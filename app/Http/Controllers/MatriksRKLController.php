@@ -18,6 +18,7 @@ use App\Entity\ImpactIdentificationClone;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\RklRplComment;
+use App\Utils\Document;
 use ErrorException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -42,6 +43,10 @@ class MatriksRKLController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->documentReview) {
+            return $this->documentReview($request->idProject);
+        }
+
         if($request->checkDocument) {
             if (!Storage::disk('public')->exists('workspace')) {
                 return 'false';
@@ -1560,5 +1565,21 @@ class MatriksRKLController extends Controller
         } else {
             return '';
         }
+    }
+
+    private function documentReview($id_project)
+    {
+        $project = Project::findOrFail($id_project);
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen RKL RPL']])->first();
+        $downloadUri = url($document_attachment->attachment);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+
+        return response()->json([
+            'docx_url' => $document_attachment->attachment,
+            'pdf_url' => $convertedUri,
+            'project_title' => strtolower(str_replace('/', '-', $project->project_title))
+        ]);
     }
 }

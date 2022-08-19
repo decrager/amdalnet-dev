@@ -1,20 +1,29 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div class="app-container" style="padding: 24px">
     <h2>Rekomendasi Hasil Uji Kelayakan</h2>
     <div>
-      <el-button
+      <!-- <el-button
         v-if="projects !== null"
         :loading="loadingPDF"
         type="danger"
         @click="exportPdf"
       >
         Export to .PDF
-      </el-button>
+      </el-button> -->
       <a
-        v-if="projects !== null"
+        v-if="pdfUrl !== null"
+        class="el-button el-button--danger el-button--medium"
+        :href="pdfUrl"
+        download="surat-rekomendasi-uji-kelayakan.pdf"
+      >
+        Export to .PDF
+      </a>
+      <a
+        v-if="docxUrl !== null"
         class="el-button el-button--primary el-button--medium"
-        :href="projects"
-        download
+        :href="docxUrl"
+        download="surat-rekomendasi-uji-kelayakan.docx"
       >
         Export to .DOCX
       </a>
@@ -23,10 +32,8 @@
       <el-col :span="16">
         <div class="grid-content bg-purple" />
         <iframe
-          v-if="projects !== null"
-          :src="
-            'https://docs.google.com/gview?url=' + encodeURIComponent(projects) + '&embedded=true'
-          "
+          v-if="pdfUrl !== null"
+          :src="pdfUrl"
           width="100%"
           height="723px"
           frameborder="0"
@@ -42,7 +49,6 @@
 <script>
 import Resource from '@/api/resource';
 const feasibilityTestResource = new Resource('feasibility-test');
-import axios from 'axios';
 
 export default {
   data() {
@@ -53,7 +59,8 @@ export default {
       loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
       showDocument: true,
-      projectName: '',
+      pdfUrl: null,
+      docxUrl: null,
     };
   },
   created() {
@@ -63,51 +70,27 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
-      const projectName = await feasibilityTestResource.list({
+      const data = await feasibilityTestResource.list({
         dokumen: 'true',
         idProject: this.$route.params.id,
         uklUpl: 'true',
       });
-      this.projects = projectName;
-      this.projectName = projectName;
+      this.pdfUrl = data.pdf_url;
+      this.docxUrl = data.docx_url;
       this.loading = false;
-    },
-    async exportDocxPhpWord() {
-      await feasibilityTestResource.list({
-        idProject: this.$route.params.id,
-        formulir: 'true',
-      });
     },
     async exportPdf() {
       this.loadingPDF = true;
-      axios({
-        url: `api/feasibility-test`,
-        method: 'GET',
-        responseType: 'blob',
-        params: {
-          idProject: this.$route.params.id,
-          pdf: 'true',
-        },
-      })
-        .then((response) => {
-          this.loadingPDF = false;
-          // const getHeaders = response.headers['content-disposition'].split('; ');
-          // const getFileName = getHeaders[1].split('=');
-          // const getName = getFileName[1].split('=');
-          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-          var fileLink = document.createElement('a');
-          fileLink.href = fileURL;
-          fileLink.setAttribute(
-            'download',
-            `${this.projectName.replace('.docx', '.pdf')}`
-          );
-          document.body.appendChild(fileLink);
-          fileLink.click();
-        })
-        .catch((err) => {
-          err = '';
-          this.loadingPDF = false;
-        });
+      const fileURL = await feasibilityTestResource.list({
+        pdf: 'true',
+        idProject: this.$route.params.id,
+      });
+
+      const fileLink = document.createElement('a');
+      fileLink.href = fileURL;
+      fileLink.setAttribute('download', `surat-rekomendasi-uji-kelayakan.pdf`);
+      document.body.appendChild(fileLink);
+      fileLink.click();
     },
   },
 };

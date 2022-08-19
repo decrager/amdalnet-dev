@@ -1427,14 +1427,14 @@ export default {
       });
     },
     async handleWorkspaceUKLUPL(idProject) {
-      const projectName = await axios.get(
+      const data = await axios.get(
         `/api/dokumen-ukl-upl/${idProject}`
       );
       this.$router.push({
         name: 'projectWorkspace',
         params: {
           id: idProject,
-          filename: projectName.data,
+          filename: data.data.file_name,
         },
       });
     },

@@ -4,19 +4,27 @@
     <el-card v-loading="loading">
       <h2>Formulir Kerangka Acuan</h2>
       <div>
-        <el-button
+        <!-- <el-button
           v-if="showDocument"
           :loading="loadingPDF"
           type="danger"
           @click="exportPdf"
         >
           Export to .PDF
-        </el-button>
+        </el-button> -->
+        <a
+          v-if="showDocument"
+          class="btn-pdf"
+          :href="urlPdf"
+          :download="`ka-andal-${project_title}.pdf`"
+        >
+          Export to .PDF
+        </a>
         <a
           v-if="showDocument"
           class="btn-docx"
           :href="downloadDocxPath"
-          download
+          :download="`ka-andal-${project_title}.docx`"
         >
           Export to .DOCX
         </a>
@@ -26,6 +34,13 @@
           <div class="grid-content bg-purple" />
           <iframe
             v-if="showDocument"
+            :src="urlPdf"
+            width="100%"
+            height="723px"
+            frameborder="0"
+          />
+          <!-- <iframe
+            v-if="showDocument"
             :src="
               'https://docs.google.com/gview?url=' +
               encodeURIComponent(projects) +
@@ -34,7 +49,7 @@
             width="100%"
             height="723px"
             frameborder="0"
-          />
+          /> -->
           <!-- <iframe
             v-if="showDocument"
             :src="`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(projects)}`"
@@ -57,10 +72,6 @@ import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 const kaReviewResounce = new Resource('ka-reviews');
 import Comment from '@/views/penyusunan-andal/components/Comment';
-import Docxtemplater from 'docxtemplater';
-import PizZip from 'pizzip';
-import PizZipUtils from 'pizzip/utils/index.js';
-import { saveAs } from 'file-saver';
 
 export default {
   components: {
@@ -88,11 +99,11 @@ export default {
       out: '',
       showDocument: false,
       downloadDocxPath: '',
+      urlPdf: '',
     };
   },
   created() {
     this.getData();
-    // this.getDocument();
   },
   methods: {
     async getData() {
@@ -105,79 +116,9 @@ export default {
       this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
       this.projects = this.downloadDocxPath;
+      this.urlPdf = data.pdf_url;
       this.showDocument = true;
       this.loading = false;
-    },
-    async exportDocxPhpWord() {
-      await andalComposingResource.list({
-        idProject: this.$route.params.id,
-        formulir: 'true',
-      });
-    },
-    downloadDocx() {
-      saveAs(this.out, `ka-andal-${this.project_title.toLowerCase()}.docx`);
-    },
-    exportDocx() {
-      PizZipUtils.getBinaryContent(
-        '/template_ka_andal.docx',
-        (error, content) => {
-          if (error) {
-            throw error;
-          }
-          const zip = new PizZip(content);
-          const doc = new Docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true,
-          });
-          doc.render({
-            metode_studi: this.metode_studi,
-            pra_konstruksi: this.pra_konstruksi,
-            konstruksi: this.konstruksi,
-            operasi: this.operasi,
-            pasca_operasi: this.pasca_operasi,
-            project_title: this.project_title,
-            pic: this.pic,
-            description: this.description,
-            location_desc: this.location_desc,
-            negative: this.negative,
-            positive: this.positive,
-            penyusun: this.penyusun,
-          });
-
-          const out = doc.getZip().generate({
-            type: 'blob',
-            mimeType:
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          });
-
-          const formData = new FormData();
-          formData.append('docx', out);
-          formData.append('type', 'formulir');
-          formData.append('idProject', this.$route.params.id);
-
-          andalComposingResource
-            .store(formData)
-            .then((response) => {
-              this.showDocument = true;
-              this.projects =
-                window.location.origin +
-                `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
-              this.loading = false;
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-
-          this.out = out;
-        }
-      );
-    },
-    getDocument() {
-      this.projects =
-        window.location.origin +
-        '/storage/formulir/' +
-        this.$route.params.id +
-        `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
     },
     async exportPdf() {
       this.loadingPDF = true;
@@ -235,12 +176,10 @@ export default {
   font-size: 14px;
   border-radius: 4px;
   color: #ffffff;
-  background-color: #216221;
   display: inline-block;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  border: 1px solid #216221;
   -webkit-appearance: none;
   text-align: center;
   box-sizing: border-box;
@@ -248,5 +187,13 @@ export default {
   margin: 0;
   transition: 0.1s;
   font-weight: 400;
+}
+.btn-docx {
+  background-color: #216221;
+  border: 1px solid #216221;
+}
+.btn-pdf {
+  background-color: #ff4949;
+  border: 1px solid #ff4949;
 }
 </style>
