@@ -64,33 +64,35 @@ class GovernmentInstitutionController extends Controller
             $institutions = GovernmentInstitution::findOrFail($request->id);
         }
 
+        $request_email = $request->email ? strtolower($request->email) : $request->email;
+
         $institutions->name = $request->name;
         $institutions->institution_type = $request->institutionType;
-        $institutions->email = $request->email;
+        $institutions->email = $request_email;
         $institutions->id_province = $request->id_province;
         $institutions->id_district = $request->id_district;
         $institutions->save();
         
         if($request->type == 'create') {
-            $is_user_exist = User::where('email', $request->email)->count();
+            $is_user_exist = User::where('email', $request_email)->count();
             if($is_user_exist == 0) {
                 $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
                 $password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($request->name),
-                    'email' => $request->email,
+                    'email' => $request_email,
                     'password' => Hash::make($password),
                     'original_password' => $password
                 ]);
                 $user->syncRoles($valsubRole);
             }
         } else {
-            if($request->email != $request->old_email) {
+            if($request_email != $request->old_email) {
                 $user = User::where('email', $request->old_email)->first();
                 if($user) {
                     $password = Str::random(8);
                     $user->password = Hash::make($password);
-                    $user->email = $request->email;
+                    $user->email = $request_email;
                     $user->save();
 
                     // send notification if existing user email changed

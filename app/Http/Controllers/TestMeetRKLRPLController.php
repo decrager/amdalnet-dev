@@ -121,13 +121,13 @@ class TestMeetRKLRPLController extends Controller
                             $email_user[] = $i->tukSecretaryMember->email;
                         }
                     } else if($i->email) {
-                        $user = User::where('email', $i->email)->count();
+                        $user = User::where('email', strtolower($i->email))->count();
                         if($user === 0) {
                             $role = Role::findByName(Acl::ROLE_EXAMINER);
                             $password = Str::random(8);
                             $user = User::create([
                                 'name' => ucfirst($i->name),
-                                'email' => $i->email,
+                                'email' => strtolower($i->email),
                                 'password' => Hash::make($password),
                                 'original_password' => $password
                             ]);
@@ -139,7 +139,7 @@ class TestMeetRKLRPLController extends Controller
                                 $invite->save();
                             }
                         } else {
-                            $user = User::where('email', $i->email)->first();
+                            $user = User::where('email', strtolower($i->email))->first();
                         }
 
                         $email_user[] = $i->email;
@@ -273,6 +273,8 @@ class TestMeetRKLRPLController extends Controller
                 $invitation = TestingMeetingInvitation::findOrFail($data['invitations'][$i]['id']);
             }
 
+            $request_email = $data['invitations'][$i]['email'] ? strtolower($data['invitations'][$i]['email']) : $data['invitations'][$i]['email'];
+
             if($data['invitations'][$i]['type'] == 'Ketua TUK' || $data['invitations'][$i]['type'] == 'Anggota TUK') {
                 $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['tuk_member_id'];
             } else if($data['invitations'][$i]['type'] == 'Anggota Sekretariat TUK') {
@@ -280,7 +282,7 @@ class TestMeetRKLRPLController extends Controller
             } else if($data['invitations'][$i]['type'] == 'institution' || $data['invitations'][$i]['type'] == 'other') {
                 $invitation->role = $data['invitations'][$i]['role'];
                 $invitation->name = $data['invitations'][$i]['name'];
-                $invitation->email = $data['invitations'][$i]['email'];
+                $invitation->email = $request_email;
                 $invitation->institution = $data['invitations'][$i]['institution'];
 
                 if($data['invitations'][$i]['type'] == 'institution') {
@@ -288,8 +290,8 @@ class TestMeetRKLRPLController extends Controller
                 }
             }
 
-            if($data['invitations'][$i]['email']) {
-                $user = User::where('email', $data['invitations'][$i]['email'])->first();
+            if($request_email) {
+                $user = User::where('email', $request_email)->first();
                 if($user) {
                     $invitation->id_user = $user->id;
                 }

@@ -166,14 +166,14 @@ class LpjpController extends Controller
             $name = 'lpjp/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
-            $email = $request->get('email');
+            $email = $request->get('email') ? strtolower($request->get('email')) : $request->get('email');
             $found = User::where('email', $email)->first();
             if (!$found) {
                 $lpjpRole = Role::findByName(Acl::ROLE_LPJP);
                 $password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
-                    'email' => $params['email'],
+                    'email' => $params['email'] ? strtolower($params['email']) : $params['email'],
                     'password' => Hash::make($password),
                     'original_password' => $password
                 ]);
@@ -196,7 +196,7 @@ class LpjpController extends Controller
                 'id_prov' => $params['id_prov'],
                 'id_district' => $params['id_district'],
                 'mobile_phone_no' => $params['mobile_phone_no'],
-                'email' => $params['email'],
+                'email' => $params['email'] ? strtolower($params['email']) : $params['email'],
                 'cert_file' => $name,
                 'contact_person' => $params['contact_person'],
                 'phone_no' => $params['phone_no'],
@@ -296,8 +296,8 @@ class LpjpController extends Controller
 
              // update user email
              if($request->email) {
-                if($request->email != $lpjp->email) {
-                    $found = User::where('email', $request->email)->first();
+                if(strtolower($request->email) != $lpjp->email) {
+                    $found = User::where('email', strtolower($request->email))->first();
                     if($found) {
                         return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
                     } else {
@@ -307,7 +307,7 @@ class LpjpController extends Controller
                             if($lpjp_user) {
                                 $old_email = $lpjp->email;
                                 $lpjp_user->name = $request->name;
-                                $lpjp_user->email = $request->email;
+                                $lpjp_user->email = strtolower($request->email);
                                 $lpjp_user->password = Hash::make($password);
                                 $lpjp_user->save();
                                 $email_changed_notif = $lpjp_user;
@@ -323,7 +323,7 @@ class LpjpController extends Controller
                             $random_password = Str::random(8);
                             $user = User::create([
                                 'name' => ucfirst($params['name']),
-                                'email' => $params['email'],
+                                'email' => strtolower($params['email']),
                                 'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($random_password),
                                 'original_password' => isset($params['password']) ? $params['password'] : $random_password
                             ]);
@@ -331,13 +331,13 @@ class LpjpController extends Controller
                         }
                     }
                 } else {
-                    $user = User::where('email',  $request->email)->first();
+                    $user = User::where('email', strtolower($request->email))->first();
                     if(!$user) {
                         $lpjpRole = Role::findByName(Acl::ROLE_LPJP);
                         $random_password = Str::random(8);
                         $user = User::create([
                             'name' => ucfirst($params['name']),
-                            'email' => $params['email'],
+                            'email' => strtolower($params['email']),
                             'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($random_password),
                             'original_password' => isset($params['password']) ? $params['password'] : $random_password
                         ]);
@@ -360,7 +360,7 @@ class LpjpController extends Controller
             $lpjp->id_prov = $params['id_prov'];
             $lpjp->id_district = $params['id_district'];
             $lpjp->mobile_phone_no = $params['mobile_phone_no'];
-            $lpjp->email = $params['email'];
+            $lpjp->email = $params['email'] ? strtolower($params['email']) : $params['email'];
             $lpjp->contact_person = $params['contact_person'];
             $lpjp->phone_no = $params['phone_no'];
             $lpjp->url_address = $params['url_address'];
