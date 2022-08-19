@@ -36,7 +36,9 @@
           <div class="grid-content bg-purple" />
           <iframe
             v-if="showDocument"
-            :src="urlPdf"
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              urlPdf
+            )}&embedded=true`"
             width="100%"
             height="723px"
             frameborder="0"

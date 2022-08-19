@@ -16,7 +16,9 @@
           <div class="grid-content bg-purple" />
           <iframe
             v-if="pdfUrl !== null"
-            :src="pdfUrl"
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              pdfUrl
+            )}&embedded=true`"
             width="100%"
             height="723px"
             frameborder="0"

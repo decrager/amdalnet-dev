@@ -20,7 +20,9 @@
           </div>
           <iframe
             v-if="showDocumentAndal"
-            :src="andalPdfUrl"
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              andalPdfUrl
+            )}&embedded=true`"
             width="100%"
             height="723px"
             frameborder="0"
@@ -37,7 +39,9 @@
           </div>
           <iframe
             v-if="showDocumentRklRpl"
-            :src="rklRplPdfUrl"
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              rklRplPdfUrl
+            )}&embedded=true`"
             width="100%"
             height="723px"
             frameborder="0"
