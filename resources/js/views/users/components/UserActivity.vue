@@ -745,10 +745,10 @@ export default {
     },
     eyeIcon(passType) {
       if (passType === 'password') {
-        return 'eye';
+        return 'eye-open';
       }
 
-      return 'eye-open';
+      return 'eye';
     },
   },
 };
