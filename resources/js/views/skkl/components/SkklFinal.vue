@@ -36,7 +36,20 @@
       </el-row>
       <el-row>
         <el-col :span="24">
-          <el-form-item label="Unggah Dokumen Persetujuan Lingkungan" prop="file">
+          <el-form-item label="Dokumen Persetujuan Lingkungan" prop="file">
+            <el-upload
+              v-if="!disableEdit"
+              action="#"
+              :auto-upload="false"
+              :on-change="handleUploadChange"
+              :show-file-list="false"
+              style="display: inline;"
+            >
+              <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
+            </el-upload>
+            <div v-if="disableEdit" style="color: red;">
+              <i>*Hanya penguji yang dapat mengunggah dokumen</i>
+            </div>
             <el-table
               :data="fileList"
               fit
@@ -59,16 +72,6 @@
                 </template>
               </el-table-column>
             </el-table>
-            <el-upload
-              action="#"
-              :auto-upload="false"
-              :on-change="handleUploadChange"
-              :show-file-list="false"
-              style="display: inline;"
-              :disabled="disableEdit"
-            >
-              <el-button v-if="!disableEdit" :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
-            </el-upload>
           </el-form-item>
         </el-col>
       </el-row>
