@@ -49,6 +49,10 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->documentReview) {
+            return $this->documentReview($request->idProject);
+        }
+
         if($request->checkDocument) {
             if(!Storage::disk('public')->exists('workspace')) {
                 return 'false';
@@ -2474,11 +2478,15 @@ class AndalComposingController extends Controller
         if($type != 'andal') {
             $submit = KaReview::where([['id_project', $id_project], ['status', 'submit']])->first();
             if($submit) {
-                return [
-                    // 'file_name' => Storage::url('workspace/' . $save_file_name),
-                    'file_name' => Storage::disk('public')->temporaryUrl('workspace/' . $save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
-                    'project_title' => strtolower($project->project_title)
-                ];
+                $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Formulir KA']])->first();
+                if($document_attachment) {
+                    $pdf_url = $this->docxToPdf($document_attachment->attachment);
+                    return [
+                        'file_name' => $document_attachment->attachment,
+                        'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
+                        'pdf_url' => $pdf_url
+                    ];
+                }
             }
         }
 
@@ -2799,9 +2807,13 @@ class AndalComposingController extends Controller
             $document_attachment->save();
         }
 
+        // get pdf url
+        $pdf_url = $this->docxToPdf($document_attachment->attachment);
+
         return [
             'file_name' => $document_attachment->attachment,
-            'project_title' => strtolower(str_replace('/', '-', $project->project_title))
+            'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'pdf_url' => $pdf_url
         ];
     }
 
@@ -3140,5 +3152,27 @@ class AndalComposingController extends Controller
             'extension' => $extension,
             'file' => base64_decode($file)
         ];
+    }
+
+    private function documentReview($id_project)
+    {
+        $project = Project::findOrFail($id_project);
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Andal']])->first();
+        $pdf_url = $this->docxToPdf($document_attachment->attachment);
+
+        return response()->json([
+            'docx_url' => $document_attachment->attachment,
+            'pdf_url' => $pdf_url,
+            'project_title' => strtolower(str_replace('/', '-', $project->project_title))
+        ]);
+    }
+
+    private function docxToPdf($url)
+    {
+        $downloadUri = url($url);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 }

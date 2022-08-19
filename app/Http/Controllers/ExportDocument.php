@@ -14,6 +14,7 @@ use App\Entity\MeetingReport;
 use App\Entity\Project;
 use App\Entity\ProjectFilter;
 use App\Entity\ProjectStage;
+use App\Utils\Document;
 use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
@@ -491,9 +492,12 @@ class ExportDocument extends Controller
         
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->first();
         if($document_attachment) {
+            $pdf_url = $this->docxToPdf($document_attachment->attachment);
             return [
-                'file_name' => $document_attachment->attachment,
-                'project_title' => strtolower(str_replace('/', '-', $project->project_title))
+                'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
+                'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
+                'pdf_url' => $pdf_url,
+                'docx_url' => $document_attachment->attachment
             ];
         }
 
@@ -790,9 +794,14 @@ class ExportDocument extends Controller
         $document_attachment->type = 'Dokumen UKL UPL';
         $document_attachment->save();
 
+        // get pdf url
+        $pdf_url = $this->docxToPdf($document_attachment->attachment);
+
         return [
-            'file_name' => $document_attachment->attachment,
-            'project_title' => strtolower(str_replace('/', '-', $project->project_title))
+            'file_name' => $save_file_name,
+            'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'pdf_url' => $pdf_url,
+            'docx_url' => $document_attachment->attachment
         ];
     }
 
@@ -998,5 +1007,14 @@ class ExportDocument extends Controller
         }
 
         return $new_data;
+    }
+
+    private function docxToPdf($url)
+    {
+        $downloadUri = url($url);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 }

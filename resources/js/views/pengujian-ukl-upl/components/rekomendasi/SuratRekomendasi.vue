@@ -3,19 +3,27 @@
   <div class="app-container" style="padding: 24px">
     <h2>Rekomendasi Hasil Uji Kelayakan</h2>
     <div>
-      <el-button
+      <!-- <el-button
         v-if="projects !== null"
         :loading="loadingPDF"
         type="danger"
         @click="exportPdf"
       >
         Export to .PDF
-      </el-button>
+      </el-button> -->
       <a
-        v-if="projects !== null"
+        v-if="pdfUrl !== null"
+        class="el-button el-button--danger el-button--medium"
+        :href="pdfUrl"
+        download="surat-rekomendasi-uji-kelayakan.pdf"
+      >
+        Export to .PDF
+      </a>
+      <a
+        v-if="docxUrl !== null"
         class="el-button el-button--primary el-button--medium"
-        :href="projects"
-        download
+        :href="docxUrl"
+        download="surat-rekomendasi-uji-kelayakan.docx"
       >
         Export to .DOCX
       </a>
@@ -24,12 +32,8 @@
       <el-col :span="16">
         <div class="grid-content bg-purple" />
         <iframe
-          v-if="projects !== null"
-          :src="
-            'https://docs.google.com/gview?url=' +
-            encodeURIComponent(projects) +
-            '&embedded=true'
-          "
+          v-if="pdfUrl !== null"
+          :src="pdfUrl"
           width="100%"
           height="723px"
           frameborder="0"
@@ -55,7 +59,8 @@ export default {
       loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
       showDocument: true,
-      projectName: '',
+      pdfUrl: null,
+      docxUrl: null,
     };
   },
   created() {
@@ -65,20 +70,14 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
-      const projectName = await feasibilityTestResource.list({
+      const data = await feasibilityTestResource.list({
         dokumen: 'true',
         idProject: this.$route.params.id,
         uklUpl: 'true',
       });
-      this.projects = projectName;
-      this.projectName = projectName;
+      this.pdfUrl = data.pdf_url;
+      this.docxUrl = data.docx_url;
       this.loading = false;
-    },
-    async exportDocxPhpWord() {
-      await feasibilityTestResource.list({
-        idProject: this.$route.params.id,
-        formulir: 'true',
-      });
     },
     async exportPdf() {
       this.loadingPDF = true;
