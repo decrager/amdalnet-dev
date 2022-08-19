@@ -297,6 +297,22 @@ class ProjectController extends Controller
             $fileKawasanLindung->storePubliclyAs('public', $kawLinName);
         }
 
+        //create fileOssReqDoc
+        $fileOssReqDocName = '';
+        if ($request->file('fileOssReqDoc')) {
+            $fileOssReqDoc = $request->file('fileOssReqDoc');
+            $fileOssReqDocName = 'project/ossReqDoc/' . uniqid() . '.' . $fileOssReqDoc->extension();
+            $fileOssReqDoc->storePubliclyAs('public', $fileOssReqDocName);
+        }
+
+        //create fileOssSpplDoc
+        $fileOssSpplDocName = '';
+        if ($request->file('fileOssSpplDoc')) {
+            $fileOssSpplDoc = $request->file('fileOssSpplDoc');
+            $fileOssSpplDocName = 'project/ossSpplDoc/' . uniqid() . '.' . $fileOssSpplDoc->extension();
+            $fileOssSpplDoc->storePubliclyAs('public', $fileOssSpplDocName);
+        }
+
         //create file map
 
         DB::beginTransaction();
@@ -340,6 +356,10 @@ class ProjectController extends Controller
                 'kawasan_lindung_file' => $kawLinName,
                 'ppib' => isset($request['pippib']) ? $request['pippib'] : null,
                 'ppib_file' => $pippibName,
+                'oss_risk' => isset($request['oss_risk']) ? $request['oss_risk'] : null,
+                'oss_authority' => isset($request['oss_authority']) ? $request['oss_authority'] : null,
+                'oss_area' => isset($request['oss_area']) ? $request['oss_area'] : null,
+                'oss_invest_status' => isset($request['oss_invest_status']) ? $request['oss_invest_status'] : null,
             ]);
 
             // add workflow

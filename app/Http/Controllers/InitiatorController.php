@@ -99,6 +99,14 @@ class InitiatorController extends Controller
                 $user->save();
             }
 
+            //fileNibDocOss
+            $fileNibDocOssName = '';
+            if ($request->file('fileNibDocOss')) {
+                $fileNibDocOss = $request->file('fileNibDocOss');
+                $fileNibDocOssName = 'project/fileNibDocOss/' . uniqid() . '.' . $fileNibDocOss->extension();
+                $fileNibDocOss->storePubliclyAs('public', $fileNibDocOssName);
+            }
+
             $initiator = Initiator::create([
                 'name'        =>  $params['name'],
                 'pic'         =>  $params['pic'],
@@ -110,8 +118,9 @@ class InitiatorController extends Controller
                 'province'    =>  isset($params['province']) ? $params['province'] : null,
                 'district'    =>  isset($params['district']) ? $params['district'] : null,
                 'pic_role'    =>  isset($params['picRole']) ? $params['picRole'] : null,
-                'nib'    =>  isset($params['nib']) ? $params['nib'] : null,
+                'nib'         =>  isset($params['nib']) ? $params['nib'] : null,
                 'logo'        =>  $logoName,
+                'nib_doc_oss' =>  $fileNibDocOssName,
             ]);
 
 
