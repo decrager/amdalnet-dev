@@ -169,7 +169,7 @@ class FormulatorController extends Controller
                         $user->avatar = $fileAvatarName;
                     }
                     if($this->checkStringNull($request->email)) {
-                        if($request->email != $old_email) {
+                        if(strtolower($request->email) != $old_email) {
                             $user->email = strtolower($request->email);
                             $email_notification = true;
                         }
@@ -206,7 +206,7 @@ class FormulatorController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            $email = $this->checkStringNull($request->get('email')) ? strtolower($request->get('email')) : $request->get('email');
+            $email = $this->checkStringNull($request->get('email')) ? strtolower($request->get('email')) : null;
 
             if($this->checkStringNull($request->email)) {
                 $found = User::where('email', $email)->first();
