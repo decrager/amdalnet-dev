@@ -112,14 +112,14 @@ class ExpertBankController extends Controller
             $fileCertNonLukName = 'expert-bank/' . uniqid() . '.' . $fileCertNonLuk->extension();
             $fileCertNonLuk->storePubliclyAs('public', $fileCertNonLukName);
 
-            $email = $request->get('email');
+            $email = strtolower($request->get('email'));
             $found = User::where('email', $email)->first();
             if (!$found) {
                 $expertRole = Role::findByName(Acl::ROLE_EXAMINER);
                 $password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
-                    'email' => $params['email'],
+                    'email' => strtolower($params['email']),
                     'password' => Hash::make($password),
                     'original_password' => $password
                 ]);
@@ -131,7 +131,7 @@ class ExpertBankController extends Controller
             $expertBank = ExpertBank::create([
                 'name'              => $params['name'],
                 'address'           => $params['address'],
-                'email'             => $params['email'],
+                'email'             => strtolower($params['email']),
                 'mobile_phone_no'   => $params['mobile_phone_no'],
                 'expertise'         => $params['expertise'],
                 'institution'       => $params['institution'],
@@ -224,8 +224,8 @@ class ExpertBankController extends Controller
 
             // update user email
             if($request->email) {
-                if($request->email != $expertBank->email) {
-                    $found = User::where('email', $request->email)->first();
+                if(strtolower($request->email) != $expertBank->email) {
+                    $found = User::where('email', strtolower($request->email))->first();
                     if($found) {
                         return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
                     } else {
@@ -235,7 +235,7 @@ class ExpertBankController extends Controller
                             if($expert_bank_user) {
                                 $old_email = $expertBank->email;
                                 $expert_bank_user->name = $request->name;
-                                $expert_bank_user->email = $request->email;
+                                $expert_bank_user->email = strtolower($request->email);
                                 $expert_bank_user->password = Hash::make($password);
                                 $expert_bank_user->save();
                                 $email_changed_notif = $expert_bank_user;
@@ -251,7 +251,7 @@ class ExpertBankController extends Controller
                             $random_password = Str::random(8);
                             $user = User::create([
                                 'name' => ucfirst($params['name']),
-                                'email' => $params['email'],
+                                'email' => strtolower($params['email']),
                                 'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
                                 'original_password' => isset($params['password']) ? $params['password'] : $random_password
                             ]);
@@ -300,7 +300,7 @@ class ExpertBankController extends Controller
 
             $expertBank->name = $params['name'];
             $expertBank->address = $params['address'];
-            $expertBank->email = $params['email'];
+            $expertBank->email = strtolower($params['email']);
             $expertBank->mobile_phone_no = $params['mobile_phone_no'];
             $expertBank->expertise = $params['expertise'];
             $expertBank->institution = $params['institution'];

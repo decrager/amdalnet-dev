@@ -71,7 +71,7 @@ class InitiatorController extends Controller
 
             DB::beginTransaction();
 
-            $found = User::where('email', $params['email'])->first();
+            $found = User::where('email', strtolower($params['email']))->first();
             if ($found) {
                 return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
             }
@@ -80,7 +80,7 @@ class InitiatorController extends Controller
             $password = Str::random(8);
             $user_data = [
                 'name' => ucfirst($params['name']),
-                'email' => $params['email'],
+                'email' => strtolower($params['email']),
                 'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($password),
                 'oss_username' => isset($params['username']) ? $params['username'] : null
             ];
@@ -109,7 +109,7 @@ class InitiatorController extends Controller
             $initiator = Initiator::create([
                 'name'        =>  $params['name'],
                 'pic'         =>  $params['pic'],
-                'email'       =>  $params['email'],
+                'email'       =>  $params['email'] ? strtolower($params['email']) : $params['email'],
                 'phone'       =>  $params['phone'],
                 'address'     =>  $params['address'],
                 'user_type'   =>  $params['user_type'],
@@ -146,7 +146,7 @@ class InitiatorController extends Controller
 
     public function showByEmail(Request $request)
     {
-        If($request->email){
+        if($request->email){
             $initiator = Initiator::where('email', $request->email)->first();
 
             if($initiator) {

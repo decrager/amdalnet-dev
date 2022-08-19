@@ -117,9 +117,9 @@ class FormulatorController extends Controller
 
             $formulator = Formulator::findOrFail($request->id);
             if($this->checkStringNull($request->email)) {
-                if($request->email != $formulator->email) {
-                    $check_user = User::where('email', $request->email)->first();
-                    $check_formulator = Formulator::where('email', $request->email)->first();
+                if(strtolower($request->email) != $formulator->email) {
+                    $check_user = User::where('email', strtolower($request->email))->first();
+                    $check_formulator = Formulator::where('email', strtolower($request->email))->first();
                     if($check_user || $check_formulator) {
                         $error['error_exist_email'] = true;
                         return response()->json($error);
@@ -145,7 +145,7 @@ class FormulatorController extends Controller
             $formulator->phone = $this->checkStringNull($request->phone);
             
             if($this->checkStringNull($request->email)) {
-                $formulator->email = $request->email;
+                $formulator->email = strtolower($request->email);
             }
 
             $formulator->reg_no = $request->reg_no;
@@ -170,7 +170,7 @@ class FormulatorController extends Controller
                     }
                     if($this->checkStringNull($request->email)) {
                         if($request->email != $old_email) {
-                            $user->email = $request->email;
+                            $user->email = strtolower($request->email);
                             $email_notification = true;
                         }
                     }
@@ -206,7 +206,7 @@ class FormulatorController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            $email = $this->checkStringNull($request->get('email'));
+            $email = $this->checkStringNull($request->get('email')) ? strtolower($request->get('email')) : $request->get('email');
 
             if($this->checkStringNull($request->email)) {
                 $found = User::where('email', $email)->first();
@@ -246,7 +246,7 @@ class FormulatorController extends Controller
                 $random_password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
-                    'email' => $params['email'],
+                    'email' => strtolower($params['email']),
                     'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($random_password),
                     'original_password' => isset($params['password']) ? $params['password'] : $random_password
                 ]);
@@ -286,7 +286,7 @@ class FormulatorController extends Controller
                 'province'          => isset($params['province']) ? $params['province'] : null,
                 'phone'             => isset($params['phone']) ? $params['phone'] : null,
                 'address'           => isset($params['address']) ? $params['address'] : null,
-                'email'             => isset($params['email']) ? $params['email'] : null,
+                'email'             => $request->email ? strtolower($params['email']) : $request->email,
             ]);
 
             if (!$formulator) {
@@ -416,12 +416,12 @@ class FormulatorController extends Controller
 
 
         if($request->email) {
-            if($request->email != $formulator->email) {
-                $found = User::where('email', $request->email)->first();
+            if(strtolower($request->email) != $formulator->email) {
+                $found = User::where('email', strtolower($request->email))->first();
                 if($found) {
                     $old_email = $found->email;
                     $found->password = Hash::make($password);
-                    $found->email = $request->email;
+                    $found->email = strtolower($request->email);
                     $found->save();
                     $email_changed_notif = $found;
                 } else {
@@ -432,7 +432,7 @@ class FormulatorController extends Controller
                         $random_password = Str::random(8);
                         $user = User::create([
                             'name' => ucfirst($params['name']),
-                            'email' => $params['email'],
+                            'email' => strtolower($params['email']),
                             'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
                             'original_password' => isset($params['password']) ? $params['password'] : $random_password
                         ]);
@@ -476,7 +476,7 @@ class FormulatorController extends Controller
         $formulator->id_institution = $params['id_institution'];
         $formulator->membership_status = $params['membership_status'];
         $formulator->id_lsp = $params['id_lsp'];
-        $formulator->email = isset($params['email']) ? $params['email'] : null;
+        $formulator->email = $request->email ? strtolower($params['email']) : $request->email;
         $formulator->nip = $params['nip'] ? $params['nip'] : null;
         $formulator->save();
         // }
@@ -575,7 +575,7 @@ class FormulatorController extends Controller
         $formulator->address = $request->address;
         $formulator->province = $request->province;
         $formulator->district = $request->district;
-        $formulator->email = $request->email;
+        $formulator->email = $request->email ? strtolower($request->email) : $request->email;
         $formulator->phone = $request->phone;
         $formulator->save();
 
@@ -583,7 +583,7 @@ class FormulatorController extends Controller
         $password = Str::random(8);
         $user_data = [
             'name' => $request->name,
-            'email' => $request->email,
+            'email' => $request->email ? strtolower($request->email) : $request->email,
             'password' => $request->password ? Hash::make($request->password) : $password
         ];
 
@@ -637,7 +637,7 @@ class FormulatorController extends Controller
             } 
         }
 
-        $user = User::where('email', $email_user)->first();
+        $user = User::where('email', strtolower($email_user))->first();
         if($user) {
             return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
         }

@@ -400,18 +400,19 @@ class TUKManagementController extends Controller
             DB::beginTransaction();
 
             $secretary_member = null;
+            $request_email = $request->email ? strtolower($request->email) : $request->email;
 
             if($request->secretaryType == 'create') {
                 $secretary_member = new TukSecretaryMember();
                 $secretary_member->id_feasibility_test_team = $request->idfeasibilityTestTeam;
 
-                $is_user_exist = User::where('email', $request->email)->count();
+                $is_user_exist = User::where('email', $request_email)->count();
                 if($is_user_exist == 0) {
                     $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_ADMINISTRATION);
                     $password = Str::random(8);
                     $user = User::create([
                         'name' => ucfirst($request->name),
-                        'email' => $request->email,
+                        'email' => $request_email,
                         'password' => Hash::make($password),
                         'original_password' => $password
                     ]);
@@ -419,11 +420,11 @@ class TUKManagementController extends Controller
                 }
             } else {
                 $secretary_member = TukSecretaryMember::findOrFail($request->idSecretaryMember);
-                if(($secretary_member->email !== $request->email) || ($secretary_member->name !== $request->name)) {
+                if(($secretary_member->email !== $request_email) || ($secretary_member->name !== $request->name)) {
                     $user = User::where('email', $secretary_member->email)->first();
 
-                    if($secretary_member->email !== $request->email) {
-                        $user->email = $request->email;
+                    if($secretary_member->email !== $request_email) {
+                        $user->email = $request_email;
                     }
 
                     if($secretary_member->name !== $request->name) {
@@ -439,7 +440,7 @@ class TUKManagementController extends Controller
             $secretary_member->nip = $request->nip;
             $secretary_member->name = $request->name;
             $secretary_member->institution = $request->institution;
-            $secretary_member->email = $request->email;
+            $secretary_member->email = $request_email;
             $secretary_member->position = $request->position;
             $secretary_member->phone = $request->phone;
             $secretary_member->sex = $request->sex;
