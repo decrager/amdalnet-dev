@@ -6,16 +6,22 @@ use App\Entity\ExpertBank;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\LukMember;
+use App\Entity\Project;
+use App\Entity\ProjectKaForm;
+use App\Entity\TestingVerification;
+use App\Entity\TukProject;
 use App\Entity\TukSecretaryMember;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\ChangeAuthorityNotification;
 use App\Notifications\TUKAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class TUKManagementController extends Controller
 {
@@ -26,6 +32,29 @@ class TUKManagementController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->type == 'otherTuk') {
+            $project = Project::findOrFail($request->idProject);
+            $tuk = FeasibilityTestTeam::where(function($q) use($project) {
+                if(strtolower($project->authority) == 'pusat') {
+                    $q->where('authority', '!=', 'Pusat');
+                } else if(strtolower($project->authority) == 'provinsi') {
+                    $q->where('authority', 'Pusat')
+                        ->orWhere('authority', 'Kabupaten/Kota')
+                        ->orWhere(function($query) use($project) {
+                            $query->where([['authority', 'Provinsi'],['id_province_name', '!=', $project->auth_province]]);
+                        });
+                } else if(strtolower($project->authority == 'kabupaten')) {
+                    $q->where('authority', 'Pusat')
+                        ->orWhere('authority', 'Provinsi')
+                        ->orWhere(function($query) use($project) {
+                            $query->where([['authority', 'Kabupaten/Kota'],['id_district_name', '!=', $project->auth_district]]);
+                        });
+                }
+            })->with(['provinceAuthority','districtAuthority'])->get();
+
+            return $tuk;
+        }
+
         if($request->type == 'editSecretaryMember') {
             return TukSecretaryMember::findOrFail($request->id);
         }
@@ -319,6 +348,46 @@ class TUKManagementController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->changeAuthority) {
+            // === DELETE VERIFICATIONS DATA IF EXIST === //
+            $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
+            if($verification) {
+                ProjectKaForm::where('id_testing_verification', $verification->id)->delete();
+                TestingVerification::destroy($verification->id);
+            }
+
+            // === DELETE ASSIGNED TUK MEMBER IF EXIST === //
+            TukProject::where('id_project', $request->idProject)->delete();
+
+            // === CHANGE PROJECT AUTHORITY === //
+            $team = FeasibilityTestTeam::findOrFail($request->tukId);
+            $project = Project::findOrFail($request->idProject);
+            $project->authority = $team->authority == 'Kabupaten/Kota' ? 'Kabupaten' : $team->authority;
+            if($team->authority == 'Pusat') {
+                $project->auth_district = null;
+                $project->auth_province = null;
+            } else if($team->authority == 'Provinsi') {
+                $project->auth_district = null;
+                $project->auth_province = $team->id_province_name;
+            } else if($team->authority == 'Kabupaten/Kota') {
+                $project->auth_district = $team->id_district_name;
+                $project->auth_province = null;
+            }
+
+            $project->save();
+
+            // === SEND NOTIFICATION TO NEW TUK SECRETARY CHIEF === //
+            $secretary_chief = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $team->id],['position', 'Kepala Sekretariat']])->first();
+            if($secretary_chief) {
+                $user = User::where('email', $secretary_chief->lukMember->email)->first();
+                if($user) {
+                    Notification::send([$user], new ChangeAuthorityNotification($project, $request->notes));
+                }
+            }
+
+            return response()->json(['message' => 'success']);
+        }
+
         if($request->secretaryMember) {
             $input = $request->all();
 
@@ -339,10 +408,12 @@ class TUKManagementController extends Controller
                 $is_user_exist = User::where('email', $request->email)->count();
                 if($is_user_exist == 0) {
                     $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_ADMINISTRATION);
+                    $password = Str::random(8);
                     $user = User::create([
                         'name' => ucfirst($request->name),
                         'email' => $request->email,
-                        'password' => Hash::make('amdalnet')
+                        'password' => Hash::make($password),
+                        'original_password' => $password
                     ]);
                     $user->syncRoles($valsubRole);
                 }

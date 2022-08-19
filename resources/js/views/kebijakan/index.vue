@@ -1,8 +1,13 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div class="app-container">
     <div class="filter-container">
       <!-- <h2>Materi</h2> -->
       <el-button
+        v-if="
+          checkPermission(['manage materials and policies']) ||
+          checkRole(['admin'])
+        "
         class="filter-item"
         type="primary"
         icon="el-icon-plus"
@@ -45,6 +50,8 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import Pagination from '@/components/Pagination';
 import axios from 'axios';
 import ComponentTable from './components/ComponentTable.vue';
@@ -75,6 +82,8 @@ export default {
     this.loading = false;
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleFilter() {
       this.getAll();
     },

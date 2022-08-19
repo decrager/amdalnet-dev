@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-self-closing -->
 <template>
   <el-card v-if="user.name">
     <div class="user-profile">
@@ -14,8 +15,8 @@
             v-if="user.avatar"
             :src="user.avatar || 'no-avatar.png'"
             class="avatar"
-            @error="$event.target.src='no-avatar.png'"
-          >
+            @error="$event.target.src = 'no-avatar.png'"
+          />
           <i v-else class="el-icon-plus avatar-uploader-icon" />
         </el-upload>
         <!-- <pan-thumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false" /> -->
@@ -24,7 +25,10 @@
         <div class="user-name text-center">
           {{ user.name }}
         </div>
-        <div v-if="user.initiatorData.phone" class="user-role text-center text-muted">
+        <div
+          v-if="user.initiator && user.initiatorData.phone"
+          class="user-role text-center text-muted"
+        >
           {{ user.initiatorData.phone }}
         </div>
         <div class="user-role text-center text-muted">
@@ -97,7 +101,6 @@ export default {
       const roles = this.user.roles.map((value) =>
         this.$options.filters.uppercaseFirst(value)
       );
-      console.log(this.user);
       return roles.join(' | ');
     },
     handleAvatarSuccess(res, file) {
@@ -113,7 +116,8 @@ export default {
 
       userResource
         .updateMultipart(this.user.id, formData)
-        .then(response => {
+        .then((response) => {
+          this.user.avatar = response.avatar;
           this.updating = false;
           this.$message({
             message: 'Berhasil Mengganti Gambar Profil',
@@ -121,7 +125,7 @@ export default {
             duration: 5 * 1000,
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.updating = false;
         });

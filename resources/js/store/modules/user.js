@@ -65,7 +65,7 @@ const actions = {
   },
 
   // get user info
-  getInfo({ commit, state }) {
+  getInfo({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
       getInfo()
         .then(response => {
@@ -75,7 +75,7 @@ const actions = {
             reject('Verification failed, please Login again.');
           }
 
-          const { roles, name, avatar, introduction, permissions, id, notifications } = data;
+          const { roles, name, avatar, introduction, permissions, id } = data;
           // roles must be a non-empty array
           if (!roles || roles.length <= 0) {
             reject('getInfo: roles must be a non-null array!');
@@ -83,13 +83,14 @@ const actions = {
 
           commit('SET_ROLES', roles);
           commit('SET_PERMISSIONS', permissions);
-          commit('SET_NOTIFICATIONS', notifications);
+          // commit('SET_NOTIFICATIONS', notifications);
           commit('SET_NAME', name);
           commit('SET_AVATAR', avatar);
           commit('SET_INTRODUCTION', introduction);
           commit('SET_ID', id);
           commit('SET_USER', data);
           resolve(data);
+          dispatch('getNotifications', 5);
         })
         .catch(error => {
           // console.log(error.code);
@@ -151,6 +152,20 @@ const actions = {
       router.addRoutes(accessRoutes);
 
       resolve();
+    });
+  },
+  // get notifications
+  getNotifications({ commit }, limit) {
+    return new Promise((resolve, reject) => {
+      axios.get(`/api/user/notifications?limit=${limit}`)
+        .then(response => {
+          commit('SET_NOTIFICATIONS', response.data);
+          resolve();
+        })
+        .catch(error => {
+          console.log(error);
+          reject(error);
+        });
     });
   },
 };

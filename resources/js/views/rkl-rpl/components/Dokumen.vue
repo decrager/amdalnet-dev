@@ -12,38 +12,36 @@
             <a
               v-if="showDocumentAndal"
               class="btn-docx"
-              :href="'/api/workspace/document/get?filename=' + documentNameAndal"
-              :download="title"
+              :href="andalDocxUrl"
+              :download="`andal-${titleAndal}.docx`"
             >
               Export Dokumen ANDAL to .DOCX
             </a>
           </div>
           <iframe
             v-if="showDocumentAndal"
-            :src="
-              'https://docs.google.com/gview?url=' +
-              projectsAndal +
-              '&embedded=true'
-            "
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              andalPdfUrl
+            )}&embedded=true`"
             width="100%"
             height="723px"
             frameborder="0"
           />
           <div style="margin-top: 10px; margin-bottom: 8px">
             <a
-              v-if="showDocument"
+              v-if="showDocumentRklRpl"
               class="btn-docx"
-              :href="'/api/workspace/document/get?filename=' + documentName"
-              :download="title"
+              :href="rklRplDocxUrl"
+              :download="`rkl-rpl-${titleRklRpl}.docx`"
             >
               Export Dokumen RKL RPL to .DOCX
             </a>
           </div>
           <iframe
-            v-if="showDocument"
-            :src="
-              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
-            "
+            v-if="showDocumentRklRpl"
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              rklRplPdfUrl
+            )}&embedded=true`"
             width="100%"
             height="723px"
             frameborder="0"
@@ -76,26 +74,21 @@ export default {
   },
   data() {
     return {
-      idProject: 0,
-      projects: '',
-      projectsAndal: '',
-      title: '',
+      titleRklRpl: '',
       titleAndal: '',
       loading: false,
-      loadingPDF: false,
-      projectId: this.$route.params && this.$route.params.id,
-      out: '',
-      showDocument: false,
+      showDocumentRklRpl: false,
       showDocumentAndal: false,
-      // userInfo: {
-      //   roles: [],
-      // },
+      andalPdfUrl: null,
+      andalDocxUrl: null,
+      rklRplPdfUrl: null,
+      rklRplDocxUrl: null,
     };
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
     isFormulator() {
       return this.userInfo.roles.includes('formulator');
@@ -112,28 +105,29 @@ export default {
   },
   async created() {
     this.loading = true;
-    // this.userInfo = await this.$store.dispatch('user/getInfo');
     await this.getDataAndal();
     await this.getData();
     this.loading = false;
   },
   methods: {
     async getData() {
-      this.title = await rklResource.list({
+      const data = await rklResource.list({
         idProject: this.$route.params.id,
-        projectName: 'true',
+        documentReview: 'true',
       });
-      this.projects =
-        window.location.origin + `/api/workspace/document/get?filename=${this.documentName}`;
-      this.showDocument = true;
+      this.rklRplDocxUrl = data.docx_url;
+      this.rklRplPdfUrl = data.pdf_url;
+      this.titleRklRpl = data.project_title;
+      this.showDocumentRklRpl = true;
     },
     async getDataAndal() {
-      this.titleAndal = await andalComposingResource.list({
+      const data = await andalComposingResource.list({
         idProject: this.$route.params.id,
-        projectName: 'true',
+        documentReview: 'true',
       });
-      this.projectsAndal =
-        window.location.origin + `/api/workspace/document/get?filename=${this.documentNameAndal}`;
+      this.andalDocxUrl = data.docx_url;
+      this.andalPdfUrl = data.pdf_url;
+      this.titleAndal = data.project_title;
       this.showDocumentAndal = true;
     },
   },

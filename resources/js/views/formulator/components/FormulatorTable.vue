@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <el-table
     v-loading="loading"
@@ -37,6 +38,7 @@
     <el-table-column label="File">
       <template slot-scope="scope">
         <el-button
+          v-if="scope.row.cert_file"
           type="text"
           size="medium"
           icon="el-icon-download"
@@ -46,6 +48,7 @@
           Sertifikat
         </el-button>
         <el-button
+          v-if="scope.row.cv_file"
           type="text"
           size="medium"
           icon="el-icon-download"
@@ -55,7 +58,10 @@
           CV
         </el-button>
         <el-button
-          v-if="certificate"
+          v-if="
+            certificate &&
+            (checkPermission(['manage formulator']) || checkRole(['admin']))
+          "
           type="warning"
           size="mini"
           @click="handleCertificate(scope.row.id)"
@@ -64,10 +70,33 @@
         </el-button>
       </template>
     </el-table-column>
+
+    <el-table-column
+      v-if="
+        !certificate &&
+        (checkPermission(['manage formulator']) || checkRole(['admin']))
+      "
+      align="center"
+      label="Aksi"
+    >
+      <template slot-scope="scope">
+        <el-button
+          type="text"
+          href="#"
+          icon="el-icon-delete"
+          @click="handleDelete(scope.row.id, scope.row.name)"
+        >
+          Hapus
+        </el-button>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'FormulatorTable',
   filters: {
@@ -88,6 +117,8 @@ export default {
     certificate: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     download(url) {
       window.open(url, '_blank').focus();
     },

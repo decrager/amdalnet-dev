@@ -12,13 +12,16 @@ namespace App\Http\Controllers\Api;
 use App\Entity\ExpertBank;
 use App\Entity\Formulator;
 use App\Entity\Initiator;
+use App\Entity\Lpjp;
 use App\Entity\LukMember;
+use App\Entity\TukSecretaryMember;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
 use App\Laravue\JsonResponse;
 use App\Laravue\Models\Permission;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\ChangeUserEmailNotification;
 use App\Notifications\UserRegistered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -27,6 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Validator;
 
 /**
@@ -87,10 +91,12 @@ class UserController extends BaseController
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
+            $password = Str::random(8);
             $user = User::create([
                 'name' => $params['name'],
                 'email' => $params['email'],
-                'password' => Hash::make($params['password']),
+                'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($password),
+                'original_password' => isset($params['password']) ? $params['password'] : $password
             ]);
             $role = Role::findByName($params['role']);
             $user->syncRoles($role);
@@ -156,9 +162,13 @@ class UserController extends BaseController
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $email = $request->get('email');
-            $found = User::where('email', $email)->first();
-            if ($found && $found->id !== $user->id) {
-                return response()->json(['error' => 'Email has been taken'], 403);
+
+            // chec if email already userd
+            if($email != $user->email) {
+                $found = User::where('email', $email)->first();
+                if ($found) {
+                    return response()->json(['error' => 'Email Sudah Digunakan']);
+                }
             }
 
             //checking if this user is initiator
@@ -193,9 +203,37 @@ class UserController extends BaseController
                 $expert_bank->save();
             }
 
+            // checking if this user is inside lpjp
+            $lpjp = Lpjp::where('email', $user->email)->first();
+            if($lpjp && $lpjp->email !== $email) {
+                // update lpjp with user email
+                $lpjp->email = $email;
+                $lpjp->save();
+            }
+
+            // checking if this user is inside tuk secretary member
+            $tuk_secretary_member = TukSecretaryMember::where('email', $user->email)->first();
+            if($tuk_secretary_member && $tuk_secretary_member !== $email) {
+                // update tuk secretary member with user email
+                $tuk_secretary_member->email = $email;
+                $tuk_secretary_member->save();
+            }
+
+            $old_email = $user->email;
+
             $user->name = $request->get('name');
             $user->email = $email;
+
+            // send notification if existing user email changed
+            if($old_email != $email) {
+                $password = Str::random(8);
+                $user->password = Hash::make($password);
+                Notification::send([$user], new ChangeUserEmailNotification(null, null, null, $password));
+                Notification::route('mail', $old_email)->notify(new ChangeUserEmailNotification($user->name, $user->email, $user->roles->first()->name));
+            }
+
             $user->save();
+
             return new UserResource($user);
         }
     }
@@ -352,5 +390,19 @@ class UserController extends BaseController
         return [
             'file' => 'required',
         ];
+    }
+
+    public function getNotifications(Request $request)
+    {
+        $user = User::findOrFail(Auth::user()->id);
+        $notifications = $user->notifications()->take($request->limit)->get();
+        $total = $user->notifications()->count();
+        $unread = $user->unreadNotifications()->count();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'total' => $total,
+            'unread' => $unread
+        ]);
     }
 }

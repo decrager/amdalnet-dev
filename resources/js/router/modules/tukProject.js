@@ -6,7 +6,7 @@ const tukProjectRoutes = {
   meta: {
     title: 'Daftar Kegiatan',
     icon: 'layout-fluid',
-    roles: ['examiner-secretary'],
+    permissions: ['view menu tuk project'],
   },
   children: [
     {
@@ -17,7 +17,7 @@ const tukProjectRoutes = {
         title: 'Daftar Kegiatan',
         icon: 'layout-fluid',
         noCache: true,
-        roles: ['examiner-secretary'],
+        permissions: ['view menu tuk project'],
       },
     },
     {
@@ -30,7 +30,7 @@ const tukProjectRoutes = {
         title: 'Daftar Kegiatan',
         icon: 'layout-fluid',
         noCache: true,
-        roles: ['examiner-secretary'],
+        permissions: ['manage tuk project'],
       },
     },
   ],

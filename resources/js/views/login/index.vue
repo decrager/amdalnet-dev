@@ -364,7 +364,7 @@
         <el-row v-else-if="user_type === 'Penyusun'">
           <el-form ref="regPenyusun" :model="registrationForm" :rules="regPenyusunRules">
             <div style="background-color: #ddddd5; padding: 5px 0;">
-              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama yang Anda masukkan sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
+              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama lengkap beserta gelar yang Anda masukkan sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
             </div>
             <el-row :gutter="24">
               <el-col :span="12">
@@ -780,7 +780,7 @@ export default {
       this.imageUrl = URL.createObjectURL(file.raw);
 
       if (file.raw.size > 1048576){
-        this.showFileAlert();
+        this.showFileAlert('1');
         return;
       }
 
@@ -806,16 +806,16 @@ export default {
       this.fileNibDocOssName = e.target.files[0].name;
     },
     handleCertificateUpload(file, filelist) {
-      if (file.raw.size > 1048576) {
-        this.showFileAlert();
+      if (file.raw.size > 5242880) {
+        this.showFileAlert('5');
         return;
       }
 
       this.registrationForm.file_sertifikat = file.raw;
       this.certificateName = file.name;
     },
-    showFileAlert(){
-      this.$alert('File Yang Diupload Melebihi 1 MB', {
+    showFileAlert(val){
+      this.$alert(`File Yang Diupload Melebihi ${val} MB`, {
         confirmButtonText: 'OK',
       });
     },
@@ -836,7 +836,7 @@ export default {
       // this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKtr').resetField();
 
       if (e.target.files[0].size > 1048576){
-        this.showFileAlert();
+        this.showFileAlert('1');
         return;
       }
 
@@ -1017,7 +1017,6 @@ export default {
       } else if (this.user_type === 'Penyusun'){
         this.$refs.regPenyusun.validate(valid => {
           if (valid) {
-            console.log(this.registrationForm);
             this.registrationForm.user_type = this.user_type;
             this.registrationForm.expertise = 'penyusun';
 
@@ -1052,14 +1051,21 @@ export default {
                     return false;
                   }
 
-                  this.$message({
-                    message:
-                'User Dengan Email ' +
-                this.registrationForm.email +
-                ' Berhasil Dibuat',
-                    type: 'success',
-                    duration: 5 * 1000,
-                  });
+                  if (response.message === 'success_certificate') {
+                    this.$alert('<h3>File Sertifikat untuk No Registrasi tersebut sudah terdapat dalam Sistem Amdalnet, Periksa kembali file sertifikat anda pada menu profile.</h3>',
+                      '',
+                      { dangerouslyUseHTMLString: true, center: true, customClass: 'alert-certificate' });
+                  } else {
+                    this.$message({
+                      message:
+                  'User Dengan Email ' +
+                  this.registrationForm.email +
+                  ' Berhasil Dibuat',
+                      type: 'success',
+                      duration: 5 * 1000,
+                    });
+                  }
+
                   this.loading = false;
                   this.form = 'login';
                   this.registrationForm = {};
@@ -1118,6 +1124,13 @@ $light_gray:#5F6368;
 }
 .form-btn-cert {
   display: inline-block;
+}
+.alert-certificate {
+  width: 37%;
+}
+.alert-certificate button.el-button--primary {
+  background-color: #ff4949;
+  border-color: #ff4949;
 }
 </style>
 

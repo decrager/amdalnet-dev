@@ -36,18 +36,42 @@
       </el-row>
       <el-row>
         <el-col :span="24">
-          <el-form-item label="Unggah Dokumen Persetujuan Lingkungan" prop="file">
+          <el-form-item label="Dokumen Persetujuan Lingkungan" prop="file">
             <el-upload
+              v-if="!disableEdit"
               action="#"
               :auto-upload="false"
               :on-change="handleUploadChange"
-              :show-file-list="true"
-              :file-list="fileList"
+              :show-file-list="false"
               style="display: inline;"
-              :disabled="disableEdit"
             >
-              <el-button v-if="!disableEdit" :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
+              <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
             </el-upload>
+            <div v-if="disableEdit" style="color: red;">
+              <i>*Hanya penguji yang dapat mengunggah dokumen</i>
+            </div>
+            <el-table
+              :data="fileList"
+              fit
+              highlight-current-row
+            >
+              <el-table-column align="center" label="Aksi">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    icon="el-icon-download"
+                    @click="download(scope.row.url)"
+                  >
+                    Download
+                  </el-button>
+                </template>
+              </el-table-column>
+              <el-table-column align="left" label="Judul Dokumen">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.name }}</span>
+                </template>
+              </el-table-column>
+            </el-table>
           </el-form-item>
         </el-col>
       </el-row>
@@ -55,7 +79,7 @@
     <div v-if="!disableEdit" slot="footer" class="dialog-footer">
       <el-button :loading="loadingSubmit" type="primary" @click="handleSubmit()"> Submit </el-button>
     </div>
-    <el-row style="margin-top: 20px;">
+    <el-row v-if="!isPemerintah" style="margin-top: 20px;">
       <el-col :span="24">
         <span style="margin-right: 10px;"><h4>Unduh SKKL Final Dari OSS</h4></span>
         <el-button
@@ -74,6 +98,7 @@
 <script>
 import Resource from '@/api/resource';
 // import axios from 'axios';
+import { mapGetters } from 'vuex';
 const skklFinalResource = new Resource('skkl-final');
 const skklResource = new Resource('skkl');
 
@@ -95,6 +120,7 @@ export default {
         title: null,
         date_published: null,
       },
+      isPemerintah: false,
     };
   },
   computed: {
@@ -104,8 +130,16 @@ export default {
     isAdmin() {
       return (this.$store.getters.roles[0].split('-')[0] === 'admin');
     },
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
   },
-  created() {
+  async created() {
+    await this.$store.dispatch('getInitiator', this.userInfo.email);
+    if (this.$store.getters.isPemerintah){
+      this.isPemerintah = true;
+    }
     this.getData();
   },
   methods: {
@@ -154,6 +188,9 @@ export default {
           duration: 5 * 1000,
         });
       }
+    },
+    download(url) {
+      window.open(url, '_blank').focus();
     },
     async handleUploadChange(file, fileList) {
       if (file.raw.size > 1048576) {

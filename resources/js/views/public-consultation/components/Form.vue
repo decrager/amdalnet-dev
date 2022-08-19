@@ -83,7 +83,7 @@
                   :key="photo.id"
                   class="photo-list"
                 >
-                  <a :href="photo.filepath" target="_blank" class="photo-link">
+                  <a :href="photo.file" target="_blank" class="photo-link">
                     {{ photo.name }}
                   </a>
                   <a
@@ -228,7 +228,7 @@
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer" align="right">
-      <el-button type="danger" @click="handleBack()"> Kembali </el-button>
+      <el-button type="danger" @click="handleBack"> Kembali </el-button>
       <el-button
         :loading="loading_submit"
         type="warning"
@@ -370,6 +370,7 @@ export default {
               id: doc.id,
               filepath: docJson.filepath,
               name: `Foto Dokumentasi ${idx + 1}`,
+              file: doc.file,
             };
           });
       }
@@ -383,8 +384,7 @@ export default {
     },
     handleBack() {
       this.$router.push({
-        name: 'publishProject',
-        params: { project: this.currentProject },
+        name: 'listProject',
       });
     },
     checkSubmit(isPublish) {

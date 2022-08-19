@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card" style="min-height:395px;">
+  <el-card class="box-card" style="min-height: 395px">
     <div slot="header" class="clearfix">
       <span>Tentang LPJP</span>
     </div>
@@ -8,10 +8,27 @@
       <div class="user-image">
         <el-row>
           <el-col :span="8">
-            <img :src="user.avatar" style="width: 150px; height:150px; background: #eee; border-radius: 500px;">
+            <!-- eslint-disable-next-line vue/html-self-closing -->
+            <img
+              :src="avatar"
+              style="
+                width: 150px;
+                height: 150px;
+                background: #eee;
+                border-radius: 500px;
+              "
+            />
           </el-col>
-          <el-col :span="16" style="padding-top: 2em;">
-            <div style="font-size:1.5em; font-weight:bold; border-bottom: 1px solid #999;">{{ user.name }}</div>
+          <el-col :span="16" style="padding-top: 2em">
+            <div
+              style="
+                font-size: 1.5em;
+                font-weight: bold;
+                border-bottom: 1px solid #999;
+              "
+            >
+              {{ user.name }}
+            </div>
           </el-col>
         </el-row>
       </div>
@@ -39,9 +56,11 @@
         </el-row>
         <el-row>
           <span class="label">Tanggal Berlaku</span>
-          <span class="value">{{ ((user.date_start).split(" "))[0] }} &mdash; {{ ((user.date_end).split(" "))[0] }}</span>
+          <span class="value">
+            {{ user.date_start.split(' ')[0] }} &mdash;
+            {{ user.date_end.split(' ')[0] }}
+          </span>
         </el-row>
-
       </div>
     </template>
   </el-card>
@@ -57,6 +76,10 @@ export default {
     isLoading: {
       type: Boolean,
       default: true,
+    },
+    avatar: {
+      type: String,
+      default: '',
     },
   },
 };

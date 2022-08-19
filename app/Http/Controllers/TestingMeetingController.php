@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TestingMeetingController extends Controller
 {
@@ -118,10 +119,12 @@ class TestingMeetingController extends Controller
                         $user = User::where('email', $i->email)->count();
                         if($user === 0) {
                             $role = Role::findByName(Acl::ROLE_EXAMINER);
+                            $password = Str::random(8);
                             $user = User::create([
                                 'name' => ucfirst($i->name),
                                 'email' => $i->email,
-                                'password' => Hash::make('amdalnet')
+                                'password' => Hash::make($password),
+                                'original_password' => $password
                             ]);
                             $user->syncRoles($role);
 
@@ -159,7 +162,13 @@ class TestingMeetingController extends Controller
                     $meeting->is_invitation_sent = true;
                     $meeting->save();
 
-                    Notification::send($user, new MeetingInvitation($meeting));
+                    $tmpName = tempnam(sys_get_temp_dir(),'');
+                    $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
+                    file_put_contents($tmpName, $tmpFile);
+                    
+                    Notification::send($user, new MeetingInvitation($meeting, $tmpName));
+                    
+                    unlink($tmpName);
     
                     // === WORKFLOW === //
                     if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
@@ -672,10 +681,13 @@ class TestingMeetingController extends Controller
             $tuk_logo = $tuk->logo;
         }
 
+        // set character if pemrakarsa is not registered via oss
+        $oss_char = $project->initiator->nib_doc_oss ? '_oss' : '';
+
         if($authority_big == 'PUSAT') {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes.docx');
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes' . $oss_char .'.docx');
         } else {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes_tuk.docx');
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes_tuk' . $oss_char . '.docx');
             $templateProcessor->setValue('tuk_address', $tuk_address);
             $templateProcessor->setValue('tuk_telp', $tuk_telp);
             $templateProcessor->setValue('authority_big', $authority_big);
@@ -759,7 +771,7 @@ class TestingMeetingController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+            'url' => Storage::disk('public')->temporaryUrl('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 
@@ -930,7 +942,7 @@ class TestingMeetingController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+            'url' => Storage::disk('public')->temporaryUrl('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 
@@ -1037,6 +1049,18 @@ class TestingMeetingController extends Controller
                 return 'V';
             } else {
                 return '';
+            }
+        } else if($type == 'hasil_penapisan') {
+            if($is_exist == 'exist') {
+                return $project->oss_required_doc ? 'V' : '';
+            } else {
+                return $project->oss_required_doc ? '' : 'V';
+            }
+        } else if($type == 'dokumen_nib') {
+            if($is_exist == 'exist') {
+                return $project->initiator->nib_doc_oss ? 'V' : '';
+            } else {
+                return $project->initiator->nib_doc_oss ? '' : 'V';
             }
         }
 

@@ -42,6 +42,8 @@ use App\Http\Controllers\ProjectOtherComponentController;
 use App\Http\Controllers\SubProjectComponentController;
 use App\Http\Controllers\ProjectKegiatanLainSekitarController;
 use App\Http\Controllers\SigapWebgisController;
+use App\Http\Controllers\ProjectAttachmentController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +81,8 @@ Route::namespace('Api')->group(function () {
                 ->response()
                 ->header('Cache-Control', 'no-cache, max-age=0, no-store, private, must-revalidate');
         });
+
+        Route::get('/user/notifications', 'UserController@getNotifications');
 
         // Api resource routes
         Route::apiResource('roles', 'RoleController')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
@@ -173,7 +177,10 @@ Route::apiResource('expert-banks', 'ExpertBankController');
 Route::apiResource('public-consultations', 'PublicConsultationController');
 Route::apiResource('rona-awals', 'RonaAwalController');
 Route::apiResource('components', 'ComponentController');
+Route::get('master-ronaawal', 'RonaAwalController@getMasterRonaAwal');
+Route::post('master-ronaawal', 'RonaAwalController@setMasterRonaAwal');
 Route::get('master-component', 'ComponentController@getMasterComponent');
+Route::post('master-component', 'ComponentController@setMasterComponent');
 Route::apiResource('kegiatan-lain-sekitar', 'KegiatanLainSekitarController');
 Route::apiResource('project-stages', 'ProjectStageController');
 Route::apiResource('sops', 'SopController');
@@ -228,6 +235,7 @@ Route::get('pie-params', [PieParamController::class, 'index']);
 Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
 Route::post('upload-maps', [ProjectMapAttachmentController::class, 'store']);
 Route::get('download-map/{id}', [ProjectMapAttachmentController::class, 'download']);
+Route::get('download-map-by-name.shp', [ProjectMapAttachmentController::class, 'getByFilename']);
 Route::apiResource('manage-approach', 'ManageApproachController');
 Route::post('upload-ka-doc', [ExportDocument::class, 'saveKADoc']);
 Route::get('pie-entries', [ImpactIdentificationController::class, 'pieEntries']);

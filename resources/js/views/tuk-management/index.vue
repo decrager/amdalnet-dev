@@ -3,6 +3,9 @@
     <el-card>
       <div class="filter-container">
         <el-button
+          v-if="
+            checkPermission(['manage tuk management']) || checkRole(['admin'])
+          "
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -44,6 +47,8 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import TukTable from '@/views/tuk-management/components/TukTable.vue';
 import Pagination from '@/components/Pagination';
 import Resource from '@/api/resource';
@@ -73,6 +78,8 @@ export default {
     this.getData();
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleFilter() {
       this.getData();
     },

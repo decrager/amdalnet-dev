@@ -148,7 +148,7 @@ class User extends Authenticatable
 
     public function getAvatarAttribute()
     {
-        if($this->attributes['avatar']) {
+        if(isset($this->attributes['avatar']) && $this->attributes['avatar']) {
             if(str_contains($this->attributes['avatar'], 'storage/')) {
                 return $this->attributes['avatar'];
             } else {

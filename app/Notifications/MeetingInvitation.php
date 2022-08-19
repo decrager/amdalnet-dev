@@ -17,15 +17,17 @@ class MeetingInvitation extends Notification
     use Queueable;
 
     public $meeting;
+    public $attachment;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(TestingMeeting $meeting)
+    public function __construct(TestingMeeting $meeting, $attachment)
     {
         $this->meeting = $meeting;
+        $this->attachment = $attachment;
     }
 
     /**
@@ -62,7 +64,10 @@ class MeetingInvitation extends Notification
                     ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . '<br>' . 'Tempat: ' . $this->meeting->location))
                     ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
                     ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name))
-                    ->attach(Storage::disk('public')->path($this->meeting->rawInvitationFile()));
+                    ->attach($this->attachment, [
+                        'as' => 'Undangan Rapat.pdf',
+                        'mime' => 'application/pdf'
+                    ]);
     }
 
     /**

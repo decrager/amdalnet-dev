@@ -34,6 +34,8 @@ use App\Entity\WorkflowStep;
 use App\Notifications\CreateProjectNotification;
 use App\Entity\ProjectSkklFinal;
 use App\Utils\Document;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -48,7 +50,12 @@ class ProjectController extends Controller
             return Project::with('feasibilityTest')->whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
-            return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+            return Project::with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function($q) {
+                $q->select('id', 'email');
+                $q->with(['user' => function($query) {
+                    $query->select('id', 'email', 'avatar');
+                }]);
+            }, 'kaReviews' => function ($q) {
                 $q->select('id', 'id_project', 'status', 'document_type');
             }, 'meetingReports' => function ($q) {
                 $q->select('id', 'id_project', 'is_accepted', 'document_type');
@@ -103,7 +110,7 @@ class ProjectController extends Controller
                 ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
                 ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
                 ->leftJoin('workflow_states', 'workflow_states.state', '=' , 'projects.marking')
-                ->distinct()
+                ->distinct(['projects.id'])
                 ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'workflow_states.public_tracking')
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
@@ -119,7 +126,12 @@ class ProjectController extends Controller
             return response()->json(ProjectController::getProject($request->id));
         }
 
-        return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+        return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function($q) {
+            $q->select('id', 'email');
+            $q->with(['user' => function($query) {
+                $query->select('id', 'email', 'avatar');
+            }]);
+        }, 'kaReviews' => function ($q) {
             $q->select('id', 'id_project', 'status', 'document_type');
             $q->orderBy('id');
         }, 'testingMeeting' => function ($q) {
@@ -205,7 +217,7 @@ class ProjectController extends Controller
             ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
             ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
             ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
-            ->distinct()
+            ->distinct(['projects.id'])
             // ->groupBy('projects.id', 'projects.id_project', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
             ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
     }
@@ -373,7 +385,7 @@ class ProjectController extends Controller
                 $initpro = Initiator::find($project->id_applicant);
                 $user = User::where('email', $initpro->email)->first();
 
-                Notification::send($user, new CreateProjectNotification($project, $user));
+                Notification::send([$user], new CreateProjectNotification($project));
             } catch (\Throwable $th) {
                 //throw $th;
             }
@@ -457,10 +469,12 @@ class ProjectController extends Controller
                         $found = User::where('email', $email)->first();
                         if (!$found) {
                             $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                            $password = Str::random(8);
                             $user = User::create([
                                 'name' => ucfirst($formulaTeam->name),
                                 'email' => $formulaTeam->email,
-                                'password' => Hash::make('amdalnet')
+                                'password' => Hash::make($password),
+                                'original_password' => $password
                             ]);
                             $user->syncRoles($formulatorRole);
                         }

@@ -8,10 +8,12 @@ use App\Entity\LukMember;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\ChangeUserEmailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class EmployeeTUKController extends Controller
@@ -127,11 +129,35 @@ class EmployeeTUKController extends Controller
         }
 
         $employee_tuk = null;
+        $email_changed_notif = null;
+        $old_email = null;
+        $password = Str::random(8);
 
         if($request->type == 'create') {
             $employee_tuk = new LukMember();
         } else {
             $employee_tuk = LukMember::findOrFail($request->idEmployee);
+
+            // update user email
+            if($request->email) {
+                if($request->email != $employee_tuk->email) {
+                    $found = User::where('email', $request->email)->first();
+                    if($found) {
+                        return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
+                    } else {
+                        if($employee_tuk->email) {
+                            $employee_tuk_user = User::where('email', $employee_tuk->email)->first();
+                            if($employee_tuk_user) {
+                                $employee_tuk_user->name = $request->name;
+                                $employee_tuk_user->email = $request->email;
+                                $employee_tuk_user->password = Hash::make($password);
+                                $employee_tuk_user->save();
+                                $email_changed_notif = $employee_tuk_user;
+                            } 
+                        } 
+                    }
+                }
+            }
         }
 
         $employee_tuk->status = $request->status;
@@ -178,7 +204,14 @@ class EmployeeTUKController extends Controller
                      $tuk_member->save();
                  }
              }
+             
             DB::commit();
+
+            // send notification if existing user email changed
+            if($email_changed_notif) {
+                Notification::send([$email_changed_notif], new ChangeUserEmailNotification(null, null, null, $password));
+                Notification::route('mail', $old_email)->notify(new ChangeUserEmailNotification($email_changed_notif->name, $email_changed_notif->email, $email_changed_notif->roles->first()->name));
+            }
         }
 
         return response()->json(['error' => null, 'message' => 'success']);

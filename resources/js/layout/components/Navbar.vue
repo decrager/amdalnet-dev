@@ -12,10 +12,14 @@
             <el-button icon="el-icon-bell" type="text" style="cursor: pointer; font-size: 18px; vertical-align: middle; color: white" @click="markAsRead" />
             <!-- <i class="el-icon-bell" style="cursor: pointer; font-size: 18px; vertical-align: middle;" /> -->
           </el-badge>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-for="notif in notifications" :key="notif.id" :command="notif">
-              {{ notif.data.message }}
-            </el-dropdown-item>
+          <el-dropdown-menu slot="dropdown" class="notif-dropdown">
+            <div v-loading="loadingNotif">
+              <el-dropdown-item v-for="notif in notifications.notifications" :key="notif.id" :command="notif">
+                <div>
+                  {{ notif.data.message }}
+                </div>
+              </el-dropdown-item>
+            </div>
           </el-dropdown-menu>
         </el-dropdown>
         <!-- <search id="header-search" class="right-menu-item" /> -->
@@ -71,6 +75,12 @@ export default {
     // Screenfull,
     // SizeSelect,
   },
+  data() {
+    return {
+      limit: 5,
+      loadingNotif: false,
+    };
+  },
   computed: {
     ...mapGetters([
       'sidebar',
@@ -95,7 +105,7 @@ export default {
       return roles.join(' | ');
     },
     sumNotifUnread(){
-      return this.notifications.filter(e => e.read_at === null).length === 0;
+      return !this.notifications.unread;
     },
   },
   mounted(){
@@ -116,10 +126,23 @@ export default {
     if (window.Echo) {
       window.Echo.channel('notif')
         .listen('NotificationEvent', e => {
-          // this.$store.dispatch('user/getInfo');
-          console.log(e);
+          this.limit = 5;
+          this.$store.dispatch('user/getNotifications', this.limit);
         });
     }
+
+    // Detect when scrolled to bottom.
+    const listElm = document.querySelector(
+      'ul.el-dropdown-menu.notif-dropdown'
+    );
+    listElm.addEventListener('scroll', (e) => {
+      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+        const difference = this.notifications.total - this.limit;
+        if (difference > 0 || (difference >= -5 && difference < 0)) {
+          this.loadNotifications();
+        }
+      }
+    });
   },
   methods: {
     handleNotif(notif){
@@ -140,6 +163,12 @@ export default {
       await this.$store.dispatch('user/logout');
       this.$router.push('/');
     },
+    async loadNotifications() {
+      this.loadingNotif = true;
+      this.limit += 5;
+      await this.$store.dispatch('user/getNotifications', this.limit);
+      this.loadingNotif = false;
+    },
   },
 };
 </script>
@@ -147,6 +176,24 @@ export default {
 .el-badge__content.is-fixed.is-dot {
   right: 5px;
   top: 10px;
+}
+.notif-dropdown {
+    width: 20em;
+    top: 0px !important;
+    height: 20em !important;
+    overflow-y: auto;
+    overflow-x: clip !important;
+}
+.notif-dropdown li {
+  font-size: 0.9em !important;
+  line-height: 1.8em !important;
+}
+.notif-dropdown li div {
+  border-bottom: 1px solid #c9c6c6;
+  padding-bottom: 5px;
+}
+.notif-dropdown li:not(:first-child) div {
+  padding-top: 10px;
 }
 </style>
 <style lang="scss" scoped>

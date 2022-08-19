@@ -54,30 +54,50 @@
           </a>
           <a
             v-else-if="scope.row.data_pendukung"
-            :href="scope.row.file"
+            href="#"
             class="link-lampiran"
-            :download="scope.row.file_name"
+            @click.prevent="
+              downloadExternalFile(
+                scope.row.file_name,
+                scope.row.file,
+                scope.$index
+              )
+            "
           >
-            Unduh File
+            {{
+              loadingExternalFile[`loading-${scope.$index}`]
+                ? 'Loading...'
+                : 'Unduh File'
+            }}
           </a>
           <a
             v-else
-            :href="scope.row.file"
+            href="#"
             class="link-lampiran"
-            :download="
-              scope.row.file_name
-                ? scope.row.file_name
-                : scope.row.name + '.pdf'
+            @click.prevent="
+              downloadExternalFile(
+                scope.row.file_name
+                  ? scope.row.file_name
+                  : scope.row.name + '.pdf',
+                scope.row.file,
+                scope.$index
+              )
             "
           >
-            Unduh File
             {{
-              scope.row.file_name
-                ? scope.row.file_name
-                    .split('.')
-                    [scope.row.file_name.split('.').length - 1].toUpperCase()
-                : 'PDF'
+              loadingExternalFile[`loading-${scope.$index}`]
+                ? 'Loading...'
+                : 'Unduh File'
             }}
+            <span v-if="!loadingExternalFile[`loading-${scope.$index}`]">
+              {{
+                scope.row.file_name
+                  ? scope.row.file_name
+                      .split('.')
+                      [scope.row.file_name.split('.').length - 1].toUpperCase()
+                  : 'PDF'
+              }}
+            </span>
           </a>
         </template>
       </el-table-column>
@@ -98,6 +118,7 @@ export default {
       loading: false,
       loadingAll: false,
       loadingPDFSPT: false,
+      loadingExternalFile: {},
       loadingPublicConsultation: false,
     };
   },
@@ -107,11 +128,19 @@ export default {
   methods: {
     async getAttachment() {
       this.loading = true;
-      this.list = await kaReviewResource.list({
+      const list = await kaReviewResource.list({
         idProject: this.$route.params.id,
         isAndal: 'false',
         attachment: 'true',
       });
+
+      for (let i = 0; i < list.length; i++) {
+        if (!(list[i].file === null || list[i].file === 'undefined')) {
+          this.loadingExternalFile[`loading-${i}`] = false;
+        }
+      }
+
+      this.list = list;
       this.loading = false;
     },
     async downloadPDFSPT() {
@@ -177,10 +206,31 @@ export default {
           }
         });
     },
+    downloadExternalFile(name, filePath, idx) {
+      this.loadingExternalFile[`loading-${idx}`] = true;
+      axios
+        .get(`/api/ka-reviews?downloadExternalFile=true&filepath=${filePath}`, {
+          responseType: 'blob',
+        })
+        .then((response) => {
+          const fileUrl = window.URL.createObjectURL(response.data);
+          const fileLink = document.createElement('a');
+
+          fileLink.href = fileUrl;
+          fileLink.setAttribute('download', name);
+          document.body.appendChild(fileLink);
+
+          fileLink.click();
+          this.loadingExternalFile[`loading-${idx}`] = false;
+        })
+        // eslint-disable-next-line handle-callback-err
+        .catch((error) => {
+          this.loadingExternalFile[`loading-${idx}`] = false;
+        });
+    },
     downloadAll() {
       document.querySelectorAll('.link-lampiran').forEach((el) => {
         el.click();
-        this.loadingAll = true;
       });
     },
   },

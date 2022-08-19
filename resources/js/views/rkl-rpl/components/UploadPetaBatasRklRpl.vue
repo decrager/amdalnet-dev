@@ -192,58 +192,57 @@ export default {
   },
   methods: {
     getMap() {
-      let layerTapak = null;
       const map = new Map({
         basemap: 'satellite',
       });
-      // Tapak
-      axios.get('api/map/' + this.idProject)
-        .then(response => {
-          const projects = response.data;
-          for (let i = 0; i < projects.length; i++) {
-            if (projects[i].attachment_type === 'tapak') {
-              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                const blob = new Blob([JSON.stringify(data)], {
-                  type: 'application/json',
-                });
-                const url = URL.createObjectURL(blob);
 
-                const renderer = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [0, 0, 0, 0.0],
-                    outline: {
-                      color: 'red',
-                      width: 2,
-                    },
-                  },
-                };
+      const mapView = new MapView({
+        container: 'mapView',
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 5,
+      });
+      this.$parent.mapView = mapView;
 
-                const geojsonLayer = new GeoJSONLayer({
-                  url: url,
-                  outFields: ['*'],
-                  title: 'Peta Tapak',
-                  renderer: renderer,
-                });
-                if (layerTapak !== null) {
-                  map.layers.remove(layerTapak);
-                }
-                map.add(geojsonLayer);
-                layerTapak = geojsonLayer;
-              });
-            }
-          }
-        });
-
-      axios.get(`api/map-geojson?id=${this.idProject}`)
+      axios.get(`api/map-geojson?id=${this.idProject}&type=tapak&step=ka&limit=1`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
             const propStyles = getType.features[0].properties.styles;
+            const step = getType.features[0].properties.step;
+
+            // Tapak
+            if (propType === 'tapak' && step === 'ka') {
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: urlBlob(item.feature_layer),
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Tapak Proyek',
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
+              });
+
+              mapView.on('layerview-create', async(event) => {
+                await mapView.goTo({
+                  target: geojsonLayerArray.fullExtent,
+                });
+              });
+
+              this.mapGeojsonArrayProject.push(geojsonLayerArray);
+            }
+          });
+        });
+
+      axios.get(`api/map-geojson?id=${this.idProject}&step=andal`)
+        .then((response) => {
+          response.data.forEach((item) => {
+            const getType = JSON.parse(item.feature_layer);
+            const propType = getType.features[0].properties.type;
+            const propFields = getType.features[0].properties.field;
+            const propStyles = getType.features[0].properties.styles;
+
             // Ecology
             if (propType === 'ecology') {
               const geojsonLayerArray = new GeoJSONLayer({
@@ -284,6 +283,11 @@ export default {
               });
 
               this.mapGeojsonArrayProject.push(geojsonLayerArray);
+              mapView.on('layerview-create', async(event) => {
+                await mapView.goTo({
+                  target: geojsonLayerArray.fullExtent,
+                });
+              });
             }
 
             // Pemantauan
@@ -316,15 +320,6 @@ export default {
             map.addMany(this.mapGeojsonArrayProject);
           });
         });
-
-      const mapView = new MapView({
-        container: 'mapView',
-        map: map,
-        center: [115.287, -1.588],
-        zoom: 5,
-      });
-      this.$parent.mapView = mapView;
-
       const layerList = new LayerList({
         view: mapView,
         container: document.createElement('div'),
@@ -345,8 +340,22 @@ export default {
         container: document.createElement('div'),
       });
 
-      mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layer-list',
+        expandTooltip: 'Layer List',
+        view: mapView,
+        content: layerList,
+      });
+
+      const legendExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap',
+        expandTooltip: 'Legend Layer',
+        view: mapView,
+        content: legend,
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendExpand, 'top-right');
     },
     async getData(){
       this.data = [];

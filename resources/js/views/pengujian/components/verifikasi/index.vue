@@ -170,6 +170,16 @@
             Unduh Hasil Pemeriksaan Berkas Administrasi
           </el-button>
         </div>
+        <div v-if="verifications.is_complete === null" style="margin-top: 30px">
+          <div style="display: flex">
+            <el-checkbox v-model="setAuthority" />
+            <p style="margin-top: 0; padding-top: 0; margin-left: 10px">
+              Rencana usaha dan/atau kegiatan yang diajukan tidak sesuai
+              kewenangannya
+            </p>
+          </div>
+          <change-authority v-if="setAuthority" />
+        </div>
       </el-col>
     </el-row>
     <el-dialog :visible.sync="lpjpPenyusunDialog">
@@ -213,7 +223,7 @@
           <div v-for="(docs, index) in publicConsultationDocs" :key="index">
             <p>
               <b>{{ docs.doc_type }}:</b>
-              <a :href="docs.filepath" style="color: #216221" target="_blank">
+              <a :href="docs.url" style="color: #216221" target="_blank">
                 Lihat
               </a>
             </p>
@@ -258,6 +268,7 @@ import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import FormulatorTeamTable from '@/views/pengujian/components/FormulatorTeamDialog';
 import WebgisVerifikasi from '@/views/pengujian/components/verifikasi/Webgis';
+import ChangeAuthority from './ChangeAuthority';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
 const verifikasiRapatResource = new Resource('testing-verification');
@@ -268,6 +279,7 @@ export default {
     Tinymce,
     WebgisVerifikasi,
     FormulatorTeamTable,
+    ChangeAuthority,
   },
   data() {
     return {
@@ -289,6 +301,7 @@ export default {
       loadingDocx: false,
       loadingPDFSPT: false,
       showWebgisDialog: false,
+      setAuthority: false,
       out: '',
       errors: {},
       kesesuaian: [
@@ -318,6 +331,9 @@ export default {
         cv_penyusun: 'CV Penyusun Amdal',
         sistematika_penyusunan:
           'Sistematika penyusunan dokumen sesuai dengan PP 22/2021',
+        hasil_penapisan:
+          'Hasil Penapisan OSS Rencana Usaha dan/atau Kegiatan di OSS',
+        dokumen_nib: 'Dokumen NIB Pemrakarsa',
       },
     };
   },
@@ -340,7 +356,7 @@ export default {
         if (data.public_consultation.docs) {
           this.publicConsultationDocs = data.public_consultation.docs.map(
             (x) => {
-              return JSON.parse(x.doc_json);
+              return { ...JSON.parse(x.doc_json), url: x.file };
             }
           );
         }

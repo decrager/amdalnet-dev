@@ -3,9 +3,24 @@
     <div v-if="isFormulator || isInitiator || isLPJP">
       <el-row :gutter="20">
         <el-col :span="12">
-          <formulator-information v-if="isFormulator" :user="user" :is-loading="isLoading" :avatar="avatar" />
-          <initiator-information v-if="isInitiator" :user="user" :is-loading="isLoading" :avatar="avatar" />
-          <lpjp-information v-if="isLPJP" :user="user" :is-loading="isLoading" />
+          <formulator-information
+            v-if="isFormulator"
+            :user="user"
+            :is-loading="isLoading"
+            :avatar="avatar"
+          />
+          <initiator-information
+            v-if="isInitiator"
+            :user="user"
+            :is-loading="isLoading"
+            :avatar="avatar"
+          />
+          <lpjp-information
+            v-if="isLPJP"
+            :user="user"
+            :is-loading="isLoading"
+            :avatar="avatar"
+          />
         </el-col>
         <el-col :span="12">
           <user-activities :user="user" />
@@ -84,33 +99,33 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'userLogged': 'user',
+      userLogged: 'user',
     }),
-    isFormulator(){
+    isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },
-    isInitiator(){
+    isInitiator() {
       return this.$store.getters.roles.includes('initiator');
     },
-    isExaminer(){
+    isExaminer() {
       return this.$store.getters.roles[0].split('-')[0] === 'examiner';
     },
-    isLPJP(){
+    isLPJP() {
       return this.$store.getters.roles.includes('lpjp');
     },
   },
   mounted() {
-    if (this.isAllowed){
+    if (this.isAllowed) {
       console.log('entering user dashboard...');
       this.getUser();
     }
   },
   methods: {
-    async getUser(){
+    async getUser() {
       // this.$store.dispatch('user/getInfo').then((response) => {
 
       if (this.userLogged) {
-        if (this.isExaminer){
+        if (this.isExaminer) {
           // this.user = response;
           this.isLoading = false;
           return;
@@ -123,10 +138,10 @@ export default {
           resource = new Resource('formulatorsByEmail');
         } else if (this.isInitiator) {
           resource = new Resource('initiatorsByEmail');
-        } else if (this.isLPJP){
+        } else if (this.isLPJP) {
           resource = new Resource('lpjpsByEmail');
         }
-        if (!resource){
+        if (!resource) {
           this.isLoading = false;
           return;
         }
@@ -151,46 +166,44 @@ export default {
     },
     isAllowed() {
       console.log('isAllowed?', this.$store.getters.roles);
-      return !!((this.isFormulator || this.isInitiator || this.isExaminer));
+      return !!(this.isFormulator || this.isInitiator || this.isExaminer);
     },
   },
 };
 </script>
 <style lang="scss">
-
 div.user-dashboard {
-    padding: 2em;
+  padding: 2em;
 }
 
 div.user-dashboard div.el-card {
-
-    margin-bottom: 1.5em;
+  margin-bottom: 1.5em;
 }
 
-div.user-dashboard div.el-card__header{
-    background: #afc7af;
-    font-weight: 700;
-    font-size: 90%;
+div.user-dashboard div.el-card__header {
+  background: #afc7af;
+  font-weight: 700;
+  font-size: 90%;
 }
-.user-image{
+.user-image {
   padding: 1em 2em;
 }
 .user-detail {
   padding: 1em 2em;
 
-  .el-row{
+  .el-row {
     margin: 1em 0 2em;
   }
 
-  span.label, span.value{
-    display:block;
+  span.label,
+  span.value {
+    display: block;
     line-height: 150%;
   }
 
   span.label {
-    font-weight:bold;
+    font-weight: bold;
     text-decoration: underline;
   }
 }
-
 </style>

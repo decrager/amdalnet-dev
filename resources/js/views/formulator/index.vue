@@ -1,10 +1,14 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div class="app-container">
     <el-card>
       <h2 v-if="updateCertificate">Perbarui Penyusun</h2>
       <div class="filter-container">
         <el-button
-          v-if="!updateCertificate"
+          v-if="
+            !updateCertificate &&
+            (checkPermission(['manage formulator']) || checkRole(['admin']))
+          "
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -13,7 +17,10 @@
           {{ 'Tambah Penyusun' }}
         </el-button>
         <el-button
-          v-if="!updateCertificate"
+          v-if="
+            !updateCertificate &&
+            (checkPermission(['manage formulator']) || checkRole(['admin']))
+          "
           class="filter-item"
           type="primary"
           @click="handleUpdateCertificate"
@@ -112,6 +119,8 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import Resource from '@/api/resource';
 import FormulatorTable from '@/views/formulator/components/FormulatorTable.vue';
 import Pagination from '@/components/Pagination';
@@ -143,6 +152,8 @@ export default {
     this.getList();
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleFilter() {
       this.getList();
     },
@@ -215,11 +226,19 @@ export default {
           formulatorResource
             .destroy(id)
             .then((response) => {
-              this.$message({
-                type: 'success',
-                message: 'Hapus Selesai',
-              });
-              this.getList();
+              if (response.message === 'success') {
+                this.$message({
+                  type: 'success',
+                  message: 'Hapus Selesai',
+                });
+                this.getList();
+              } else {
+                this.$message({
+                  message: 'Data Penyusun Gagal Dihapus',
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
+              }
             })
             .catch((error) => {
               console.log(error);

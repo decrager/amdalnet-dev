@@ -25,6 +25,7 @@ class ScopingController extends Controller
      */
     public function index(Request $request)
     {
+
         if ($request->check_formulir_ka && $request->id_project) {
             return $this->checkFormulirKA($request);
         }

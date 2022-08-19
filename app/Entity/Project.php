@@ -269,6 +269,24 @@ class Project extends Model implements Auditable
         return null;
     }
 
+    public function rawKtr()
+    {
+        return $this->attributes['ktr'];
+    }
+
+    public function rawPreAgreementFile()
+    {
+        return $this->attributes['pre_agreement_file'];
+    }
+
+    public function getOssRequiredDocAttribute()
+    {
+        if(isset($this->attributes['oss_required_doc']) && $this->attributes['oss_required_doc'] != null) {
+            return Storage::disk('public')->temporaryUrl($this->attributes['oss_required_doc'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+        }
+
+        return null;
+    }
 
     public function applyWorkFlowTransition($transition, $fromState, $endState, $changeMarking = true){
         $userId = Auth::user()->id;

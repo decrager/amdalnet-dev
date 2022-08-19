@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use App\Entity\WorkflowLog;
-
+use App\Notifications\AnnouncementNotification;
+use App\User;
+use Illuminate\Support\Facades\Notification;
 
 // use DB;
 
@@ -35,8 +37,15 @@ class AnnouncementController extends Controller
         }
 
         $getAllAnnouncement = Announcement::with([
-            'project',
-            'project.address',
+            'project' => function($q) {
+                $q->with(['address',
+                'initiator' => function($query) {
+                    $query->select('id', 'email', 'logo');
+                    $query->with('user', function($qu) {
+                        $qu->select('id', 'email', 'avatar');
+                    });
+                }]);
+            },
             // 'project.initiator'
         ])->withCount('feedbacks')
         ->select('announcements.*')
@@ -274,6 +283,12 @@ class AnnouncementController extends Controller
                         $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement');
                         break;
                     default:
+                }
+
+                // === NOTIFIKASI === //
+                $user = User::where('email', $project->initiator->email)->first();
+                if($user) {
+                    Notification::send([$user], new AnnouncementNotification($project));
                 }
             }
 

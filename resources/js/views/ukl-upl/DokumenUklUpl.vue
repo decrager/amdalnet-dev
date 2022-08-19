@@ -15,10 +15,10 @@
         <el-col :sm="24" :md="14">
           <div class="grid-content bg-purple" />
           <iframe
-            v-if="projects !== null"
-            :src="
-              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
-            "
+            v-if="pdfUrl !== null"
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              pdfUrl
+            )}&embedded=true`"
             width="100%"
             height="723px"
             frameborder="0"
@@ -35,10 +35,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import Resource from '@/api/resource';
 import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
 import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
-const andalComposingResource = new Resource('andal-composing');
 import axios from 'axios';
 import WorkflowUkl from '@/components/WorkflowUkl';
 
@@ -50,21 +48,16 @@ export default {
   },
   data() {
     return {
-      idProject: 0,
-      projects: null,
       loading: false,
-      projectId: this.$route.params && this.$route.params.id,
-      showDocument: true,
       projectName: '',
-      // userInfo: {
-      //   roles: [],
-      // },
+      pdfUrl: null,
+      docxUrl: null,
     };
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
     isFormulator() {
       return this.userInfo.roles.includes('formulator');
@@ -75,42 +68,18 @@ export default {
   },
   async created() {
     this.$store.dispatch('getStep', 5);
-    // this.userInfo = await this.$store.dispatch('user/getInfo');
     await this.getData();
   },
   methods: {
     async getData() {
       this.loading = true;
-      const projectName = await axios.get(
+      const data = await axios.get(
         `/api/dokumen-ukl-upl/${this.$route.params.id}`
       );
-      this.projects =
-        window.location.origin + '/api/workspace/document/get?filename=' + projectName.data;
-      this.projectName = projectName.data;
+      this.docxUrl = data.data.docx_url;
+      this.pdfUrl = data.data.pdf_url;
+      this.projectName = data.data.file_name;
       this.loading = false;
-    },
-    async exportDocxPhpWord() {
-      await andalComposingResource.list({
-        idProject: this.$route.params.id,
-        formulir: 'true',
-      });
-    },
-    async exportPdf() {
-      axios({
-        url: `api/dokumen-ukl-upl-pdf/${this.$route.params.id}`,
-        method: 'GET',
-        responseType: 'blob',
-      }).then((response) => {
-        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-        var fileLink = document.createElement('a');
-        fileLink.href = fileURL;
-        fileLink.setAttribute(
-          'download',
-          `${this.projectName.replace('.docx', '.pdf')}`
-        );
-        document.body.appendChild(fileLink);
-        fileLink.click();
-      });
     },
     workspace() {
       this.$router.push({

@@ -418,7 +418,16 @@ class FeasibilityTestController extends Controller
             $project->save();
         }
 
-        return $document_attachment->attachment;
+        // get pdf url
+        $downloadUri = url($document_attachment->attachment);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+
+        return [
+            'docx_url' => $document_attachment->attachment,
+            'pdf_url' => $convertedUri
+        ];
     }
 
     private function getTukData($data, $tuk) {

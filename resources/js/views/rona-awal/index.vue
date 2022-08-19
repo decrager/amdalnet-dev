@@ -1,204 +1,53 @@
 <template>
-  <div class="app-container">
+  <div v-loading="loading" class="app-container" style="padding: 24px;">
     <el-card>
-      <div class="filter-container">
-        <el-button
-          class="filter-item"
-          type="primary"
-          icon="el-icon-plus"
-          @click="handleCreate"
-        >
-          {{ 'Tambah Master Rona Lingkungan' }}
-        </el-button>
-        <el-row :gutter="32">
-          <el-col :sm="24" :md="10">
-            <el-input
-              v-model="listQuery.search"
-              suffix-icon="el-icon search"
-              placeholder="Pencarian..."
-              @input="inputSearch"
-            >
-              <el-button
-                slot="append"
-                icon="el-icon-search"
-                @click="handleSearch"
-              />
-            </el-input>
-          </el-col>
-        </el-row>
-      </div>
-      <rona-awal-table
-        :loading="loading"
-        :list="list"
-        :page="listQuery.page"
-        :limit="listQuery.limit"
-        @handleEditForm="handleEditForm($event)"
-        @handleDelete="handleDelete($event)"
-      />
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
-        @pagination="handleFilter"
-      />
-      <rona-awal-dialog
-        :rona="ronaAwal"
-        :show="show"
-        :options="componentOptions"
-        @handleSubmitRonaAwal="handleSubmitRonaAwal"
-        @handleCancelRonaAwal="handleCancelRonaAwal"
-      />
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="Rona Awal Baku" name="formalised" style="padding: 1em;">
+          <formalised-hue v-if="(activeName === 'formalised') && (componentTypes.length > 0)" :component-options="componentTypes" />
+        </el-tab-pane>
+        <el-tab-pane label="Rona Awal Tidak Baku" name="non-formalised" style="padding: 1em;">
+          <non-formalised-hue v-if="(activeName === 'non-formalised') && (componentTypes.length > 0)" :component-options="componentTypes" />
+        </el-tab-pane>
+      </el-tabs>
+
     </el-card>
   </div>
 </template>
-
 <script>
 import Resource from '@/api/resource';
-import RonaAwalTable from '@/views/rona-awal/components/RonaAwalTable.vue';
-import Pagination from '@/components/Pagination';
-import RonaAwalDialog from './components/RonaAwalDialog.vue';
-const ronaAwalesource = new Resource('rona-awals');
-const componentResource = new Resource('components');
+import FormalisedHue from './Baku.vue';
+import NonFormalisedHue from './BelumBaku.vue';
+const componentTypeResource = new Resource('component-types');
 
 export default {
-  name: 'RonaAwalList',
+  name: 'HueList',
   components: {
-    RonaAwalTable,
-    Pagination,
-    RonaAwalDialog,
+    FormalisedHue,
+    NonFormalisedHue,
   },
-  data() {
+  data(){
     return {
-      list: [],
-      loading: true,
-      listQuery: {
-        page: 1,
-        limit: 10,
-        search: null,
-      },
-      timeoutId: null,
-      total: 0,
-      ronaAwal: {},
-      show: false,
-      componentOptions: [],
+      loading: false,
+      componentTypes: [],
+      activeName: 'formalised',
     };
   },
-  created() {
-    this.getList();
-    this.getComponentList();
+  mounted() {
+    this.getComponentTypes();
   },
   methods: {
-    handleSubmitRonaAwal() {
-      if (this.ronaAwal.id !== undefined) {
-        ronaAwalesource
-          .updateMultipart(this.ronaAwal.id, this.ronaAwal)
-          .then((response) => {
-            this.$message({
-              type: 'success',
-              message: 'Rona Lingkungan Berhasil Diupdate',
-              duration: 5 * 1000,
-            });
-            this.show = false;
-            this.ronaAwal = {};
-            this.getList();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        ronaAwalesource
-          .store(this.ronaAwal)
-          .then((response) => {
-            this.$message({
-              message:
-                'Rona Lingkungan ' + this.ronaAwal.name + ' Berhasil Dibuat',
-              type: 'success',
-              duration: 5 * 1000,
-            });
-            this.show = false;
-            this.ronaAwal = {};
-            this.getList();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    },
-    async getComponentList() {
-      const { data } = await componentResource.list({ limit: 1000 });
-      this.componentOptions = data.map((i) => {
-        return { value: i.id, label: i.name };
-      });
-    },
-    handleFilter() {
-      this.getList();
-    },
-    async getList() {
+    async getComponentTypes(){
       this.loading = true;
-      const { data, total } = await ronaAwalesource.list(this.listQuery);
-      this.list = data;
-      this.total = total;
-      this.loading = false;
-    },
-    handleCreate() {
-      this.show = true;
-    },
-    handleCancelRonaAwal() {
-      this.ronaAwal = {};
-      this.show = false;
-    },
-    handleEditForm(id) {
-      this.ronaAwal = this.list.find((element) => element.id === id);
-      this.show = true;
-    },
-    handleDelete({ id, nama }) {
-      this.$confirm(
-        'apakah anda yakin akan menghapus ' + nama + '. ?',
-        'Peringatan',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Batal',
-          type: 'warning',
-        }
-      )
-        .then(() => {
-          ronaAwalesource
-            .destroy(id)
-            .then((response) => {
-              this.$message({
-                type: 'success',
-                message: 'Hapus Selesai',
-              });
-              this.getList();
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+      this.componentTypes = [];
+      await componentTypeResource.list({})
+        .then(res => {
+          this.componentTypes = res.data;
         })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: 'Hapus Digagalkan',
-          });
+        .finally(() => {
+          this.loading = false;
         });
-    },
-    inputSearch(val) {
-      if (this.timeoutId) {
-        clearTimeout(this.timeoutId);
-      }
-      this.timeoutId = setTimeout(() => {
-        this.listQuery.page = 1;
-        this.listQuery.limit = 10;
-        this.getList();
-      }, 500);
-    },
-    async handleSearch() {
-      this.listQuery.page = 1;
-      this.listQuery.limit = 10;
-      await this.getList();
-      this.listQuery.search = null;
     },
   },
 };
 </script>
+\

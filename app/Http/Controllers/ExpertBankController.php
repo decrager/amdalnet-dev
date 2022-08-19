@@ -7,11 +7,14 @@ use App\Http\Resources\ExpertBankResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\ChangeUserEmailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use DB;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class ExpertBankController extends Controller
 {
@@ -113,10 +116,12 @@ class ExpertBankController extends Controller
             $found = User::where('email', $email)->first();
             if (!$found) {
                 $expertRole = Role::findByName(Acl::ROLE_EXAMINER);
+                $password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
                     'email' => $params['email'],
-                    'password' => Hash::make('amdalnet')
+                    'password' => Hash::make($password),
+                    'original_password' => $password
                 ]);
                 $user->syncRoles($expertRole);
             }
@@ -213,6 +218,48 @@ class ExpertBankController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
+            $email_changed_notif = null;
+            $old_email = null;
+            $password = Str::random(8);
+
+            // update user email
+            if($request->email) {
+                if($request->email != $expertBank->email) {
+                    $found = User::where('email', $request->email)->first();
+                    if($found) {
+                        return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
+                    } else {
+                        $create_user = 0;
+                        if($expertBank->email) {
+                            $expert_bank_user = User::where('email', $expertBank->email)->first();
+                            if($expert_bank_user) {
+                                $old_email = $expertBank->email;
+                                $expert_bank_user->name = $request->name;
+                                $expert_bank_user->email = $request->email;
+                                $expert_bank_user->password = Hash::make($password);
+                                $expert_bank_user->save();
+                                $email_changed_notif = $expert_bank_user;
+                            } else {
+                                $create_user = 1;
+                            }
+                        } else {
+                           $create_user = 1;
+                        }
+
+                        if($create_user == 1) {
+                            $expertBankRole = Role::findByName(Acl::ROLE_EXAMINER);
+                            $random_password = Str::random(8);
+                            $user = User::create([
+                                'name' => ucfirst($params['name']),
+                                'email' => $params['email'],
+                                'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
+                                'original_password' => isset($params['password']) ? $params['password'] : $random_password
+                            ]);
+                            $user->syncRoles($expertBankRole);
+                        }
+                    }
+                }
+            }
 
             $cvName = null;
             $ijasahName = null;
@@ -259,6 +306,12 @@ class ExpertBankController extends Controller
             $expertBank->institution = $params['institution'];
             $expertBank->status = $params['status'];
             $expertBank->save();
+
+            // send notification if existing user email changed
+            if($email_changed_notif) {
+                Notification::send([$email_changed_notif], new ChangeUserEmailNotification(null,null,null,$password));
+                Notification::route('mail', $old_email)->notify(new ChangeUserEmailNotification($email_changed_notif->name, $email_changed_notif->email, $email_changed_notif->roles->first()->name));
+            }
         }
 
         return new ExpertBankResource($expertBank);

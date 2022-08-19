@@ -1,11 +1,12 @@
 <template>
   <div class="app-container">
     <el-button
+      :loading="loadingSubmit"
       type="success"
       size="small"
       icon="el-icon-check"
       style="margin-bottom: 10px;"
-      @click="handleSaveForm()"
+      @click="handleSaveForm"
     >
       Simpan Perubahan
     </el-button>
@@ -47,16 +48,16 @@
         <el-table-column label="Bentuk">
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
-              <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
+              <div v-for="form in scope.row.env_monitor_plan.forms" :key="form.num">
                 <el-tooltip class="item" effect="dark" placement="top-start">
                   <div slot="content">
-                    {{ plan.form }}
+                    {{ form.description }}
                   </div>
                   <el-button
                     type="default"
                     size="medium"
-                    :style="formButtonStyle(plan)"
-                    @click="handleViewPlans(scope.row, plan)"
+                    :style="formButtonStyle(form)"
+                    @click="handleViewPlans(scope.row, form)"
                   >
                     <el-button
                       v-if="isFormulator"
@@ -65,9 +66,9 @@
                       icon="el-icon-close"
                       style="margin-left: 0px; margin-right: 10px;"
                       class="button-action-mini"
-                      @click="handleDeletePlan(scope.row.id, plan.id)"
+                      @click="handleDeleteForm(scope.$index, form.id, form.num)"
                     />
-                    <span>{{ trimForm(plan.form) }}</span>
+                    <span>{{ trimForm(form.description) }}</span>
                     <!-- <el-button
                       v-if="isFormulator"
                       type="default"
@@ -79,72 +80,99 @@
                   </el-button>
                 </el-tooltip>
               </div>
-              <el-input v-model="newEnvMonitorPlan[scope.row.id]" placeholder="Bentuk Pemantauan..." type="textarea" :rows="2" />
-              <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round @click="handleAddPlan(scope.row.id)" />
+              <el-input v-model="scope.row.new_form" placeholder="Bentuk Pemantauan..." type="textarea" :rows="2" />
+              <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round @click="handleAddForm(scope.$index)" />
+              <small
+                v-if="checkError(scope.row.env_monitor_plan.errors, 'forms')"
+                style="color: #f56c6c; display: block"
+              >
+                Silahkan Isi Kolom Bentuk Pengelolaan
+              </small>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="Lokasi">
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
-              <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
-                <el-input
-                  v-if="plan.is_selected"
-                  v-model="plan.location"
-                  type="textarea"
-                  :rows="2"
-                />
-                <small
-                  v-if="checkError(plan.errors, 'location') && plan.is_selected"
-                  style="color: #f56c6c; display: block"
-                >
-                  Silahkan Isi Kolom Lokasi
-                </small>
+              <div v-for="location in scope.row.env_monitor_plan.locations" :key="location.num">
+                <el-tooltip class="item" effect="dark" placement="top-start">
+                  <div slot="content">
+                    {{ location.description }}
+                  </div>
+                  <el-button
+                    type="default"
+                    size="medium"
+                    :style="formButtonStyle(location)"
+                    @click="handleViewPlans(scope.row, location)"
+                  >
+                    <el-button
+                      v-if="isFormulator"
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-close"
+                      style="margin-left: 0px; margin-right: 10px;"
+                      class="button-action-mini"
+                      @click="handleDeleteLocation(scope.$index, location.id, location.num)"
+                    />
+                    <!-- <span>{{ trimForm(form.description) }}</span> -->
+                    <span>{{ trimForm(location.description) }}</span>
+                    <!-- <el-button
+                      v-if="isFormulator"
+                      type="default"
+                      size="mini"
+                      class="pull-right button-action-mini"
+                      icon="el-icon-edit"
+                      @click="handleEditComponent(comp.id)"
+                    /> -->
+                  </el-button>
+                </el-tooltip>
               </div>
+              <el-input v-model="scope.row.new_location" placeholder="Lokasi..." type="textarea" :rows="2" />
+              <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round @click="handleAddLocation(scope.$index)" />
+              <small
+                v-if="checkError(scope.row.env_monitor_plan.errors, 'locations')"
+                style="color: #f56c6c; display: block"
+              >
+                Silahkan Isi Kolom Lokasi
+              </small>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="Periode">
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
-              <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
-                <div v-if="plan.is_selected">
-                  <el-input-number
-                    v-if="plan.is_selected"
-                    v-model="plan.period_number"
-                    :min="0"
-                    :max="100"
-                    :disabled="!isFormulator"
-                    size="mini"
-                  />
-                  <small
-                    v-if="checkError(plan.errors, 'period_number') && plan.is_selected"
-                    style="color: #f56c6c; display: block"
-                  >
-                    Silahkan Isi Kolom Nomor Periode
-                  </small>
-                  x
-                  <el-select
-                    v-if="plan.is_selected"
-                    v-model="plan.period_description"
-                    placeholder="Pilihan"
-                    :disabled="!isFormulator"
-                  >
-                    <el-option
-                      v-for="item in periode"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                  <small
-                    v-if="checkError(plan.errors, 'period_description') && plan.is_selected"
-                    style="color: #f56c6c; display: block"
-                  >
-                    Silahkan Isi Kolom Deskripsi Periode
-                  </small>
-                </div>
-              </div>
+              <el-input-number
+                v-model="scope.row.env_monitor_plan.period_number"
+                :min="0"
+                :max="100"
+                :disabled="!isFormulator"
+                size="mini"
+              />
+              <small
+                v-if="checkError(scope.row.env_monitor_plan.errors, 'period_number')"
+                style="color: #f56c6c; display: block"
+              >
+                Silahkan Isi Kolom Nomor Periode
+              </small>
+              x
+              <el-select
+                v-model="scope.row.env_monitor_plan.period_description"
+                placeholder="Pilihan"
+                :disabled="!isFormulator"
+              >
+                <el-option
+                  v-for="item in periode"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+              <small
+                v-if="checkError(scope.row.env_monitor_plan.errors, 'period_description')"
+                style="color: #f56c6c; display: block"
+              >
+                Silahkan Isi Kolom Deskripsi Periode
+              </small>
             </div>
           </template>
         </el-table-column>
@@ -152,49 +180,44 @@
       <el-table-column :key="iplhKey" label="Institusi Pemantauan Lingkungan Hidup">
         <template slot-scope="scope">
           <div v-if="!scope.row.is_stage">
-            <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
-              <div v-if="plan.is_selected">Pelaksana: <el-input v-model="plan.executor" /></div>
-              <small
-                v-if="checkError(plan.errors, 'executor') && plan.is_selected"
-                style="color: #f56c6c; display: block"
-              >
-                Silahkan Isi Kolom Pelaksana
-              </small>
-              <div v-if="plan.is_selected">Pengawas: <el-input v-model="plan.supervisor" /></div>
-              <small
-                v-if="checkError(plan.errors, 'supervisor') && plan.is_selected"
-                style="color: #f56c6c; display: block"
-              >
-                Silahkan Isi Kolom Pengawas
-              </small>
-              <div v-if="plan.is_selected">Penerima Laporan: <el-input v-model="plan.report_recipient" /></div>
-              <small
-                v-if="checkError(plan.errors, 'report_recipient') && plan.is_selected"
-                style="color: #f56c6c; display: block"
-              >
-                Silahkan Isi Kolom Penerima Laporan
-              </small>
-            </div>
+            <div>Pelaksana: <el-input v-model="scope.row.env_monitor_plan.executor" /></div>
+            <small
+              v-if="checkError(scope.row.env_monitor_plan.errors, 'executor')"
+              style="color: #f56c6c; display: block"
+            >
+              Silahkan Isi Kolom Pelaksana
+            </small>
+            <div>Pengawas: <el-input v-model="scope.row.env_monitor_plan.supervisor" /></div>
+            <small
+              v-if="checkError(scope.row.env_monitor_plan.errors, 'supervisor')"
+              style="color: #f56c6c; display: block"
+            >
+              Silahkan Isi Kolom Pengawas
+            </small>
+            <div>Penerima Laporan: <el-input v-model="scope.row.env_monitor_plan.report_recipient" /></div>
+            <small
+              v-if="checkError(scope.row.env_monitor_plan.errors, 'report_recipient')"
+              style="color: #f56c6c; display: block"
+            >
+              Silahkan Isi Kolom Penerima Laporan
+            </small>
           </div>
         </template>
       </el-table-column>
       <el-table-column :key="descKey" label="Keterangan">
         <template slot-scope="scope">
           <div v-if="!scope.row.is_stage">
-            <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
-              <el-input
-                v-if="plan.is_selected"
-                v-model="plan.description"
-                type="textarea"
-                :rows="4"
-              />
-              <small
-                v-if="checkError(plan.errors, 'description') && plan.is_selected"
-                style="color: #f56c6c; display: block"
-              >
-                Silahkan Isi Kolom Keterangan
-              </small>
-            </div>
+            <el-input
+              v-model="scope.row.env_monitor_plan.description"
+              type="textarea"
+              :rows="4"
+            />
+            <small
+              v-if="checkError(scope.row.env_monitor_plan.errors, 'description')"
+              style="color: #f56c6c; display: block"
+            >
+              Silahkan Isi Kolom Keterangan
+            </small>
           </div>
         </template>
       </el-table-column>
@@ -206,7 +229,7 @@
 import Resource from '@/api/resource';
 import axios from 'axios';
 const impactIdtResource = new Resource('impact-identifications');
-const envMonitorPlanResource = new Resource('env-monitor-plans');
+// const envMonitorPlanResource = new Resource('env-monitor-plans');
 
 export default {
   name: 'MatriksUplTable',
@@ -216,6 +239,8 @@ export default {
       currentPlanIdx: 0,
       newEnvMonitorPlan: {},
       data: [],
+      deletedForm: [],
+      deletedLocation: [],
       periode: [
         {
           label: 'per Hari',
@@ -238,6 +263,7 @@ export default {
       splhKey: 1,
       iplhKey: 1,
       descKey: 1,
+      loadingSubmit: false,
     };
   },
   computed: {
@@ -259,7 +285,34 @@ export default {
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       await axios.get('api/matriks-ukl-upl/table-upl/' + this.idProject)
         .then(response => {
-          this.data = response.data;
+          this.data = response.data.map(x => {
+            if (!x.is_stage) {
+              if (x.env_monitor_plan) {
+                x.env_monitor_plan.forms = x.env_monitor_plan.forms.map((y, idx) => {
+                  y.num = idx + 1;
+                  return y;
+                });
+                x.env_monitor_plan.locations = x.env_monitor_plan.locations.map((y, idx) => {
+                  y.num = idx + 1;
+                  return y;
+                });
+              } else {
+                x.env_monitor_plan = {
+                  id: null,
+                  forms: [],
+                  locations: [],
+                  period_number: null,
+                  period_description: null,
+                  supervisor: null,
+                  report_recipient: null,
+                  executor: null,
+                  description: null,
+                  is_selected: true,
+                };
+              }
+            }
+            return x;
+          });
           this.loading = false;
         });
     },
@@ -273,13 +326,13 @@ export default {
         return { backgroundColor: '#ffffff', color: '#099C4B', marginBottom: '5px' };
       }
     },
-    handleViewPlans(imp, plan) {
-      imp.env_monitor_plan.forEach((p) => {
-        p.is_selected = false;
-      });
-      plan.is_selected = true;
-      this.reloadPlanData();
-    },
+    // handleViewPlans(imp, plan) {
+    //   imp.env_monitor_plan.forEach((p) => {
+    //     p.is_selected = false;
+    //   });
+    //   plan.is_selected = true;
+    //   this.reloadPlanData();
+    // },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.is_stage) {
         return [1, 9];
@@ -291,23 +344,34 @@ export default {
       const data = [...this.data];
       this.data = data.map(x => {
         if (x.env_monitor_plan) {
-          const newEnvMonitorPlan = x.env_monitor_plan.map(y => {
-            y.errors = {};
-            if (!y.description || !y.executor || !y.form || !y.location || !y.period_number || !y.period_description || !y.report_recipient || !y.supervisor) {
-              errors++;
-            }
-            y.errors.description = Boolean(!y.description);
-            y.errors.executor = Boolean(!y.executor);
-            y.errors.form = Boolean(!y.form);
-            y.errors.location = Boolean(!y.location);
-            y.errors.period_number = Boolean(!y.period_number);
-            y.errors.period_description = Boolean(!y.period_description);
-            y.errors.report_recipient = Boolean(!y.report_recipient);
-            y.errors.supervisor = Boolean(!y.supervisor);
-            return y;
-          });
-          x.env_monitor_plan = newEnvMonitorPlan;
-          return x;
+          x.env_monitor_plan.errors = {};
+          if (!x.env_monitor_plan.description || !x.env_monitor_plan.executor || x.env_monitor_plan.forms.length === 0 || x.env_monitor_plan.locations.length === 0 || !x.env_monitor_plan.period_number || !x.env_monitor_plan.period_description || !x.env_monitor_plan.report_recipient || !x.env_monitor_plan.supervisor) {
+            errors++;
+          }
+
+          const formsError = x.env_monitor_plan.forms.filter((z) => Boolean(z.description)).length === 0;
+          console.log('error form: ', formsError);
+
+          if (formsError) {
+            errors++;
+          }
+
+          const locationsError =
+            x.env_monitor_plan.locations.filter((z) => Boolean(z.description)).length === 0;
+          console.log('error location: ', locationsError);
+
+          if (locationsError) {
+            errors++;
+          }
+
+          x.env_monitor_plan.errors.description = Boolean(!x.env_monitor_plan.description);
+          x.env_monitor_plan.errors.executor = Boolean(!x.env_monitor_plan.executor);
+          x.env_monitor_plan.errors.period_number = Boolean(!x.env_monitor_plan.period_number);
+          x.env_monitor_plan.errors.period_description = Boolean(!x.env_monitor_plan.period_description);
+          x.env_monitor_plan.errors.report_recipient = Boolean(!x.env_monitor_plan.report_recipient);
+          x.env_monitor_plan.errors.supervisor = Boolean(!x.env_monitor_plan.supervisor);
+          x.env_monitor_plan.errors.forms = formsError;
+          x.env_monitor_plan.errors.locations = locationsError;
         }
         return x;
       });
@@ -322,18 +386,23 @@ export default {
         impactIdtResource
           .store({
             env_monitor_plan_data: this.data,
+            deleted_form: JSON.stringify(this.deletedForm),
+            deleted_location: JSON.stringify(this.deletedLocation),
           })
           .then((response) => {
             if (response.code === 200) {
+              this.loadingSubmit = false;
               this.$message({
                 message: 'Matriks UPL berhasil disimpan',
                 type: 'success',
                 duration: 5 * 1000,
               });
+              this.getData();
             // this.$emit('handleCheckProjectMarking');
             }
           })
           .catch((err) => {
+            this.loadingSubmit = false;
             this.$message({
               message: err.response.data.message,
               type: 'error',
@@ -357,63 +426,81 @@ export default {
         }
       }
     },
-    handleAddPlan(idImp) {
-      if (this.newEnvMonitorPlan[idImp] === undefined ||
-        this.newEnvMonitorPlan[idImp] === null ||
-        this.newEnvMonitorPlan[idImp].replace(/\s+/g, '').trim() === '') {
-        this.$message({
-          message: 'Bentuk Pemantauan tidak boleh kosong',
-          type: 'error',
-          duration: 5 * 1000,
-        });
-      } else {
-        envMonitorPlanResource
-          .store({
-            id_impact_identifications: idImp,
-            form: this.newEnvMonitorPlan[idImp],
-          })
-          .then((response) => {
-            if (response.code === 200) {
-              this.$message({
-                message: 'Bentuk UPL berhasil disimpan',
-                type: 'success',
-                duration: 5 * 1000,
-              });
-              // add new env_monitor_plan to this.data
-              this.addPlanToImpact(parseInt(idImp), response.data);
-              this.newEnvMonitorPlan[idImp] = '';
-            }
-          })
-          .catch((err) => {
-            this.$message({
-              message: err.response.data.message,
-              type: 'error',
-              duration: 5 * 1000,
-            });
-          });
+    handleAddForm(idx) {
+      if (!this.data[idx].new_form) {
+        return;
       }
+
+      const data = this.data[idx].env_monitor_plan.forms;
+      this.data[idx].env_monitor_plan.forms.push({
+        num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
+        id: null,
+        description: this.data[idx].new_form,
+      });
+      this.data[idx].new_form = null;
+      // if (this.newEnvMonitorPlan[idImp] === undefined ||
+      //   this.newEnvMonitorPlan[idImp] === null ||
+      //   this.newEnvMonitorPlan[idImp].replace(/\s+/g, '').trim() === '') {
+      //   this.$message({
+      //     message: 'Bentuk Pemantauan tidak boleh kosong',
+      //     type: 'error',
+      //     duration: 5 * 1000,
+      //   });
+      // } else {
+      //   envMonitorPlanResource
+      //     .store({
+      //       id_impact_identifications: idImp,
+      //       form: this.newEnvMonitorPlan[idImp],
+      //     })
+      //     .then((response) => {
+      //       if (response.code === 200) {
+      //         this.$message({
+      //           message: 'Bentuk UPL berhasil disimpan',
+      //           type: 'success',
+      //           duration: 5 * 1000,
+      //         });
+      //         // add new env_monitor_plan to this.data
+      //         this.addPlanToImpact(parseInt(idImp), response.data);
+      //         this.newEnvMonitorPlan[idImp] = '';
+      //       }
+      //     })
+      //     .catch((err) => {
+      //       this.$message({
+      //         message: err.response.data.message,
+      //         type: 'error',
+      //         duration: 5 * 1000,
+      //       });
+      //     });
+      // }
     },
-    handleDeletePlan(idImp, id) {
-      envMonitorPlanResource
-        .destroy(id)
-        .then((response) => {
-          if (response.code === 200) {
-            this.$message({
-              message: 'Bentuk UPL berhasil dihapus',
-              type: 'success',
-              duration: 5 * 1000,
-            });
-            // remove env_monitor_plan from this.data
-            this.removePlanFromImpact(parseInt(idImp), parseInt(id));
-          }
-        })
-        .catch((err) => {
-          this.$message({
-            message: err.response.data.message,
-            type: 'error',
-            duration: 5 * 1000,
-          });
-        });
+    handleAddLocation(idx) {
+      if (!this.data[idx].new_location) {
+        return;
+      }
+
+      const data = this.data[idx].env_monitor_plan.locations;
+      this.data[idx].env_monitor_plan.locations.push({
+        num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
+        id: null,
+        description: this.data[idx].new_location,
+      });
+      this.data[idx].new_location = null;
+    },
+    handleDeleteForm(idx, id, num) {
+      if (id) {
+        this.deletedForm.push(id);
+      }
+      this.data[idx].env_monitor_plan.forms = [...this.data[idx].env_monitor_plan.forms.filter(x => {
+        return x.num !== num;
+      })];
+    },
+    handleDeleteLocation(idx, id, num) {
+      if (id) {
+        this.deletedLocation.push(id);
+      }
+      this.data[idx].env_monitor_plan.locations = [...this.data[idx].env_monitor_plan.locations.filter(x => {
+        return x.num !== num;
+      })];
     },
     checkError(errors, key) {
       if (errors) {

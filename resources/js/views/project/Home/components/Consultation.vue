@@ -23,7 +23,7 @@
           <div v-if="docs.length > 0">
             <p class="p-header" style="margin-top: 2em !important;">Dokumen</p>
             <p v-for="(doc, i) in docs" :key="i+'_key_'+id">
-              <el-link :href="doc.filepath" target="_blank" icon="el-icon-download" type="primary">{{ doc.doc_type }}</el-link>
+              <el-link :href="doc.url" target="_blank" icon="el-icon-download" type="primary">{{ doc.doc_type }}</el-link>
             </p>
           </div>
         </el-col>
@@ -69,7 +69,7 @@ export default {
     getDocs() {
       this.docs = [];
       const docs = this.data.docs.map((doc) => {
-        return JSON.parse(doc.doc_json);
+        return { ...JSON.parse(doc.doc_json), url: doc.file };
       });
       this.docs = docs;
     },

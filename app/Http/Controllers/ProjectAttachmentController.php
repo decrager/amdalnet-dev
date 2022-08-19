@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Entity\Project;
 
 class ProjectAttachmentController extends Controller
 {
@@ -45,7 +46,20 @@ class ProjectAttachmentController extends Controller
      */
     public function show($id)
     {
-        return response()->json([]);
+        $project = Project::where('id', $id)->first();
+        if (!$project){
+            return response('Kegiatan tidak ditemukan.', 404);
+        }
+        $result = null;
+        switch ($project->required_doc){
+            case 'AMDAL':
+                $result = $this->getAmdalAttachments($project);
+                break;
+            case 'UKL-UPL':
+                $result = $this->getUKLUPLAttachments($project);
+                break;
+        }
+        return response()->json($project, 200);
     }
 
     /**
@@ -80,5 +94,13 @@ class ProjectAttachmentController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    private function getAmdalAttachments($project){
+        return $project;
+    }
+    private function getUKLUPLAttachments($project){
+        return $project;
     }
 }

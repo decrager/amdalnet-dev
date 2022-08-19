@@ -1,20 +1,29 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div :loading="loading" style="padding: 24px">
     <h2>Rekomendasi Hasil Uji Kelayakan</h2>
     <div>
-      <el-button
+      <!-- <el-button
         v-if="projects !== null"
         :loading="loadingPDF"
         type="danger"
         @click="exportPdf"
       >
         Export to .PDF
-      </el-button>
+      </el-button> -->
       <a
-        v-if="projects !== null"
+        v-if="pdfUrl !== null"
+        class="el-button el-button--danger el-button--medium"
+        :href="pdfUrl"
+        download="surat-rekomendasi-uji-kelayakan.pdf"
+      >
+        Export to .PDF
+      </a>
+      <a
+        v-if="docxUrl !== null"
         class="el-button el-button--primary el-button--medium"
-        :href="projects"
-        download
+        :href="docxUrl"
+        download="surat-rekomendasi-uji-kelayakan.docx"
       >
         Export to .DOCX
       </a>
@@ -23,14 +32,25 @@
       <el-col :span="16">
         <div class="grid-content bg-purple" />
         <iframe
-          v-if="projects !== null"
-          :src="
-            'https://docs.google.com/gview?url=' + projects + '&embedded=true'
-          "
+          v-if="pdfUrl !== null"
+          :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+            pdfUrl
+          )}&embedded=true`"
           width="100%"
           height="723px"
           frameborder="0"
         />
+        <!-- <iframe
+          v-if="projects !== null"
+          :src="
+            'https://docs.google.com/gview?url=' +
+            encodeURIComponent(projects) +
+            '&embedded=true'
+          "
+          width="100%"
+          height="723px"
+          frameborder="0"
+        /> -->
       </el-col>
       <el-col :span="8">
         <div class="grid-content bg-purple" />
@@ -47,12 +67,13 @@ export default {
   data() {
     return {
       idProject: 0,
-      projects: null,
       loading: false,
       loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
       showDocument: true,
       projectName: '',
+      docxUrl: null,
+      pdfUrl: null,
     };
   },
   created() {
@@ -61,18 +82,13 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
-      const link = await feasibilityTestResource.list({
+      const data = await feasibilityTestResource.list({
         dokumen: 'true',
         idProject: this.$route.params.id,
       });
-      this.projects = link;
+      this.pdfUrl = data.pdf_url;
+      this.docxUrl = data.docx_url;
       this.loading = false;
-    },
-    async exportDocxPhpWord() {
-      await feasibilityTestResource.list({
-        idProject: this.$route.params.id,
-        formulir: 'true',
-      });
     },
     async exportPdf() {
       this.loadingPDF = true;
@@ -83,10 +99,7 @@ export default {
 
       const fileLink = document.createElement('a');
       fileLink.href = fileURL;
-      fileLink.setAttribute(
-        'download',
-        `surat-rekomendasi-uji-kelayakan.pdf`
-      );
+      fileLink.setAttribute('download', `surat-rekomendasi-uji-kelayakan.pdf`);
       document.body.appendChild(fileLink);
       fileLink.click();
 

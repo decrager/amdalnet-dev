@@ -27,4 +27,9 @@ class RonaAwal extends Model
     {
         return $this->belongsTo(ComponentType::class, 'id_component_type', 'id');
     }
+    public function scopeMaster($query)
+    {
+        return $query->where('is_master', '=', true);
+    }
+
 }

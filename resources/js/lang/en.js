@@ -124,7 +124,8 @@ export default {
     password: 'Password',
     any: 'any',
     thirdparty: 'Or connect with',
-    thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !',
+    thirdpartyTips:
+      'Can not be simulated on local, so please combine you own business simulation! ! !',
     email: 'Email',
     userType: 'User Type',
     registrationForm: 'Registration Form',
@@ -196,13 +197,18 @@ export default {
       'do announcement': 'lakukan pengumuman',
       'do assemble formulator': 'lakukan perakitan formulator',
       'do publish announcement': 'publikasikan pengumuman',
-      'do digital workspace - initial qualification form': 'lakukan ruang kerja digital - formulir kualifikasi awal',
-      'do digital workspace - RKL/RPL': 'melakukan ruang kerja digital - RKL/RPL',
+      'do digital workspace - initial qualification form':
+        'lakukan ruang kerja digital - formulir kualifikasi awal',
+      'do digital workspace - RKL/RPL':
+        'melakukan ruang kerja digital - RKL/RPL',
       'do digital workspace - ANDAL': 'melakukan ruang kerja digital - ANDAL',
       'do digital workspace - UKL/UPL': 'lakukan ruang kerja digital - UKL/UPL',
-      'do digital workspace - Examiner AMDAL': 'melakukan ruang kerja digital - Penguji AMDAL',
-      'do post check - Generate SK PKPLH': 'lakukan post check - Hasilkan SK PKPLH',
-      'do post check - Generate SK SKKL': 'lakukan post check - Hasilkan SK SKKL',
+      'do digital workspace - Examiner AMDAL':
+        'melakukan ruang kerja digital - Penguji AMDAL',
+      'do post check - Generate SK PKPLH':
+        'lakukan post check - Hasilkan SK PKPLH',
+      'do post check - Generate SK SKKL':
+        'lakukan post check - Hasilkan SK SKKL',
       'do post check - Push To OSS': 'lakukan pemeriksaan pos - Dorong Ke OSS',
       'view menu project pre submission': 'view menu project pre submission',
       'view menu project post submission': 'view menu project post submission',
@@ -234,7 +240,8 @@ export default {
       'do RKL/RPL environment set': 'do RKL/RPL environment set',
       'do RKL/RPL impact matrix': 'do RKL/RPL impact matrix',
       'do RKL/RPL potencial impact': 'do RKL/RPL potencial impact',
-      'do RKL/RPL hypothetical significance': 'do RKL/RPL hypothetical significance',
+      'do RKL/RPL hypothetical significance':
+        'do RKL/RPL hypothetical significance',
       'do RKL/RPL management': 'do RKL/RPL management',
       'do RKL/RPL monitoring': 'do RKL/RPL monitoring',
       'do UKL/UPL activities': 'do UKL/UPL activities',
@@ -255,20 +262,80 @@ export default {
       'read project': 'read project',
       'update project': 'update project',
       'drop project': 'drop project',
+      'view menu rona awal': 'view menu rona awal',
+      'manage rona awal': 'kelola rona awal',
+      'view menu tuk member list': 'view menu daftar anggota tuk',
+      'view menu materials and policies': 'view menu material dan kebijakan',
+      'view menu permission list': 'view menu daftar izin',
+      'view menu env approve': 'view menu persetujuan lingkungan',
+      'view menu ukl upl': 'view menu ukl upl',
+      'view menu sop management': 'view menu sop pengelolaan',
+      'view menu video tutorial': 'view menu video tutorial',
+      'manage tuk member list': 'kelola daftar anggota tuk',
+      'manage materials and policies': 'kelola materi dan kebijakan',
+      'manage permission list': 'kelola daftar izin',
+      'manage env approve': 'kelola persetujuan lingkunan',
+      'manage ukl upl': 'kelola ukl upl',
+      'manage sop management': 'kelola sop pengelolaan',
+      'manage video tutorial': 'kelola video tutorial',
+      'view menu tuk management': 'view menu manajemen tuk',
+      'manage tuk management': 'kelola manajemen tuk',
+      'view menu tuk profile': 'view menu profil tuk',
+      'view menu tuk project': 'view menu proyek tuk',
+      'manage tuk profile': 'kelola profil tuk',
+      'manage tuk project': 'kelola proyek tuk',
+      'view menu ka': 'view menu formulir ka',
+      'view menu ka document': 'view menu dokumen ka',
+      'view menu ka adm': 'view menu uji administrasi ka',
+      'view menu ka meeting invitation': 'view menu undangan rapat ka',
+      'view menu ka comment recapitulation':
+        'view menu rekapitulasi komentar ka',
+      'view menu ka meeting report': 'view menu berita acara ka',
+      'view menu andal': 'view menu andal',
+      'view menu rkl rpl': 'view menu rkl rpl',
+      'view menu andal rkl rpl document': 'view menu dokumen andal rkl rpl',
+      'view menu andal rkl rpl adm': 'view menu uji administrasi andal rkl rpl',
+      'view menu andal rkl rpl meeting invitation':
+        'view menu undangan rapat andal rkl rpl',
+      'view menu andal rkl rpl comment recapitulation':
+        'view menu rekapitulasi komentar andal rkl rpl',
+      'view menu andal rkl rpl meeting report':
+        'view menu berita acara andal rkl rpl',
+      'view menu feasibility test': 'view menu uji kelayakan',
+      'view menu feasibility test recommendation':
+        'view menu rekomendasi uji kelayakan',
+      'view menu skkl': 'view menu skkl',
+      'view menu ukl upl form': 'view menu formulir ukl upl',
+      'view menu ukl upl document': 'view menu dokumen ukl upl',
+      'view menu ukl upl adm': 'view menu uji administrasi ukl upl',
+      'view menu ukl upl meeting invitation':
+        'view menu undangan rapat ukl upl',
+      'view menu ukl upl meeting report': 'view menu berita acara ukl upl',
+      'view menu ukl upl feasibility test': 'view menu uji kelayakan ukl upl',
+      'view menu ukl upl feasibility test recommendation':
+        'view menu rekomendasi uji kelayakan ukl upl',
+      'view menu pkplh': 'view menu pkplh',
     },
   },
   guide: {
-    description: 'The guide page is useful for some people who entered the project for the first time. You can briefly introduce the features of the project. Demo is based on ',
+    description:
+      'The guide page is useful for some people who entered the project for the first time. You can briefly introduce the features of the project. Demo is based on ',
     button: 'Show Guide',
   },
   components: {
     documentation: 'Documentation',
-    tinymceTips: 'Rich text editor is a core part of management system, but at the same time is a place with lots of problems. In the process of selecting rich texts, I also walked a lot of detours. The common rich text editors in the market are basically used, and the finally chose Tinymce. See documentation for more detailed rich text editor comparisons and introductions.',
-    dropzoneTips: 'Because my business has special needs, and has to upload images to qiniu, so instead of a third party, I chose encapsulate it by myself. It is very simple, you can see the detail code in @/components/Dropzone.',
-    stickyTips: 'when the page is scrolled to the preset position will be sticky on the top.',
-    backToTopTips1: 'When the page is scrolled to the specified position, the Back to Top button appears in the lower right corner',
-    backToTopTips2: 'You can customize the style of the button, show / hide, height of appearance, height of the return. If you need a text prompt, you can use element-ui el-tooltip elements externally',
-    imageUploadTips: 'Since I was using only the vue@1 version, and it is not compatible with mockjs at the moment, I modified it myself, and if you are going to use it, it is better to use official version.',
+    tinymceTips:
+      'Rich text editor is a core part of management system, but at the same time is a place with lots of problems. In the process of selecting rich texts, I also walked a lot of detours. The common rich text editors in the market are basically used, and the finally chose Tinymce. See documentation for more detailed rich text editor comparisons and introductions.',
+    dropzoneTips:
+      'Because my business has special needs, and has to upload images to qiniu, so instead of a third party, I chose encapsulate it by myself. It is very simple, you can see the detail code in @/components/Dropzone.',
+    stickyTips:
+      'when the page is scrolled to the preset position will be sticky on the top.',
+    backToTopTips1:
+      'When the page is scrolled to the specified position, the Back to Top button appears in the lower right corner',
+    backToTopTips2:
+      'You can customize the style of the button, show / hide, height of appearance, height of the return. If you need a text prompt, you can use element-ui el-tooltip elements externally',
+    imageUploadTips:
+      'Since I was using only the vue@1 version, and it is not compatible with mockjs at the moment, I modified it myself, and if you are going to use it, it is better to use official version.',
   },
   table: {
     description: 'Description',
@@ -305,7 +372,8 @@ export default {
   treeNode: 'Tree Node',
   errorLog: {
     tips: 'Please click the bug icon in the upper right corner',
-    description: 'Now the management system are basically the form of the spa, it enhances the user experience, but it also increases the possibility of page problems, a small negligence may lead to the entire page deadlock. Fortunately Vue provides a way to catch handling exceptions, where you can handle errors or report exceptions.',
+    description:
+      'Now the management system are basically the form of the spa, it enhances the user experience, but it also increases the possibility of page problems, a small negligence may lead to the entire page deadlock. Fortunately Vue provides a way to catch handling exceptions, where you can handle errors or report exceptions.',
     documentation: 'Document introduction',
   },
   excel: {
@@ -339,11 +407,11 @@ export default {
     sidebarLogo: 'Sidebar Logo',
   },
   user: {
-    'role': 'Role',
-    'password': 'Password',
-    'confirmPassword': 'Confirm password',
-    'name': 'Name',
-    'email': 'Email',
+    role: 'Role',
+    password: 'Password',
+    confirmPassword: 'Confirm password',
+    name: 'Name',
+    email: 'Email',
   },
   roles: {
     title: {
@@ -375,20 +443,29 @@ export default {
       'examiner-community': 'examiner-community',
     },
     description: {
-      admin: 'Super Administrator. Have access and full permission to all pages.',
-      manager: 'Manager. Have access and permission to most of pages except permission page.',
-      editor: 'Editor. Have access to most of pages, full permission with articles and related resources.',
+      admin:
+        'Super Administrator. Have access and full permission to all pages.',
+      manager:
+        'Manager. Have access and permission to most of pages except permission page.',
+      editor:
+        'Editor. Have access to most of pages, full permission with articles and related resources.',
       user: 'Normal user. Have access to some pages',
-      visitor: 'Visitor. Have access to static pages, should not have any writable permission',
-      initiator: 'Initiator of projects / activities, that sould be check for Environmental Impact Analysis',
+      visitor:
+        'Visitor. Have access to static pages, should not have any writable permission',
+      initiator:
+        'Initiator of projects / activities, that sould be check for Environmental Impact Analysis',
       formulator: 'Formulator of Environmental Impact Analysis',
-      institution: 'Institution that serve services for Environmental Impact Analysis',
+      institution:
+        'Institution that serve services for Environmental Impact Analysis',
       'admin-standard': 'Center for Environmental and Forestry Standardization',
       examiner: 'Investigation team for Environmental Impact Analysis',
-      'examiner-institution': 'Institution that has examiner and investigation team for Environmental Impact Analysis',
+      'examiner-institution':
+        'Institution that has examiner and investigation team for Environmental Impact Analysis',
       'admin-system': 'Administrator for system',
-      'admin-central': 'Administrator from Central Ministry of environment and forestry',
-      'admin-regional': 'Administrator from Regional Ministry of environment and forestry',
+      'admin-central':
+        'Administrator from Central Ministry of environment and forestry',
+      'admin-regional':
+        'Administrator from Regional Ministry of environment and forestry',
       public: 'Public Access',
     },
   },

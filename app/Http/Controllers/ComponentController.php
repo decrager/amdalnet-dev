@@ -227,8 +227,37 @@ class ComponentController extends Controller
         if(!isset($request->stage) || (!isset($request->name))){
             return response()->json(['error' => 'Parameter pencarian tidak lengkap'], 416);
         }
+
         $res = Component::master()->where('id_project_stage', $request->stage)
-          ->whereRaw('lower(name) = ?', array($request->name))->first();
+          ->whereRaw('lower(name) = ?', array(strtolower($request->name)))->first();
         return response()->json(['data' => $res], 200);
+    }
+
+    public function setMasterComponent(Request $request){
+        if(!isset($request->id))
+        {
+            return response()->json(['error' => 'Parameter pencarian tidak lengkap'], 416);
+        }
+
+        $res = Component::where('id', $request->id)->first();
+        if (!$res){
+            return response()->json(['error' => 'Komponen tidak ditemukan'], 404);
+        }
+        $master = Component::master()->where('id_project_stage', $res->id_project_stage)
+        ->whereRaw('lower(name) = ?', array(strtolower($res->name)))->first();
+
+        if ($master){
+            return response()->json(['error' => 'Sudah ada data master komponen kegiatan'], 413);
+        }
+
+        try {
+            $res->is_master = true;
+            $res->save();
+            return response()->json(['data' => $res, 'message' => 'Komponen kegiatan berhasil disimpan sebagai master data'], 200);
+
+        } catch (QueryException $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
     }
 }

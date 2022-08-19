@@ -639,7 +639,7 @@ export default {
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
 
-      const tapakData = await axios.get(`api/map-geojson?type=tapak&step=ka`);
+      const tapakData = await axios.get(`api/map-geojson?type=tapak&step=ka&limit=1`);
       for (let i = 0; i < tapakData.data.length; i++) {
         const item = tapakData.data[i];
         const getType = JSON.parse(item.feature_layer);

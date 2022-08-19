@@ -17,7 +17,10 @@
         <span>{{ scope.row.file }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Aksi">
+    <el-table-column
+      v-if="checkPermission(['manage sop management']) || checkRole(['admin'])"
+      label="Aksi"
+    >
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -41,6 +44,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'ComponentTable',
   props: {
@@ -51,6 +57,8 @@ export default {
     loading: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleEditForm(row) {
       const currentParam = row;
       this.$router.push({

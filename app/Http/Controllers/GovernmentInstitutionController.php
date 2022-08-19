@@ -6,8 +6,11 @@ use App\Entity\GovernmentInstitution;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\ChangeUserEmailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class GovernmentInstitutionController extends Controller
 {
@@ -72,20 +75,27 @@ class GovernmentInstitutionController extends Controller
             $is_user_exist = User::where('email', $request->email)->count();
             if($is_user_exist == 0) {
                 $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
+                $password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($request->name),
                     'email' => $request->email,
-                    'password' => Hash::make('amdalnet')
+                    'password' => Hash::make($password),
+                    'original_password' => $password
                 ]);
                 $user->syncRoles($valsubRole);
             }
         } else {
             if($request->email != $request->old_email) {
-                $is_user_exist = User::where('email', $request->old_email)->count();
-                if($is_user_exist > 0) {
-                    $user = User::where('email', $request->old_email)->first();
+                $user = User::where('email', $request->old_email)->first();
+                if($user) {
+                    $password = Str::random(8);
+                    $user->password = Hash::make($password);
                     $user->email = $request->email;
                     $user->save();
+
+                    // send notification if existing user email changed
+                    Notification::send([$user], new ChangeUserEmailNotification(null,null,null,$password));
+                    Notification::route('mail', $request->old_email)->notify(new ChangeUserEmailNotification($user->name, $user->email, $user->roles->first()->name));
                 }
             }
         }

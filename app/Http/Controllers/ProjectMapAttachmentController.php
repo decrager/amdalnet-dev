@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ProjectMapAttachmentResource;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
 class ProjectMapAttachmentController extends Controller
@@ -167,7 +169,8 @@ class ProjectMapAttachmentController extends Controller
 
         // $headers = ['Content-Type' =>  'application/octet-stream'];
         // return  Response::download($file, $map->original_filename, $headers, 'attachment');
-        return redirect()->away(Storage::disk('public')->temporaryUrl('map/' . $map->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
+        // return redirect()->away(Storage::disk('public')->temporaryUrl('map/' . $map->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
+        return redirect()->away(Storage::temporaryUrl('map/' . $map->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
 
@@ -277,6 +280,9 @@ class ProjectMapAttachmentController extends Controller
             ->when($request->has('step'), function ($query) use ($request) {
                 return $query->where('project_map_attachments.step', '=', $request->step);
             })
+            ->when($request->has('limit'), function ($query) use ($request) {
+                return $query->take($request->limit);
+            })
             ->where('project_map_attachments.file_type', '=', 'SHP')
             ->whereNotNull('project_map_attachments.geom')
             ->groupBy('project_map_attachments.id')
@@ -370,5 +376,14 @@ class ProjectMapAttachmentController extends Controller
             ->get();
 
         return response()->json($getMapPdf);
+    }
+
+    public function getByFilename(Request $request)
+    {
+        $filename = $request->query('filename');
+        if (!Storage::disk('public')->exists('map/'. $filename)) {
+            return response('File tidak ditemukan', 418);
+        }
+        return redirect()->away(Storage::temporaryUrl('public/map/' . $filename, Carbon::now()->addMinutes(30)));
     }
 }

@@ -192,7 +192,7 @@ class PublicConsultationController extends Controller
                     $deleted_file = PublicConsultationDoc::find($deleted_photo[$i]);
                     if($deleted_file) {
                         $json_file = json_decode($deleted_file->doc_json, true);
-                        $file = str_replace(Storage::url(''), '', $json_file['filepath']);
+                        $file = $json_file['filepath'];
                         Storage::disk('public')->delete($file);
                         $deleted_file->delete();
                     }
@@ -244,7 +244,7 @@ class PublicConsultationController extends Controller
                 if($request->data_type !== 'new') {
                     $key = str_replace(' ', '_', strtolower($metadata->doc_type));
                     if(array_key_exists($key, $doc)) {
-                         $file = str_replace(Storage::url(''), '', $doc[$key]['filepath']);
+                         $file = $doc[$key]['filepath'];
                          Storage::disk('public')->delete($file);
                          PublicConsultationDoc::destroy($doc[$key]['id']);
                     }
@@ -265,7 +265,7 @@ class PublicConsultationController extends Controller
                     $r = count($exp) == 2 ? $exp[1][0] : '';
                     $subfolder = strtolower(sprintf('%s%s', $f, $r));
                     $folder = sprintf('docs/pubcons/%s', $subfolder);
-                    $file_name = '/' . $folder . '/' . $filename;
+                    $file_name = $folder . '/' . $filename;
                     // save file
                     $file->storePubliclyAs('public', $file_name);
                     // $filepath = Storage::url($file_name);

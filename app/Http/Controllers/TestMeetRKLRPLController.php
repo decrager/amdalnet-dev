@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TestMeetRKLRPLController extends Controller
 {
@@ -123,10 +124,12 @@ class TestMeetRKLRPLController extends Controller
                         $user = User::where('email', $i->email)->count();
                         if($user === 0) {
                             $role = Role::findByName(Acl::ROLE_EXAMINER);
+                            $password = Str::random(8);
                             $user = User::create([
                                 'name' => ucfirst($i->name),
                                 'email' => $i->email,
-                                'password' => Hash::make('amdalnet')
+                                'password' => Hash::make($password),
+                                'original_password' => $password
                             ]);
                             $user->syncRoles($role);
 
@@ -163,8 +166,14 @@ class TestMeetRKLRPLController extends Controller
                     // === UPDATE STATUS INVITATION === //
                     $meeting->is_invitation_sent = true;
                     $meeting->save();
+
+                    $tmpName = tempnam(sys_get_temp_dir(),'');
+                    $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
+                    file_put_contents($tmpName, $tmpFile);
     
-                    Notification::send($user, new MeetingInvitation($meeting));
+                    Notification::send($user, new MeetingInvitation($meeting, $tmpName));
+
+                    unlink($tmpName);
     
                     // === WORKFLOW === //
                     if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
@@ -801,7 +810,7 @@ class TestMeetRKLRPLController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url($save_file_name) 
+            'url' => Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 
@@ -976,7 +985,7 @@ class TestMeetRKLRPLController extends Controller
         }
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url($save_file_name) 
+            'url' => Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 

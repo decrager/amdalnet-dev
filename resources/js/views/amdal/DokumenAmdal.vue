@@ -6,19 +6,27 @@
         <span v-if="isFormulator">ke Pemrakarsa</span>
       </h2>
       <div>
-        <el-button
+        <!-- <el-button
           v-if="showDocument"
           :loading="loadingPDF"
           type="danger"
           @click="exportPdf"
         >
           Export to .PDF
-        </el-button>
+        </el-button> -->
+        <a
+          v-if="showDocument"
+          class="btn-pdf"
+          :href="urlPdf"
+          :download="`ka-${project_title}.pdf`"
+        >
+          Export to .PDF
+        </a>
         <a
           v-if="showDocument"
           class="btn-docx"
           :href="downloadDocxPath"
-          download
+          :download="`ka-${project_title}.docx`"
         >
           Export to .DOCX
         </a>
@@ -26,22 +34,31 @@
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
           <div class="grid-content bg-purple" />
+          <iframe
+            v-if="showDocument"
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              urlPdf
+            )}&embedded=true`"
+            width="100%"
+            height="723px"
+            frameborder="0"
+          />
           <!-- <iframe
             v-if="showDocument"
             :src="
-              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
+              'https://docs.google.com/gview?url=' + encodeURIComponent(projects) + '&embedded=true'
             "
             width="100%"
             height="723px"
             frameborder="0"
           /> -->
-          <iframe
+          <!-- <iframe
             v-if="showDocument"
             :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projects}`"
             width="100%"
             height="723px"
             frameborder="0"
-          />
+          /> -->
         </el-col>
         <el-col :sm="24" :md="10">
           <ReviewPenyusun
@@ -81,12 +98,14 @@ export default {
       formulirKACompleted: false,
       idProject: 0,
       projects: '',
+      urlPdf: '',
       loading: false,
       loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
       out: '',
       showDocument: false,
       downloadDocxPath: '',
+      project_title: '',
       // userInfo: {
       //   roles: [],
       // },
@@ -147,7 +166,7 @@ export default {
       this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
       this.projects = this.downloadDocxPath;
-      // this.projects = window.location.origin + `/${this.downloadDocxPath}`;
+      this.urlPdf = data.pdf_url;
       this.showDocument = true;
       this.loading = false;
       this.templateKALoaded = true;
@@ -202,17 +221,16 @@ export default {
   border-radius: 50%;
   border: 2px solid #099c4b;
 }
-.btn-docx {
+.btn-docx,
+.btn-pdf {
   padding: 10px 20px;
   font-size: 14px;
   border-radius: 4px;
   color: #ffffff;
-  background-color: #216221;
   display: inline-block;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  border: 1px solid #216221;
   -webkit-appearance: none;
   text-align: center;
   box-sizing: border-box;
@@ -220,5 +238,13 @@ export default {
   margin: 0;
   transition: 0.1s;
   font-weight: 400;
+}
+.btn-docx {
+  background-color: #216221;
+  border: 1px solid #216221;
+}
+.btn-pdf {
+  background-color: #ff4949;
+  border: 1px solid #ff4949;
 }
 </style>

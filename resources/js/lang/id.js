@@ -125,7 +125,8 @@ export default {
     confirmPassword: 'Konfirmasi Password',
     any: 'apa saja',
     thirdparty: 'Terhubung dengan',
-    thirdpartyTips: 'Tidak bisa disimulasikan di lokal, silahkan gabungkan dengan simulasi yang Anda miliki!',
+    thirdpartyTips:
+      'Tidak bisa disimulasikan di lokal, silahkan gabungkan dengan simulasi yang Anda miliki!',
     email: 'Surel',
     userType: 'Jenis User',
     registrationForm: 'Form Pendaftaran',
@@ -210,13 +211,18 @@ export default {
       'do announcement': 'lakukan pengumuman',
       'do assemble formulator': 'lakukan perakitan formulator',
       'do publish announcement': 'publikasikan pengumuman',
-      'do digital workspace - initial qualification form': 'lakukan ruang kerja digital - formulir kualifikasi awal',
-      'do digital workspace - RKL/RPL': 'melakukan ruang kerja digital - RKL/RPL',
+      'do digital workspace - initial qualification form':
+        'lakukan ruang kerja digital - formulir kualifikasi awal',
+      'do digital workspace - RKL/RPL':
+        'melakukan ruang kerja digital - RKL/RPL',
       'do digital workspace - ANDAL': 'melakukan ruang kerja digital - ANDAL',
       'do digital workspace - UKL/UPL': 'lakukan ruang kerja digital - UKL/UPL',
-      'do digital workspace - Examiner AMDAL': 'melakukan ruang kerja digital - Penguji AMDAL',
-      'do post check - Generate SK PKPLH': 'lakukan post check - Hasilkan SK PKPLH',
-      'do post check - Generate SK SKKL': 'lakukan post check - Hasilkan SK SKKL',
+      'do digital workspace - Examiner AMDAL':
+        'melakukan ruang kerja digital - Penguji AMDAL',
+      'do post check - Generate SK PKPLH':
+        'lakukan post check - Hasilkan SK PKPLH',
+      'do post check - Generate SK SKKL':
+        'lakukan post check - Hasilkan SK SKKL',
       'do post check - Push To OSS': 'lakukan pemeriksaan pos - Dorong Ke OSS',
       'view menu project pre submission': 'view menu kegiatan pra pengajuan',
       'view menu project post submission': 'view menu kegiatan pasca pengajuan',
@@ -248,7 +254,8 @@ export default {
       'do RKL/RPL environment set': 'lakukan pengaturan lingkungan RKL/RPL',
       'do RKL/RPL impact matrix': 'lakukan matriks dampak RKL/RPL',
       'do RKL/RPL potencial impact': 'melakukan dampak potensial RKL/RPL',
-      'do RKL/RPL hypothetical significance': 'melakukan signifikansi hipotetis RKL/RPL',
+      'do RKL/RPL hypothetical significance':
+        'melakukan signifikansi hipotetis RKL/RPL',
       'do RKL/RPL management': 'melakukan pengelolaan RKL/RPL',
       'do RKL/RPL monitoring': 'melakukan pemantauan RKL/RPL',
       'do UKL/UPL activities': 'melakukan kegiatan UKL/UPL',
@@ -272,20 +279,80 @@ export default {
       'create ka': 'buat kerangka acuan',
       'read ka': 'membaca kerangka acuan',
       'update ka': 'pembaruan kerangka acuan',
+      'view menu rona awal': 'view menu rona awal',
+      'manage rona awal': 'kelola rona awal',
+      'view menu tuk member list': 'view menu daftar anggota tuk',
+      'view menu materials and policies': 'view menu material dan kebijakan',
+      'view menu permission list': 'view menu daftar izin',
+      'view menu env approve': 'view menu persetujuan lingkungan',
+      'view menu ukl upl': 'view menu ukl upl',
+      'view menu sop management': 'view menu sop pengelolaan',
+      'view menu video tutorial': 'view menu video tutorial',
+      'manage tuk member list': 'kelola daftar anggota tuk',
+      'manage materials and policies': 'kelola materi dan kebijakan',
+      'manage permission list': 'kelola daftar izin',
+      'manage env approve': 'kelola persetujuan lingkunan',
+      'manage ukl upl': 'kelola ukl upl',
+      'manage sop management': 'kelola sop pengelolaan',
+      'manage video tutorial': 'kelola video tutorial',
+      'view menu tuk management': 'view menu manajemen tuk',
+      'manage tuk management': 'kelola manajemen tuk',
+      'view menu tuk profile': 'view menu profil tuk',
+      'view menu tuk project': 'view menu proyek tuk',
+      'manage tuk profile': 'kelola profil tuk',
+      'manage tuk project': 'kelola proyek tuk',
+      'view menu ka': 'view menu formulir ka',
+      'view menu ka document': 'view menu dokumen ka',
+      'view menu ka adm': 'view menu uji administrasi ka',
+      'view menu ka meeting invitation': 'view menu undangan rapat ka',
+      'view menu ka comment recapitulation':
+        'view menu rekapitulasi komentar ka',
+      'view menu ka meeting report': 'view menu berita acara ka',
+      'view menu andal': 'view menu andal',
+      'view menu rkl rpl': 'view menu rkl rpl',
+      'view menu andal rkl rpl document': 'view menu dokumen andal rkl rpl',
+      'view menu andal rkl rpl adm': 'view menu uji administrasi andal rkl rpl',
+      'view menu andal rkl rpl meeting invitation':
+        'view menu undangan rapat andal rkl rpl',
+      'view menu andal rkl rpl comment recapitulation':
+        'view menu rekapitulasi komentar andal rkl rpl',
+      'view menu andal rkl rpl meeting report':
+        'view menu berita acara andal rkl rpl',
+      'view menu feasibility test': 'view menu uji kelayakan',
+      'view menu feasibility test recommendation':
+        'view menu rekomendasi uji kelayakan',
+      'view menu skkl': 'view menu skkl',
+      'view menu ukl upl form': 'view menu formulir ukl upl',
+      'view menu ukl upl document': 'view menu dokumen ukl upl',
+      'view menu ukl upl adm': 'view menu uji administrasi ukl upl',
+      'view menu ukl upl meeting invitation':
+        'view menu undangan rapat ukl upl',
+      'view menu ukl upl meeting report': 'view menu berita acara ukl upl',
+      'view menu ukl upl feasibility test': 'view menu uji kelayakan ukl upl',
+      'view menu ukl upl feasibility test recommendation':
+        'view menu rekomendasi uji kelayakan ukl upl',
+      'view menu pkplh': 'view menu pkplh',
     },
   },
   guide: {
-    description: 'The guide page is useful for some people who entered the project for the first time. You can briefly introduce the features of the project. Demo is based on ',
+    description:
+      'The guide page is useful for some people who entered the project for the first time. You can briefly introduce the features of the project. Demo is based on ',
     button: 'Tampilkan Panduan',
   },
   components: {
     documentation: 'Dokumentasi',
-    tinymceTips: 'Rich text editor is a core part of management system, but at the same time is a place with lots of problems. In the process of selecting rich texts, I also walked a lot of detours. The common rich text editors in the market are basically used, and the finally chose Tinymce. See documentation for more detailed rich text editor comparisons and introductions.',
-    dropzoneTips: 'Because my business has special needs, and has to upload images to qiniu, so instead of a third party, I chose encapsulate it by myself. It is very simple, you can see the detail code in @/components/Dropzone.',
-    stickyTips: 'when the page is scrolled to the preset position will be sticky on the top.',
-    backToTopTips1: 'When the page is scrolled to the specified position, the Back to Top button appears in the lower right corner',
-    backToTopTips2: 'You can customize the style of the button, show / hide, height of appearance, height of the return. If you need a text prompt, you can use element-ui el-tooltip elements externally',
-    imageUploadTips: 'Since I was using only the vue@1 version, and it is not compatible with mockjs at the moment, I modified it myself, and if you are going to use it, it is better to use official version.',
+    tinymceTips:
+      'Rich text editor is a core part of management system, but at the same time is a place with lots of problems. In the process of selecting rich texts, I also walked a lot of detours. The common rich text editors in the market are basically used, and the finally chose Tinymce. See documentation for more detailed rich text editor comparisons and introductions.',
+    dropzoneTips:
+      'Because my business has special needs, and has to upload images to qiniu, so instead of a third party, I chose encapsulate it by myself. It is very simple, you can see the detail code in @/components/Dropzone.',
+    stickyTips:
+      'when the page is scrolled to the preset position will be sticky on the top.',
+    backToTopTips1:
+      'When the page is scrolled to the specified position, the Back to Top button appears in the lower right corner',
+    backToTopTips2:
+      'You can customize the style of the button, show / hide, height of appearance, height of the return. If you need a text prompt, you can use element-ui el-tooltip elements externally',
+    imageUploadTips:
+      'Since I was using only the vue@1 version, and it is not compatible with mockjs at the moment, I modified it myself, and if you are going to use it, it is better to use official version.',
   },
   table: {
     description: 'Deskripsi',
@@ -321,7 +388,8 @@ export default {
   getTree: 'Ambil Struktur Pohon',
   errorLog: {
     tips: 'Please click the bug icon in the upper right corner',
-    description: 'Now the management system are basically the form of the spa, it enhances the user experience, but it also increases the possibility of page problems, a small negligence may lead to the entire page deadlock. Fortunately Vue provides a way to catch handling exceptions, where you can handle errors or report exceptions.',
+    description:
+      'Now the management system are basically the form of the spa, it enhances the user experience, but it also increases the possibility of page problems, a small negligence may lead to the entire page deadlock. Fortunately Vue provides a way to catch handling exceptions, where you can handle errors or report exceptions.',
     documentation: 'Document introduction',
   },
   excel: {
@@ -355,11 +423,11 @@ export default {
     sidebarLogo: 'Sidebar Logo',
   },
   user: {
-    'role': 'Peran',
-    'password': 'Password',
-    'confirmPassword': 'Konfirmasi password',
-    'name': 'Nama',
-    'email': 'Surel',
+    role: 'Peran',
+    password: 'Password',
+    confirmPassword: 'Konfirmasi password',
+    name: 'Nama',
+    email: 'Surel',
   },
   roles: {
     title: {
@@ -392,19 +460,25 @@ export default {
     },
     description: {
       admin: 'Super Administrator. Memiliki akses ke semua halaman.',
-      manager: 'Manager. Memiliki akses hampir ke semua halaman kecuali perizinan.',
+      manager:
+        'Manager. Memiliki akses hampir ke semua halaman kecuali perizinan.',
       editor: 'Editor. Memiliki perizinan penuh untuk artikel.',
       user: 'Normal user. Memiliki akses ke sebagian halaman',
-      visitor: 'Visitor. Memiliki akses ke halaman static, tidak memiliki izin menulis data',
-      initiator: 'Pemrakarsa proyek / kegiatan, yang akan di lakukan pemeriksaan dampak lingkungannya',
+      visitor:
+        'Visitor. Memiliki akses ke halaman static, tidak memiliki izin menulis data',
+      initiator:
+        'Pemrakarsa proyek / kegiatan, yang akan di lakukan pemeriksaan dampak lingkungannya',
       formulator: 'Penyusun dokumen analisis dampak lingkungan',
-      institution: 'Lembaga Penyedia Jasa Penyusunan analisis dampak lingkungan',
+      institution:
+        'Lembaga Penyedia Jasa Penyusunan analisis dampak lingkungan',
       'admin-standard': 'Pusat Standardisasi Lingkungan dan Kehutanan',
       examiner: 'Penguji dalam pemeriksaan analisis dampak lingkungan',
       'examiner-institution': 'Lembaga Uji Kelayakan',
       'admin-system': 'Administrator system',
-      'admin-central': 'Administrator pusat Kementrian Lingkungan Hidup dan Kehutanan',
-      'admin-regional': 'Administrator daerah Kementrian Lingkungan Hidup dan Kehutanan',
+      'admin-central':
+        'Administrator pusat Kementrian Lingkungan Hidup dan Kehutanan',
+      'admin-regional':
+        'Administrator daerah Kementrian Lingkungan Hidup dan Kehutanan',
       public: 'Publik',
       'formulator-chief': 'Ketua Penyusun',
       'formulator-member': 'Anggota Penyusun',

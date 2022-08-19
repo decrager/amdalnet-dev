@@ -40,7 +40,7 @@
     <component-tidak-baku-dialog
       :show="showDialog"
       :component="component"
-      @close="showDialog = false"
+      @close="closeDialog"
     />
 
   </div>
@@ -232,6 +232,10 @@ export default {
       this.component = this.list.find(c => c.id === id);
       console.log(this.component);
       this.showDialog = true;
+    },
+    closeDialog(){
+      this.showDialog = false;
+      this.handleFilter();
     },
   },
 };
