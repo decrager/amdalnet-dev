@@ -44,7 +44,7 @@
                 name="current"
               />
               <span class="show-pwd" @click="showPwd('current')">
-                <svg-icon icon-class="eye" />
+                <svg-icon :icon-class="eyeIcon(passwordType.current)" />
               </span>
             </el-form-item>
             <el-form-item label="Masukkan Password Baru" prop="new">
@@ -54,7 +54,7 @@
                 name="new"
               />
               <span class="show-pwd" @click="showPwd('new')">
-                <svg-icon icon-class="eye" />
+                <svg-icon :icon-class="eyeIcon(passwordType.new)" />
               </span>
             </el-form-item>
             <el-form-item label="Konfirmasi Password Baru" prop="confirm">
@@ -64,7 +64,7 @@
                 name="confirm"
               />
               <span class="show-pwd" @click="showPwd('confirm')">
-                <svg-icon icon-class="eye" />
+                <svg-icon :icon-class="eyeIcon(passwordType.confirm)" />
               </span>
             </el-form-item>
             <el-form-item>
@@ -742,6 +742,13 @@ export default {
       } else {
         this.passwordType[pwdType] = 'password';
       }
+    },
+    eyeIcon(passType) {
+      if (passType === 'password') {
+        return 'eye';
+      }
+
+      return 'eye-open';
     },
   },
 };
