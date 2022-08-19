@@ -40,19 +40,32 @@
             <el-form-item label="Masukkan Password Lama" prop="current">
               <el-input
                 v-model="password.current"
-                type="password"
+                :type="passwordType.current"
                 name="current"
               />
+              <span class="show-pwd" @click="showPwd('current')">
+                <svg-icon icon-class="eye" />
+              </span>
             </el-form-item>
             <el-form-item label="Masukkan Password Baru" prop="new">
-              <el-input v-model="password.new" type="password" name="new" />
+              <el-input
+                v-model="password.new"
+                :type="passwordType.new"
+                name="new"
+              />
+              <span class="show-pwd" @click="showPwd('new')">
+                <svg-icon icon-class="eye" />
+              </span>
             </el-form-item>
             <el-form-item label="Konfirmasi Password Baru" prop="confirm">
               <el-input
                 v-model="password.confirm"
-                type="password"
+                :type="passwordType.confirm"
                 name="confirm"
               />
+              <span class="show-pwd" @click="showPwd('confirm')">
+                <svg-icon icon-class="eye" />
+              </span>
             </el-form-item>
             <el-form-item>
               <el-button
@@ -374,6 +387,11 @@ export default {
         current: null,
         new: null,
         confirm: null,
+      },
+      passwordType: {
+        current: 'password',
+        new: 'password',
+        confirm: 'password',
       },
       selectedExpertise: null,
       expertise: [
@@ -718,6 +736,13 @@ export default {
     download(url) {
       window.open(url, '_blank').focus();
     },
+    showPwd(pwdType) {
+      if (this.passwordType[pwdType] === 'password') {
+        this.passwordType[pwdType] = '';
+      } else {
+        this.passwordType[pwdType] = 'password';
+      }
+    },
   },
 };
 </script>
@@ -821,5 +846,14 @@ export default {
 }
 .upload-formulator-cert {
   margin-right: 1em;
+}
+.show-pwd {
+  position: absolute;
+  right: 10px;
+  top: 2.3em;
+  font-size: 16px;
+  color: #889aa4;
+  cursor: pointer;
+  user-select: none;
 }
 </style>
