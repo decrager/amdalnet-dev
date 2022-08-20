@@ -94,7 +94,7 @@ class UserController extends BaseController
             $password = Str::random(8);
             $user = User::create([
                 'name' => $params['name'],
-                'email' => $params['email'],
+                'email' => strtolower($params['email']),
                 'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($password),
                 'original_password' => isset($params['password']) ? $params['password'] : $password
             ]);
@@ -161,7 +161,7 @@ class UserController extends BaseController
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            $email = $request->get('email');
+            $email = $request->get('email') ? strtolower($request->get('email')) : $request->get('email');
 
             // chec if email already userd
             if($email != $user->email) {

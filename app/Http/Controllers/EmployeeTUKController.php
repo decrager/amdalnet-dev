@@ -114,14 +114,15 @@ class EmployeeTUKController extends Controller
         }
         
         DB::beginTransaction();
+        $request_email = $request->email ? strtolower($request->email) : $request->email;
 
-        $is_user_exist = User::where('email', $request->email)->count();
+        $is_user_exist = User::where('email', $request_email)->count();
         if($is_user_exist == 0) {
             $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
             $password = Str::random(8);
             $user = User::create([
                 'name' => ucfirst($request->name),
-                'email' => $request->email,
+                'email' => $request_email,
                 'password' => Hash::make($password),
                 'original_password' => $password
             ]);
@@ -139,9 +140,9 @@ class EmployeeTUKController extends Controller
             $employee_tuk = LukMember::findOrFail($request->idEmployee);
 
             // update user email
-            if($request->email) {
-                if($request->email != $employee_tuk->email) {
-                    $found = User::where('email', $request->email)->first();
+            if($request_email) {
+                if($request_email != $employee_tuk->email) {
+                    $found = User::where('email', $request_email)->first();
                     if($found) {
                         return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
                     } else {
@@ -149,7 +150,7 @@ class EmployeeTUKController extends Controller
                             $employee_tuk_user = User::where('email', $employee_tuk->email)->first();
                             if($employee_tuk_user) {
                                 $employee_tuk_user->name = $request->name;
-                                $employee_tuk_user->email = $request->email;
+                                $employee_tuk_user->email = $request_email;
                                 $employee_tuk_user->password = Hash::make($password);
                                 $employee_tuk_user->save();
                                 $email_changed_notif = $employee_tuk_user;
@@ -165,7 +166,7 @@ class EmployeeTUKController extends Controller
         $employee_tuk->nip = $request->nip;
         $employee_tuk->name = $request->name;
         $employee_tuk->institution = $request->institution;
-        $employee_tuk->email = $request->email;
+        $employee_tuk->email = $request_email;
         $employee_tuk->position = $request->position;
         $employee_tuk->phone = $request->phone;
         $employee_tuk->sex = $request->sex;
