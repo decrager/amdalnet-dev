@@ -57,21 +57,22 @@
         </el-row>
         <el-row type="flex" justify="space-between" style="margin-bottom: 20px">
           <el-radio-group v-model="user_type" @change="onChangeRadioUserType">
-            <!-- <el-radio disabled style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio> -->
-            <el-radio style="width: 350px" label="Pemerintah" border>Pemrakarsa Pemerintah</el-radio>
-            <el-radio style="width: 350px" label="Penyusun" border>Penyusun</el-radio>
+            <el-radio style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio>
+            <el-radio style="width: 250px" label="Pemerintah" border>Pemrakarsa Pemerintah</el-radio>
+            <el-radio style="width: 250px" label="Penyusun" border>Penyusun</el-radio>
           </el-radio-group>
         </el-row>
-        <!-- <el-row v-if="user_type === 'Pemrakarsa'">
+        <el-row v-if="user_type === 'Pemrakarsa'">
           <el-form ref="regPemrakarsa" :model="registrationForm" :rules="regPemrakarsaRules">
-            <el-row>
-              <el-col>
+            <el-row :gutter="24">
+              <el-col :span="12">
                 <el-form-item prop="nib" :label="$t('login.nib')">
-                  <el-input v-model="registrationForm.nib" name="nib" type="text" auto-complete="on" :placeholder="$t('login.nib')">
-                    <template slot="append">
-                      <el-button>Periksa NIB</el-button>
-                    </template>
-                  </el-input>
+                  <el-input v-model="registrationForm.nib" name="nib" type="text" :placeholder="$t('login.nib')" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Unggah Dokumen NIB dari OSS (Max 10MB)" prop="fileNibDocOss">
+                  <classic-upload :name="fileNibDocOssName" :fid="'nibDocOssFile'" @handleFileUpload="handleFilenibDocOssUpload($event)" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -216,7 +217,7 @@
               </el-col>
             </el-row>
           </el-form>
-        </el-row> -->
+        </el-row>
         <el-row v-if="user_type === 'Pemerintah'">
           <el-form ref="regPemerintah" :model="registrationForm" :rules="regPemerintahRules">
             <el-row :gutter="24">
@@ -574,6 +575,7 @@
 import { validEmail } from '@/utils/validate';
 import { csrf } from '@/api/auth';
 import Resource from '@/api/resource';
+import ClassicUpload from '@/components/ClassicUpload';
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const initiatorResource = new Resource('initiators');
@@ -583,7 +585,9 @@ const logo = require('@/assets/login/logo-amdal.png').default;
 
 export default {
   name: 'Login',
-  components: {},
+  components: {
+    ClassicUpload,
+  },
   data() {
     const validateEmail = (rule, value, callback) => {
       if (!validEmail(value)) {
@@ -598,6 +602,12 @@ export default {
       } else {
         callback();
       }
+    };
+    const validatefileNibDocOss = (rule, value, callback) => {
+      if (!this.registrationForm.fileNibDocOss){
+        callback(new Error('File Nib Document Oss Belum Diunggah'));
+      }
+      callback();
     };
     const validatePass = (rule, value, callback) => {
       if (value.length < 4) {
@@ -646,6 +656,7 @@ export default {
         address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
+        fileNibDocOss: [{ required: true, trigger: 'change', validator: validatefileNibDocOss }],
         password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
         nib: [{ required: true, trigger: 'blur', message: 'NIB Dibutuhkan' }],
         // phone: [{ required: true, trigger: 'blur', message: 'Silahkan Masukan Nomor Telepon Yang Benar' }],
@@ -728,6 +739,7 @@ export default {
       fileAgencyUploadName: '',
       imageUrl: null,
       certificateName: null,
+      fileNibDocOssName: 'No File Selected',
     };
   },
   watch: {
@@ -757,6 +769,13 @@ export default {
         this.$refs['regPenyusun'].resetFields();
       }
     },
+    checkCvFile() {
+      document.querySelector('#cvFile').click();
+    },
+    checkCvFileSure(e) {
+      this.cvFileName = e.target.files[0].name;
+      this.cvFileUpload = e.target.files[0];
+    },
     handleAgencyLogoUpload(file, filelist){
       this.imageUrl = URL.createObjectURL(file.raw);
 
@@ -767,6 +786,24 @@ export default {
 
       // this.fileAgencyUpload = e.target.files[0];
       this.registrationForm.fileAgencyUpload = file.raw;
+    },
+    handleFilenibDocOssUpload(e){
+      // reset validation
+      this.$refs['regPemrakarsa'].fields.find((f) => f.prop === 'fileNibDocOss').resetField();
+
+      if (e.target.files[0].size > 10485760){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
+      this.fileNibDocOss = e.target.files[0];
+      this.registrationForm.fileNibDocOss = e.target.files[0];
+      this.fileNibDocOssName = e.target.files[0].name;
     },
     handleCertificateUpload(file, filelist) {
       if (file.raw.size > 5242880) {
@@ -1228,7 +1265,7 @@ $textColor:#eee;
     grid-template-columns: auto 480px;
     transition: all .3s ease-in-out;
     transform: scale(1);
-    max-width: 782px;
+    max-width: 882px;
     .registration-form{
       width: 50vw;
       min-width: 360px;

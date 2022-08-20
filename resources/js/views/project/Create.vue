@@ -236,7 +236,8 @@
               </el-form-item>
             </el-row>
             <!-- Alamat -->
-            <el-row v-show="currentProject.isPemerintah === 'true'" type="flex" justify="end" :gutter="4">
+            <!-- <el-row v-show="currentProject.isPemerintah === 'true'" type="flex" justify="end" :gutter="4"> -->
+            <el-row type="flex" justify="end" :gutter="4">
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
                   <el-table :key="refresh" :data="currentProject.address" max-height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
@@ -319,6 +320,129 @@
                   Kembali
                 </el-button>
                 <el-button size="medium" type="primary" @click="handleStudyAccord">
+                  Lanjutkan
+                </el-button>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-collapse-item>
+        <el-collapse-item v-if="!currentProject.isPemerintah" title="PENENTUAN KEWENANGAN" name="8" disabled>
+          <el-form
+            ref="penentuanKewenanganMandiri"
+            :model="currentProject"
+            :rules="penentuanKewenanganMandiriRules"
+            label-position="top"
+            label-width="200px"
+            style="max-width: 100%"
+          >
+            <el-row :gutter="4">
+              <el-col :span="12">
+                <el-form-item
+                  label="Tingkat Resiko"
+                  prop="oss_risk"
+                >
+                  <el-select
+                    v-model="currentProject.oss_risk"
+                    placeholder="Pilih"
+                    style="width: 100%"
+                    size="medium"
+                  >
+                    <el-option
+                      v-for="item in ossRiskOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  label="Hasil Kewenangan dari OSS"
+                  prop="oss_authority"
+                >
+                  <el-select
+                    v-model="currentProject.oss_authority"
+                    placeholder="Pilih"
+                    style="width: 100%"
+                    size="medium"
+                  >
+                    <el-option
+                      v-for="item in ossAuthOptions"
+                      :key="item.value.id"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="4">
+              <el-col :span="12">
+                <el-form-item
+                  label="Rencana Usaha dan/atau Kegiatan Masuk Kawasan ?"
+                  prop="oss_area"
+                >
+                  <el-select
+                    v-model="currentProject.oss_area"
+                    placeholder="Pilih"
+                    style="width: 100%"
+                    size="medium"
+                  >
+                    <el-option
+                      v-for="item in ossAreaOptions"
+                      :key="item.value.id"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  label="Status Penanaman Modal"
+                  prop="oss_invest_status"
+                >
+                  <el-select
+                    v-model="currentProject.oss_invest_status"
+                    placeholder="Pilih"
+                    style="width: 100%"
+                    size="medium"
+                  >
+                    <el-option
+                      v-for="item in ossInvestmentOptions"
+                      :key="item.value.id"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="4">
+              <el-col :span="12">
+                <el-form-item label="" prop="fileOssReqDoc">
+                  <div slot="label">
+                    <span>Unggah Hasil Penapisan di OSS ? (PDF max 10MB)</span>
+                  </div>
+                  <classic-upload :name="fileOssReqDocName" :fid="'fileOssReqDoc'" @handleFileUpload="handlefileOssReqDocUpload" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="" prop="fileOssSpplDoc">
+                  <div slot="label">
+                    <span>Unggah Dokumen SPPL dari OSS ? (PDF max 10MB)</span>
+                  </div>
+                  <classic-upload :name="fileOssSpplDocName" :fid="'fileOssSpplDoc'" @handleFileUpload="handlefileOssSpplDocUpload" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row type="flex" justify="end">
+              <el-col :span="5">
+                <el-button size="medium" @click="activeName = '2'">
+                  Kembali
+                </el-button>
+                <el-button size="medium" type="primary" @click="goToStatusKegiatanMandiri">
                   Lanjutkan
                 </el-button>
               </el-col>
@@ -803,6 +927,70 @@ export default {
       fileMapName: 'No File Selected',
       filePdfName: 'No File Selected',
       filePreAgreementName: 'No File Selected',
+      fileOssReqDoc: null,
+      fileOssSpplDoc: null,
+      fileOssReqDocName: 'No File Selected',
+      fileOssSpplDocName: 'No File Selected',
+      ossRiskOptions: [
+        {
+          value: 'Rendah',
+          label: 'Rendah',
+        },
+        {
+          value: 'Menengah Rendah',
+          label: 'Menengah Rendah',
+        },
+        {
+          value: 'Menengah Tinggi',
+          label: 'Menengah Tinggi',
+        },
+        {
+          value: 'Tinggi',
+          label: 'Tinggi',
+        },
+      ],
+      ossAuthOptions: [
+        {
+          value: 'Kabupaten',
+          label: 'Kabupaten/Kota',
+        },
+        {
+          value: 'Provinsi',
+          label: 'Provinsi',
+        },
+        {
+          value: 'Pusat',
+          label: 'Pusat',
+        },
+      ],
+      ossAreaOptions: [
+        {
+          value: '00',
+          label: 'Kawasan Industri',
+        },
+        {
+          value: '01',
+          label: 'Kawasan Perdagangan Bebas dan Pelabuhan Bebas',
+        },
+        {
+          value: '02',
+          label: 'Kawasan Ekonomi Khusus',
+        },
+        {
+          value: '03',
+          label: 'Tidak Masuk dalam Kawasan',
+        },
+      ],
+      ossInvestmentOptions: [
+        {
+          value: 'Penanaman Modal Asing',
+          label: 'Penanaman Modal Asing',
+        },
+        {
+          value: 'Penanaman Modal Dalam Negeri',
+          label: 'Penanaman Modal Dalam Negeri',
+        },
+      ],
       studyApproachOptions: [
         {
           value: 'Terpadu',
@@ -932,6 +1120,20 @@ export default {
           { validator: validateAddress, trigger: 'blur' },
         ],
       },
+      penentuanKewenanganMandiriRules: {
+        oss_risk: [
+          { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
+        ],
+        oss_authority: [
+          { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
+        ],
+        oss_area: [
+          { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
+        ],
+        oss_invest_status: [
+          { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
+        ],
+      },
       penentuanKewenanganRules: {
         listKewenangan: [
           { validator: validateListKewenangan, trigger: 'blur' },
@@ -1049,18 +1251,22 @@ export default {
 
     // console.log(this.userInfo);
 
-    if (!this.$store.getters.isPemerintah && !this.$route.params.project) {
-      // console.log('masuk pak eko');
-      await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
+    // uncomment this for enabling oss -ossenabled
+    // if (!this.$store.getters.isPemerintah && !this.$route.params.project) {
+    //   // console.log('masuk pak eko');
+    //   await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
 
-      await this.getProjectsFromOss();
-    }
+    //   await this.getProjectsFromOss();
+    // }
+    // to here -ossenabled
 
-    // set is rencana kegiatan umk atau tidak
-    this.isUmk = this.$store.getters.ossByNib.flag_umk ? this.$store.getters.ossByNib.flag_umk !== 'N' : false;
+    // set is rencana kegiatan umk atau tidak -ossenabled
+    // this.isUmk = this.$store.getters.ossByNib.flag_umk ? this.$store.getters.ossByNib.flag_umk !== 'N' : false;
 
-    // set flag from oss
-    this.fromOss = !this.$store.getters.isPemerintah;
+    // set flag from oss -ossenabled
+    // new
+    // this.fromOss = !this.$store.getters.isPemerintah;
+    // old
     // this.fromOss = !!this.$store.getters.ossByNib.data_proyek;
 
     generateArcgisToken(this.token);
@@ -1123,7 +1329,9 @@ export default {
       }
     },
     getKewenangan(list){
-      let temp = this.getKewenanganOss(this.kewenanganOSS); // kabupaten
+      // -ossenabled
+      // let temp = this.getKewenanganOss(this.kewenanganOSS); // kabupaten
+      let temp = this.currentProject.oss_authority; // kabupaten
       // console.log('1', temp);
       const tempFile = this.currentProject.address[0].prov; // JAWA TENGAH
       // console.log('2', tempFile);
@@ -1152,6 +1360,7 @@ export default {
       return temp;
     },
     async calculateKewenanganAnomali(){
+      // console.log(this.currentProject);
       let kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
 
       // console.log(11, kewenanganTemp);
@@ -1176,12 +1385,12 @@ export default {
       }
 
       // if kewenangan KEK
-      if (this.jenisKawasanOSS === '02'){
+      if (this.currentProject.oss_area === '02'){
         kewenanganTemp = 'Pusat';
       }
       // console.log(16, kewenanganTemp);
 
-      if (this.kewenanganPMA && this.kewenanganPMA === '01'){
+      if (this.currentProject && this.currentProject.oss_invest_status === 'Penanaman Modal Asing'){
         kewenanganTemp = 'Pusat';
         // console.log(17, kewenanganTemp);
       }
@@ -1200,14 +1409,71 @@ export default {
         // console.log(18, kewenanganTemp);
       }
 
-      if (this.jenisKawasanOSS === '03'){
+      if (this.currentProject.oss_area === '03'){
         kewenanganTemp = 'Pusat';
         // console.log(19, kewenanganTemp);
       }
 
       this.currentProject.authority = kewenanganTemp;
-      // console.log(20, this.currentProject);
     },
+    // -ossenabled
+    // async calculateKewenanganAnomali(){
+    //   let kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
+
+    //   // console.log(11, kewenanganTemp);
+
+    //   // if kwenangan not pusat use authority from address project
+    //   if (kewenanganTemp !== 'Pusat' && this.currentProject.address.filter(e => e.isUsed).length > 1){
+    //     kewenanganTemp = this.currentProject.authority;
+    //   }
+    //   // console.log(12, kewenanganTemp);
+
+    //   const tempFile = this.currentProject.address.filter(e => e.isUsed)[0].prov;
+    //   const tempKabFile = this.currentProject.address.filter(e => e.isUsed)[0].district;
+    //   // console.log(13, { tempFile, tempKabFile });
+    //   if (kewenanganTemp === 'Provinsi'){
+    //     const authProv = await provinceResource.list({ provName: tempFile });
+    //     this.currentProject.auth_province = authProv.id;
+    //     // console.log(14, this.currentProject.auth_province);
+    //   } else if (kewenanganTemp === 'Kabupaten'){
+    //     const authDistrict = await districtResource.list({ districtName: tempKabFile });
+    //     this.currentProject.auth_district = authDistrict.id;
+    //     // console.log(15, this.currentProject.auth_district);
+    //   }
+
+    //   // if kewenangan KEK
+    //   if (this.jenisKawasanOSS === '02'){
+    //     kewenanganTemp = 'Pusat';
+    //   }
+    //   // console.log(16, kewenanganTemp);
+
+    //   if (this.kewenanganPMA && this.kewenanganPMA === '01'){
+    //     kewenanganTemp = 'Pusat';
+    //     // console.log(17, kewenanganTemp);
+    //   }
+
+    //   const listProvDist = this.currentProject.listSubProject.map(item => {
+    //     return { sector: item.sector, biz_type: item.biz_type };
+    //   });
+
+    //   const anomaliPBG = await authorityResource.list({ listSubProject: listProvDist });
+
+    //   // console.log(typeof anomaliPBG);
+
+    //   // if theres is anomali pbg skip kewenagan
+    //   if (anomaliPBG === 1){
+    //     kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
+    //     // console.log(18, kewenanganTemp);
+    //   }
+
+    //   if (this.jenisKawasanOSS === '03'){
+    //     kewenanganTemp = 'Pusat';
+    //     // console.log(19, kewenanganTemp);
+    //   }
+
+    //   this.currentProject.authority = kewenanganTemp;
+    //   // console.log(20, this.currentProject);
+    // },
     handlechecked(val){
       // console.log(val);
       this.currentProject.address.map(e => {
@@ -1291,6 +1557,17 @@ export default {
         }
       });
     },
+    async goToStatusKegiatanMandiri(){
+      this.$refs.penentuanKewenanganMandiri.validate(async(valid) => {
+        if (valid) {
+          await this.calculateKewenanganAnomali();
+          this.activeName = '3';
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
     async goToStatusKegiatanPemerintah(){
       this.$refs.penentuanKewenangan.validate((valid) => {
         if (valid) {
@@ -1345,8 +1622,10 @@ export default {
       if (this.currentProject.isPemerintah){
         this.activeName = '7';
       } else {
-        await this.calculateKewenanganAnomali();
-        this.activeName = '3';
+        // -ossenabled
+        // await this.calculateKewenanganAnomali();
+        // this.activeName = '3';
+        this.activeName = '8';
       }
       // this.$refs.pendekatanStudi.validate(async(valid) => {
       //   if (valid) {
@@ -1361,11 +1640,25 @@ export default {
     async handleBackStatusKegiatan(){
       delete this.currentProject.authority;
       await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
-      this.activeName = this.currentProject.isPemerintah ? '7' : '2';
+      // enabled oss
+      // this.activeName = this.currentProject.isPemerintah ? '7' : '2';
+      this.activeName = this.currentProject.isPemerintah ? '7' : '8';
     },
+    // -ossenabled
+    // goToJenisKegiatan(){
+    //   this.$refs.statusKegiatan.validate((valid) => {
+    //     if (valid) {
+    //       this.activeName = '4';
+    //     } else {
+    //       console.log('error submit!!');
+    //       return false;
+    //     }
+    //   });
+    // },
     goToJenisKegiatan(){
       this.$refs.statusKegiatan.validate((valid) => {
         if (valid) {
+          this.calculateKewenanganAnomali();
           this.activeName = '4';
         } else {
           console.log('error submit!!');
@@ -1591,6 +1884,46 @@ export default {
       this.filePreAgreement = e.target.files[0];
       this.filePreAgreementName = e.target.files[0].name;
       // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
+    },
+    handlefileOssReqDocUpload(e){
+      if (!e.target) {
+        return;
+      }
+
+      this.$refs['penentuanKewenanganMandiri'].fields.find((f) => f.prop === 'fileOssReqDoc')?.resetField();
+
+      if (e.target.files[0].size > 10485760){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
+      this.fileOssReqDoc = e.target.files[0];
+      this.fileOssReqDocName = e.target.files[0].name;
+    },
+    handlefileOssSpplDocUpload(e){
+      if (!e.target) {
+        return;
+      }
+
+      this.$refs['penentuanKewenanganMandiri'].fields.find((f) => f.prop === 'fileOssSpplDoc')?.resetField();
+
+      if (e.target.files[0].size > 10485760){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
+      this.fileOssSpplDoc = e.target.files[0];
+      this.fileOssSpplDocName = e.target.files[0].name;
     },
     handleFileTapakProyekPdfUpload(e){
       if (!e.target) {
@@ -1995,6 +2328,12 @@ export default {
       }
       if (this.filePreAgreement) {
         this.currentProject.filePreAgreement = this.filePreAgreement;
+      }
+      if (this.fileOssReqDoc) {
+        this.currentProject.fileOssReqDoc = this.fileOssReqDoc;
+      }
+      if (this.fileOssSpplDoc) {
+        this.currentProject.fileOssSpplDoc = this.fileOssSpplDoc;
       }
 
       // check if project in kawasan lindung without exception
