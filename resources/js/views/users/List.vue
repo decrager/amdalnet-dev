@@ -19,7 +19,7 @@
         <el-option
           v-for="item in roles"
           :key="item"
-          :label="item | uppercaseFirst"
+          :label="$t(`roles.title.${item}`) | uppercaseFirst"
           :value="item"
         />
       </el-select>
