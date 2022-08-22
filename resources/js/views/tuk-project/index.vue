@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-card>
+    <el-card v-if="checkRole(['examiner-secretary'])">
       <div class="filter-container">
         <el-row :gutter="32">
           <el-col :sm="24" :md="10">
@@ -33,11 +33,17 @@
         @pagination="handleFilter"
       />
     </el-card>
+    <el-card v-else>
+      <div style="text-align: center;">
+        <h3>Halaman Ini Diperuntukkan bagi Kepala Sekretariat TUK</h3>
+      </div>
+    </el-card>
   </div>
 </template>
 
 <script>
 import TukProjectTable from '@/views/tuk-project/components/TukProjectTable';
+import checkRole from '@/utils/role';
 import Pagination from '@/components/Pagination';
 import Resource from '@/api/resource';
 const tukProjectResource = new Resource('tuk-project');
@@ -65,10 +71,15 @@ export default {
     this.getData();
   },
   methods: {
+    checkRole,
     handleFilter() {
       this.getData();
     },
     async getData() {
+      if (!this.checkRole(['examiner-secretary'])) {
+        return false;
+      }
+
       this.loading = true;
       const { data, total } = await tukProjectResource.list(this.listQuery);
       this.list = data.map((x) => {

@@ -478,6 +478,7 @@
       <AnnouncementDialog
         :announcement="announcement"
         :show="show"
+        :loading="loadingAnnouncement"
         @handleSubmitAnnouncement="handleSubmitAnnouncement($event)"
         @handleCancelAnnouncement="show = false"
       />
@@ -527,6 +528,7 @@ export default {
   data() {
     return {
       loading: true,
+      loadingAnnouncement: false,
       addLoading: false,
       searchString: '',
       sectionHeader: 'list-penapisan',
@@ -888,6 +890,7 @@ export default {
       );
     },
     handleSubmitAnnouncement(fileProof){
+      this.loadingAnnouncement = true;
       // make form data because we got file
       const formData = new FormData();
 
@@ -910,10 +913,12 @@ export default {
           });
           this.getFiltered(this.listQuery);
           this.announcement = {};
+          this.loadingAnnouncement = false;
           this.show = false;
         })
         .catch((error) => {
           console.log(error);
+          this.loadingAnnouncement = false;
         });
     },
     handleCancelAnnouncement(){

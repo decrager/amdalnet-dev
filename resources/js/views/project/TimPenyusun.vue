@@ -513,7 +513,7 @@ export default {
       this.membersAhli = oldData.filter((old) => old.num !== num);
     },
     handleUploadSk(file, filelist) {
-      if (file.raw.size > 1048576) {
+      if (file.raw.size > 2097152) {
         this.showFileAlert();
         return;
       }
@@ -522,7 +522,7 @@ export default {
       this.sk.name = file.name;
     },
     showFileAlert() {
-      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+      this.$alert('Ukuran file tidak boleh lebih dari 2 MB', '', {
         center: true,
       });
     },

@@ -836,7 +836,7 @@ class TUKManagementController extends Controller
             'id_province' => 'required',
             'id_district' => 'required',
             'address' => 'required',
-            'cv' => 'max:1024'
+            'cv' => 'max:10240'
         ],[
             'status.required' => 'Status Wajib Dipilih',
             'nik.required' => 'NIK Wajib Diisi',
@@ -851,7 +851,7 @@ class TUKManagementController extends Controller
             'id_province.required' => 'Provinsi Wajib Dipilih',
             'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
             'address.required' => 'Alamat Wajib Diisi',
-            'cv.max' => 'Ukuran file tidak boleh melebihi 1 MB'
+            'cv.max' => 'Ukuran file tidak boleh melebihi 10 MB'
         ]);
 
         return $validator;
@@ -870,7 +870,7 @@ class TUKManagementController extends Controller
             'id_province' => 'required',
             'id_district' => 'required',
             'address' => 'required',
-            'cv' => 'max:1024'
+            'cv' => 'max:10240'
         ],[
             'status.required' => 'Status Wajib Dipilih',
             'nik.required' => 'NIK Wajib Diisi',
@@ -885,7 +885,7 @@ class TUKManagementController extends Controller
             'id_province.required' => 'Provinsi Wajib Dipilih',
             'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
             'address.required' => 'Alamat Wajib Diisi',
-            'cv.max' => 'Ukuran file tidak boleh melebihi 1 MB'
+            'cv.max' => 'Ukuran file tidak boleh melebihi 10 MB'
         ]);
 
         return $validator;
