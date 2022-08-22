@@ -214,19 +214,19 @@
     >
       <span> Lanjutkan publish Pengumuman untuk Rencana Usaha dan/atau Kegiatan <b>{{ announcement.type }}</b>? </span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="confirmPublishDialog = false">Batal</el-button>
-        <el-button type="primary" @click="handleSubmitAnnouncement()">Iya, Publish</el-button>
+        <el-button :loading="loading" @click="confirmPublishDialog = false">Batal</el-button>
+        <el-button :loading="loading" type="primary" @click="handleSubmitAnnouncement()">Iya, Publish</el-button>
       </span>
     </el-dialog>
 
     <div slot="footer" class="dialog-footer">
       <el-row>
         <el-col :span="12" style="text-align: left;">
-          <el-button type="error" @click="handleCancelAnnouncement()"> Batal </el-button>
-          <el-button type="primary" plain @click="handleSaveAnnouncement()"> Simpan </el-button>
+          <el-button :loading="loading" type="error" @click="handleCancelAnnouncement()"> Batal </el-button>
+          <el-button :loading="loading" type="primary" plain @click="handleSaveAnnouncement()"> Simpan </el-button>
         </el-col>
         <el-col :span="12">
-          <el-button type="primary" @click="doConfirmPublish"> Publish </el-button>
+          <el-button :loading="loading" type="primary" @click="doConfirmPublish"> Publish </el-button>
         </el-col>
       </el-row>
     </div>
@@ -242,6 +242,10 @@ export default {
       default: () => {},
     },
     show: Boolean,
+    loading: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   data(){
     return {
