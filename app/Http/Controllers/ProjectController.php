@@ -217,7 +217,7 @@ class ProjectController extends Controller
             ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
             ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
             ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
-            ->distinct(['projects.id'])
+            // ->distinct(['projects.id'])
             // ->groupBy('projects.id', 'projects.id_project', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
             ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
     }
