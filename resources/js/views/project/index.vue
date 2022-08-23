@@ -449,7 +449,7 @@
               @change="onTukFilter"
             >
               <el-option
-                v-for="item in [{text: 'PJM', value: 'pjm'}, {text: 'Substansi', value: 'valsub'}, {text: 'Administrasi', value: 'administrasi'}, {text: 'Pengujian', value: 'pengujian'}]"
+                v-for="item in [{text: 'PJM', value: 'pjm'}, {text: 'Substansi', value: 'valsub'}, {text: 'Administrasi', value: 'valadm'}, {text: 'Pengujian', value: 'pengujian'}]"
                 :key="item.value"
                 :label="item.text"
                 :value="item.value"
