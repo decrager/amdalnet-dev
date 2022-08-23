@@ -13,6 +13,8 @@
         <el-col :sm="24" :md="12">
           <h4>Dokumen Persetujuan Lingkungan</h4>
           <DokumenPersetujuan />
+          <h4>Dokumen Persetujuan Lingkungan Final</h4>
+          <PkplhFinal />
         </el-col>
       </el-row>
       <el-row :gutter="32">
@@ -30,6 +32,7 @@
 <script>
 import Information from '@/views/skkl/components/Information';
 import DokumenPersetujuan from '@/views/pkplh/components/DokumenPersetujuan';
+import PkplhFinal from '@/views/pkplh/components/PkplhFinal';
 import WorkflowUkl from '@/components/WorkflowUkl';
 
 import axios from 'axios';
@@ -47,6 +50,7 @@ export default {
   components: {
     Information,
     DokumenPersetujuan,
+    PkplhFinal,
     WorkflowUkl,
   },
   data() {
