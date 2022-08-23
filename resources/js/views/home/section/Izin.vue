@@ -31,95 +31,97 @@
         </el-col>
       </el-row>
       <!-- <template v-if="allData.length > 0"> -->
-      <el-row
-        :gutter="20"
-        class="bb bg-custom"
-        style="display: flex; align-items: center"
-      >
-        <el-col :span="2" class="text-center py1">
-          <div class="d-flex align-items-center justify-align-center">
-            <span class="fz12 white fw">No</span>
-          </div>
-        </el-col>
-        <el-col :span="4" class="py1 cp">
-          <div class="d-flex align-items-center" @click="handleSort(sort)">
-            <span class="fz12 white fw">Nama Pemrakarsa Usaha/Kegiatan</span>
-            <i class="el-icon-d-caret white fz12 ml-0-3" />
-          </div>
-        </el-col>
-        <el-col :span="5" class="text-center py1 cp">
-          <div
-            class="d-flex align-items-center justify-align-start"
-            @click="handleSort(sort)"
-          >
-            <span class="fz12 white fw">
-              Nama Usaha/Kegiatan (SKKL/Izin Lingkungan)
-            </span>
-            <i class="el-icon-d-caret white fz12 ml-0-3" />
-          </div>
-        </el-col>
-        <el-col :span="4" class="text-center py1 cp">
-          <div
-            class="d-flex align-items-center justify-align-start"
-            @click="handleSort(sort)"
-          >
-            <span class="fz12 white fw">Nomor SK</span>
-            <i class="el-icon-d-caret white fz12 ml-0-3" />
-          </div>
-        </el-col>
-        <el-col :span="4" class="text-center py1">
-          <div class="d-flex align-items-center justify-align-start">
-            <span class="fz12 white fw">Tanggal Berlaku SK</span>
-          </div>
-        </el-col>
-        <el-col :span="3" class="text-center py1">
-          <div class="d-flex align-items-center justify-align-start">
-            <span class="fz12 white fw">Penerbit SK</span>
-          </div>
-        </el-col>
-        <el-col :span="2" class="text-center py1">
-          <div class="d-flex align-items-center justify-align-center">
-            <span class="fz12 white fw">File</span>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row
-        v-for="(ijin, index) in allData"
-        :key="ijin.id"
-        :gutter="20"
-        style="display: flex; align-items: center"
-        class="bb bg-custom tb-hover"
-      >
-        <el-col :span="2" class="text-center py">
-          <span class="fz12 white fw">{{ index + 1 }}</span>
-        </el-col>
-        <el-col :span="4" class="py">
-          <span class="fz12 white">{{ ijin.pemarkasa_name }}</span>
-        </el-col>
-        <el-col :span="5" class="py">
-          <span class="fz12 white">{{ ijin.kegiatan_name }}</span>
-        </el-col>
-        <el-col :span="4" class="py">
-          <span class="fz12 white">{{ ijin.sk_number }}</span>
-        </el-col>
-        <el-col :span="4" class="py1">
-          <span class="fz12 white">{{ formatDateStr(ijin.date) }}</span>
-        </el-col>
-        <el-col :span="3" class="py1">
-          <span class="fz12 white">{{ ijin.publisher }}</span>
-        </el-col>
-        <el-col :span="2" class="py text-center">
-          <a
-            :href="ijin.file"
-            target="_blank"
-            class="fz9 white cl-blue buttonDownload"
-            download
-          >
-            <i class="el-icon-download" /> Download
-          </a>
-          -
-        </el-col>
-      </el-row>
+      <div v-loading="loading">
+        <el-row
+          :gutter="20"
+          class="bb bg-custom"
+          style="display: flex; align-items: center"
+        >
+          <el-col :span="2" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-center">
+              <span class="fz12 white fw">No</span>
+            </div>
+          </el-col>
+          <el-col :span="4" class="py1 cp">
+            <div class="d-flex align-items-center" @click="handleSort(sort)">
+              <span class="fz12 white fw">Nama Pemrakarsa Usaha/Kegiatan</span>
+              <i class="el-icon-d-caret white fz12 ml-0-3" />
+            </div>
+          </el-col>
+          <el-col :span="5" class="text-center py1 cp">
+            <div
+              class="d-flex align-items-center justify-align-start"
+              @click="handleSort(sort)"
+            >
+              <span class="fz12 white fw">
+                Nama Usaha/Kegiatan (SKKL/Izin Lingkungan)
+              </span>
+              <i class="el-icon-d-caret white fz12 ml-0-3" />
+            </div>
+          </el-col>
+          <el-col :span="4" class="text-center py1 cp">
+            <div
+              class="d-flex align-items-center justify-align-start"
+              @click="handleSort(sort)"
+            >
+              <span class="fz12 white fw">Nomor SK</span>
+              <i class="el-icon-d-caret white fz12 ml-0-3" />
+            </div>
+          </el-col>
+          <el-col :span="4" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-start">
+              <span class="fz12 white fw">Tanggal Berlaku SK</span>
+            </div>
+          </el-col>
+          <el-col :span="3" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-start">
+              <span class="fz12 white fw">Penerbit SK</span>
+            </div>
+          </el-col>
+          <el-col :span="2" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-center">
+              <span class="fz12 white fw">File</span>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row
+          v-for="(ijin, index) in allData"
+          :key="ijin.id"
+          :gutter="20"
+          style="display: flex; align-items: center"
+          class="bb bg-custom tb-hover"
+        >
+          <el-col :span="2" class="text-center py">
+            <span class="fz12 white fw">{{ index + 1 + listQuery.page * listQuery.limit - listQuery.limit }}</span>
+          </el-col>
+          <el-col :span="4" class="py">
+            <span class="fz12 white">{{ ijin.pemarkasa_name }}</span>
+          </el-col>
+          <el-col :span="5" class="py">
+            <span class="fz12 white">{{ ijin.kegiatan_name }}</span>
+          </el-col>
+          <el-col :span="4" class="py">
+            <span class="fz12 white">{{ ijin.sk_number }}</span>
+          </el-col>
+          <el-col :span="4" class="py1">
+            <span class="fz12 white">{{ formatDateStr(ijin.date) }}</span>
+          </el-col>
+          <el-col :span="3" class="py1">
+            <span class="fz12 white">{{ ijin.publisher }}</span>
+          </el-col>
+          <el-col :span="2" class="py text-center">
+            <a
+              :href="ijin.file"
+              target="_blank"
+              class="fz9 white cl-blue buttonDownload"
+              download
+            >
+              <i class="el-icon-download" /> Download
+            </a>
+            -
+          </el-col>
+        </el-row>
+      </div>
       <div class="block" style="text-align: right">
         <pagination
           v-show="total > 0"
@@ -161,6 +163,7 @@ export default {
       search: '',
       allData: [],
       regulations: [],
+      loading: false,
       total: 0,
       listQuery: {
         page: 1,
@@ -214,13 +217,18 @@ export default {
       return finalDate;
     },
     getAll(search, sort) {
+      this.loading = true;
       axios
         .get(
-          `/api/environmental-permit?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}`
+          `/api/environmental-permit?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.listQuery.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
           this.total = response.data.total;
+          this.loading = false;
+        // eslint-disable-next-line handle-callback-err
+        }).catch((err) => {
+          this.loading = false;
         });
     },
     handleSearch() {
