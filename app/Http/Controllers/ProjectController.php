@@ -110,7 +110,7 @@ class ProjectController extends Controller
                 ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
                 ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
                 ->leftJoin('workflow_states', 'workflow_states.state', '=' , 'projects.marking')
-                ->distinct(['projects.id'])
+                // ->distinct(['projects.id'])
                 ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'workflow_states.public_tracking')
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
