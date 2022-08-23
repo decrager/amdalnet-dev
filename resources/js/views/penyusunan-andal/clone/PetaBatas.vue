@@ -235,7 +235,7 @@ export default {
       });
       this.$parent.mapView = mapView;
 
-      axios.get(`api/map-geojson?id=${this.idProject}&step=andal`)
+      axios.get(`api/map-geojson?id=${this.idProject}&step=ka`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
@@ -355,7 +355,7 @@ export default {
       this.data = [];
       const files = await uploadMaps.list({
         id_project: this.idProject,
-        step: 'andal',
+        step: 'ka',
       });
       this.data = files.data;
       this.process(files.data);
@@ -397,7 +397,7 @@ export default {
     handleSubmit(){
       const formData = new FormData();
       formData.append('id_project', this.idProject);
-      formData.append('step', 'andal');
+      // formData.append('step', 'andal');
 
       this.files.forEach((e, i) => {
         formData.append('files[]', e[0]);
@@ -814,7 +814,7 @@ export default {
 
       // Map Tapak
       const projId = this.$route.params && this.$route.params.id;
-      axios.get(`api/map-geojson?id=${projId}&type=tapak&step=andal&limit=1`)
+      axios.get(`api/map-geojson?id=${projId}&type=tapak&step=ka&limit=1`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);

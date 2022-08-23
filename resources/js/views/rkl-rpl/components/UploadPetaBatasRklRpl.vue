@@ -235,7 +235,7 @@ export default {
           });
         });
 
-      axios.get(`api/map-geojson?id=${this.idProject}&step=andal`)
+      axios.get(`api/map-geojson?id=${this.idProject}&step=ka`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
