@@ -32,7 +32,7 @@ class EnvironmentalPermitController extends Controller
                 })->orWhere(function($query) use($request) {
                     $query->whereRaw("LOWER(sk_number) LIKE '%" . strtolower($request->search) . "%'");
                 });
-            })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+            })->orderby($request->orderBy ?? 'date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
     
             return response()->json($environmentalPermit, 200);
         } else {
@@ -47,7 +47,7 @@ class EnvironmentalPermitController extends Controller
                     return $indents;
                 }
     
-            })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+            })->orderby($request->orderBy ?? 'date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
     
             return response()->json($environmentalPermit, 200);
         }

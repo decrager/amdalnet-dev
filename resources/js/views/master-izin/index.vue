@@ -74,6 +74,7 @@ export default {
       timeoutId: null,
       optionValue: null,
       sort: 'DESC',
+      orderBy: 'id',
     };
   },
   created() {
@@ -89,7 +90,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/environmental-permit?page=${this.listQuery.page}&sort=${this.sort}&search=${this.listQuery.search}`
+          `/api/environmental-permit?page=${this.listQuery.page}&sort=${this.sort}&search=${this.listQuery.search}&orderBy=${this.orderBy}`
         )
         .then((response) => {
           this.allData = response.data.data.map((x) => {
@@ -170,6 +171,8 @@ export default {
       }, 500);
     },
     async handleSearch() {
+      this.sort = 'desc';
+      this.orderBy = 'id';
       this.listQuery.page = 1;
       this.listQuery.limit = 10;
       await this.getAll();
