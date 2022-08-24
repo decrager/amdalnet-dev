@@ -326,7 +326,7 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc === 'UKL-UPL' && scope.row.result_risk === 'Menengah Rendah'"
+                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc === 'UKL-UPL' && scope.row.result_risk === 'Menengah Rendah' && !isPemerintah"
                   href="#"
                   type="text"
                   icon="el-icon-document"
