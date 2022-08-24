@@ -148,11 +148,11 @@ export default {
     if (initiators.data.length === 0) {
       this.isPemerintah = true;
     }
-    await this.$store.dispatch('getInitiator', this.userInfo.email);
+    this.getData();
+    // await this.$store.dispatch('getInitiator', this.userInfo.email);
     // if (this.$store.getters.isPemerintah){
     //   this.isPemerintah = true;
     // }
-    this.getData();
   },
   methods: {
     async getData() {
@@ -169,6 +169,7 @@ export default {
       const skklFinals = await skklFinalResource.list({
         id_project: this.idProject,
       });
+      console.log(skklFinals);
       this.loading = false;
       this.disableEdit = true;
       if (this.isExaminer || this.isAdmin) {

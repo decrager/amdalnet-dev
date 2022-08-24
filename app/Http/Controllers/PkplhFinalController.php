@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Entity\Project;
 use App\Entity\ProjectPkplhFinal;
 use App\Services\OssService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class PkplhFinalController extends Controller
@@ -19,6 +21,8 @@ class PkplhFinalController extends Controller
         if ($request->id_project) {
             $pkplhFinal = ProjectPkplhFinal::where('id_project', $request->id_project)->first();
             if ($pkplhFinal) {
+                $filename = $pkplhFinal->file;
+                $pkplhFinal->file = Storage::temporaryUrl('public/' . $filename, Carbon::now()->addMinutes(30));
                 return [$pkplhFinal];
             }
             return [];
@@ -49,10 +53,13 @@ class PkplhFinalController extends Controller
             //create file
             $file_name = $project->project_title .' - ' . $project->initiator->name . ' - final';
             $file = $request->file('pkplh_final');
-            $name = 'pkplh/' . $file_name . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
+            $name = 'pkplh_final/' . $file_name . '.' . $file->extension();
+            // $file->storePubliclyAs('public', $name);
+            if (!Storage::disk('public')->exists('pkplh_final')) {
+                Storage::disk('public')->makeDirectory('pkplh_final');
+            }
+            $fileCreated = Storage::disk('public')->put($name, $file);
 
-            //create environmental expert  
             $pkplh = ProjectPkplhFinal::where('id_project', $data['id_project'])->first();
             $sendLicenseStatus = false;
 
@@ -68,13 +75,13 @@ class PkplhFinalController extends Controller
             $pkplh->file = $name;
             $saved = $pkplh->save();
 
-            if ($saved) {
+            if ($saved && $fileCreated) {
                 if ($sendLicenseStatus) {
                     OssService::receiveLicenseStatus($project, '50');
                 }
                 return response()->json(['code' => 200, 'data' => $pkplh]);
             }
-            return response()->json(['code' => 500]);
+            return response()->json(['code' => 500, 'fileCreated' => $fileCreated]);
         }
     }
 
