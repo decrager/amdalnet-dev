@@ -59,7 +59,7 @@
             </a>
             <ul v-if="isActiveDaftar" class="left0 top4">
               <li>
-                <a href="#" @click="handleSetMenu('IZIN')">Daftar Izin</a>
+                <a href="#" @click="handleSetMenu('IZIN')">Daftar Persetujuan Lingkungan</a>
               </li>
               <!-- <li>
                 <a href="">Statistik Izin</a>

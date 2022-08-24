@@ -3,7 +3,7 @@
     <div class="container">
       <el-row>
         <el-col :span="24">
-          <h2 class="fw white mb-1-5">Data Izin AMDALNET</h2>
+          <h2 class="fw white mb-1-5">Daftar Persetujuan Lingkungan</h2>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="mb-1">
@@ -43,7 +43,7 @@
             </div>
           </el-col>
           <el-col :span="4" class="py1 cp">
-            <div class="d-flex align-items-center" @click="handleSort(sort)">
+            <div class="d-flex align-items-center" @click="handleSort('pemarkasa_name')">
               <span class="fz12 white fw">Nama Pemrakarsa Usaha/Kegiatan</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
@@ -51,7 +51,7 @@
           <el-col :span="5" class="text-center py1 cp">
             <div
               class="d-flex align-items-center justify-align-start"
-              @click="handleSort(sort)"
+              @click="handleSort('kegiatan_name')"
             >
               <span class="fz12 white fw">
                 Nama Usaha/Kegiatan (SKKL/Izin Lingkungan)
@@ -62,7 +62,7 @@
           <el-col :span="4" class="text-center py1 cp">
             <div
               class="d-flex align-items-center justify-align-start"
-              @click="handleSort(sort)"
+              @click="handleSort('sk_number')"
             >
               <span class="fz12 white fw">Nomor SK</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
@@ -111,6 +111,7 @@
           </el-col>
           <el-col :span="2" class="py text-center">
             <a
+              v-if="ijin.file"
               :href="ijin.file"
               target="_blank"
               class="fz9 white cl-blue buttonDownload"
@@ -118,7 +119,7 @@
             >
               <i class="el-icon-download" /> Download
             </a>
-            -
+            <span v-else>-</span>
           </el-col>
         </el-row>
       </div>
@@ -171,7 +172,8 @@ export default {
       },
       keyword: '',
       optionValue: null,
-      sort: 'ASC',
+      sort: 'DESC',
+      orderBy: 'date',
       tableData: [
         {
           name: 'Semua',
@@ -220,7 +222,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/environmental-permit?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.listQuery.limit}`
+          `/api/environmental-permit?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.listQuery.limit}&orderBy=${this.orderBy}`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -231,10 +233,14 @@ export default {
           this.loading = false;
         });
     },
-    handleSearch() {
-      this.getAll(this.keyword);
+    async handleSearch() {
+      this.orderBy = 'date';
+      this.sort = 'desc';
+      await this.getAll(this.keyword);
     },
     handleFilter() {
+      this.orderBy = 'date';
+      this.sort = 'desc';
       axios
         .get(
           `/api/environmental-permit?keyword=${
@@ -246,7 +252,8 @@ export default {
           this.total = response.data.total;
         });
     },
-    handleSort() {
+    handleSort(val) {
+      this.orderBy = val;
       if (this.sort === 'ASC') {
         this.sort = 'DESC';
       } else {
