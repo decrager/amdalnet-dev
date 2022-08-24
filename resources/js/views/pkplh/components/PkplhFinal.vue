@@ -101,6 +101,7 @@ import Resource from '@/api/resource';
 import { mapGetters } from 'vuex';
 const pkplhFinalResource = new Resource('pkplh-final');
 const skklResource = new Resource('skkl');
+const initiatorResource = new Resource('initiators');
 
 export default {
   name: 'PkplhFinal',
@@ -121,25 +122,36 @@ export default {
         date_published: null,
       },
       isPemerintah: false,
+      isExaminer: false,
+      isAdmin: false,
     };
   },
   computed: {
-    isExaminer() {
-      return (this.$store.getters.roles[0].split('-')[0] === 'examiner');
-    },
-    isAdmin() {
-      return (this.$store.getters.roles[0].split('-')[0] === 'admin');
-    },
     ...mapGetters({
       'userInfo': 'user',
       'userId': 'userId',
     }),
   },
   async created() {
-    await this.$store.dispatch('getInitiator', this.userInfo.email);
-    if (this.$store.getters.isPemerintah){
+    if (this.$store.getters.roles[0].split('-')[0] === 'examiner'){
+      this.isExaminer = true;
+    }
+    if (this.$store.getters.roles[0].split('-')[0] === 'admin'){
+      this.isAdmin = true;
+    }
+    if (this.isExaminer || this.isAdmin) {
+      this.disableEdit = false;
+    }
+    const initiators = await initiatorResource.list({
+      email: this.userInfo.email,
+    });
+    if (initiators.data.length === 0) {
       this.isPemerintah = true;
     }
+    await this.$store.dispatch('getInitiator', this.userInfo.email);
+    // if (this.$store.getters.isPemerintah){
+    //   this.isPemerintah = true;
+    // }
     this.getData();
   },
   methods: {
@@ -160,9 +172,6 @@ export default {
       });
       this.loading = false;
       this.disableEdit = true;
-      if (this.isExaminer || this.isAdmin) {
-        this.disableEdit = false;
-      }
 
       if (pkplhFinals.length > 0) {
         const pkplhFinal = pkplhFinals[0];
