@@ -384,6 +384,12 @@ export default {
       const data = await employeeTukResource.store(formData);
       if (data.errors) {
         this.errors = data.errors;
+      } else if (data.errors_alert) {
+        this.$message({
+          message: data.errors_alert,
+          type: 'error',
+          duration: 5 * 1000,
+        });
       } else {
         this.$message({
           message: 'Data berhasil disimpan',

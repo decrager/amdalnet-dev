@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-self-closing -->
 <template>
   <div class="app-container" style="padding: 24px">
     <form enctype="multipart/form-data" @submit.prevent="saveIjinLingkungan">
@@ -54,6 +55,24 @@
               </el-form>
               <el-form>
                 <el-row>
+                  <el-form-item label="Jenis Dokumen Lingkungan">
+                    <el-select
+                      v-model="form.document_type"
+                      placeholder="Pilih Jenis Dokumen Lingkungan"
+                      style="width: 100%"
+                    >
+                      <el-option
+                        v-for="(document, idx) in document_type"
+                        :key="idx"
+                        :label="document.val"
+                        :value="document.val"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
                   <el-form-item label="Nomor SK">
                     <el-input
                       v-model="form.sk_number"
@@ -95,12 +114,14 @@
                       type="file"
                       class="el-input__inner"
                       @change="handleFileUpload()"
-                    >
+                    />
                   </el-form-item>
                 </el-row>
               </el-form>
               <div class="" style="margin-top: 0.5rem; text-align: right">
-                <el-button type="danger" @click="handleCancel">Kembali</el-button>
+                <el-button type="danger" @click="handleCancel">
+                  Kembali
+                </el-button>
                 <el-button
                   type="primary"
                   icon="el-icon-s-claim"
@@ -134,6 +155,23 @@ export default {
         publisher: '',
       },
       file: '',
+      document_type: [
+        {
+          val: 'Amdal',
+        },
+        {
+          val: 'UKL-UPL',
+        },
+        {
+          val: 'DELH',
+        },
+        {
+          val: 'DPLH',
+        },
+        {
+          val: 'Perubahan PL',
+        },
+      ],
       kewenangan: [
         { name: 'pusat' },
         { name: 'provinsi' },
@@ -155,6 +193,9 @@ export default {
       formData.append('sk_number', this.form.sk_number);
       formData.append('date', this.form.date);
       formData.append('publisher', this.form.publisher);
+      if (this.form.document_type) {
+        formData.append('document_type', this.form.document_type);
+      }
 
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios

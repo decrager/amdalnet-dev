@@ -94,7 +94,7 @@ export default {
         )
         .then((response) => {
           this.allData = response.data.data.map((x) => {
-            x.date = this.formatDateStr(x.date);
+            x.date_format = this.formatDateStr(x.date);
             return x;
           });
           this.total = response.data.total;

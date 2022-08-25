@@ -80,6 +80,7 @@ class EnvironmentalPermitController extends Controller
                 'sk_number'         => 'required',
                 'date'              => 'required',
                 'publisher'         => 'required',
+                'document_type'     => 'required',
             ]
         );
 
@@ -107,6 +108,7 @@ class EnvironmentalPermitController extends Controller
             $permit->date = $params['date'];
             $permit->publisher = $params['publisher'];
             $permit->file = $name;
+            $permit->document_type = $params['document_type'];
             $permit->save();
 
             return new EnvironmentalExpertResource($permit);
@@ -153,6 +155,7 @@ class EnvironmentalPermitController extends Controller
                 'sk_number'         => 'required',
                 'date'              => 'required',
                 'publisher'         => 'required',
+                'document_type'     => 'required',
             ]
         );
 
@@ -178,6 +181,7 @@ class EnvironmentalPermitController extends Controller
             $permit->sk_number = $params['sk_number'];
             $permit->date = $params['date'];
             $permit->publisher = $params['publisher'];
+            $permit->document_type = $params['document_type'];
             $permit->save();
         }
 

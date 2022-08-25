@@ -124,7 +124,7 @@ class DashboardController extends Controller
                                     $que->where('authority', 'district');
                                     $que->whereIn('auth_district', $districts);
                                 });
-                        } else if($team->authority == 'Kabupaten') {
+                        } else if($team->authority == 'Kabupaten/Kota') {
                             $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
                         }
                     }
