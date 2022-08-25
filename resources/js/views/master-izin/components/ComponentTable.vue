@@ -49,8 +49,9 @@
       prop="kegiatan_name"
       sortable
     />
+    <el-table-column label="Jenis Dokumen" prop="document_type" sortable />
     <el-table-column label="Nomor SK" prop="sk_number" sortable />
-    <el-table-column label="Tanggal Berlaku SK" prop="date" sortable />
+    <el-table-column label="Tanggal Berlaku SK" prop="date_format" sortable />
   </el-table>
 </template>
 
