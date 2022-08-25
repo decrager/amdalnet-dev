@@ -144,6 +144,7 @@ class EmployeeTUKController extends Controller
                         if($employee_tuk->email) {
                             $employee_tuk_user = User::where('email', $employee_tuk->email)->first();
                             if($employee_tuk_user) {
+                                $old_email = $employee_tuk->email;
                                 $employee_tuk_user->name = $request->name;
                                 $employee_tuk_user->email = $request_email;
                                 $employee_tuk_user->password = Hash::make($password);
