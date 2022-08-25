@@ -628,7 +628,8 @@ export default {
       this.userInfo.roles.includes('examiner-administration') ||
       this.userInfo.roles.includes('examiner-community') ||
       this.userInfo.roles.includes('examiner') ||
-      this.userInfo.roles.includes('examiner-institution')
+      this.userInfo.roles.includes('examiner-institution') ||
+      this.userInfo.roles.includes('examiner-secretary')
     ) {
       this.listQuery.tuk = 'true';
     }
