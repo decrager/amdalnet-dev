@@ -153,12 +153,7 @@ class EmployeeTUKController extends Controller
                                 $create_user = true;
                             }
                         } else {
-                            $is_user_exist = User::where('email', $request_email)->count();
-                            if($is_user_exist == 0) {
-                                $create_user = true;
-                            } else {
-                                return response()->json(['errors_alert' => 'Email yang anda masukkan sudah terpakai']);
-                            }
+                            $create_user = true;
                         }
                     }
                 }
