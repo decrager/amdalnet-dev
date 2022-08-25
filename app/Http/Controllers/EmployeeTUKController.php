@@ -150,7 +150,7 @@ class EmployeeTUKController extends Controller
                                 $employee_tuk_user->save();
                                 $email_changed_notif = $employee_tuk_user;
                             } else {
-                                $create_user = true;;
+                                $create_user = true;
                             }
                         } else {
                             $is_user_exist = User::where('email', $request_email)->count();
