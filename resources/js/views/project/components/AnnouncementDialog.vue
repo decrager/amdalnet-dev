@@ -10,11 +10,11 @@
               <el-col
                 :span="8"
               ><el-form-item label="Nama" prop="pic_name">
-                <el-input v-model="announcement.pic_name" /> </el-form-item></el-col>
+                <el-input v-model="announcement.pic_name" :readonly="true" /> </el-form-item></el-col>
               <el-col
                 :span="16"
               ><el-form-item label="Alamat" prop="pic_address">
-                <el-input v-model="announcement.pic_address" /> </el-form-item></el-col>
+                <el-input v-model="announcement.pic_address" :readonly="true" /> </el-form-item></el-col>
             </el-row>
           </div>
         </div>
