@@ -1658,7 +1658,7 @@ export default {
     goToJenisKegiatan(){
       this.$refs.statusKegiatan.validate((valid) => {
         if (valid) {
-          this.calculateKewenanganAnomali();
+          // this.calculateKewenanganAnomali();
           this.activeName = '4';
         } else {
           console.log('error submit!!');
