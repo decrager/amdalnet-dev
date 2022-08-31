@@ -644,7 +644,7 @@ class ExportDocument extends Controller
                     } else if(strtolower($component_type) == 'kegiatan lain sekitar') {
                         $kls[] = $this->getUklUplData($imp, 'kls', $component, $change_type, $ronaAwal);
                     } else if(strtolower($component_type) == 'lain lain') {
-                        $kll[] = $this->getUklUplData($imp, 'kls', $component, $change_type, $ronaAwal);
+                        $kll[] = $this->getUklUplData($imp, 'kll', $component, $change_type, $ronaAwal);
                     }
 
                 }
@@ -674,7 +674,7 @@ class ExportDocument extends Controller
                     } else if(strtolower($component_type) == 'kegiatan lain sekitar') {
                         $ols[] = $this->getUklUplData($imp, 'ols', $component, $change_type, $ronaAwal);
                     } else if(strtolower($component_type) == 'lain lain') {
-                        $oll[] = $this->getUklUplData($imp, 'ols', $component, $change_type, $ronaAwal);
+                        $oll[] = $this->getUklUplData($imp, 'oll', $component, $change_type, $ronaAwal);
                     }
                 }
 
@@ -848,12 +848,14 @@ class ExportDocument extends Controller
         $ukl_bentuk = '';
         $ukl_lokasi = '';
         $ukl_periode = $imp->envManagePlan ? $imp->envManagePlan->period : '';
+        $ukl_keterangan = $imp->envManagePlan ? $imp->envManagePlan->description : '';
         $upl_bentuk = '';
         $upl_lokasi = '';
         $upl_periode = $imp->envMonitorPlan ? $imp->envMonitorPlan->period : '';
         $upl_pelaksana = $imp->envManagePlan ? $imp->envManagePlan->executor : '';
         $upl_pengawas = $imp->envManagePlan ? $imp->envManagePlan->supervisor : '';
         $upl_pelaporan = $imp->envManagePlan ? $imp->envManagePlan->report_recipient : '';
+        $upl_keterangan = $imp->envMonitorPlan ? $imp->envMonitorPlan->description : '';
 
         if($imp->envManagePlan) {
             if($imp->envManagePlan->forms) {
@@ -905,7 +907,9 @@ class ExportDocument extends Controller
             $st . '_upl_periode' => $upl_periode,
             $st . '_pelaksana' => $upl_pelaksana,
             $st . '_pengawas' => $upl_pengawas,
-            $st . '_pelaporan' => $upl_pelaporan
+            $st . '_pelaporan' => $upl_pelaporan,
+            $st . '_ukl_keterangan' => $ukl_keterangan,
+            $st . '_upl_keterangan' => $upl_keterangan
         ];
     }
 
