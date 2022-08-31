@@ -187,7 +187,7 @@
           <el-alert
             v-if="!currentProject.isPemerintah"
             style="margin-top: 5px"
-            title="Daftar Proyek dibawah ini merupakan data yang dikirim dari OSS-RBA"
+            title="Isikan data proyek anda sesuai dengan yang terdapat dalam OSS-RBA"
             type="error"
             effect="dark"
             :closable="false"
@@ -338,7 +338,7 @@
             <el-row :gutter="4">
               <el-col :span="12">
                 <el-form-item
-                  label="Tingkat Resiko"
+                  label="Tingkat Risiko Dari OSS"
                   prop="oss_risk"
                 >
                   <el-select
@@ -380,7 +380,7 @@
             <el-row :gutter="4">
               <el-col :span="12">
                 <el-form-item
-                  label="Rencana Usaha dan/atau Kegiatan Masuk Kawasan ?"
+                  label="Rencana Usaha dan/atau Kegiatan Masuk Kawasan"
                   prop="oss_area"
                 >
                   <el-select
