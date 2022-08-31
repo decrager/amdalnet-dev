@@ -551,12 +551,14 @@ class SKKLController extends Controller
         // double check : akses inqueryFileDS
         if ($fileUrl == null) {
             if ($type == 'sppl' || $type == 'pkplh') {
-                foreach ($dataNib['id_izin_list'] as $id_izin) {
-                    $resp = OssService::inqueryFileDS($dataNib['nib'], $id_izin);
-                    if ((int)$resp['responInqueryFileDS']['status'] == 200 &&
-                        isset($resp['responInqueryFileDS']['url_file_ds'])) {
-                        $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
-                        break;
+                if (isset($dataNib['id_izin_list'])) {
+                    foreach ($dataNib['id_izin_list'] as $id_izin) {
+                        $resp = OssService::inqueryFileDS($dataNib['nib'], $id_izin);
+                        if ((int)$resp['responInqueryFileDS']['status'] == 200 &&
+                            isset($resp['responInqueryFileDS']['url_file_ds'])) {
+                            $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
+                            break;
+                        }
                     }
                 }
             } else {

@@ -68,7 +68,7 @@
               </el-table-column>
               <el-table-column align="left" label="Judul Dokumen">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.name }}</span>
+                  <span>{{ scope.row.title }}</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -181,10 +181,8 @@ export default {
         this.postForm = skklFinal;
         // get file list
         if (skklFinal !== null && skklFinal.file !== null && skklFinal.file !== '') {
-          const spl = skklFinal.file.split('/');
-          const idx = spl.length - 1;
           this.fileList.push({
-            name: spl[idx],
+            title: skklFinal.title,
             url: skklFinal.file,
             id: skklFinal.id,
           });

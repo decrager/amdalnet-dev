@@ -58,7 +58,7 @@ class PkplhFinalController extends Controller
             if (!Storage::disk('public')->exists('pkplh_final')) {
                 Storage::disk('public')->makeDirectory('pkplh_final');
             }
-            $fileCreated = Storage::disk('public')->put($name, $file);
+            $fileCreated = Storage::disk('public')->put($name, file_get_contents($file));
 
             $pkplh = ProjectPkplhFinal::where('id_project', $data['id_project'])->first();
             $sendLicenseStatus = false;
