@@ -178,7 +178,7 @@
           </template>
         </el-table-column>
       </el-table-column>
-      <el-table-column :key="iplhKey" label="Institusi Pengelolaan Lingkungan Hidup">
+      <el-table-column :key="iplhKey" label="Institusi Pengelola Lingkungan Hidup">
         <template slot-scope="scope">
           <div v-if="!scope.row.is_stage">
             <div>Pelaksana: <el-input v-model="scope.row.env_manage_plan.executor" /></div>

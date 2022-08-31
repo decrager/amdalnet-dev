@@ -276,7 +276,7 @@
             <el-input v-model="lpjp.pic" />
           </el-form-item>
           <el-form-item label="No. Registrasi">
-            <el-input v-model="lpjp.reg_no" />
+            <el-input v-model="lpjp.reg_no" :readonly="true" />
           </el-form-item>
           <el-form-item label="No. Telepon">
             <el-input v-model="lpjp.phone_no" />
@@ -288,6 +288,7 @@
               placeholder="Pilih tanggal"
               value-format="yyyy-MM-dd"
               style="width: 100%"
+              :readonly="true"
             />
           </el-form-item>
           <el-form-item label="Terakhir Berlaku" prop="terakhirBerlaku">
@@ -297,6 +298,7 @@
               placeholder="Pilih tanggal"
               value-format="yyyy-MM-dd"
               style="width: 100%"
+              :readonly="true"
             />
           </el-form-item>
           <el-form-item>

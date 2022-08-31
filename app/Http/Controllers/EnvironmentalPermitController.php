@@ -166,15 +166,14 @@ class EnvironmentalPermitController extends Controller
 
             $params = $request->all();
 
-            if($request->file('file') !== null){
+            if($request->hasFile('file')){
                 //create file
                 $file = $request->file('file');
                 $name = 'environmental-permit/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
                 $permit->file = $name;
-            } else {
-                $name = $request->file('old_file');
-            }
+            } 
+
             $permit->pemarkasa_name = $params['pemarkasa_name'];
             $permit->authority = $params['authority'];
             $permit->kegiatan_name = $params['kegiatan_name'];
