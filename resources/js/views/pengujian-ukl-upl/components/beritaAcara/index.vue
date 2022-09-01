@@ -114,9 +114,9 @@ export default {
   computed: {
     acceptedTitle() {
       if (this.reports.is_accepted) {
-        return 'UKL UPL Dilanjutkan ke Uji Kelayakan';
+        return 'UKL UPL Dilanjutkan ke Tahap Selanjutnya';
       } else {
-        return 'UKL UPL Tidak Dilanjutkan ke Uji Kelayakan';
+        return 'UKL UPL Tidak Dilanjutkan ke Tahap Selanjutnya';
       }
     },
   },

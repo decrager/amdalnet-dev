@@ -10,6 +10,7 @@ use App\Entity\Formulator;
 use App\Entity\FormulatorTeamMember;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Initiator;
+use App\Entity\KaReview;
 use App\Entity\MeetingReport;
 use App\Entity\MeetingReportInvitation;
 use App\Entity\Project;
@@ -19,6 +20,7 @@ use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
 use App\Notifications\AcceptToFeasibilityTest;
 use App\Notifications\MeetingReportNotification;
+use App\Notifications\UklUplAcceptedNotification;
 use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
@@ -95,29 +97,41 @@ class MeetReportRKLRPLController extends Controller
             $meeting_report->is_accepted = $request->isAccepted;
             $meeting_report->save();
 
-            // === SEND NOTIFICATION === //
-            // $project = Project::findOrFail($request->idProject);
-            // $user = [];
-            // $pemrakarsa = User::where('email', $project->initiator->email)->first();
-            // if($pemrakarsa) {
-            //     $user[] = $pemrakarsa;
-            // }
-            // $ketua_penyusun = Formulator::whereHas('teamMember', function($q) use($request) {
-            //     $q->where('position', 'Ketua');
-            //     $q->whereHas('team', function($query) use($request) {
-            //         $query->where('id_project', $request->idProject);
-            //     });
-            // })->first();
-            // if($ketua_penyusun) {
-            //     $user_penyusun = User::where('email', $ketua_penyusun->email)->first();
-            //     if($user_penyusun) {
-            //         $user[] = $user_penyusun;
-            //     }
-            // }
+            if($document_type == 'ukl-upl') {
+                if(!$request->isAccepted) {
+                    // delete file
+                    $document = KaReview::where([['id_project', $request->idProject],['status', 'submit']])->first();
+                    Storage::disk('public')->delete($document->getRawApplicationLetter());
 
-            // if(count($user) > 0) {
-            //     Notification::send($user, new AcceptToFeasibilityTest($meeting_report));
-            // }
+                    // delete submit document
+                    KaReview::where('id_project', $request->idProject)->delete();
+                }
+
+                // === NOTIFICATIONS === //
+                $receiver = [];
+                $project = Project::findOrFail($request->idProject);
+                // 1. Pemrakarsa
+                $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+                if($pemrakarsa_user) {
+                    $receiver[] = $pemrakarsa_user;
+                }
+                // 2. Penyusun
+                $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->get();
+                foreach($formulator_team_members as $ftm) {
+                    if($ftm->formulator) {
+                        $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                        if($formulator_user) {
+                            $receiver[] = $formulator_user;
+                        }
+                    }
+                }
+
+                if(count($receiver) > 0) {
+                    Notification::send($receiver, new UklUplAcceptedNotification($project, $request->isAccepted));
+                }
+            }
 
             return response()->json(['message' => 'Data sukses disimpan']);
         }
