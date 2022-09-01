@@ -171,7 +171,6 @@ export default {
         id_project: this.idProject,
       });
       this.loading = false;
-      this.disableEdit = true;
 
       if (pkplhFinals.length > 0) {
         const pkplhFinal = pkplhFinals[0];
