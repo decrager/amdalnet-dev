@@ -8,6 +8,7 @@ use App\Entity\FeasibilityTestTeam;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
 use App\Entity\KaReview;
+use App\Entity\MeetingReport;
 use App\Entity\Project;
 use App\Entity\ProjectMapAttachment;
 use App\Entity\ProjectRonaAwal;
@@ -81,6 +82,7 @@ class KaReviewController extends Controller
             $review->notes = $request->notes;
             $review->document_type = $request->documentType;
             $review->save();
+            
 
             $document_type = '';
             if($request->documentType == 'ka') {
@@ -89,6 +91,13 @@ class KaReviewController extends Controller
                 $document_type = 'ANDAL RKL RPL';
             } else if($request->documentType == 'ukl-upl') {
                 $document_type = 'UKL UPL';
+                
+                // if document is repairment
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject],['is_accepted', false]])->first();
+                if($meeting_report) {
+                    $meeting_report->is_accepted = null;
+                    $meeting_report->save();
+                }
             }
 
             $project = Project::findOrFail($request->idProject);

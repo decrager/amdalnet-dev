@@ -71,7 +71,7 @@
     <div>
       <FeedbackList ref="feedbacklist" :disable-rating="true" />
     </div>
-    <div v-if="isInitiator">
+    <div v-if="isInitiator && (announcement.project.required_doc !== 'UKL-UPL')">
       <el-alert
         v-if="publicConst.id && publicConst.is_publish"
         title="Konsultasi Publik Telah Diterima"
@@ -110,7 +110,9 @@ export default {
   data() {
     return {
       id: 0,
-      announcement: {},
+      announcement: {
+        project: {},
+      },
       announcementDetails: [],
       publicConst: {},
       projectTitle: null,
