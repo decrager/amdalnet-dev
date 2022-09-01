@@ -98,6 +98,7 @@ class MeetReportRKLRPLController extends Controller
             $meeting_report->save();
 
             if($document_type == 'ukl-upl') {
+                $project = Project::findOrFail($request->idProject);
                 if(!$request->isAccepted) {
                     // delete file
                     $document = KaReview::where([['id_project', $request->idProject],['status', 'submit']])->first();
@@ -105,11 +106,17 @@ class MeetReportRKLRPLController extends Controller
 
                     // delete submit document
                     KaReview::where('id_project', $request->idProject)->delete();
+
+                    // update workflow
+                    if($project->marking == 'uklupl-mt.examination') {
+                        $project->workflow_apply('held-uklupl-examination-meeting');
+                        $project->workflow_apply('return-uklupl-examination');
+                        $project->save();
+                    }
                 }
 
                 // === NOTIFICATIONS === //
                 $receiver = [];
-                $project = Project::findOrFail($request->idProject);
                 // 1. Pemrakarsa
                 $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
                 if($pemrakarsa_user) {

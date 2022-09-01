@@ -11,7 +11,7 @@
     <el-step title="Formulir UKL UPL" />
     <el-step title="Matriks UKL UPL" />
     <el-step title="Dokumen UKL UPL" />
-    <el-step title="Surat Keputusan" />
+    <el-step title="Surat Keputusan PKPLH" />
   </el-steps>
 </template>
 
