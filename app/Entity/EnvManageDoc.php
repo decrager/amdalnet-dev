@@ -35,4 +35,9 @@ class EnvManageDoc extends Model
 
         return null;
     }
+
+    public function getRawFilePath()
+    {
+        return $this->attributes['filepath'];
+    }
 }
