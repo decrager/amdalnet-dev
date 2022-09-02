@@ -254,7 +254,7 @@
                   Berita Acara
                 </el-button>
                 <el-button
-                  v-if="isValAdmOrAddByAdmin(scope.row) && isMeetReportAccepted(scope.row)"
+                  v-if="isAmdal(scope.row) && isValAdmOrAddByAdmin(scope.row) && isMeetReportAccepted(scope.row)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -335,7 +335,7 @@
                   Unduh PKPLH Otomatis
                 </el-button>
                 <el-button
-                  v-if="isPJM(scope.row) && isMeetReportAccepted(scope.row)"
+                  v-if="isAmdal(scope.row) && isPJM(scope.row) && isMeetReportAccepted(scope.row)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -353,7 +353,7 @@
                   SKKL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && isFeasib(scope.row) && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
+                  v-if="isUklUpl(scope.row) && isMeetReportAccepted(scope.row) && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"

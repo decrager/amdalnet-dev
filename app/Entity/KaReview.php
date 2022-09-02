@@ -30,4 +30,9 @@ class KaReview extends Model
 
         return null;
     }
+
+    public function getRawApplicationLetter()
+    {
+        return $this->attributes['application_letter'];
+    }
 }

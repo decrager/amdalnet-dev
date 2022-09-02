@@ -423,7 +423,7 @@
               <el-col :span="12">
                 <el-form-item label="" prop="fileOssReqDoc">
                   <div slot="label">
-                    <span>Unggah Hasil Penapisan di OSS ? (PDF max 10MB)</span>
+                    <span>Unggah Hasil Penapisan di OSS (PDF max 10MB)</span>
                   </div>
                   <classic-upload :name="fileOssReqDocName" :fid="'fileOssReqDoc'" @handleFileUpload="handlefileOssReqDocUpload" />
                 </el-form-item>
@@ -431,7 +431,7 @@
               <el-col :span="12">
                 <el-form-item label="" prop="fileOssSpplDoc">
                   <div slot="label">
-                    <span>Unggah Dokumen SPPL dari OSS ? (PDF max 10MB)</span>
+                    <span>Unggah Dokumen SPPL dari OSS (PDF max 10MB)</span>
                   </div>
                   <classic-upload :name="fileOssSpplDocName" :fid="'fileOssSpplDoc'" @handleFileUpload="handlefileOssSpplDocUpload" />
                 </el-form-item>

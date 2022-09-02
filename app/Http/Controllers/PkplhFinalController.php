@@ -79,6 +79,15 @@ class PkplhFinalController extends Controller
                 if ($sendLicenseStatus) {
                     OssService::receiveLicenseStatus($project, '50');
                 }
+
+                // update workflow
+                if($project->marking == 'uklupl-mt.ba-signed') {
+                    $project->workflow_apply('draft-uklupl-recommendation');
+                    $project->workflow_apply('sign-uklupl-recommendation');
+                    $project->workflow_apply('publish-uklupl-pkplh');
+                    $project->save();
+                }
+
                 return response()->json(['code' => 200, 'data' => $pkplh]);
             }
             return response()->json(['code' => 500, 'fileCreated' => $fileCreated]);
