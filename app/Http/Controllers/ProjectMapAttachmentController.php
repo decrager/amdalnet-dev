@@ -65,12 +65,8 @@ class ProjectMapAttachmentController extends Controller
                 ]);
 
                 if ($map->id) {
-                    // unlink old files
-                    // if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
-                    //     unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
-                    // }
-                    if (Storage::disk('public')->exists($map->stored_filename)) {
-                        Storage::disk('public')->delete($map->stored_filename);
+                    if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
+                        Storage::disk('public')->delete('map/' . $map->stored_filename);
                     }
                 }
 
@@ -100,8 +96,14 @@ class ProjectMapAttachmentController extends Controller
                 }
 
                 $enableCloneAndal = false;
-                // if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
-                if ($file->storeAs('public/map/',$map->stored_filename)) {
+                
+                // save file to S3
+                if (!Storage::disk('public')->exists('map')) {
+                    Storage::disk('public')->makeDirectory('map');
+                }
+                $filePut = Storage::disk('public')->put('map/' . $map->stored_filename, file_get_contents($file));
+                
+                if ($filePut) {
                     $map->save();
                     // clone andal, if step = 'ka'
                     if ($request['step'] == 'ka' && $enableCloneAndal) {
