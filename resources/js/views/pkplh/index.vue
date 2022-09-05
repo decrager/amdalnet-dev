@@ -67,74 +67,59 @@ export default {
   },
   methods: {
     async loadMap() {
-      let layerTapak = null;
       axios.get('api/map/' + this.idProject).then((response) => {
         const map = new Map({
           basemap: 'satellite',
         });
 
         const projects = response.data;
+        let tapakAdded = false;
+        let socialAdded = false;
+        let studyAdded = false;
+        let ecologyAdded = false;
         for (let i = 0; i < projects.length; i++) {
-          // Map Ekologi
-          if (projects[i].attachment_type === 'ecology') {
-            shp(
-              window.location.origin +
-                '/storage/map/' +
-                projects[i].stored_filename
-            ).then((data) => {
-              const blob = new Blob([JSON.stringify(data)], {
-                type: 'application/json',
-              });
-              const url = URL.createObjectURL(blob);
-              axios.get('api/projects/' + this.idProject).then((response) => {
-                const rendererTapak = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [0, 0, 0, 0.0],
-                    outline: {
-                      color: 'red',
-                      width: 2,
-                    },
-                  },
-                };
-                const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
-                  outFields: ['*'],
-                  visible: true,
-                  title: 'Layer Batas Ekologi',
-                  renderer: rendererTapak,
-                });
-                if (layerTapak !== null) {
-                  map.layers.remove(layerTapak);
-                }
-                layerTapak = geojsonLayerArray;
-                map.add(geojsonLayerArray);
-              });
-            });
+          let layerTitle = '';
+          let layerOutlineColor = '';
+          if (projects[i].attachment_type === 'tapak' && !tapakAdded) {
+            layerTitle = 'Layer Tapak Proyek';
+            layerOutlineColor = '#964B00';
+            tapakAdded = true;
+          } else if (projects[i].attachment_type === 'study' && !studyAdded) {
+            layerTitle = 'Layer Batas Wilayah Studi';
+            layerOutlineColor = 'green';
+            studyAdded = true;
+          } else if (projects[i].attachment_type === 'ecology' && !ecologyAdded) {
+            layerTitle = 'Layer Batas Ekologi';
+            layerOutlineColor = 'red';
+            ecologyAdded = true;
+          } else if (projects[i].attachment_type === 'social' && !socialAdded) {
+            layerTitle = 'Layer Batas Sosial';
+            layerOutlineColor = 'blue';
+            socialAdded = true;
           }
-
-          // Map Sosial
-          if (projects[i].attachment_type === 'social') {
-            shp(
-              window.location.origin +
-                '/storage/map/' +
-                projects[i].stored_filename
-            ).then((data) => {
-              const blob = new Blob([JSON.stringify(data)], {
-                type: 'application/json',
-              });
-              const url = URL.createObjectURL(blob);
-              axios.get('api/projects/' + this.idProject).then((response) => {
-                const rendererTapak = {
+          if (layerTitle !== '') {
+            axios({
+              url: 'api/download-map-by-name?filename=' + projects[i].stored_filename,
+              method: 'GET',
+              responseType: 'blob',
+            }).then((response) => {
+              shp(
+                window.location.origin +
+                  '/storage/map/' +
+                  projects[i].stored_filename
+              ).then((data) => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                const rendererLayer = {
                   type: 'simple',
                   field: '*',
                   symbol: {
                     type: 'simple-fill',
                     color: [0, 0, 0, 0.0],
                     outline: {
-                      color: 'blue',
+                      color: layerOutlineColor,
                       width: 2,
                     },
                   },
@@ -143,98 +128,15 @@ export default {
                   url: url,
                   outFields: ['*'],
                   visible: true,
-                  title: 'Layer Batas Sosial',
-                  renderer: rendererTapak,
+                  title: layerTitle,
+                  renderer: rendererLayer,
                 });
-                map.add(geojsonLayerArray);
-              });
-            });
-          }
 
-          // Map Studi
-          if (projects[i].attachment_type === 'study') {
-            shp(
-              window.location.origin +
-                '/storage/map/' +
-                projects[i].stored_filename
-            ).then((data) => {
-              const blob = new Blob([JSON.stringify(data)], {
-                type: 'application/json',
-              });
-              const url = URL.createObjectURL(blob);
-              axios.get('api/projects/' + this.idProject).then((response) => {
-                const rendererTapak = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [0, 0, 0, 0.0],
-                    outline: {
-                      color: 'green',
-                      width: 2,
-                    },
-                  },
-                };
-                const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
-                  outFields: ['*'],
-                  visible: true,
-                  title: 'Layer Batas Wilayah Studi',
-                  renderer: rendererTapak,
-                });
-                mapView.on('layerview-create', (event) => {
-                  mapView.goTo({
-                    target: geojsonLayerArray.fullExtent,
-                  });
-                });
                 map.add(geojsonLayerArray);
-              });
-            });
-          }
-
-          // Map Tapak
-          if (projects[i].attachment_type === 'tapak') {
-            shp(
-              window.location.origin +
-                '/storage/map/' +
-                projects[i].stored_filename
-            ).then((data) => {
-              const blob = new Blob([JSON.stringify(data)], {
-                type: 'application/json',
-              });
-              const url = URL.createObjectURL(blob);
-              axios.get('api/projects/' + this.idProject).then((response) => {
-                const rendererTapak = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [0, 0, 0, 0.0],
-                    outline: {
-                      color: '#964B00',
-                      width: 2,
-                    },
-                  },
-                };
-                const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
-                  outFields: ['*'],
-                  visible: true,
-                  title: 'Layer Tapak',
-                  renderer: rendererTapak,
-                });
-                map.add(geojsonLayerArray);
-
-                mapView.on('layerview-create', (event) => {
-                  mapView.goTo({
-                    target: geojsonLayerArray.fullExtent,
-                  });
-                });
               });
             });
           }
         }
-
         const mapView = new MapView({
           container: 'mapView',
           map: map,
