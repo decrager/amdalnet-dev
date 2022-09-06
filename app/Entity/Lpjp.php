@@ -3,13 +3,10 @@
 namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 class Lpjp extends Model
 {
-    use SoftDeletes;
-
     protected $table = 'lpjp';
 
     protected $fillable = [
