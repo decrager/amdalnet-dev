@@ -30,6 +30,13 @@ class FormulatorController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->uklUpl) {
+            return Formulator::where(function($query) use($request) {
+                $query->where(function($q) use($request) {
+                    $q->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                });
+            })->orderBy('name')->limit(20)->get();
+        }
 
         if($request->byUserId) {
             $formulator = Formulator::where('email', $request->email)->first();
