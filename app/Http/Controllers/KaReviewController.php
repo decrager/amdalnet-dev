@@ -116,7 +116,11 @@ class KaReviewController extends Controller
                 if($ftm->formulator) {
                     $formulator_user = User::where('email', $ftm->formulator->email)->first();
                     if($formulator_user) {
-                        if($ftm->position == 'Ketua' || $ftm->position == 'Anggota') {
+                        if($project->required_doc == 'AMDAL') {
+                            if($ftm->position == 'Ketua' || $ftm->position == 'Anggota') {
+                                $receiver[] = $formulator_user;
+                            }
+                        } else if($project->required_doc == 'UKL-UPL') {
                             $receiver[] = $formulator_user;
                         }
                     }
