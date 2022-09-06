@@ -67,7 +67,7 @@ class LpjpController extends Controller
 
         }
 
-        return LpjpResource::collection(Lpjp::withTrashed()->where(function ($query) use ($request) {
+        return LpjpResource::collection(Lpjp::where(function ($query) use ($request) {
             if ($request->active == '1' || $request->status === '1') {
                 $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
                     ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
@@ -391,7 +391,7 @@ class LpjpController extends Controller
             if($user) {
                 $user->delete();
             }
-            $lpjp->forceDelete();
+            $lpjp->delete();
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
