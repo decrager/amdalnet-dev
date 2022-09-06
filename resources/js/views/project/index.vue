@@ -439,7 +439,7 @@
             <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district+'/ '+scope.row.address[0].prov : '' }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="isExaminer || isAdmin || isSubtance" label="Penugasan" width="200px" align="center">
+        <el-table-column v-if="isExaminer || isAdmin || isSubtance || isSecretary" label="Penugasan" width="200px" align="center">
           <template slot="header">
             <el-select
               v-model="listQuery.filterTUK"
