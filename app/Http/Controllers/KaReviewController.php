@@ -121,7 +121,7 @@ class KaReviewController extends Controller
                                 $receiver[] = $formulator_user;
                             }
                         } else if($project->required_doc == 'UKL-UPL') {
-                            $receiver = $formulator_user;
+                            $receiver[] = $formulator_user;
                         }
                     }
                 }
