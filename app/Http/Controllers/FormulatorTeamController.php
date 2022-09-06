@@ -11,6 +11,7 @@ use App\Entity\Project;
 use App\Http\Resources\FormulatorResource;
 use App\Laravue\Models\User;
 use App\Notifications\FormulatorTeamAssigned;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -84,6 +85,7 @@ class FormulatorTeamController extends Controller
                 'type_team' => $project->type_formulator_team,
                 'id_lpjp' => $project->id_lpjp,
                 'sk_letter' => $sk_letter,
+                'required_doc' => $project->required_doc
             ];
         }
 
@@ -106,25 +108,45 @@ class FormulatorTeamController extends Controller
             })->get();
 
             $num = 1;
-            foreach($formulatorTeamMember as $f) {
-                $member[] = [
-                    'num' => $num,
-                    'id' => $f->id,
-                    'db_id' => $f->id_formulator,
-                    'name' => $f->formulator->name,
-                    'value' => $f->formulator->name,
-                    'type' => 'update',
-                    'position' => $f->position,
-                    'expertise' => $f->formulator->expertise,
-                    'file' => $f->formulator->cv_file,
-                    'certificate' => $f->formulator->cert_file,
-                    'cert_no' => $f->formulator->cert_no,
-                    'reg_no' => $f->formulator->reg_no,
-                    'membership_status' => $f->formulator->membership_status
-                ];
-
-                $num++;
+            
+            $project = Project::findOrFail($id_project);
+            if($project->required_doc == 'AMDAL') {
+                foreach($formulatorTeamMember as $f) {
+                    $member[] = [
+                        'num' => $num,
+                        'id' => $f->id,
+                        'db_id' => $f->id_formulator,
+                        'name' => $f->formulator->name,
+                        'value' => $f->formulator->name,
+                        'type' => 'update',
+                        'position' => $f->position,
+                        'expertise' => $f->formulator->expertise,
+                        'file' => $f->formulator->cv_file,
+                        'certificate' => $f->formulator->cert_file,
+                        'cert_no' => $f->formulator->cert_no,
+                        'reg_no' => $f->formulator->reg_no,
+                        'membership_status' => $f->formulator->membership_status
+                    ];
+    
+                    $num++;
+                }
+            } else if($project->required_doc == 'UKL-UPL') {
+                foreach($formulatorTeamMember as $f) {
+                    $member[] = [
+                        'name' => $f->formulator->name,
+                        'id' => $f->id,
+                        'id_formulator' => $f->id_formulator,
+                        'expertise' => $f->formulator->expertise,
+                        'cv_file' => $f->formulator->cv_file,
+                        'reg_no' => $f->formulator->reg_no,
+                        'membership_status' => $f->formulator->membership_status,
+                        'cert_file' => $f->formulator->cert_file,
+                    ];
+    
+                    $num++;
+                }
             }
+
 
             return $member;
         }
@@ -204,6 +226,61 @@ class FormulatorTeamController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->type && $request->type == 'uklupl') {
+            $receiver = [];
+            DB::beginTransaction();
+            try {
+                $project = Project::findOrFail($request->idProject);
+                $team = FormulatorTeam::where('id_project', $request->idProject)->first();
+                if(!$team) {
+                    $project->type_formulator_team = 'mandiri';
+                    $project->save();
+    
+                    $team = new FormulatorTeam();
+                    $team->name = 'Tim Penyusun ' . $project->project_title;
+                    $team->id_project = $request->idProject;
+                    $team->save();
+                }
+    
+                $members = $request->members;
+                if(count($members) > 0) {
+                    for($i = 0; $i < count($members); $i++) {
+                        $team_member = new FormulatorTeamMember();
+                        $team_member->id_formulator_team = $team->id;
+                        $team_member->id_formulator = $members[$i];
+                        $team_member->save();
+
+                        $formulator = Formulator::findOrFail($members[$i]);
+                        $user = User::where('email', $formulator->email)->first();
+                        if($user) {
+                            $receiver[] = $user;
+                        }
+                    }
+                }
+    
+                $deleted = $request->deletedMembers;
+                if(count($deleted) > 0) {
+                    FormulatorTeamMember::whereIn('id', $deleted)->delete();
+                }
+            } catch(Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 500,
+                    'code' => 500,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            DB::commit();
+
+            // send notification
+            if(count($receiver) > 0) {
+                Notification::send($receiver, new FormulatorTeamAssigned($team));
+            }
+
+            return response()->json(['message' => 'success']);
+        }
+
         if($request->type && $request->type == 'lpjp') {
             $validator = Validator::make(
                 $request->all(),
