@@ -240,8 +240,6 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-
-
         // return $request;
         $request['listSubProject'] = json_decode($request['listSubProject']);
         $request['address'] = json_decode($request['address']);
