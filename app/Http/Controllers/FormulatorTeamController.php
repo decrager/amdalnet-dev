@@ -237,6 +237,7 @@ class FormulatorTeamController extends Controller
                     $project->save();
     
                     $team = new FormulatorTeam();
+                    $team->id_team = uniqid();
                     $team->name = 'Tim Penyusun ' . $project->project_title;
                     $team->id_project = $request->idProject;
                     $team->save();
