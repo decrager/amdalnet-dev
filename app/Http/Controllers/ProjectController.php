@@ -240,6 +240,8 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+
+
         // return $request;
         $request['listSubProject'] = json_decode($request['listSubProject']);
         $request['address'] = json_decode($request['address']);
@@ -782,6 +784,18 @@ class ProjectController extends Controller
 
         if ($project === null) {
             return response()->json(['error' => 'project not found'], 404);
+        }
+
+        if($request->projectHome) {
+            if($request->type === 'locationDesc') {
+                $project->location_desc = $request->locationDesc;
+            } else if($request->type === 'description') {
+                $project->description = $request->description;
+            }
+
+            $project->save();
+            
+            return response()->json(['message' => 'success']);
         }
 
         //validate request
