@@ -35,7 +35,7 @@ class FormulatorController extends Controller
                 $query->where(function($q) use($request) {
                     $q->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
                 });
-            })->orderBy('name')->limit(20)->get();
+            })->whereHas('user')->orderBy('name')->limit(20)->get();
         }
 
         if($request->byUserId) {
