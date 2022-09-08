@@ -133,6 +133,11 @@ export default {
                 });
 
                 map.add(geojsonLayerArray);
+                mapView.on('layerview-create', async(event) => {
+                  await mapView.goTo({
+                    target: geojsonLayerArray.fullExtent,
+                  });
+                });
               });
             });
           }
