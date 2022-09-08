@@ -63,7 +63,7 @@ export default {
       await timelineResource.list({ id: this.id })
         .then((res) => {
           this.activities = this.process(res).filter(marking => {
-            return !(marking.label === 'Penyusunan Rekomendasi' || marking.label === 'Penerbitan Rekomendasi');
+            return !(marking.code === 'UKL-12.1' || marking.code === 'UKL-12.5');
           });
 
           if ((this.activities.length > 0) && (this.marking !== null)){

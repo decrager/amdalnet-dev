@@ -102,7 +102,7 @@ export default {
         .then(response => {
           if (response.data && response.data.length > 0){
             this.data = response.data.filter(marking => {
-              return !(marking.label === 'Penyusunan Rekomendasi' || marking.label === 'Penerbitan Rekomendasi');
+              return !(marking.code === 'UKL-12.1' || marking.code === 'UKL-12.5');
             });
             if (this.project.marking !== null){
               const current_marking = this.data.find(e => e.to_place === this.project.marking);
