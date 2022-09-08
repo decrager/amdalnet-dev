@@ -101,7 +101,9 @@ export default {
       await axios.get('api/timeline?id=' + this.project.id)
         .then(response => {
           if (response.data && response.data.length > 0){
-            this.data = response.data;
+            this.data = response.data.filter(marking => {
+              return !(marking.label === 'Penyusunan Rekomendasi' || marking.label === 'Penerbitan Rekomendasi');
+            });
             if (this.project.marking !== null){
               const current_marking = this.data.find(e => e.to_place === this.project.marking);
               this.current_rank = current_marking.rank;
