@@ -62,7 +62,9 @@ export default {
       this.current_rank = 0;
       await timelineResource.list({ id: this.id })
         .then((res) => {
-          this.activities = this.process(res);
+          this.activities = this.process(res).filter(marking => {
+            return !(marking.code === 'UKL-12.1' || marking.code === 'UKL-12.5');
+          });
 
           if ((this.activities.length > 0) && (this.marking !== null)){
             const state = this.activities.find(s => s.to_place === this.marking);

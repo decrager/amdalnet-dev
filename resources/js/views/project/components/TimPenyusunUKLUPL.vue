@@ -222,6 +222,12 @@ export default {
         deletedMembers: this.deletedMembers,
       });
 
+      this.$message({
+        message: 'Data berhasil disimpan',
+        type: 'success',
+        duration: 5 * 1000,
+      });
+
       await this.getTimPenyusun();
 
       this.loadingSubmit = false;
