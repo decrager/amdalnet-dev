@@ -137,7 +137,7 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp"
+                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -191,7 +191,7 @@
                   Dokumen ANDAL RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp"
+                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
