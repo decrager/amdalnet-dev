@@ -784,6 +784,18 @@ class ProjectController extends Controller
             return response()->json(['error' => 'project not found'], 404);
         }
 
+        if($request->projectHome) {
+            if($request->type === 'locationDesc') {
+                $project->location_desc = $request->locationDesc;
+            } else if($request->type === 'description') {
+                $project->description = $request->description;
+            }
+
+            $project->save();
+            
+            return response()->json(['message' => 'success']);
+        }
+
         //validate request
 
         $validator = Validator::make(
