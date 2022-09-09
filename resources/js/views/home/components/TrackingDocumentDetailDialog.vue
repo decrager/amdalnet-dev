@@ -105,30 +105,18 @@ export default {
               return !(marking.code === 'UKL-12.1' || marking.code === 'UKL-12.5');
             });
             if (this.project.marking !== null){
-              if (this.project.marking === 'uklupl-mr.pkplh-published') {
+              if (this.project.marking === 'uklupl-mr.pkplh-published' || this.project.marking === 'uklupl-mt.pkplh-published') {
                 const current_marking = this.data.find(e => e.code === 'UKL-13');
-                if (current_marking === undefined) {
-                  console.log(this.project_marking, this.data);
-                } else {
-                  this.current_rank = current_marking.rank;
-                }
+                this.current_rank = current_marking.rank;
               } else if (this.project.marking === 'amdal.skkl-published') {
                 const current_marking = this.data.find(e => e.code === 'AMD-24');
-                if (current_marking === undefined) {
-                  console.log(this.project_marking, this.data);
-                } else {
-                  this.current_rank = current_marking.rank;
-                }
+                this.current_rank = current_marking.rank;
               } else {
                 let current_marking = this.data.find(e => e.to_place === this.project.marking);
                 if (!current_marking) {
                   current_marking = this.data.find(e => e.state === this.project.marking);
                 }
-                if (current_marking === undefined) {
-                  console.log(this.project_marking, this.data);
-                } else {
-                  this.current_rank = current_marking.rank;
-                }
+                this.current_rank = current_marking.rank;
               }
             }
           }
