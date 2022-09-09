@@ -112,7 +112,10 @@ export default {
                 const current_marking = this.data.find(e => e.code === 'AMD-24');
                 this.current_rank = current_marking.rank;
               } else {
-                const current_marking = this.data.find(e => e.to_place === this.project.marking);
+                let current_marking = this.data.find(e => e.to_place === this.project.marking);
+                if (!current_marking) {
+                  current_marking = this.data.find(e => e.state === this.project.marking);
+                }
                 this.current_rank = current_marking.rank;
               }
             }
