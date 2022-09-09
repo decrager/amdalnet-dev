@@ -74,7 +74,10 @@ export default {
               const state = this.activities.find(s => s.code === 'AMD-24');
               this.current_rank = state.rank;
             } else {
-              const state = this.activities.find(s => s.to_place === this.marking);
+              let state = this.activities.find(s => s.to_place === this.marking);
+              if (!state) {
+                state = this.activities.find(s => s.state === this.marking);
+              }
               this.current_rank = state.rank;
             }
           }

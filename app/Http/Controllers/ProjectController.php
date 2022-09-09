@@ -918,7 +918,7 @@ class ProjectController extends Controller
             ->select('workflow_steps.code', 'workflow_logs.from_place', 'workflow_logs.to_place',
                 'workflow_logs.created_at as datetime',
                 'workflow_steps.rank', 'workflow_steps.is_conditional',
-                'workflow_states.public_tracking as label', 'users.name as username')
+                'workflow_states.public_tracking as label', 'users.name as username', 'workflow_states.state')
             // ->addSelect(DB::raw('\''.$project->marking.'\' as current_marking'))
             ->leftJoin('workflow_states', 'workflow_states.code', '=', 'workflow_steps.code')
             ->leftJoin('workflow_logs',  function ($join) use ($project) {
