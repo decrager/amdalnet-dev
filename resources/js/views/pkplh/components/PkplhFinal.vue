@@ -42,7 +42,8 @@
               action="#"
               :auto-upload="false"
               :on-change="handleUploadChange"
-              :show-file-list="false"
+              :show-file-list="true"
+              :file-list="fileList"
               style="display: inline;"
             >
               <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
@@ -68,7 +69,7 @@
               </el-table-column>
               <el-table-column align="left" label="Judul Dokumen">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.title }}</span>
+                  <span>{{ scope.row.name }}</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -178,7 +179,7 @@ export default {
         // get file list
         if (pkplhFinal !== null && pkplhFinal.file !== null && pkplhFinal.file !== '') {
           this.fileList.push({
-            title: pkplhFinal.title,
+            name: pkplhFinal.title,
             url: pkplhFinal.file,
             id: pkplhFinal.id,
           });
@@ -207,6 +208,12 @@ export default {
       this.loadingUpload = true;
       this.filePkplhFinal = file;
       this.loadingUpload = false;
+
+      this.fileList.push({
+        name: file.name,
+        url: '',
+        id: 1,
+      });
     },
     showFileAlert() {
       this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
