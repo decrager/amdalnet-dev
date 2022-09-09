@@ -67,8 +67,16 @@ export default {
           });
 
           if ((this.activities.length > 0) && (this.marking !== null)){
-            const state = this.activities.find(s => s.to_place === this.marking);
-            this.current_rank = state.rank;
+            if (this.marking === 'uklupl-mr.pkplh-published') {
+              const state = this.data.find(s => s.code === 'UKL-13');
+              this.current_rank = state.rank;
+            } else if (this.marking === 'amdal.skkl-published') {
+              const state = this.activities.find(s => s.code === 'AMD-24');
+              this.current_rank = state.rank;
+            } else {
+              const state = this.activities.find(s => s.to_place === this.marking);
+              this.current_rank = state.rank;
+            }
           }
         })
         .finally(() => {
