@@ -1269,6 +1269,9 @@ export default {
 
       const districtData = await districtResource.get(this.initiator.district);
 
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      // console.log(new Date(project.created_at.substring(0, 10)).toLocaleDateString('id-ID', options));
+
       PizZipUtils.getBinaryContent(
         '/template_sppl_pem.docx',
         (error, content) => {
@@ -1283,12 +1286,13 @@ export default {
           doc.render({
             name: `${this.initiator.user_type} ${this.initiator.name}`,
             address: this.initiator.address,
+            paddress: `${project.address[0].address}, ${project.address[0].district}, ${project.address[0].prov}`,
             phone: this.initiator.phone,
             pic: this.initiator.pic,
             pic_role: this.initiator.pic_role,
             bidang: bidArr,
             tempat: districtData.name,
-            tanggal: project.created_at.substring(0, 10),
+            tanggal: new Date(project.created_at.substring(0, 10)).toLocaleDateString('id-ID', options),
           });
 
           const out = doc.getZip().generate({
