@@ -372,6 +372,8 @@ class ProjectController extends Controller
                 'oss_authority' => isset($request['oss_authority']) ? $request['oss_authority'] : null,
                 'oss_area' => isset($request['oss_area']) ? $request['oss_area'] : null,
                 'oss_invest_status' => isset($request['oss_invest_status']) ? $request['oss_invest_status'] : null,
+                'oss_required_doc' => $fileOssReqDocName,
+                'oss_sppl_doc' => $fileOssSpplDocName,
             ]);
 
             // add workflow
