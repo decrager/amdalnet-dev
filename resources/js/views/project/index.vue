@@ -1285,6 +1285,8 @@ export default {
           });
           doc.render({
             name: `${this.initiator.user_type} ${this.initiator.name}`,
+            pname: `${project.project_title}`,
+            pnoreg: `${project.registration_no}`,
             address: this.initiator.address,
             paddress: `${project.address[0].address}, ${project.address[0].district}, ${project.address[0].prov}`,
             phone: this.initiator.phone,
