@@ -343,7 +343,7 @@ export default {
       token: null,
       penutupanLahan2020JSON: null,
       kawasanHutanBJSON: null,
-      pippib2021Periode2JSON: null,
+      pippib2022Periode1JSON: null,
       authorities: [],
       sectors: [],
       projectYears: [
@@ -953,8 +953,8 @@ export default {
 
       this.mapInit.add(kawasanHutanB);
 
-      const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+      const pippib2022Periode1 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_1/MapServer',
         sublayers: [
           {
             id: 0,
@@ -967,13 +967,13 @@ export default {
 
       pipbipToggle.addEventListener('change', () => {
         if (this.checkedPIPPIB === true) {
-          pippib2021Periode2.visible = true;
+          pippib2022Periode1.visible = true;
         } else {
-          pippib2021Periode2.visible = false;
+          pippib2022Periode1.visible = false;
         }
       });
 
-      this.mapInit.add(pippib2021Periode2);
+      this.mapInit.add(pippib2022Periode1);
 
       const mapView = new MapView({
         container: 'mapViewDiv',

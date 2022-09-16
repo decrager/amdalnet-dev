@@ -1206,7 +1206,7 @@ export default {
       },
       penutupanLahan2020JSON: null,
       kawasanHutanBJSON: null,
-      pippib2021Periode2JSON: null,
+      pippib2022Periode1JSON: null,
     };
   },
   computed: {
@@ -1990,8 +1990,8 @@ export default {
         ],
       });
 
-      const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+      const pippib2022Periode1 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_1/MapServer',
         sublayers: [
           {
             id: 0,
@@ -2003,7 +2003,7 @@ export default {
       const sigapLayer = new GroupLayer({
         title: 'Peta Tematik Status',
         visible: true,
-        layers: [penutupanLahan2020, kawasanHutanB, pippib2021Periode2],
+        layers: [penutupanLahan2020, kawasanHutanB, pippib2022Periode1],
         opacity: 0.90,
       });
 
