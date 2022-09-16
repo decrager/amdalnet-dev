@@ -33,7 +33,7 @@
       </el-col>
     </el-form-item>
 
-    <el-form-item label="Peta Area Pengelolaan" :required="required">
+    <el-form-item label="Peta Lokasi Pengelolaan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
@@ -91,7 +91,7 @@
       </el-col>
     </el-form-item>
 
-    <el-form-item label="Peta Area Pemantauan" :required="required">
+    <el-form-item label="Peta Lokasi Pemantauan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi SHP

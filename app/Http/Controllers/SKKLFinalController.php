@@ -58,7 +58,7 @@ class SKKLFinalController extends Controller
             if (!Storage::disk('public')->exists('skkl_final')) {
                 Storage::disk('public')->makeDirectory('skkl_final');
             }
-            $fileCreated = Storage::disk('public')->put($name, $file);
+            $fileCreated = Storage::disk('public')->put($name, file_get_contents($file));
 
             $skkl = ProjectSkklFinal::where('id_project', $data['id_project'])->first();
             $sendLicenseStatus = false;

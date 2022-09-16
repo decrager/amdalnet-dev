@@ -137,7 +137,7 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp"
+                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -191,7 +191,7 @@
                   Dokumen ANDAL RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp"
+                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -254,7 +254,7 @@
                   Berita Acara
                 </el-button>
                 <el-button
-                  v-if="isValAdmOrAddByAdmin(scope.row) && isMeetReportAccepted(scope.row)"
+                  v-if="isAmdal(scope.row) && isValAdmOrAddByAdmin(scope.row) && isMeetReportAccepted(scope.row)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -335,7 +335,7 @@
                   Unduh PKPLH Otomatis
                 </el-button>
                 <el-button
-                  v-if="isPJM(scope.row) && isMeetReportAccepted(scope.row)"
+                  v-if="isAmdal(scope.row) && isPJM(scope.row) && isMeetReportAccepted(scope.row)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -353,7 +353,7 @@
                   SKKL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && isFeasib(scope.row) && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
+                  v-if="isUklUpl(scope.row) && isMeetReportAccepted(scope.row) && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -439,7 +439,7 @@
             <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district+'/ '+scope.row.address[0].prov : '' }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="isExaminer || isAdmin || isSubtance" label="Penugasan" width="200px" align="center">
+        <el-table-column v-if="isExaminer || isAdmin || isSubtance || isSecretary" label="Penugasan" width="200px" align="center">
           <template slot="header">
             <el-select
               v-model="listQuery.filterTUK"

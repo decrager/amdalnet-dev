@@ -65,12 +65,8 @@ class ProjectMapAttachmentController extends Controller
                 ]);
 
                 if ($map->id) {
-                    // unlink old files
-                    // if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
-                    //     unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
-                    // }
-                    if (Storage::disk('public')->exists($map->stored_filename)) {
-                        Storage::disk('public')->delete($map->stored_filename);
+                    if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
+                        Storage::disk('public')->delete('map/' . $map->stored_filename);
                     }
                 }
 
@@ -100,8 +96,14 @@ class ProjectMapAttachmentController extends Controller
                 }
 
                 $enableCloneAndal = false;
-                // if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
-                if ($file->storeAs('public/map/',$map->stored_filename)) {
+                
+                // save file to S3
+                if (!Storage::disk('public')->exists('map')) {
+                    Storage::disk('public')->makeDirectory('map');
+                }
+                $filePut = Storage::disk('public')->put('map/' . $map->stored_filename, file_get_contents($file));
+
+                if ($filePut) {
                     $map->save();
                     // clone andal, if step = 'ka'
                     if ($request['step'] == 'ka' && $enableCloneAndal) {
@@ -190,9 +192,12 @@ class ProjectMapAttachmentController extends Controller
         // if (count($map) == 0) {
         $map = ProjectMapAttachment::where('id_project', '=', $id)
             ->where('file_type', '=', 'SHP')
-            ->where('step', 'ka')
             ->get();
         // }
+        foreach ($map as $item) {
+            $filename = $item->stored_filename;
+            $item->{"file_url"} = Storage::temporaryUrl('public/map/' . $filename, Carbon::now()->addMinutes(30));
+        }
         return response()->json($map);
     }
 
@@ -385,6 +390,13 @@ class ProjectMapAttachmentController extends Controller
         if (!Storage::disk('public')->exists('map/'. $filename)) {
             return response('File tidak ditemukan', 418);
         }
-        return redirect()->away(Storage::temporaryUrl('public/map/' . $filename, Carbon::now()->addMinutes(30)));
+        $fileUrl = Storage::temporaryUrl('public/map/' . $filename, Carbon::now()->addMinutes(30));
+        $replaced = str_contains(dirname(__FILE__), '\app\Http\Controllers') ?
+            '\app\Http\Controllers' : '/app/Http/Controllers';
+        $tempFile = str_replace($replaced, '', dirname(__FILE__)) . '/public/storage/map/' . $filename;
+        if (!file_exists($tempFile)) {
+            copy($fileUrl, $tempFile);
+        }
+        return file_get_contents($fileUrl);
     }
 }

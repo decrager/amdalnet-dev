@@ -33,8 +33,23 @@
       </el-col>
     </el-row>
     <hr style="border-color: #ccc; ">
-    <div class="context-bar-item" v-html="data.description" />
     <el-row :gutter="30">
+      <el-col :sm="24" :md="14">
+        <p class="header">Deskripsi Kegiatan</p>
+        <Tinymce
+          v-model="data.description"
+          output-format="html"
+          :menubar="''"
+          :image="false"
+          :toolbar="[
+            'bold italic underline bullist numlist  preview undo redo fullscreen',
+          ]"
+          :height="150"
+        />
+      </el-col>
+      <el-col :sm="24" :md="10" align="right">
+        <el-button :loading="loading" type="primary" style="margin-top: 16px;" @click="handleSave">Simpan</el-button>
+      </el-col>
       <el-col :span="20">
         <p class="header">Dampak Potensial</p>
         <p class="data">{{ data.potential_impact }}</p>
@@ -75,10 +90,13 @@
   </div>
 </template>
 <script>
+import Tinymce from '@/components/Tinymce';
 import ProjectActivities from './sections/Activities.vue';
+import Resource from '@/api/resource';
+const projectResource = new Resource('projects');
 export default {
   name: 'ProjectDetail',
-  components: { ProjectActivities },
+  components: { ProjectActivities, Tinymce },
   props: {
     data: {
       type: Object,
@@ -91,6 +109,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       utama: [],
       pendukung: [],
       linkData: [
@@ -120,6 +139,22 @@ export default {
   mounted() {
     this.utama = (this.data.list_sub_project).filter((e) => e.type === 'utama');
     this.pendukung = (this.data.list_sub_project).filter((e) => e.type === 'pendukung');
+  },
+  methods: {
+    async handleSave() {
+      this.loading = true;
+      await projectResource.update(this.$route.params.id, {
+        projectHome: 'true',
+        type: 'description',
+        description: this.data.description,
+      });
+      this.$message({
+        message: 'Data berhasil disimpan',
+        type: 'success',
+        duration: 5 * 1000,
+      });
+      this.loading = false;
+    },
   },
 };
 </script>

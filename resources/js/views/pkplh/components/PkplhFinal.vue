@@ -42,7 +42,8 @@
               action="#"
               :auto-upload="false"
               :on-change="handleUploadChange"
-              :show-file-list="false"
+              :show-file-list="true"
+              :file-list="fileList"
               style="display: inline;"
             >
               <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
@@ -171,17 +172,14 @@ export default {
         id_project: this.idProject,
       });
       this.loading = false;
-      this.disableEdit = true;
 
       if (pkplhFinals.length > 0) {
         const pkplhFinal = pkplhFinals[0];
         this.postForm = pkplhFinal;
         // get file list
         if (pkplhFinal !== null && pkplhFinal.file !== null && pkplhFinal.file !== '') {
-          const spl = pkplhFinal.file.split('/');
-          const idx = spl.length - 1;
           this.fileList.push({
-            name: spl[idx],
+            name: pkplhFinal.title,
             url: pkplhFinal.file,
             id: pkplhFinal.id,
           });
@@ -210,6 +208,12 @@ export default {
       this.loadingUpload = true;
       this.filePkplhFinal = file;
       this.loadingUpload = false;
+
+      this.fileList.push({
+        name: file.name,
+        url: '',
+        id: 1,
+      });
     },
     showFileAlert() {
       this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {

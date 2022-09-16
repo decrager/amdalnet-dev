@@ -12,19 +12,37 @@
     </template>
 
     <p class="header">Deskripsi Lokasi</p>
-    <section v-html="data.location_desc" />
+    <Tinymce
+      v-model="data.location_desc"
+      output-format="html"
+      :menubar="''"
+      :image="false"
+      :toolbar="[
+        'bold italic underline bullist numlist  preview undo redo fullscreen',
+      ]"
+      :height="150"
+    />
 
     <p class="header">Surat Kesesuaian Tata Ruang</p>
     <p class="data"><el-link :href="data.ktr" target="_blank" icon="el-icon-download" type="primary">{{ file_ktr }}</el-link></p>
 
+    <div style="text-align: right;">
+      <el-button :loading="loading" type="primary" @click="handleSave">Simpan</el-button>
+    </div>
+
   </div>
 </template>
 <script>
+import Tinymce from '@/components/Tinymce';
 import ProjectMap from './sections/Map.vue';
+import Resource from '@/api/resource';
+const projectResource = new Resource('projects');
+
 export default {
   name: 'ProjectLocation',
   components: {
     ProjectMap,
+    Tinymce,
   },
   props: {
     data: {
@@ -35,6 +53,7 @@ export default {
   data() {
     return {
       file_ktr: '',
+      loading: false,
     };
   },
 
@@ -43,7 +62,20 @@ export default {
     this.file_ktr = splice[splice.length - 1];
   },
   methods: {
-
+    async handleSave() {
+      this.loading = true;
+      await projectResource.update(this.$route.params.id, {
+        projectHome: 'true',
+        type: 'locationDesc',
+        locationDesc: this.data.location_desc,
+      });
+      this.$message({
+        message: 'Data berhasil disimpan',
+        type: 'success',
+        duration: 5 * 1000,
+      });
+      this.loading = false;
+    },
   },
 };
 </script>

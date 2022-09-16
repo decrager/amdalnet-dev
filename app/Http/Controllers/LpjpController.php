@@ -387,6 +387,10 @@ class LpjpController extends Controller
     public function destroy(Lpjp $lpjp)
     {
         try {
+            $user = User::where('email', $lpjp->email)->first();
+            if($user) {
+                $user->delete();
+            }
             $lpjp->delete();
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);

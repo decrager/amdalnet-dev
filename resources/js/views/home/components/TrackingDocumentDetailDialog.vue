@@ -101,10 +101,23 @@ export default {
       await axios.get('api/timeline?id=' + this.project.id)
         .then(response => {
           if (response.data && response.data.length > 0){
-            this.data = response.data;
+            this.data = response.data.filter(marking => {
+              return !(marking.code === 'UKL-12.1' || marking.code === 'UKL-12.5');
+            });
             if (this.project.marking !== null){
-              const current_marking = this.data.find(e => e.to_place === this.project.marking);
-              this.current_rank = current_marking.rank;
+              if (this.project.marking === 'uklupl-mr.pkplh-published' || this.project.marking === 'uklupl-mt.pkplh-published') {
+                const current_marking = this.data.find(e => e.code === 'UKL-13');
+                this.current_rank = current_marking.rank;
+              } else if (this.project.marking === 'amdal.skkl-published') {
+                const current_marking = this.data.find(e => e.code === 'AMD-24');
+                this.current_rank = current_marking.rank;
+              } else {
+                let current_marking = this.data.find(e => e.to_place === this.project.marking);
+                if (!current_marking) {
+                  current_marking = this.data.find(e => e.state === this.project.marking);
+                }
+                this.current_rank = current_marking.rank;
+              }
             }
           }
         }).finally(() => {

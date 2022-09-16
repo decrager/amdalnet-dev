@@ -43,7 +43,13 @@
             v-if="reports.is_accepted === null"
             style="background-color: #e1e1e1; padding: 10px 0; margin-top: 5px"
           >
-            <h3>Apakah UKL-UPL dapat dilanjutkan ke Uji Kelayakan?</h3>
+            <h3>Apakah UKL-UPL dapat dilanjutkan ke tahapan selanjutnya?</h3>
+            <p style="margin-bottom: 5px">
+              <b>Pilih "Tidak" apabila UKL-UPL memerlukan perbaikan</b>
+            </p>
+            <p style="margin-top: 0">
+              <b>Pilih "Ya" apabila UKL-UPL tidak memerlukan perbaikan</b>
+            </p>
             <div style="text-align: center">
               <el-button
                 :loading="loadingAccept"
@@ -114,9 +120,9 @@ export default {
   computed: {
     acceptedTitle() {
       if (this.reports.is_accepted) {
-        return 'UKL UPL Dilanjutkan ke Uji Kelayakan';
+        return 'UKL UPL Dilanjutkan ke Tahap Selanjutnya';
       } else {
-        return 'UKL UPL Tidak Dilanjutkan ke Uji Kelayakan';
+        return 'UKL UPL Tidak Dilanjutkan ke Tahap Selanjutnya';
       }
     },
   },
@@ -386,11 +392,15 @@ export default {
       this.reports.file = name;
     },
     acceptOrNot(accept) {
-      this.$confirm('Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.', 'Warning', {
-        confirmButtonText: 'Ya',
-        cancelButtonText: 'Tidak',
-        type: 'warning',
-      })
+      this.$confirm(
+        'Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.',
+        'Warning',
+        {
+          confirmButtonText: 'Ya',
+          cancelButtonText: 'Tidak',
+          type: 'warning',
+        }
+      )
         .then(() => {
           this.loadingAccept = true;
           meetingReportResource.store({

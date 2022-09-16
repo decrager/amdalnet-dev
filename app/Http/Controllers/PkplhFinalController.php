@@ -23,6 +23,16 @@ class PkplhFinalController extends Controller
             if ($pkplhFinal) {
                 $filename = $pkplhFinal->file;
                 $pkplhFinal->file = Storage::temporaryUrl('public/' . $filename, Carbon::now()->addMinutes(30));
+
+                // update workflow
+                $project = Project::findOrFail($request->id_project);
+                if($project->marking == 'uklupl-mt.ba-signed') {
+                    $project->workflow_apply('draft-uklupl-recommendation');
+                    $project->workflow_apply('sign-uklupl-recommendation');
+                    $project->workflow_apply('publish-uklupl-pkplh');
+                    $project->save();
+                }
+
                 return [$pkplhFinal];
             }
             return [];
@@ -58,7 +68,7 @@ class PkplhFinalController extends Controller
             if (!Storage::disk('public')->exists('pkplh_final')) {
                 Storage::disk('public')->makeDirectory('pkplh_final');
             }
-            $fileCreated = Storage::disk('public')->put($name, $file);
+            $fileCreated = Storage::disk('public')->put($name, file_get_contents($file));
 
             $pkplh = ProjectPkplhFinal::where('id_project', $data['id_project'])->first();
             $sendLicenseStatus = false;
@@ -79,6 +89,7 @@ class PkplhFinalController extends Controller
                 if ($sendLicenseStatus) {
                     OssService::receiveLicenseStatus($project, '50');
                 }
+
                 return response()->json(['code' => 200, 'data' => $pkplh]);
             }
             return response()->json(['code' => 500, 'fileCreated' => $fileCreated]);

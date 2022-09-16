@@ -42,7 +42,7 @@
               action="#"
               :auto-upload="false"
               :on-change="handleUploadChange"
-              :show-file-list="false"
+              :show-file-list="true"
               style="display: inline;"
             >
               <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
@@ -181,10 +181,8 @@ export default {
         this.postForm = skklFinal;
         // get file list
         if (skklFinal !== null && skklFinal.file !== null && skklFinal.file !== '') {
-          const spl = skklFinal.file.split('/');
-          const idx = spl.length - 1;
           this.fileList.push({
-            name: spl[idx],
+            name: skklFinal.title,
             url: skklFinal.file,
             id: skklFinal.id,
           });
@@ -213,6 +211,11 @@ export default {
       this.loadingUpload = true;
       this.fileSkklFinal = file;
       this.loadingUpload = false;
+      this.fileList.push({
+        name: file.name,
+        url: '',
+        id: 1,
+      });
     },
     showFileAlert() {
       this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {

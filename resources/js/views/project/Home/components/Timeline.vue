@@ -62,11 +62,24 @@ export default {
       this.current_rank = 0;
       await timelineResource.list({ id: this.id })
         .then((res) => {
-          this.activities = this.process(res);
+          this.activities = this.process(res).filter(marking => {
+            return !(marking.code === 'UKL-12.1' || marking.code === 'UKL-12.5');
+          });
 
           if ((this.activities.length > 0) && (this.marking !== null)){
-            const state = this.activities.find(s => s.to_place === this.marking);
-            this.current_rank = state.rank;
+            if (this.marking === 'uklupl-mr.pkplh-published' || this.marking === 'uklupl-mt.pkplh-published') {
+              const state = this.activities.find(s => s.code === 'UKL-13');
+              this.current_rank = state.rank;
+            } else if (this.marking === 'amdal.skkl-published') {
+              const state = this.activities.find(s => s.code === 'AMD-24');
+              this.current_rank = state.rank;
+            } else {
+              let state = this.activities.find(s => s.to_place === this.marking);
+              if (!state) {
+                state = this.activities.find(s => s.state === this.marking);
+              }
+              this.current_rank = state.rank;
+            }
           }
         })
         .finally(() => {

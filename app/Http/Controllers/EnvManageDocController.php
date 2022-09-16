@@ -28,7 +28,7 @@ class EnvManageDocController extends Controller
                     ->get();
                     if (count($rows) > 0) {
                         foreach ($rows as $row) {
-                            $row['filename'] = $this->getFileName($row->filepath);
+                            $row['filename'] = $this->getFileName($row->getRawFilePath());
                         }
                 }
                 return EnvManageDocResource::collection($rows);
@@ -39,7 +39,7 @@ class EnvManageDocController extends Controller
                 ->get();
             if (count($rows) > 0) {
                 foreach ($rows as $row) {
-                    $row['filename'] = $this->getFileName($row->filepath);
+                    $row['filename'] = $this->getFileName($row->getRawFilePath());
                 }
             }
             return EnvManageDocResource::collection($rows);
@@ -79,56 +79,51 @@ class EnvManageDocController extends Controller
      */
     public function store(Request $request)
     {
-        // upload file
-        $params = $request->all();
-        $type = '';
-        $name = '';
-        $unique_name = '';
-        if ($request->hasFile('sppl')) {
-            //create file
-            $file = $request->file('sppl');
-            $unique_name = uniqid() . '.' . $file->extension();
-            $name = 'sppl/' . $unique_name;
-            $type = 'SPPL';
-        } else if ($request->hasFile('dpt')) {
-            //create file
-            $file = $request->file('dpt');
-            $unique_name = uniqid() . '.' . $file->extension();
-            $name = 'dpt/' . $unique_name;
-            $type = 'DPT';
+        if($request->sppl) {
+            $this->uploadSingleFile($request->sppl, 'SPPL', $request->idProject);
         }
-        DB::beginTransaction();
-        try {
-            $file->storePubliclyAs('public', $name);
-            $envManageDoc = null;
-            if ($params['is_update']) {
-                $envManageDoc = EnvManageDoc::find($params['id']);
-                if ($envManageDoc != null) {
-                    $envManageDoc->filepath = $name;
-                    $envManageDoc->save();
+
+        if($request->dpt) {
+            $this->uploadSingleFile($request->dpt, 'DPT', $request->idProject);
+        }
+
+        if($request->ktr) {
+            $this->uploadSingleFile($request->ktr, 'KTR', $request->idProject);
+        }
+
+        $others = json_decode($request->others, true);
+
+        if(count($others) > 0) {
+            for($i = 0; $i < count($others); $i++) {
+                $fileRequest = 'file-' . $i;
+
+                if($request->input($fileRequest)) {
+                    $attachment = new EnvManageDoc();
+                    $attachment->id_project = $request->idProject;
+                    $attachment->name = $others[$i];
+                    $attachment->type = 'OTHERS';
+
+                    $file = $this->base64ToFile($request->input($fileRequest));
+                    $fileName = 'uklupl-attachment/others/' . uniqid() . '.' . $file['extension'];
+                    Storage::disk('public')->put($fileName, $file['file']);
+                    $attachment->filepath = $fileName;
+                    $attachment->save();
                 }
-            } else {
-                $envManageDoc = EnvManageDoc::create([
-                    'id_project' => $params['id_project'],
-                    'type' => $type,
-                    'filepath' => $name,
-                ]);
             }
-            DB::commit();
-            $envManageDoc['filename'] = $unique_name;
-            return response()->json([
-                'status' => 200,
-                'code' => 200,
-                'data' => $envManageDoc,
-            ], 200);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'status' => 500,
-                'code' => 500,
-                'message' => $e->getMessage(),
-            ], 500);
         }
+
+        $deleted = json_decode($request->deleted, true);
+
+        if(count($deleted) > 0) {
+            $files = EnvManageDoc::whereIn('id', $deleted)->get();
+            foreach($files as $file) {
+                Storage::disk('public')->delete($file->getRawFilePath());
+            }
+
+            EnvManageDoc::whereIn('id', $deleted)->delete();
+        }
+
+        return response()->json(['message' => 'success']);
     }
 
     /**
@@ -174,5 +169,41 @@ class EnvManageDocController extends Controller
     public function destroy(EnvManageDoc $envManageDoc)
     {
         //
+    }
+
+    private function uploadSingleFile($file_64, $type, $id_project)
+    {
+        $attachment = EnvManageDoc::where([['id_project', $id_project],['type', $type]])->first();
+        if(!$attachment) {
+            $attachment = new EnvManageDoc();
+            $attachment->id_project = $id_project;
+            $attachment->type = $type;
+        } else {
+            Storage::disk('public')->delete($attachment->getRawFilePath());
+        }
+
+        $file = $this->base64ToFile($file_64);
+        $fileName = strtolower($type) . '/' . uniqid() . '.' . $file['extension'];
+        Storage::disk('public')->put($fileName, $file['file']);
+        $attachment->filepath = $fileName;
+        $attachment->save();
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

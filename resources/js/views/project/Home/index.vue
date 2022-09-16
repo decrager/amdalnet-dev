@@ -35,9 +35,9 @@
             <el-tab-pane label="Tim Penyusun">
               <project-formulator-team v-if="project_id > 0" :id="project_id" />
             </el-tab-pane>
-            <el-tab-pane label="SPT dan Konsultasi Publik">
+            <el-tab-pane :label="sptLabel">
               <project-public-feedback v-if="announcement_id > 0" :id="announcement_id" />
-              <project-public-consultation v-if="project_id > 0" :id="project_id" />
+              <project-public-consultation v-if="project_id > 0 && data.required_doc !== 'UKL-UPL'" :id="project_id" />
             </el-tab-pane>
             <el-tab-pane label="Lampiran">
               <!-- <screening-attachments :data="data"/>
@@ -101,6 +101,13 @@ export default {
     },
     project_id: function(){
       return this.isPublic ? this.id : (this.$route.params && this.$route.params.id);
+    },
+    sptLabel: function() {
+      if (this.data.required_doc === 'UKL-UPL') {
+        return 'Saran, Pendapat dan Tanggapan Masyarakat';
+      }
+
+      return 'SPT dan Konsultasi Publik';
     },
   },
   mounted(){

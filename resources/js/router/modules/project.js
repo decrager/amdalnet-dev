@@ -73,6 +73,20 @@ const projectRoutes = {
       },
       props: true,
     },
+    // {
+    //   path: 'penyusun/:id/create',
+    //   component: () => import('@/views/project/CreatePenyusunByInitiator'),
+    //   name: 'createPenyusunByInitiator',
+    //   hidden: true,
+    //   meta: {
+    //     title: 'createPenyusunByInitiator',
+    //     icon: 'documentation',
+    //     noCache: true,
+    //     breadcrumb: false,
+    //     permissions: ['view menu formulator team', 'manage formulator team'],
+    //   },
+    //   props: true,
+    // },
     {
       path: 'home/:id(\\d+)',
       component: () => import('@/views/project/Home/index'),
