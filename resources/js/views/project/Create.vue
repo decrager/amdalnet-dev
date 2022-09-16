@@ -358,7 +358,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item
-                  label="Hasil Kewenangan dari OSS"
+                  label="Hasil Kewenangan sesuai dengan Perizinan Berusaha"
                   prop="oss_authority"
                 >
                   <el-select
@@ -932,14 +932,14 @@ export default {
       fileOssReqDocName: 'No File Selected',
       fileOssSpplDocName: 'No File Selected',
       ossRiskOptions: [
-        {
-          value: 'Rendah',
-          label: 'Rendah',
-        },
-        {
-          value: 'Menengah Rendah',
-          label: 'Menengah Rendah',
-        },
+        // {
+        //   value: 'Rendah',
+        //   label: 'Rendah',
+        // },
+        // {
+        //   value: 'Menengah Rendah',
+        //   label: 'Menengah Rendah',
+        // },
         {
           value: 'Menengah Tinggi',
           label: 'Menengah Tinggi',
