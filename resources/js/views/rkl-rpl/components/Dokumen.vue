@@ -5,11 +5,7 @@
       <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
         <div class="el-alert__content">
           <p class="el-alert__description">
-            <ul>
-              <li>
-                Pastikan Workspace ANDAL RKL RPL sudah dilengkapi
-              </li>
-            </ul>
+            Pastikan Workspace ANDAL RKL RPL sudah dilengkapi
           </p>
         </div>
       </div>

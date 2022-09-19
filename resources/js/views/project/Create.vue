@@ -495,9 +495,7 @@
                 <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
                   <div class="el-alert__content">
                     <p class="el-alert__description">
-                      <ul>
-                        <li>Untuk pengajuan persetujuan yang sudah berjalan, saat ini masih dalam tahap pengembangan.</li>
-                      </ul>
+                      Untuk pengajuan persetujuan yang sudah berjalan, saat ini masih dalam tahap pengembangan.
                     </p>
                   </div>
                 </div>
@@ -550,9 +548,7 @@
                 <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
                   <div class="el-alert__content">
                     <p class="el-alert__description">
-                      <ul>
-                        <li>Untuk pengajuan persetujuan kegiatan pengembangan, saat ini masih dalam tahap pengembangan.</li>
-                      </ul>
+                      Untuk pengajuan persetujuan kegiatan pengembangan, saat ini masih dalam tahap pengembangan.
                     </p>
                   </div>
                 </div>

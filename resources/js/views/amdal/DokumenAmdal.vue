@@ -4,11 +4,7 @@
       <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
         <div class="el-alert__content">
           <p class="el-alert__description">
-            <ul>
-              <li>
-                Pastikan Workspace AMDAL sudah dilengkapi
-              </li>
-            </ul>
+            Pastikan Workspace AMDAL sudah dilengkapi
           </p>
         </div>
       </div>
