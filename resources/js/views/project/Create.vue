@@ -487,10 +487,21 @@
             :model="currentProject"
             :rules="statusKegiatanRules"
             label-position="top"
-            label-width="200px"
+            label-width="100%"
             style="max-width: 100%"
           >
             <el-row>
+              <el-col :span="12" style="width: 100%;">
+                <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
+                  <div class="el-alert__content">
+                    <p class="el-alert__description">
+                      <ul>
+                        <li>Untuk pengajuan persetujuan yang sudah berjalan, saat ini masih dalam tahap pengembangan.</li>
+                      </ul>
+                    </p>
+                  </div>
+                </div>
+              </el-col>
               <el-col :span="12">
                 <el-form-item
                   label="Rencana Kegiatan Baru atau Kegiatan Yang Sudah Berjalan"
@@ -508,6 +519,7 @@
                       :key="item.value.id"
                       :label="item.label"
                       :value="item.value"
+                      :disabled="item.disabled"
                     />
                   </el-select>
                 </el-form-item>
@@ -534,6 +546,17 @@
             style="max-width: 100%"
           >
             <el-row>
+              <el-col :span="12" style="width: 100%;">
+                <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
+                  <div class="el-alert__content">
+                    <p class="el-alert__description">
+                      <ul>
+                        <li>Untuk pengajuan persetujuan kegiatan pengembangan, saat ini masih dalam tahap pengembangan.</li>
+                      </ul>
+                    </p>
+                  </div>
+                </div>
+              </el-col>
               <el-col :span="12">
                 <el-form-item
                   label="Kegiatan Baru atau Bagian dari Kegiatan Sebelumnya?"
@@ -551,6 +574,7 @@
                       :key="item.value.id"
                       :label="item.label"
                       :value="item.value"
+                      :disabled="item.disabled"
                     />
                   </el-select>
                 </el-form-item>
@@ -1007,20 +1031,24 @@ export default {
       ],
       statusOptions: [
         {
+          disabled: false,
           value: 'Rencana',
           label: 'Rencana',
         },
         {
+          disabled: true,
           value: 'Berjalan',
           label: 'Berjalan',
         },
       ],
       projectTypeOptions: [
         {
+          disabled: false,
           value: 'Baru',
           label: 'Baru',
         },
         {
+          disabled: true,
           value: 'Pengembangan',
           label: 'Pengembangan',
         },
