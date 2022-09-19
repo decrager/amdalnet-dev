@@ -2,6 +2,17 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card v-loading="loading">
+      <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
+        <div class="el-alert__content">
+          <p class="el-alert__description">
+            <ul>
+              <li>
+                Pastikan Workspace ANDAL RKL RPL sudah dilengkapi
+              </li>
+            </ul>
+          </p>
+        </div>
+      </div>
       <h2>
         Submit Dokumen ANDAL RKL RPL
         <span v-if="isFormulator">ke Pemrakarsa</span>

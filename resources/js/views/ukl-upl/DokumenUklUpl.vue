@@ -2,6 +2,17 @@
   <div class="app-container" style="padding: 24px">
     <el-card v-loading="loading">
       <workflow-ukl />
+      <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
+        <div class="el-alert__content">
+          <p class="el-alert__description">
+            <ul>
+              <li>
+                Pastikan Workspace UKL UPL sudah dilengkapi
+              </li>
+            </ul>
+          </p>
+        </div>
+      </div>
       <h2>
         Submit Formulir UKL UPL
         <span v-if="isFormulator">ke Pemrakarsa</span>
