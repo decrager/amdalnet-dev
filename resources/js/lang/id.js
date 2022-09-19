@@ -454,8 +454,8 @@ export default {
       luk: 'LUK',
       'examiner-chief': 'Ketua Ahli',
       'examiner-secretary': 'Kepala Sekretariat',
-      'examiner-administration': 'Validator Administrasi',
-      'examiner-substance': 'Validator Substansi',
+      'examiner-administration': 'Ketua TUK',
+      'examiner-substance': 'Anggota TUK',
       'examiner-community': 'Ahli Komunitas',
     },
     description: {
