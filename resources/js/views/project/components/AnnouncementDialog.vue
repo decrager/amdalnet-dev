@@ -2,8 +2,14 @@
   <el-dialog :title="'Publish Pengumuman'" :visible.sync="show" :close-on-click-modal="false" :show-close="false" :destroy-on-close="true" @close="onClose">
     <div class="form-container">
       <el-form ref="announcement" :model="announcement" :rules="announcementRules">
-
         <div>
+          <div v-if="announcement.project_result == 'UKL-UPL'" role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
+            <div class="el-alert__content">
+              <p class="el-alert__description">
+                Publish pengumuman pada UKL-UPL hanya untuk memenuhi aspek keterbukaan publik.
+              </p>
+            </div>
+          </div>
           <p style="font-weight:bold;">Penanggung Jawab</p>
           <div style="padding:1em 2em; border: 1px solid #efefef; border-radius: 0.3em; margin: 1em auto;">
             <el-row :gutter="8">
