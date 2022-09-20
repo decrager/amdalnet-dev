@@ -93,6 +93,7 @@ class UsersTableSeeder extends Seeder
                     'name' => $fullName,
                     'email' => strtolower($name) . '@amdalnet.dev',
                     'password' => \Illuminate\Support\Facades\Hash::make('amdalnet'),
+                    // 'activate' => '1',
                 ]);
 
                 $role = Role::findByName($roleName);

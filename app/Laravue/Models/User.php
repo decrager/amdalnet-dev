@@ -140,7 +140,7 @@ class User extends Authenticatable
 
         $user = static::query()->create($attributes);
 
-        Notification::send($user, new UserRegistered($user, $original_password));
+        // Notification::send($user, new UserRegistered($user, $original_password));
         event(new \App\Events\NotificationEvent());
 
         return $user;
