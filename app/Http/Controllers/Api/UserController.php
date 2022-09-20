@@ -27,6 +27,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -75,39 +76,45 @@ class UserController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $validator = Validator::make(
-            $request->all(),
-            array_merge(
-                $this->getValidationRules(),
-                [
-                    'password' => ['required', 'min:6'],
-                    'confirmPassword' => 'same:password',
-                ]
-            )
-        );
+        {
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                array_merge(
+                    $this->getValidationRules(),
+                    [
+                        'password' => ['required', 'min:6'],
+                        'confirmPassword' => 'same:password',
+                    ]
+                )
+            );
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 403);
-        } else {
-            $params = $request->all();
-            $password = Str::random(8);
-            $user = User::create([
-                'name' => $params['name'],
-                'email' => strtolower($params['email']),
-                'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($password),
-                'original_password' => isset($params['password']) ? $params['password'] : $password
-            ]);
-            $role = Role::findByName($params['role']);
-            $user->syncRoles($role);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 403);
+            } else {
+                $params = $request->all();
+                $password = Str::random(8);
+                $user = User::create([
+                    'name' => $params['name'],
+                    'email' => strtolower($params['email']),
+                    'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($password),
+                    'original_password' => isset($params['password']) ? $params['password'] : $password
+                ]);
+                $role = Role::findByName($params['role']);
+                $user->syncRoles($role);
 
-            // $admins = User::all()->filter(function($user) {
-            //     return $user->hasRole('admin');
-            // });
+                // $admins = User::all()->filter(function($user) {
+                //     return $user->hasRole('admin');
+                // });
 
-            // Notification::send($admins, new UserRegistered($user));
-
-            return new UserResource($user);
+                // Notification::send($admins, new UserRegistered($user));
+                DB::commit();
+                return new UserResource($user);
+            }
+        } catch (\Exception $th) {
+            DB::rollBack();
+            return response($th, 500);
         }
     }
 
@@ -148,7 +155,7 @@ class UserController extends BaseController
 
         if($request->current && $request->new) {
             if(!Hash::check($request->current, $user->password)) {
-                return response()->json(['error' => 'Password lama salah']); 
+                return response()->json(['error' => 'Password lama salah']);
             }
 
             $user->password = Hash::make($request->new);
