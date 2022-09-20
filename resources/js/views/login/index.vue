@@ -110,6 +110,7 @@
                 <el-form-item prop="province" :label="$t('login.province')">
                   <el-select
                     v-model="registrationForm.province"
+                    filterable
                     name="province"
                     :placeholder="$t('login.province')"
                     style="width: 100%"
@@ -128,6 +129,7 @@
                 <el-form-item prop="district" :label="$t('login.district')">
                   <el-select
                     v-model="registrationForm.district"
+                    filterable
                     name="district"
                     :placeholder="$t('login.district')"
                     style="width: 100%"
@@ -254,6 +256,7 @@
                 <el-form-item prop="province" :label="$t('login.province')">
                   <el-select
                     v-model="registrationForm.province"
+                    filterable
                     name="province"
                     :placeholder="$t('login.province')"
                     style="width: 100%"
@@ -272,6 +275,7 @@
                 <el-form-item prop="district" :label="$t('login.district')">
                   <el-select
                     v-model="registrationForm.district"
+                    filterable
                     name="district"
                     :placeholder="$t('login.district')"
                     style="width: 100%"
@@ -388,6 +392,7 @@
                 <el-form-item prop="province" :label="$t('login.province')">
                   <el-select
                     v-model="registrationForm.province"
+                    filterable
                     name="province"
                     :placeholder="$t('login.province')"
                     style="width: 100%"
@@ -406,6 +411,7 @@
                 <el-form-item prop="district" :label="$t('login.district')">
                   <el-select
                     v-model="registrationForm.district"
+                    filterable
                     name="district"
                     :placeholder="$t('login.district')"
                     style="width: 100%"
