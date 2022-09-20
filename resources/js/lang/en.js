@@ -434,7 +434,7 @@ export default {
       'formulator-member': 'formulator-member',
       'formulator-expert': 'formulator-expert',
       lpjp: 'lpjp',
-      pustanling: 'pustanling',
+      pustanling: 'pusfaster',
       luk: 'luk',
       'examiner-chief': 'examiner-chief',
       'examiner-secretary': 'examiner-secretary',
