@@ -4,7 +4,7 @@
       <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
         <div class="el-alert__content">
           <p class="el-alert__description">
-            Pastikan Workspace AMDAL sudah dilengkapi
+            Pastikan Workspace Formulir Kerangka Acuan sudah dilengkapi
           </p>
         </div>
       </div>
