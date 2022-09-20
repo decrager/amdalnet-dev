@@ -15,6 +15,7 @@ const state = {
   roles: [],
   permissions: [],
   notifications: [],
+  page: 'login',
 };
 
 const mutations = {
@@ -45,6 +46,9 @@ const mutations = {
   SET_USER: (state, user) => {
     state.user = user;
   },
+  SET_PAGE_REGISTER: (state, page) => {
+    state.page = page;
+  },
 };
 
 const actions = {
@@ -62,6 +66,10 @@ const actions = {
           reject(error);
         });
     });
+  },
+
+  setPage({ commit }, page) {
+    commit('SET_PAGE_REGISTER', page);
   },
 
   // get user info
