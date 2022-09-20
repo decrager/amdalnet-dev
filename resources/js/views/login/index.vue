@@ -71,8 +71,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Unggah Dokumen NIB dari OSS (Max 10MB)" prop="fileNibDocOss">
-                  <classic-upload :name="fileNibDocOssName" :fid="'nibDocOssFile'" @handleFileUpload="handleFilenibDocOssUpload($event)" />
+                <el-form-item label="Unggah Dokumen NIB dan SPPL dari OSS" prop="fileNibDocOss">
+                  <classic-upload :name="fileNibDocOssName" style="border: 0px !important" :fid="'nibDocOssFile'" @handleFileUpload="handleFilenibDocOssUpload($event)" />
                 </el-form-item>
               </el-col>
             </el-row>

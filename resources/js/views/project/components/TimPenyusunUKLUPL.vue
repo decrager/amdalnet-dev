@@ -2,6 +2,19 @@
   <div class="form-container" style="margin: 24px">
     <el-card>
       <h3>Daftar Tim Penyusun Kegiatan</h3>
+      <div role="alert" class="el-alert el-alert--info is-light" style="margin-top: 10px; margin-bottom: 10px">
+        <div class="el-alert__content">
+          <p class="el-alert__description">
+            <b>Penyusunan UKL-UPL:</b>
+            <ul>
+              <li>Dapat dilakukan oleh pemrakarsa secara mandiri</li>
+              <li>Setiap penyusunan UKL-UPL (termasuk apabila dilakukan oleh pemrakasa sendiri), wajib membuat akun penyusun di amdalnet</li>
+              <li>Apabila penyusun sudah memiliki akun, silahkan cari nama penyusun pada tombol pencarian dibawah</li>
+              <li>Untuk penyusunan UKL-UPL tidak harus dari KTPA atau ATPA</li>
+            </ul>
+          </p>
+        </div>
+      </div>
       <el-row :gutter="32">
         <el-col :sm="24" :md="12">
           <el-row :gutter="32">

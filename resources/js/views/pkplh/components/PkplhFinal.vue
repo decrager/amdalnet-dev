@@ -80,7 +80,7 @@
     <div v-if="!disableEdit" slot="footer" class="dialog-footer">
       <el-button :loading="loadingSubmit" type="primary" @click="handleSubmit()"> Submit </el-button>
     </div>
-    <el-row v-if="!isPemerintah" style="margin-top: 20px;">
+    <!-- <el-row v-if="!isPemerintah" style="margin-top: 20px;">
       <el-col :span="24">
         <span style="margin-right: 10px;"><h4>Unduh PKPLH Final Dari OSS</h4></span>
         <el-button
@@ -92,7 +92,7 @@
           Unduh
         </el-button>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
