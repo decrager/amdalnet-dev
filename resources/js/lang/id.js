@@ -450,7 +450,7 @@ export default {
       'formulator-member': 'Anggota Penyusun',
       'formulator-expert': 'Tim Ahli',
       lpjp: 'LPJP',
-      pustanling: 'pustanling',
+      pustanling: 'Pusfaster',
       luk: 'LUK',
       'examiner-chief': 'Ketua Ahli',
       'examiner-secretary': 'Kepala Sekretariat',
