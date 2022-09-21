@@ -356,6 +356,7 @@ class Workspace
         }
     
         $saved = 1;
+        Log::debug('processForceSave: ' . $downloadUri . ' from ' . $downloadExt . ' to ' . $curExt);
         
         // donwload data from oods
         if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
