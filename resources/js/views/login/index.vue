@@ -739,6 +739,50 @@ export default {
           value: 'pt',
           label: 'Perseroan Terbatas (PT)',
         },
+        {
+          value: 'ptpr',
+          label: 'Perseroan Terbatas (PT) Perorangan',
+        },
+        {
+          value: 'cv',
+          label: 'Persekutuan Komanditer (CV / Commanditaire Vennootschap)',
+        },
+        {
+          value: 'fa',
+          label: 'Persekutuan Firma (FA / Vennootschap Onder Firma)',
+        },
+        {
+          value: 'pp',
+          label: 'Persekutuan Perdata',
+        },
+        {
+          value: 'kpi',
+          label: 'Koperasi',
+        },
+        {
+          value: 'pap',
+          label: 'Persyarikatan atau Perkumpulan',
+        },
+        {
+          value: 'ysn',
+          label: 'Yayasan',
+        },
+        {
+          value: 'perum',
+          label: 'Perusahaan Umum (Perum)',
+        },
+        {
+          value: 'perumda',
+          label: 'Perusahaan Umum Daerah (Perumda)',
+        },
+        {
+          value: 'blu',
+          label: 'Badan Layanan Umum',
+        },
+        {
+          value: 'bhl',
+          label: 'Badan Hukum Lainnya',
+        },
       ],
       form: 'login',
       fileAgencyUpload: null,

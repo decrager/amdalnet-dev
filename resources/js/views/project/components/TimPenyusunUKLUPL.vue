@@ -8,7 +8,7 @@
             <b>Penyusunan UKL-UPL:</b>
             <ul>
               <li>Dapat dilakukan oleh pemrakarsa secara mandiri</li>
-              <li>Setiap penyusunan UKL-UPL (termasuk apabila dilakukan oleh pemrakasa sendiri), wajib membuat akun penyusun di amdalnet</li>
+              <li>Setiap penyusunan UKL-UPL (termasuk apabila dilakukan oleh pemrakasa sendiri), wajib membuat akun penyusun di amdalnet melalui <span style="color: blue" @click="logout">link</span> berikut</li>
               <li>Apabila penyusun sudah memiliki akun, silahkan cari nama penyusun pada tombol pencarian dibawah</li>
               <li>Untuk penyusunan UKL-UPL tidak harus dari KTPA atau ATPA</li>
             </ul>
@@ -244,6 +244,12 @@ export default {
       await this.getTimPenyusun();
 
       this.loadingSubmit = false;
+    },
+    logout() {
+      this.$store.dispatch('user/logout').then(() => {
+        // this.$store.dispatch('user/setPage', 'register')
+        this.$router.push({ path: '/login' });
+      });
     },
     download(url) {
       window.open(url, '_blank').focus();
