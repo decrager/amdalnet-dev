@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <el-alert
       style="margin-top: 5px; margin-bottom: 5px"
@@ -95,7 +95,7 @@
       </el-table-column>
     </el-table>
   </div>
-</template>
+</template> -->
 
 <script>
 import { mapGetters } from 'vuex';
