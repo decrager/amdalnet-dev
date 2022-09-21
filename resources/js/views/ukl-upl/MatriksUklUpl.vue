@@ -34,7 +34,7 @@
             @handleDokPendukungUploaded="handleDokPendukungUploaded"
           />
         </el-collapse-item>
-        <el-collapse-item name="4" title="PETA TITIK PEMANTAUAN & PENGELOLAAN" :disabled="petaBatasDisabled">
+        <el-collapse-item name="4" title="PETA TITIK PENGELOLAAN & PEMANTAUAN" :disabled="petaBatasDisabled">
           <upload-peta-batas-ukl-upl
             v-if="activeName === '4'"
             @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan"
