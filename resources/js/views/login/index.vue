@@ -42,7 +42,7 @@
             </el-button>
           </el-form-item>
           <el-row type="flex" class="row-bg" justify="space-between">
-            <el-button type="text" style="background-color: transparent; color: blue;">Lupa Kata Sandi?</el-button>
+            <!-- <el-button type="text" style="background-color: transparent; color: blue;">Lupa Kata Sandi?</el-button> -->
             <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak Memiliki Akun? <span style="color: red">Buat Akun Baru</span> </el-button>
           </el-row>
         </el-form>
