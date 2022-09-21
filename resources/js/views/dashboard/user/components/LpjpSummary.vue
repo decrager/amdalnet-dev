@@ -1,71 +1,100 @@
+
 <template>
-  <el-card class="box-card">
-    <div slot="header" class="clearfix">
-      <span>Persetujuan</span>
-    </div>
-    <div class="user-summary-cards">
-
-      <el-row :gutter="10">
-        <el-col :span="8">
-          <el-card id="total" class="box-card" style="background: #303030; color: white;">
-            <span class="title">Total</span>
-            <span class="value">{{ summary.total }}</span>
-          </el-card>
-        </el-col>
-        <el-col :span="8">
-          <el-card id="total" class="box-card" style="background: #347437; color: white;">
-            <span class="title">Amdal</span>
-            <span class="value">{{ summary.amdal }}</span>
-          </el-card>
-        </el-col>
-        <el-col :span="8">
-          <el-card id="total" class="box-card" style="background: #449748; color: white;">
-            <span class="title">UKL UPL MT/T</span>
-            <span class="value">{{ summary.uklupl_mtt }}</span>
-          </el-card>
-        </el-col>
-      </el-row>
-      <el-row :gutter="10" style="margin-top: 0.6em;">
-        <el-col :span="8">
-          <el-card id="total" class="box-card" style="background: #EB8A00; color: white;">
-            <span class="title">SPPL</span>
-            <span class="value">{{ summary.sppl }}</span>
-          </el-card>
-        </el-col>
-        <el-col :span="8">
-          <el-card id="total" class="box-card" style="background: #FAC400; color: white;">
-            <span class="title">Adendum Andal dan RKL RPL</span>
-            <span class="value">{{ summary.addendum }}</span>
-          </el-card>
-        </el-col>
-        <el-col :span="8">
-          <el-card id="total" class="box-card" style="background: #449748; color: white;">
-            <span class="title">UKL UPL R/MR</span>
-            <span class="value">{{ summary.uklupl_rmr }}</span>
-          </el-card>
-        </el-col>
-      </el-row>
-
-    </div>
-  </el-card>
+  <div class="user-summary">
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>Persetujuan</span>
+      </div>
+      <!-- flexbox -->
+      <el-skeleton v-if="isLoading || (summary === null)" :rows="6" />
+      <div v-else class="user-summary-cards">
+        <!-- -->
+        <el-row>
+          <el-col :span="8">
+            <el-card id="total" class="box-card" style="background: #0A2F08; color: white;">
+              <span class="title">Total</span>
+              <span class="value">{{ summary.total }}</span>
+            </el-card>
+          </el-col>
+          <el-col :span="16">
+            <el-row>
+              <el-col :span="12">
+                <!-- #638761 -->
+                <el-card class="box-card" style="background: #347437; color: white;">
+                  <span class="title">AMDAL</span>
+                  <span class="value">{{ summary.amdal }}</span>
+                </el-card>
+              </el-col>
+              <el-col :span="12">
+                <!-- #61929d -->
+                <el-card class="box-card" style="background: #449748; color: white;">
+                  <span class="title">UKL-UPL</span>
+                  <span class="value">{{ summary.uklupl }}</span>
+                </el-card>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <!-- #54abab -->
+                <el-card class="box-card" style="background: #EB8A00; color: white;">
+                  <span class="title">SPPL</span>
+                  <span class="value">{{ summary.sppl }}</span>
+                </el-card>
+              </el-col>
+              <el-col :span="12">
+                <!-- #a5c5bc -->
+                <el-card class="box-card" style="background: #FAC400; color: white;">
+                  <span class="title smaller">Addendum Andal dan RKL RPL</span>
+                  <span class="value" style="margin-top: 0.5em;">{{ summary.addendum }}</span>
+                </el-card>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+      </div>
+    </el-card>
+  </div>
 </template>
 <script>
 import Resource from '@/api/resource';
-const countResource = new Resource('dashboard/lpjp-count');
-
+const countResource = new Resource('proposal-count');
 export default {
-  name: 'LpjpSummary',
+  name: 'UserSummary',
   props: {
     user: {
       type: Object,
-      default: () => {},
+      default: null,
     },
   },
-  data(){
+  data() {
     return {
-      summary: {},
-      loading: false,
+      isLoading: true,
+      /* data: [
+        { label: 'Total', value: 18 },
+        { label: 'AMDAL', value: 3 },
+        { label: 'UKL-UPL', value: 5 },
+        { label: 'SPPL', value: 7 },
+        { label: 'Adendum AMDAL', value: 0 },
+        { label: 'Adendum UKL-UPL', value: 0 },
+      ],*/
+      summary: null, // { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 0, addendum_amdal: 0 },
+      // summary: { total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0 },
+
     };
+  },
+  computed: {
+    isFormulator(){
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isInitiator(){
+      return this.$store.getters.roles.includes('initiator');
+    },
+    isLPJP(){
+      return this.$store.getters.roles.includes('lpjp');
+    },
+    isExaminer(){
+      return this.$store.getters.roles[0].split('-')[0] === 'examiner';
+    },
   },
   watch: {
     user: function(val) {
@@ -73,16 +102,68 @@ export default {
       this.getCount();
     },
   },
+  mounted() {
+    this.isLoading = false;
+    console.log('user Summary');
+  },
   methods: {
-    async getCount(){
-      this.loading = true;
-      await countResource.list({ lpjpId: this.user.id })
-        .then((res) => {
-          this.summary = res;
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+    async getCount() {
+      this.isLoading = true;
+      let param = null;
+      if (this.isInitiator) {
+        param = { initiatorId: this.user.id };
+      }
+      if (this.isFormulator) {
+        param = { formulatorId: this.user.id };
+      }
+      if (this.isLPJP) {
+        param = { lpjpId: this.user.id };
+      }
+
+      await countResource.list(param).then((res) => {
+        let total = 0;
+        const summary = {
+          total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0,
+        };
+        let doc = res.find((e) => e.required_doc === 'AMDAL');
+        if (doc) {
+          summary.amdal = doc.total;
+          total = total + doc.total;
+        } else {
+          summary.amdal = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'UKL-UPL');
+        if (doc) {
+          summary.uklupl = doc.total;
+          total = total + doc.total;
+        } else {
+          summary.uklupl = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'SPPL');
+        if (doc) {
+          summary.sppl = doc.total;
+          total = total + doc.total;
+        } else {
+          summary.sppl = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'ADDENDUM');
+        if (doc) {
+          summary.addendum = doc.total;
+          total = total + doc.total;
+        } else {
+          summary.addendum = 0;
+        }
+
+        summary.total = total;
+        this.summary = summary;
+        this.isLoading = false;
+        console.log('getCount: ', this.summary);
+      }).finally((f) => {
+        this.isLoading = false;
+      });
     },
   },
 };
@@ -112,6 +193,15 @@ export default {
     }
     .smaller {
       font-size: 86%;
+    }
+
+    &#total {
+      height: 300px;
+      .value {
+        position: relative;
+        top: 80px;
+        font-weight: bolder;
+      }
     }
   }
 }
