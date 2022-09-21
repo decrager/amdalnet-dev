@@ -96,7 +96,8 @@ class WorkspaceController extends Controller
         $appUrl = env('APP_URL');
         $callUrl = env('OFFICE_CALLBACK_URL');
         $filename = $request->query('filename', 'sample.docx');
-        $dockey = md5($filename.$id);
+        $dirs = Storage::disk('public')->directories('workspace/'.$filename.'-hist');
+        $dockey = md5($filename.$id.strval(count($dirs)));
         $config = [
             'width' => '100%',
             'height' => '100%',
@@ -105,7 +106,7 @@ class WorkspaceController extends Controller
             'document' => [
                 'fileType' => 'docx',
                 'key' => $dockey,
-                'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
+                'title' => 'Edited Document.docx',
                 // 'url' => $appUrl.'/workspace/document/download?fileName=61943e88ad99a.docx',
                 // 'url' => $callUrl.'/storage/workspace/'.$filename,
                 'url' => Storage::disk('public')->temporaryUrl('workspace/'.$filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
