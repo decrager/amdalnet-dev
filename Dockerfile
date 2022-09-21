@@ -23,8 +23,8 @@ RUN yes "no" | pecl install redis && docker-php-ext-enable redis
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY . .
-COPY .env.example .env
+# COPY . .
+# COPY .env.example .env
 
 # CMD ["bash", "./laravue-entrypoint.sh"]
 
