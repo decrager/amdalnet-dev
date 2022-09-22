@@ -308,7 +308,7 @@
                   Workspace UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork && isPemerintah && scope.row.required_doc === 'SPPL'"
+                  v-if="isInitiator && !isScoping && !isDigiWork && isPemerintah"
                   href="#"
                   type="text"
                   icon="el-icon-document"
