@@ -92,14 +92,18 @@ export default {
     ]),
     getRole() {
       const roles = this.$store.getters.roles.map(value => {
-        // if (value === 'initiator'){
-        //   value = 'pemrakarsa';
-        // } else if (value === 'formulator'){
-        //   value = 'penyusun';
-        // } else if (value === 'examiner'){
-        //   value = 'ahli';
-        // }
-        const translatedRole = this.$t('roles.title.' + value);
+        if (value === 'institution'){
+          value = 'LSP';
+        } else if (value === 'pustanling'){
+          value = 'Pusfaster';
+        } else if (value === 'examiner-secretary'){
+          value = 'Kepala Sekretariat TUK';
+        } else if (value === 'examiner-substance'){
+          value = 'TUK';
+        } else if (value === 'examiner-administration'){
+          value = 'TUK';
+        }
+        const translatedRole = this.$t(value);
         return this.$options.filters.uppercaseFirst(translatedRole);
       });
       return roles.join(' | ');
