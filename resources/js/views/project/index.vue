@@ -317,7 +317,7 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork && !isPemerintah"
+                  v-if="isInitiator && !isScoping && !isDigiWork && !isPemerintah && scope.row.required_doc === 'SPPL'"
                   href="#"
                   type="text"
                   icon="el-icon-document"
