@@ -92,19 +92,24 @@ export default {
     ]),
     getRole() {
       const roles = this.$store.getters.roles.map(value => {
-        if (value === 'institution'){
-          value = 'LSP';
-        } else if (value === 'pustanling'){
-          value = 'Pusfaster';
-        } else if (value === 'examiner-secretary'){
-          value = 'Kepala Sekretariat TUK';
-        } else if (value === 'examiner-substance'){
-          value = 'TUK';
-        } else if (value === 'examiner-administration'){
-          value = 'TUK';
+        if (value === 'institution' || value === 'pustanling' || value === 'examiner-secretary' || value === 'examiner-substance' || value === 'examiner-administration') {
+          if (value === 'institution'){
+            value = 'LSP';
+          } else if (value === 'pustanling'){
+            value = 'Pusfaster';
+          } else if (value === 'examiner-secretary'){
+            value = 'Kepala Sekretariat TUK';
+          } else if (value === 'examiner-substance'){
+            value = 'TUK';
+          } else if (value === 'examiner-administration'){
+            value = 'TUK';
+          }
+          const translatedRole = this.$t(value);
+          return this.$options.filters.uppercaseFirst(translatedRole);
+        } else if (value !== 'institution' || value !== 'pustanling' || value !== 'examiner-secretary' || value !== 'examiner-substance' || value !== 'examiner-administration') {
+          const translatedRole = this.$t('roles.title.' + value);
+          return this.$options.filters.uppercaseFirst(translatedRole);
         }
-        const translatedRole = this.$t(value);
-        return this.$options.filters.uppercaseFirst(translatedRole);
       });
       return roles.join(' | ');
     },
