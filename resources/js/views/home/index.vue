@@ -11,6 +11,7 @@
     <ukl-menengah v-if="toggleUklMenengah" />
     <ukl-spesifik v-if="toggleUklSpesifik" />
     <Sop v-if="toggleSop" />
+    <Cluster v-if="toggleCluster" />
     <action-home v-if="toggleMenu" @showAmdalDigital="handleSetMenu('AMDALDigital')" />
     <proposal-counter v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
@@ -37,6 +38,7 @@ import Materi from './section/Materi.vue';
 import Uklm from './section/Uklm.vue';
 import Ukls from './section/Ukls.vue';
 import Sop from './section/Sop.vue';
+import Cluster from './section/Cluster.vue';
 import Persetujuan from './section/Persetujuan.vue';
 import ActionHome from './section/Action.vue';
 import ProposalCounter from './section/ProposalCounter.vue';
@@ -59,6 +61,7 @@ export default {
     'ukl-menengah': Uklm,
     'ukl-spesifik': Ukls,
     'Sop': Sop,
+    'Cluster': Cluster,
     'izin': Izin,
     'persetujuan': Persetujuan,
     'action-home': ActionHome,
@@ -80,6 +83,7 @@ export default {
       toggleUklMenengah: false,
       toggleUklSpesifik: false,
       toggleSop: false,
+      toggleCluster: false,
       toggleAD: false,
       toggleLPJP: false,
       toggleTentang: false,
@@ -111,6 +115,7 @@ export default {
       const men = (e === 'UKL_UPL_M') ? 'true' : 'false';
       const spec = (e === 'UKL_UPL_S') ? 'true' : 'false';
       const sop = (e === 'SOP') ? 'true' : 'false';
+      const cluster = (e === 'CLUSTER') ? 'true' : 'false';
       const ad = (e === 'AMDALDigital') ? 'true' : 'false';
       const lpjp = (e === 'LPJP') ? 'true' : 'false';
       const tentang = (e === 'TENTANG') ? 'true' : 'false';
@@ -122,6 +127,7 @@ export default {
       this.toggleUklMenengah = JSON.parse(men);
       this.toggleUklSpesifik = JSON.parse(spec);
       this.toggleSop = JSON.parse(sop);
+      this.toggleCluster = JSON.parse(cluster);
       this.toggleAD = JSON.parse(ad);
       this.toggleLPJP = JSON.parse(lpjp);
       this.toggleTentang = JSON.parse(tentang);

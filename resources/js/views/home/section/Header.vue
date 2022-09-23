@@ -44,6 +44,9 @@
               <li>
                 <a href="#" @click="handleSetMenu('SOP')">SOP Pengelolaan dan Pemantauan Lingkungan</a>
               </li>
+              <li>
+                <a href="#" @click="handleSetMenu('CLUSTER')">Daftar Cluster KBLI UKL UPL Menengah Rendah</a>
+              </li>
             </ul>
           </li>
           <li class="nav__item" style="margin-top:1.2rem">
@@ -148,7 +151,7 @@ export default {
       if (e === 'MATERI'){
         this.activeMenu = 'Materi';
       }
-      if (e === 'FORMULIR' || e === 'UKL_UPL_M' || e === 'UKL_UPL_S' || e === 'SOP'){
+      if (e === 'FORMULIR' || e === 'UKL_UPL_M' || e === 'UKL_UPL_S' || e === 'SOP' || e === 'CLUSTER'){
         this.isActiveFormulir = !this.isActiveFormulir;
         this.activeMenu = 'Formulir';
       }
