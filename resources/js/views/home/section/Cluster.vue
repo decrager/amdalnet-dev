@@ -40,6 +40,7 @@
           :key="dataCluster.no"
           :gutter="20"
           class="bg-custom w-el-row"
+          style="margin-bottom: 3px;"
         >
           <el-col :span="1" class="text-center py">
             <span class="fz12 white fw ">{{ index + 1 }}</span>
@@ -50,6 +51,7 @@
               <u>{{ dataCluster.cluster.subjudul }}</u><br>
               {{ dataCluster.cluster.konten }}<br>
               <a
+                class="fz12 white cl-blue buttonDownload"
                 target="_blank"
                 :href="dataCluster.cluster.link"
               >
