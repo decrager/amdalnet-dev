@@ -13,6 +13,7 @@
           <el-option
             v-for="item in getColumn"
             :key="item.value"
+            class="sel-hover"
             :label="item.label"
             :value="item.value"
           />
@@ -94,6 +95,12 @@ export default {
       selectedColumn: null,
       loading: false,
       loadingDownload: false,
+      uklUplColumn: [
+        {
+          label: 'Identifikasi Komponen Kegiatan dan Komponen Lingkungan',
+          value: 'identifikasi-ukl-upl',
+        },
+      ],
       kaColumn: [
         {
           label: 'Pelingkupan',
@@ -154,6 +161,8 @@ export default {
         return this.andalColumn;
       } else if (this.flow === 'rkl-rpl') {
         return this.rklRplColumn;
+      } else if (this.flow === 'ukl-upl') {
+        return this.uklUplColumn;
       }
 
       return [];
@@ -222,3 +231,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .sel-hover:hover {
+  background-color: #c1c1c1;
+}
+</style>
