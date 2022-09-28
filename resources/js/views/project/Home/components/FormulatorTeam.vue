@@ -11,10 +11,13 @@
       <p class="header">Anggota</p>
       <formulator-persons :data="anggota" />
     </section>
-
     <section v-if="(ahli !== null) && ((ahli.length > 0)) ">
       <p class="header">Tim Ahli</p>
       <formulator-persons :data="ahli" :mode="2" />
+    </section>
+    <section v-if="(ketua.length < 1) && (anggota.length < 1)">
+      <p class="header">Data Penyusun</p>
+      <formulator-persons :data="data" />
     </section>
 
   </div>
@@ -42,8 +45,6 @@ export default {
     };
   },
   mounted(){
-    // this.id = this.$route.params && this.$route.params.id;
-
     this.getFormulatorTeam();
     this.getFormulator();
     this.getExpert();
@@ -51,17 +52,11 @@ export default {
   methods: {
     async getFormulator(){
       this.data = [];
-      // console.log('Get Formulator', this.id);
       const projectId = this.$route.params && this.$route.params.id;
-      await formulatorResource.list({ type: 'tim-penyusun', idProject: projectId })
-        .then((res) => {
-          this.data = res;
-          this.ketua = this.data.filter((e) => e.position === 'Ketua');
-          this.anggota = this.data.filter((e) => e.position === 'Anggota');
-          // console.log('ketua: ', this.ketua);
-          // console.log('anggota: ', this.anggota);
-        })
-        .finally();
+      const response = await formulatorResource.list({ type: 'tim-penyusun', idProject: projectId });
+      this.data = response;
+      this.ketua = this.data.filter((e) => e.position === 'Ketua');
+      this.anggota = this.data.filter((e) => e.position === 'Anggota');
     },
     async getExpert(){
       this.ahli = [];
