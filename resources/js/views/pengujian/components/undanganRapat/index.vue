@@ -727,7 +727,7 @@ export default {
       );
     },
     checkHandleUploadChange(file, fileList) {
-      if (file.raw.size > 1048576) {
+      if (file.raw.size > 5242880) {
         this.showFileAlert();
         return;
       } else {
@@ -783,7 +783,7 @@ export default {
       this.loadingSendInvitation = false;
     },
     handleUploadInvitationFile(file, fileList) {
-      if (file.raw.size > 1048576) {
+      if (file.raw.size > 5242880) {
         this.showFileAlert();
         return;
       }
@@ -810,7 +810,7 @@ export default {
       this.meetings.invitations.splice(idx, 1);
     },
     showFileAlert() {
-      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+      this.$alert('Ukuran file tidak boleh lebih dari 5 MB', '', {
         center: true,
       });
     },
