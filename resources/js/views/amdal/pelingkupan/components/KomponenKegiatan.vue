@@ -14,7 +14,7 @@
         />
       </div>
       <!-- form -->
-      <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
+      <el-button icon="el-icon-plus" size="mini" circle type="primary" :disabled="isReadOnly" plain @click="isReadOnly && addComponent" />
       <form-komponen-kegiatan
         :show="showForm"
         :form-mode="formMode"
@@ -41,6 +41,7 @@
 import FormKomponenKegiatan from './forms/FormKomponenKegiatan.vue';
 import FormDeleteComponent from './forms/FormDeleteComponent.vue';
 import ComponentsList from './tables/ComponentsList.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'KomponenKegiatan',
@@ -72,6 +73,14 @@ export default {
       showDelete: false,
       deleted: null,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted';
+    },
   },
   methods: {
     onSaveData(obj){

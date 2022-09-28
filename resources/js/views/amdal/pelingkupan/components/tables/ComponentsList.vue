@@ -87,7 +87,6 @@ export default {
       markingStatus: 'markingStatus',
     }),
     isReadOnly() {
-      console.log({ markingStatus: this.markingStatus });
       return this.markingStatus === 'amdal.form-ka-submitted';
     },
   },
