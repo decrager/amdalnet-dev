@@ -115,7 +115,7 @@ class TestMeetRKLRPLController extends Controller
                         if($email) {
                             $email_user[] = $email;
                         }
-                        
+
                     } else if($i->tukSecretaryMember) {
                         if($i->tukSecretaryMember->email) {
                             $email_user[] = $i->tukSecretaryMember->email;
@@ -170,11 +170,11 @@ class TestMeetRKLRPLController extends Controller
                     $tmpName = tempnam(sys_get_temp_dir(),'');
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
                     file_put_contents($tmpName, $tmpFile);
-    
+
                     Notification::send($user, new MeetingInvitation($meeting, $tmpName));
 
                     unlink($tmpName);
-    
+
                     // === WORKFLOW === //
                     if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
                         $project->workflow_apply('send-uklupl-examination-invitation');
@@ -184,7 +184,7 @@ class TestMeetRKLRPLController extends Controller
                         $project->workflow_apply('send-amdal-feasibility-invitation');
                         $project->save();
                     }
-    
+
                     return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
                 }
             }
@@ -198,7 +198,7 @@ class TestMeetRKLRPLController extends Controller
 
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
-    
+
                 $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
 
                 if($testing_meeting->file) {
@@ -457,7 +457,7 @@ class TestMeetRKLRPLController extends Controller
                 if($a['type']==$b['type']) return 0;
                 return $a['type'] < $b['type']?1:-1;
             });
-        } 
+        }
 
         $data = [
             'type' => 'update',
@@ -495,13 +495,13 @@ class TestMeetRKLRPLController extends Controller
 
         if($tuk) {
             $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $tuk->id)->get();
-            
+
             foreach($members as $m) {
                 $name = '';
                 $email = '';
                 $type_member = '';
                 $institution = '';
-    
+
                 if($m->expertBank) {
                     $name = $m->expertBank->name;
                     $email = $m->expertBank->email;
@@ -513,7 +513,7 @@ class TestMeetRKLRPLController extends Controller
                     $institution = $m->lukMember->institution;
                     $type_member = 'employee';
                 }
-    
+
                 $newMembers[] = [
                     'id' => $m->id,
                     'role' => $m->position,
@@ -561,10 +561,10 @@ class TestMeetRKLRPLController extends Controller
                 $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
             }
         }
-        
+
         $meeting_time = '';
         $meeting_date = '';
-        
+
         if($testing_meeting->meeting_time) {
             $meeting_time = date('H:i', strtotime($testing_meeting->meeting_time));
         }
@@ -596,7 +596,7 @@ class TestMeetRKLRPLController extends Controller
                  if($f->formulator) {
                      $total++;
                      $anggota_penyusun[] = [
-                         'penyusun' => $total . '. ' .  $f->formulator->name . ' (' . $f->position . ')' 
+                         'penyusun' => $total . '. ' .  $f->formulator->name . ' (' . $f->position . ')'
                      ];
                  } else if($f->expert) {
                     $ahli[] = $f->expert->name . ' (Anggota Ahli)';
@@ -610,7 +610,7 @@ class TestMeetRKLRPLController extends Controller
                          'penyusun' => $total . '. ' . $ahli[$i]
                         ];
                     $total++;
-                } 
+                }
              }
          }
 
@@ -633,7 +633,7 @@ class TestMeetRKLRPLController extends Controller
                 }
              } else {
                  $meeting_invitations[] = [
-                   'invitations' => $total . '. ' . $i->name . ' (' . $i->role . ')'  
+                   'invitations' => $total . '. ' . $i->name . ' (' . $i->role . ')'
                  ];
              }
              $total++;
@@ -641,14 +641,14 @@ class TestMeetRKLRPLController extends Controller
 
         // === PETA === //
         $checkPeta = $this->checkPeta($id_project, $document_type);
-        
+
         // === KONSULTASI PUBLIK === //
         $checkKonsulPublik = $this->checkKonsulPublik($id_project);
 
         // === PENYUSUN === //
         $checkCvPenyusun = $this->checkCvPenyusun($id_project);
 
-        // === TUK === // 
+        // === TUK === //
         $tuk = null;
         $kepala_sekretariat_tuk = '';
         $authority = '';
@@ -675,7 +675,7 @@ class TestMeetRKLRPLController extends Controller
                 $authority_big = strtoupper($tuk->districtAuthority->name);
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $tuk_telp = $tuk->phone;
@@ -712,7 +712,7 @@ class TestMeetRKLRPLController extends Controller
              }
          } else {
              if($authority_big == 'PUSAT') {
-                 $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes.docx');
+                 $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes_tuk.docx');
              } else {
                 $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes_tuk.docx');
                 $templateProcessor->setValue('tuk_address', $tuk_address);
@@ -730,7 +730,7 @@ class TestMeetRKLRPLController extends Controller
 
         if($authority_big !== 'PUSAT') {
             $templateProcessor->setValue('institution_name', $institution_name);
-        } 
+        }
 
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
@@ -760,21 +760,21 @@ class TestMeetRKLRPLController extends Controller
             if($verification->forms->first()) {
                 foreach($verification->forms as $f) {
                     if(!($document_type == 'ukl-upl' && $f->name == 'peta_titik')) {
-                        $templateProcessor->setValue($f->name . '_exist', 
+                        $templateProcessor->setValue($f->name . '_exist',
                                     $this->checkFileAdmExist(
-                                                    'exist', 
-                                                    $f->name, 
-                                                    $project, 
-                                                    $checkPeta, 
-                                                    $checkKonsulPublik, 
+                                                    'exist',
+                                                    $f->name,
+                                                    $project,
+                                                    $checkPeta,
+                                                    $checkKonsulPublik,
                                                     $checkCvPenyusun));
-                        $templateProcessor->setValue($f->name . '_not_exist', 
+                        $templateProcessor->setValue($f->name . '_not_exist',
                         $this->checkFileAdmExist(
-                                        'not_exist', 
-                                        $f->name, 
-                                        $project, 
-                                        $checkPeta, 
-                                        $checkKonsulPublik, 
+                                        'not_exist',
+                                        $f->name,
+                                        $project,
+                                        $checkPeta,
+                                        $checkKonsulPublik,
                                         $checkCvPenyusun));
                         $templateProcessor->setValue($f->name . '_yes', $f->suitability == 'Sesuai' ? 'V' : '');
                         $templateProcessor->setValue($f->name . '_no', $f->suitability == 'Tidak Sesuai' ? 'V' : '');
@@ -795,7 +795,7 @@ class TestMeetRKLRPLController extends Controller
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         $save_file_name = '';
-        
+
         if($document_type == 'ukl-upl') {
             // $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
             $tmpName = $templateProcessor->save();
@@ -826,7 +826,7 @@ class TestMeetRKLRPLController extends Controller
         $testing_meeting = TestingMeeting::select('id', 'id_project', 'updated_at', 'location', 'meeting_date', 'meeting_time')->where([['id_project', $id_project],['document_type', $document_type]])->first();
         $invitations = TestingMeetingInvitation::where('id_testing_meeting', $testing_meeting->id)->get();
         Carbon::setLocale('id');
-        
+
         $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s', strtotime($testing_meeting->updated_at)))->isoFormat('MMMM Y');
 
         $project_address = '';
@@ -871,7 +871,7 @@ class TestMeetRKLRPLController extends Controller
                 $authority_big_check = strtoupper($tuk->districtAuthority->name);
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Ketua']])->first();
@@ -889,11 +889,11 @@ class TestMeetRKLRPLController extends Controller
                 $institution_name = strtoupper($tuk->institution);
             }
         }
-        
+
         $member = [];
         $ahli = [];
         $instansi = [];
-        
+
         foreach($invitations as $i) {
             if($i->id_feasibility_test_team_member) {
                 $tuk_member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
@@ -928,7 +928,7 @@ class TestMeetRKLRPLController extends Controller
                         $instansi[] = [
                             'name' => count($instansi) + 1 . '. Wakil dari ' . $institution->name
                         ];
-                    } 
+                    }
                 } else {
                     $instansi[] = [
                         'name' => count($instansi) + 1 . '. Wakil dari ' . $i->institution
@@ -1035,18 +1035,18 @@ class TestMeetRKLRPLController extends Controller
                     return 'V';
                 }
             }
-        } else if($type == 'surat_penyusun') {
-            if($is_exist == 'exist') {
-                return 'V';
-            } else {
-                return '';
-            }
-        } else if($type == 'sertifikasi_penyusun') {
-            if($is_exist == 'exist') {
-                return 'V';
-            } else {
-                return '';
-            }
+        // } else if($type == 'surat_penyusun') {
+        //     if($is_exist == 'exist') {
+        //         return 'V';
+        //     } else {
+        //         return '';
+        //     }
+        // } else if($type == 'sertifikasi_penyusun') {
+        //     if($is_exist == 'exist') {
+        //         return 'V';
+        //     } else {
+        //         return '';
+        //     }
         } else if($type == 'peta') {
             if($checkPeta) {
                 if($is_exist == 'exist') {
@@ -1061,34 +1061,34 @@ class TestMeetRKLRPLController extends Controller
                     return '';
                 }
             }
-        } else if($type == 'konsul_publik') {
-            if($checkKonsulPublik) {
-                if($is_exist == 'exist') {
-                    return 'V';
-                } else {
-                    return '';
-                }
-            } else {
-                if($is_exist == 'exist') {
-                    return '';
-                } else {
-                    return 'V';
-                }
-            }
-        } else if($type == 'cv_penyusun') {
-            if($checkCvPenyusun) {
-                if($is_exist == 'exist') {
-                    return 'V';
-                } else {
-                    return '';
-                }
-            } else {
-                if($is_exist == 'exist') {
-                    return '';
-                } else {
-                    return 'V';
-                }
-            }
+        // } else if($type == 'konsul_publik') {
+        //     if($checkKonsulPublik) {
+        //         if($is_exist == 'exist') {
+        //             return 'V';
+        //         } else {
+        //             return '';
+        //         }
+        //     } else {
+        //         if($is_exist == 'exist') {
+        //             return '';
+        //         } else {
+        //             return 'V';
+        //         }
+        //     }
+        // } else if($type == 'cv_penyusun') {
+        //     if($checkCvPenyusun) {
+        //         if($is_exist == 'exist') {
+        //             return 'V';
+        //         } else {
+        //             return '';
+        //         }
+        //     } else {
+        //         if($is_exist == 'exist') {
+        //             return '';
+        //         } else {
+        //             return 'V';
+        //         }
+        //     }
         } else if($type == 'sistematika_penyusunan') {
             if($is_exist == 'exist') {
                 return 'V';
@@ -1235,15 +1235,15 @@ class TestMeetRKLRPLController extends Controller
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
-      
-        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
-      
+
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1);
+
         // find substring fro replace here eg: data:image/png;base64,
-      
-        $file = str_replace($replace, '', $file_64); 
-      
-        $file = str_replace(' ', '+', $file); 
-      
+
+        $file = str_replace($replace, '', $file_64);
+
+        $file = str_replace(' ', '+', $file);
+
         return [
             'extension' => $extension,
             'file' => base64_decode($file)
