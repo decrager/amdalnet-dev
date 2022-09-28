@@ -712,7 +712,7 @@ class TestMeetRKLRPLController extends Controller
              }
          } else {
              if($authority_big == 'PUSAT') {
-                 $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes_tuk.docx');
+                 $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes.docx');
              } else {
                 $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes_tuk.docx');
                 $templateProcessor->setValue('tuk_address', $tuk_address);
