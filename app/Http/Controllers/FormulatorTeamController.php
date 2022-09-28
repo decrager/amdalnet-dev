@@ -108,7 +108,7 @@ class FormulatorTeamController extends Controller
             })->get();
 
             $num = 1;
-            
+
             $project = Project::findOrFail($id_project);
             if($project->required_doc == 'AMDAL') {
                 foreach($formulatorTeamMember as $f) {
@@ -127,7 +127,7 @@ class FormulatorTeamController extends Controller
                         'reg_no' => $f->formulator->reg_no,
                         'membership_status' => $f->formulator->membership_status
                     ];
-    
+
                     $num++;
                 }
             } else if($project->required_doc == 'UKL-UPL') {
@@ -141,8 +141,16 @@ class FormulatorTeamController extends Controller
                         'reg_no' => $f->formulator->reg_no,
                         'membership_status' => $f->formulator->membership_status,
                         'cert_file' => $f->formulator->cert_file,
+                        'num' => $num ?? null,
+                        'db_id' => $f->id_formulator ?? null,
+                        'value' => $f->formulator->name ?? null,
+                        'type' => 'update',
+                        'position' => $f->position ?? null,
+                        'file' => $f->formulator->cv_file ?? null,
+                        'certificate' => $f->formulator->cert_file ?? null,
+                        'cert_no' => $f->formulator->cert_no ?? null,
                     ];
-    
+
                     $num++;
                 }
             }
@@ -235,14 +243,14 @@ class FormulatorTeamController extends Controller
                 if(!$team) {
                     $project->type_formulator_team = 'mandiri';
                     $project->save();
-    
+
                     $team = new FormulatorTeam();
                     $team->id_team = uniqid();
                     $team->name = 'Tim Penyusun ' . $project->project_title;
                     $team->id_project = $request->idProject;
                     $team->save();
                 }
-    
+
                 $members = $request->members;
                 if(count($members) > 0) {
                     for($i = 0; $i < count($members); $i++) {
@@ -258,7 +266,7 @@ class FormulatorTeamController extends Controller
                         }
                     }
                 }
-    
+
                 $deleted = $request->deletedMembers;
                 if(count($deleted) > 0) {
                     FormulatorTeamMember::whereIn('id', $deleted)->delete();
