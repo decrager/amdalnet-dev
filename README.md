@@ -20,6 +20,10 @@
 
 ### Installing
 
+```
+composer install
+```
+
 Create .env file by
 
 copy `.env.example` to `.env`

@@ -230,4 +230,15 @@ class HomeController extends Controller
     public function s3lastmodified()
     {
     }
+
+    /**
+     * Test lastmodified
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function s3check()
+    {
+        $files = Storage::disk('public')->directories('workspace/sample.docx-hist');
+        var_dump($files);
+    }
 }

@@ -415,3 +415,4 @@ Route::get('test/s3/template', 'HomeController@s3template');
 Route::get('test/s3/topdf', 'HomeController@s3topdf');
 Route::delete('test/s3/delete', 'HomeController@s3delete');
 Route::post('test/s3/upload', 'HomeController@s3upload');
+Route::get('test/s3/check', 'HomeController@s3check');
