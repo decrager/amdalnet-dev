@@ -12,7 +12,7 @@
         :data-id="comp.id"
         @click.self="select"
       >
-        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
+        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" :disabled="isReadOnly" @click="!isReadOnly && removeComponent(comp.id)" />
         <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
         {{ comp.name }}  <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
       </p>
@@ -40,6 +40,8 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'ComponentsList',
   props: {
@@ -80,7 +82,15 @@ export default {
       selected: [],
     };
   },
-
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      console.log({ markingStatus: this.markingStatus });
+      return this.markingStatus === 'amdal.form-ka-submitted';
+    },
+  },
   watch: {
     deSelectAll: function(val) {
       // console.log('deselect? ' + this.id, val);
@@ -89,7 +99,6 @@ export default {
       }
     },
   },
-
   methods: {
     removeComponent(id){
       // const e = this.components.find( c => c.id === id);
