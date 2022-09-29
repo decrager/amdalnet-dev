@@ -52,6 +52,7 @@ Onlyoffice:
 sudo docker run -i -t -d -p 9000:80 --restart=always --name oods \
     -v /home/ubuntu/office/DocumentServer/data:/var/www/onlyoffice/Data \
     -v /home/ubuntu/office/DocumentServer/logs:/var/log/onlyoffice \
+    -v /home/ubuntu/onlyoffice/DocumentServer/etc/local.json:/etc/onlyoffice/documentserver/local.json \
     onlyoffice/documentserver-de
 
 
