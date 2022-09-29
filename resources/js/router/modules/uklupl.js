@@ -54,7 +54,8 @@ const ukluplRoutes = {
     {
       path: ':id(\\d+)/berita-acara',
       component: () =>
-        import('@/views/pengujian-ukl-upl/components/beritaAcara/index'),
+        // import('@/views/pengujian-ukl-upl/components/beritaAcara/index'),
+        import('@/views/pengujian-ukl-upl/components/beritaAcara/BeritaAcara'),
       name: 'beritaAcaraUKLUPL',
       meta: {
         title: 'Berita Acara',
