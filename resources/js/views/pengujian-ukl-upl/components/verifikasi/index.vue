@@ -14,7 +14,7 @@
     </div>
     <el-row :gutter="32">
       <el-col :sm="24" :md="12">
-        <h4 align="center">FORMULIR KELENGKAPAN ADMINISTRASI</h4>
+        <h4 align="center">FORMULIR KELENGKAPAN ADMINISTRASI UKL UPL</h4>
         <el-table
           v-loading="loadingverification"
           :data="verifications.ka_forms"
