@@ -98,7 +98,7 @@ export default {
       uklUplColumn: [
         {
           label: 'Identifikasi Komponen Kegiatan dan Komponen Lingkungan',
-          value: 'identifikasi-ukl-upl',
+          value: 'pelingkupan',
         },
       ],
       kaColumn: [
