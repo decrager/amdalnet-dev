@@ -89,7 +89,7 @@ services:
 
   onlyoffice:
     image: onlyoffice/documentserver:7.2
-    environtment:
+    environment:
       - "JWT_ENABLED=false"
     ports:
       - "8008:80"
