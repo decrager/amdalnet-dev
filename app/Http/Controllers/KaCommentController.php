@@ -360,7 +360,7 @@ class KaCommentController extends Controller
 
         }
 
-        $templateProcessor = new TemplateProcessor(asset('template_rekap_komentar.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_rekap_komentar.docx'));
         $templateProcessor->cloneRowAndSetValues('recap', $comment_list);
 
         if(count($html) > 0) {

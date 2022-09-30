@@ -148,7 +148,7 @@ class MeetReportRKLRPLController extends Controller
 
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
-    
+
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
 
                 if($meeting_report->file) {
@@ -419,7 +419,7 @@ class MeetReportRKLRPLController extends Controller
                 if($a['type']==$b['type']) return 0;
                 return $a['type'] < $b['type']?1:-1;
             });
-        } 
+        }
 
         $data = [
             'type' => 'new',
@@ -510,7 +510,7 @@ class MeetReportRKLRPLController extends Controller
                 if($a['type']==$b['type']) return 0;
                 return $a['type'] < $b['type']?1:-1;
             });
-        } 
+        }
 
         $data = [
             'type' => 'update',
@@ -549,13 +549,13 @@ class MeetReportRKLRPLController extends Controller
 
         if($tuk) {
             $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $tuk->id)->get();
-            
+
             foreach($members as $m) {
                 $name = '';
                 $email = '';
                 $type_member = '';
                 $institution = '';
-    
+
                 if($m->expertBank) {
                     $name = $m->expertBank->name;
                     $email = $m->expertBank->email;
@@ -567,7 +567,7 @@ class MeetReportRKLRPLController extends Controller
                     $institution = $m->lukMember->institution;
                     $type_member = 'employee';
                 }
-    
+
                 $newMembers[] = [
                     'id' => $m->id,
                     'role' => $m->position,
@@ -608,7 +608,7 @@ class MeetReportRKLRPLController extends Controller
         $meeting = MeetingReport::select('id', 'id_project', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes')->where([['id_project', $id_project],['document_type', $document_type]])->first();
         $invitations = MeetingReportInvitation::where('id_meeting_report', $meeting->id)->get();
         Carbon::setLocale('id');
-        
+
         $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s', strtotime($meeting->updated_at)))->isoFormat('MMMM Y');
 
         $project_address = '';
@@ -651,7 +651,7 @@ class MeetReportRKLRPLController extends Controller
                 $authority_big = strtoupper($tuk->districtAuthority->name);
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $authority_real = $tuk->authority;
@@ -669,10 +669,10 @@ class MeetReportRKLRPLController extends Controller
                 $institution_name = strtoupper($tuk->institution);
             }
         }
-        
+
         $member = [];
         $ahli = [];
-        
+
         foreach($invitations as $i) {
             if($i->id_feasibility_test_team_member) {
                 $tuk_member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
@@ -701,14 +701,14 @@ class MeetReportRKLRPLController extends Controller
         $templateProcessor = null;
 
         if($authority_real == 'Pusat') {
-            $templateProcessor = new TemplateProcessor('template_berita_acara_arr.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_arr.docx'));
             if($document_type == 'ukl-upl') {
-                $templateProcessor = new TemplateProcessor('template_berita_acara_uu.docx');
+                $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_uu.docx'));
             }
         } else {
-            $templateProcessor = new TemplateProcessor('template_berita_acara_arr_tuk.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_arr_tuk.docx'));
             if($document_type == 'ukl-upl') {
-                $templateProcessor = new TemplateProcessor('template_berita_acara_uu_tuk.docx');
+                $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_uu_tuk.docx'));
             }
             $templateProcessor->setValue('tuk_address', $tuk_address);
             $templateProcessor->setValue('tuk_telp', $tuk_telp);
@@ -794,15 +794,15 @@ class MeetReportRKLRPLController extends Controller
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
-      
-        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
-      
+
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1);
+
         // find substring fro replace here eg: data:image/png;base64,
-      
-        $file = str_replace($replace, '', $file_64); 
-      
-        $file = str_replace(' ', '+', $file); 
-      
+
+        $file = str_replace($replace, '', $file_64);
+
+        $file = str_replace(' ', '+', $file);
+
         return [
             'extension' => $extension,
             'file' => base64_decode($file)

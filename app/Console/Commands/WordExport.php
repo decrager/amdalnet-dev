@@ -50,7 +50,7 @@ class WordExport extends Command
         // $expert_bank_member = ExpertBankTeamMember::where([['id_expert_bank_team', $beritaAcara->expert_bank_team_id], ['position', 'Ketua']])->first();
         // $ketua_tuk = $expert_bank_member->expertBank->name;
         // $institution = $expert_bank_member->expertBank->institution;
-        $templateProcessor = new TemplateProcessor('public/template_berita_acara.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara.docx'));
 
         $templateProcessor->setValue('title', 'Judul Besar');
         $templateProcessor->setValue('address', 'Alamat Institusi');
@@ -70,7 +70,7 @@ class WordExport extends Command
         $templateProcessor->setValue('ketua_tuk', 'Nama Ketua TUK');
         $templateProcessor->setValue('institution', 'Institusi');
 
-        // block 
+        // block
         $tim = [
             ['nama_anggota' => 'anggota 1'],
             ['nama_anggota' => 'anggota 2'],
@@ -79,7 +79,7 @@ class WordExport extends Command
         ];
         $templateProcessor->cloneBlock('TIM', count($tim), true, false, $tim);
         $templateProcessor->cloneBlock('anggota_tim', count($tim), true, false, $tim);
-        
+
 
         $save_file_name = 'berita-acara-ka-' . uniqid() . '.docx';
         if (!File::exists(storage_path('app/public/berita-acara/'))) {
@@ -88,5 +88,5 @@ class WordExport extends Command
         $templateProcessor->saveAs(storage_path('app/public/berita-acara/' . $save_file_name));
     }
 
-    
+
 }
