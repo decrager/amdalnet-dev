@@ -163,8 +163,8 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item ref="fileProofUpload" label="Bukti Pengumuman (Max 1MB)" prop="fileProof">
-              <div v-if="announcement.proof" style="clear: both !important; margin-bottom: 0.8em;">
+            <!-- <el-form-item ref="fileProofUpload" label="Bukti Pengumuman (Max 1MB)" prop="fileProof">
+             <div v-if="announcement.proof" style="clear: both !important; margin-bottom: 0.8em;">
                 <a :href="announcement.proof" target="_blank" style="font-weight: bold;">Bukti Pengumuman yang tersimpan <i class="el-icon-download" /></a>
               </div>
               <el-col :span="24"><div
@@ -190,7 +190,7 @@
                   @change="checkProfFileSure"
                 >
               </div></el-col>
-            </el-form-item>
+            </el-form-item>  -->
           </div>
         </div>
         <div>
