@@ -88,7 +88,9 @@ services:
   #     - "password=S3cRet"
 
   onlyoffice:
-    image: onlyoffice/documentserver-de
+    image: onlyoffice/documentserver:7.2
+    environment:
+      - "JWT_ENABLED=false"
     ports:
       - "8008:80"
 
