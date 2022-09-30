@@ -50,10 +50,11 @@ Onlyoffice:
 
 
 sudo docker run -i -t -d -p 9000:80 --restart=always --name oods \
+    -e JWT_ENABLED=false \
+    -e JWT_SECRET=LIo3a2QLrCQ7BPi8ET09 \
     -v /home/ubuntu/office/DocumentServer/data:/var/www/onlyoffice/Data \
     -v /home/ubuntu/office/DocumentServer/logs:/var/log/onlyoffice \
-    -v /home/ubuntu/onlyoffice/DocumentServer/etc/local.json:/etc/onlyoffice/documentserver/local.json \
-    onlyoffice/documentserver-de:6.4
+    onlyoffice/documentserver-de:7.2
 
 
 http://oo.mymac.net/doceditor.php?fileID=61943e88ad99a.docx&user=&action=edit&type=desktop
