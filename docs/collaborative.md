@@ -52,7 +52,8 @@ Onlyoffice:
 sudo docker run -i -t -d -p 9000:80 --restart=always --name oods \
     -v /home/ubuntu/office/DocumentServer/data:/var/www/onlyoffice/Data \
     -v /home/ubuntu/office/DocumentServer/logs:/var/log/onlyoffice \
-    onlyoffice/documentserver-de
+    -v /home/ubuntu/onlyoffice/DocumentServer/etc/local.json:/etc/onlyoffice/documentserver/local.json \
+    onlyoffice/documentserver-de:6.4
 
 
 http://oo.mymac.net/doceditor.php?fileID=61943e88ad99a.docx&user=&action=edit&type=desktop

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Entity\Workspace;
+use App\Utils\Jwt;
 use Illuminate\Support\Facades\Log;
 
 class WorkspaceController extends Controller
@@ -92,11 +93,18 @@ class WorkspaceController extends Controller
     public function getConfig(Request $request, String $id) {
         $currentUser = Auth::user();
         // $officeUrl = env('MIX_OFFICE_URL'); 
-        // $officeSecret = env('OFFICE_SECRET');
+        $officeSecret = env('OFFICE_SECRET');
+
         $appUrl = env('APP_URL');
         $callUrl = env('OFFICE_CALLBACK_URL');
         $filename = $request->query('filename', 'sample.docx');
-        $dirs = Storage::disk('public')->directories('workspace/'.$filename.'-hist');
+        $dirs = [];
+        try {
+            $dirs = Storage::disk('public')->directories('workspace/'.$filename.'-hist');
+        } catch (\Aws\S3\Exception\S3Exception $e) {
+            $dirs = [];
+        }
+        
         $dockey = md5($filename.$id.strval(count($dirs)));
         $config = [
             'width' => '100%',
@@ -156,6 +164,12 @@ class WorkspaceController extends Controller
                 'callbackUrl' => $callUrl.'/api/workspace/document/track?fileName='.$filename,
             ],
         ];
+        $token = Jwt::encode($config);
+        $config['token'] = $token;
+        // $config['width'] = '100%';
+        // $config['height'] = '100%';
+        // $config['type'] = 'desktop';
+        // $config['documentType'] = 'word';
         return response()->json($config);
     }
 
