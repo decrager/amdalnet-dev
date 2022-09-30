@@ -32,18 +32,23 @@
     >
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <Tinymce
-            v-if="isFormulator"
-            v-model="scope.row.impact_study.required_information"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :toolbar="[
-              'bold italic underline bullist numlist  preview undo redo fullscreen',
-            ]"
-            :height="50"
-          />
-          <div v-else v-html="scope.row.impact_study.required_information" />
+          <div v-if="isReadOnly">
+            <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
+          </div>
+          <div v-else>
+            <Tinymce
+              v-if="isFormulator"
+              v-model="scope.row.impact_study.required_information"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
+            />
+            <div v-else v-html="scope.row.impact_study.required_information" />
+          </div>
         </div>
       </template>
     </el-table-column>
@@ -53,72 +58,92 @@
     >
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <Tinymce
-            v-if="isFormulator"
-            v-model="scope.row.impact_study.data_gathering_method"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :toolbar="[
-              'bold italic underline bullist numlist  preview undo redo fullscreen',
-            ]"
-            :height="50"
-          />
-          <div v-else v-html="scope.row.impact_study.data_gathering_method" />
+          <div v-if="isReadOnly">
+            <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
+          </div>
+          <div v-else>
+            <Tinymce
+              v-if="isFormulator"
+              v-model="scope.row.impact_study.data_gathering_method"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
+            />
+            <div v-else v-html="scope.row.impact_study.data_gathering_method" />
+          </div>
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Analisis Data untuk Prakiraan" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <Tinymce
-            v-if="isFormulator"
-            v-model="scope.row.impact_study.analysis_method"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :toolbar="[
-              'bold italic underline bullist numlist  preview undo redo fullscreen',
-            ]"
-            :height="50"
-          />
-          <div v-else v-html="scope.row.impact_study.analysis_method" />
+          <div v-if="isReadOnly">
+            <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
+          </div>
+          <div v-else>
+            <Tinymce
+              v-if="isFormulator"
+              v-model="scope.row.impact_study.analysis_method"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
+            />
+            <div v-else v-html="scope.row.impact_study.analysis_method" />
+          </div>
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Prakiraan Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <Tinymce
-            v-if="isFormulator"
-            v-model="scope.row.impact_study.forecast_method"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :toolbar="[
-              'bold italic underline bullist numlist  preview undo redo fullscreen',
-            ]"
-            :height="50"
-          />
-          <div v-else v-html="scope.row.impact_study.forecast_method" />
+          <div v-if="isReadOnly">
+            <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
+          </div>
+          <div v-else>
+            <Tinymce
+              v-if="isFormulator"
+              v-model="scope.row.impact_study.forecast_method"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
+            />
+            <div v-else v-html="scope.row.impact_study.forecast_method" />
+          </div>
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Evaluasi Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <Tinymce
-            v-if="isFormulator"
-            v-model="scope.row.impact_study.evaluation_method"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :toolbar="[
-              'bold italic underline bullist numlist  preview undo redo fullscreen',
-            ]"
-            :height="50"
-          />
-          <div v-else v-html="scope.row.impact_study.evaluation_method" />
+          <div v-if="isReadOnly">
+            <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
+          </div>
+          <div v-else>
+            <Tinymce
+              v-if="isFormulator"
+              v-model="scope.row.impact_study.evaluation_method"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
+            />
+            <div v-else v-html="scope.row.impact_study.evaluation_method" />
+          </div>
         </div>
       </template>
     </el-table-column>
@@ -126,6 +151,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Comment from '@/views/amdal/components/Comment.vue';
 import Tinymce from '@/components/Tinymce';
 
@@ -169,6 +195,14 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
     },

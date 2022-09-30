@@ -19,7 +19,7 @@ export default {
   },
   data() {
     return {
-      idProject: this.$route.params.id,
+      idProject: 0,
       userInfo: {
         roles: [],
       },
@@ -33,8 +33,21 @@ export default {
       return this.$store.getters.roles.includes('initiator');
     },
   },
+  mounted() {
+    this.setProjectId();
+    this.getMarking();
+  },
   created() {
     this.$store.dispatch('getStep', 5);
+  },
+  methods: {
+    async getMarking() {
+      await this.$store.dispatch('getMarking', this.idProject);
+    },
+    setProjectId(){
+      const id = this.$route.params && this.$route.params.id;
+      this.idProject = id;
+    },
   },
 };
 </script>

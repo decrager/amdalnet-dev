@@ -1,23 +1,29 @@
 <template>
   <el-row v-loading="loading">
     <el-col :md="24" :sm="24">
-      <Tinymce
-        v-model="evaluation"
-        output-format="html"
-        :menubar="''"
-        :image="false"
-        :toolbar="[
-          'bold italic underline bullist numlist  preview undo redo fullscreen',
-        ]"
-        :height="300"
-      />
+      <div v-if="isReadOnly">
+        <span v-html="evaluation" />
+      </div>
+      <div v-else>
+        <Tinymce
+          v-model="evaluation"
+          output-format="html"
+          :menubar="''"
+          :image="false"
+          :toolbar="[
+            'bold italic underline bullist numlist  preview undo redo fullscreen',
+          ]"
+          :height="300"
+        />
+      </div>
     </el-col>
     <el-col :md="24" :sm="24" style="text-align: right">
       <el-button
         :loading="loadingSubmit"
         type="primary"
         style="margin-top: 20px"
-        @click="checkSubmit"
+        :disabled="isReadOnly"
+        @click="!isReadOnly && checkSubmit()"
       >
         Simpan
       </el-button>
@@ -26,6 +32,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Tinymce from '@/components/Tinymce';
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
@@ -41,6 +48,15 @@ export default {
       loading: false,
       loadingSubmit: false,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   created() {
     this.getData();

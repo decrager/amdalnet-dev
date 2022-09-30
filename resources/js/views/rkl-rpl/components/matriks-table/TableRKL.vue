@@ -191,39 +191,47 @@
                   type="danger"
                   size="mini"
                   icon="el-icon-close"
+                  :disabled="isReadOnly"
                   @click.prevent="
-                    deleteEditor(
-                      source.num,
-                      index,
-                      scope.$index,
-                      'impact source'
-                    )
+                    !isReadOnly &&
+                      deleteEditor(
+                        source.num,
+                        index,
+                        scope.$index,
+                        'impact source'
+                      )
                   "
                 />
               </div>
-              <Tinymce
-                v-if="isFormulator && source.show"
-                :id="`source-${source.num}-${scope.$index}`"
-                v-model="scope.row.impact_source[index].description"
-                output-format="html"
-                :menubar="''"
-                :image="false"
-                :toolbar="[
-                  'bold italic underline bullist numlist  preview undo redo fullscreen',
-                ]"
-                :height="50"
-              />
-              <div
-                v-if="!isFormulator"
-                v-html="scope.row.impact_source[index].description"
-              />
+              <div v-if="isReadOnly">
+                <span v-html="scope.row.impact_source[index].description" />
+              </div>
+              <div v-else>
+                <Tinymce
+                  v-if="isFormulator && source.show"
+                  :id="`source-${source.num}-${scope.$index}`"
+                  v-model="scope.row.impact_source[index].description"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :toolbar="[
+                    'bold italic underline bullist numlist  preview undo redo fullscreen',
+                  ]"
+                  :height="50"
+                />
+                <div
+                  v-if="!isFormulator"
+                  v-html="scope.row.impact_source[index].description"
+                />
+              </div>
             </div>
           </div>
           <el-button
             v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
-            @click="handleAddImpactSource(scope.$index)"
+            :disabled="isReadOnly"
+            @click="!isReadOnly && handleAddImpactSource(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
@@ -253,39 +261,47 @@
                   type="danger"
                   size="mini"
                   icon="el-icon-close"
+                  :disabled="isReadOnly"
                   @click.prevent="
-                    deleteEditor(
-                      indicator.num,
-                      index,
-                      scope.$index,
-                      'success indicator'
-                    )
+                    !isReadOnly &&
+                      deleteEditor(
+                        indicator.num,
+                        index,
+                        scope.$index,
+                        'success indicator'
+                      )
                   "
                 />
               </div>
-              <Tinymce
-                v-if="isFormulator && indicator.show"
-                :id="`indicator-${indicator.num}-${scope.$index}`"
-                v-model="scope.row.success_indicator[index].description"
-                output-format="html"
-                :menubar="''"
-                :image="false"
-                :toolbar="[
-                  'bold italic underline bullist numlist  preview undo redo fullscreen',
-                ]"
-                :height="50"
-              />
-              <div
-                v-if="!isFormulator"
-                v-html="scope.row.success_indicator[index].description"
-              />
+              <div v-if="isReadOnly">
+                <span v-html="scope.row.success_indicator[index].description" />
+              </div>
+              <div v-else>
+                <Tinymce
+                  v-if="isFormulator && indicator.show"
+                  :id="`indicator-${indicator.num}-${scope.$index}`"
+                  v-model="scope.row.success_indicator[index].description"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :toolbar="[
+                    'bold italic underline bullist numlist  preview undo redo fullscreen',
+                  ]"
+                  :height="50"
+                />
+                <div
+                  v-if="!isFormulator"
+                  v-html="scope.row.success_indicator[index].description"
+                />
+              </div>
             </div>
           </div>
           <el-button
             v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
-            @click="handleAddSuccessIndicator(scope.$index)"
+            :disabled="isReadOnly"
+            @click="!isReadOnly && handleAddSuccessIndicator(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
@@ -313,34 +329,42 @@
                   type="danger"
                   size="mini"
                   icon="el-icon-close"
+                  :disabled="isReadOnly"
                   @click.prevent="
-                    deleteEditor(form.num, index, scope.$index, 'form')
+                    !isReadOnly &&
+                      deleteEditor(form.num, index, scope.$index, 'form')
                   "
                 />
               </div>
-              <Tinymce
-                v-if="isFormulator && form.show"
-                :id="`form-${form.num}-${scope.$index}`"
-                v-model="scope.row.form[index].description"
-                output-format="html"
-                :menubar="''"
-                :image="false"
-                :toolbar="[
-                  'bold italic underline bullist numlist  preview undo redo fullscreen',
-                ]"
-                :height="50"
-              />
-              <div
-                v-if="!isFormulator"
-                v-html="scope.row.form[index].description"
-              />
+              <div v-if="isReadOnly">
+                <span v-html="scope.row.form[index].description" />
+              </div>
+              <div v-else>
+                <Tinymce
+                  v-if="isFormulator && form.show"
+                  :id="`form-${form.num}-${scope.$index}`"
+                  v-model="scope.row.form[index].description"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :toolbar="[
+                    'bold italic underline bullist numlist  preview undo redo fullscreen',
+                  ]"
+                  :height="50"
+                />
+                <div
+                  v-if="!isFormulator"
+                  v-html="scope.row.form[index].description"
+                />
+              </div>
             </div>
           </div>
           <el-button
             v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
-            @click="handleAddForm(scope.$index)"
+            :disabled="isReadOnly"
+            @click="!isReadOnly && handleAddForm(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
@@ -368,34 +392,42 @@
                   type="danger"
                   size="mini"
                   icon="el-icon-close"
+                  :disabled="isReadOnly"
                   @click.prevent="
-                    deleteEditor(location.num, index, scope.$index, 'location')
+                    !isReadOnly &&
+                      deleteEditor(location.num, index, scope.$index, 'location')
                   "
                 />
               </div>
-              <Tinymce
-                v-if="isFormulator && location.show"
-                :id="`location-${location.num}-${scope.$index}`"
-                v-model="scope.row.location[index].description"
-                output-format="html"
-                :menubar="''"
-                :image="false"
-                :toolbar="[
-                  'bold italic underline bullist numlist  preview undo redo fullscreen',
-                ]"
-                :height="50"
-              />
-              <div
-                v-if="!isFormulator"
-                v-html="scope.row.location[index].description"
-              />
+              <div v-if="isReadOnly">
+                <span v-html="scope.row.location[index].description" />
+              </div>
+              <div v-else>
+                <Tinymce
+                  v-if="isFormulator && location.show"
+                  :id="`location-${location.num}-${scope.$index}`"
+                  v-model="scope.row.location[index].description"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :toolbar="[
+                    'bold italic underline bullist numlist  preview undo redo fullscreen',
+                  ]"
+                  :height="50"
+                />
+                <div
+                  v-if="!isFormulator"
+                  v-html="scope.row.location[index].description"
+                />
+              </div>
             </div>
           </div>
           <el-button
             v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
-            @click="handleAddLocation(scope.$index)"
+            :disabled="isReadOnly"
+            @click="!isReadOnly && handleAddLocation(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
@@ -416,7 +448,7 @@
             v-if="scope.row.type == 'subtitle'"
             v-model="scope.row.period_number"
             :min="0"
-            :disabled="!isFormulator"
+            :disabled="!isFormulator || isReadOnly"
             style="width: 100%"
             :class="{
               'is-error': checkError(
@@ -437,7 +469,7 @@
             v-if="scope.row.type == 'subtitle'"
             v-model="scope.row.period_description"
             placeholder="Pilihan"
-            :disabled="!isFormulator"
+            :disabled="!isFormulator || isReadOnly"
             :class="{
               'is-error': checkError(
                 scope.row.type,
@@ -451,6 +483,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
+              :disabled="isReadOnly"
             />
           </el-select>
           <span v-else>{{ '' }}</span>
@@ -474,6 +507,7 @@
               type="textarea"
               :rows="2"
               :readonly="!isFormulator"
+              :disabled="isReadOnly"
               :class="{
                 'is-error': checkError(
                   scope.row.type,
@@ -500,6 +534,7 @@
               type="textarea"
               :rows="2"
               :readonly="!isFormulator"
+              :disabled="isReadOnly"
               :class="{
                 'is-error': checkError(
                   scope.row.type,
@@ -526,6 +561,7 @@
               type="textarea"
               :rows="2"
               :readonly="!isFormulator"
+              :disabled="isReadOnly"
               :class="{
                 'is-error': checkError(
                   scope.row.type,
@@ -557,7 +593,8 @@
         class="filter-item"
         type="primary"
         style="font-size: 0.8rem"
-        @click="checkSubmit"
+        :disabled="isReadOnly"
+        @click="!isReadOnly && checkSubmit()"
       >
         {{ 'Simpan Perubahan' }}
       </el-button>
@@ -648,7 +685,13 @@ export default {
     ...mapGetters({
       userInfo: 'user',
       userId: 'userId',
+      markingStatus: 'markingStatus',
     }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },

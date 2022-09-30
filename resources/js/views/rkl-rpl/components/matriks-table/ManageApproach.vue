@@ -16,6 +16,7 @@
           v-if="technologyInput.show"
           v-model="technologyInput.value"
           type="textarea"
+          :disabled="isReadOnly"
           :rows="2"
           style="margin-top: 5px"
         />
@@ -24,7 +25,8 @@
             :loading="loadingSubmitTechnology"
             type="primary"
             size="mini"
-            @click="handleSubmit('technology')"
+            :disabled="isReadOnly"
+            @click="!isReadOnly && handleSubmit('technology')"
           >
             {{ 'Kirim' }}
           </el-button>
@@ -34,7 +36,8 @@
         icon="el-icon-plus"
         style="margin-top: 5px"
         circle
-        @click="technologyInput.show = !technologyInput.show"
+        :disabled="isReadOnly"
+        @click="!isReadOnly && (technologyInput.show = !technologyInput.show)"
       />
     </el-col>
     <el-col :md="8" :sm="24">
@@ -54,6 +57,7 @@
           v-model="socialEconomyInput.value"
           type="textarea"
           :rows="2"
+          :disabled="isReadOnly"
           style="margin-top: 5px"
         />
         <div v-if="socialEconomyInput.show" class="send-btn-container">
@@ -61,7 +65,8 @@
             :loading="loadingSubmitSocial"
             type="primary"
             size="mini"
-            @click="handleSubmit('social_economy')"
+            :disabled="isReadOnly"
+            @click="!isReadOnly && handleSubmit('social_economy')"
           >
             {{ 'Kirim' }}
           </el-button>
@@ -71,7 +76,8 @@
         icon="el-icon-plus"
         style="margin-top: 5px"
         circle
-        @click="socialEconomyInput.show = !socialEconomyInput.show"
+        :disabled="isReadOnly"
+        @click="!isReadOnly && (socialEconomyInput.show = !socialEconomyInput.show)"
       />
     </el-col>
     <el-col :md="8" :sm="24">
@@ -91,6 +97,7 @@
           v-model="institutionInput.value"
           type="textarea"
           :rows="2"
+          :disabled="isReadOnly"
           style="margin-top: 5px"
         />
         <div v-if="institutionInput.show" class="send-btn-container">
@@ -98,7 +105,8 @@
             :loading="loadingSubmitInstitution"
             type="primary"
             size="mini"
-            @click="handleSubmit('institution')"
+            :disabled="isReadOnly"
+            @click="!isReadOnly && handleSubmit('institution')"
           >
             {{ 'Kirim' }}
           </el-button>
@@ -108,13 +116,15 @@
         icon="el-icon-plus"
         style="margin-top: 5px"
         circle
-        @click="institutionInput.show = !institutionInput.show"
+        :disabled="isReadOnly"
+        @click="!isReadOnly && (institutionInput.show = !institutionInput.show)"
       />
     </el-col>
   </el-row>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const manageApproachResource = new Resource('manage-approach');
 
@@ -143,6 +153,15 @@ export default {
         value: null,
       },
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   created() {
     this.getData();

@@ -14,7 +14,7 @@
         />
       </div>
       <!-- form -->
-      <el-button icon="el-icon-plus" size="mini" circle type="primary" :disabled="isReadOnly" plain @click="isReadOnly && addComponent" />
+      <el-button icon="el-icon-plus" size="mini" circle type="primary" :disabled="isReadOnly" @click="!isReadOnly && addComponent()" />
       <form-komponen-lingkungan
         :show="showForm"
         :form-mode="formMode"
@@ -77,7 +77,7 @@ export default {
       markingStatus: 'markingStatus',
     }),
     isReadOnly() {
-      return this.markingStatus === 'amdal.form-ka-submitted';
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
     },
   },
   methods: {
