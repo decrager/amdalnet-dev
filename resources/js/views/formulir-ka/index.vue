@@ -302,9 +302,17 @@
               <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
-                  <el-upload>
-                    <el-button size="small" type="info">browse</el-button>
-                  </el-upload>
+                  <div v-if="isReadOnly">
+                    <el-upload :disabled="isReadonly">
+                      <el-button size="small" type="info">browse</el-button>
+                    </el-upload>
+                  </div>
+                  <div v-else>
+                    <el-upload>
+                      <el-button size="small" type="info">browse</el-button>
+                    </el-upload>
+                  </div>
+
                 </el-col>
               </el-row>
             </el-col>
@@ -314,7 +322,7 @@
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" type="info">browse</el-button>
+                    <el-button :disabled="isReadOnly" size="small" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -326,7 +334,7 @@
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" type="info">browse</el-button>
+                    <el-button size="small" :disabled="isReadOnly" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -337,7 +345,7 @@
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" type="info">browse</el-button>
+                    <el-button size="small" :disabled="isReadOnly" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -350,7 +358,7 @@
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" type="info">browse</el-button>
+                    <el-button size="small" :disabled="isReadOnly" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -361,7 +369,7 @@
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" type="info">browse</el-button>
+                    <el-button size="small" :disabled="isReadOnly" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -370,7 +378,7 @@
 
           <el-row style="margin: 1em 0;">
             <el-col :span="12">
-              <el-button size="medium" type="warning">Unggah Peta</el-button>
+              <el-button size="medium" :disabled="isReadOnly" type="warning">Unggah Peta</el-button>
             </el-col>
             <el-col :span="12" style="text-align: right;">
               <el-button size="medium" type="danger">Batal</el-button>
@@ -711,6 +719,8 @@ div.div-fka {
 </style>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   data() {
     return {
@@ -796,6 +806,15 @@ export default {
       sosBudTags: [{ id: 1, name: 'Tingkat Pendapatan' }, { id: 2, name: 'Mata Pencaharian' }, { id: 3, name: 'Situs Arkeologi' }],
       kesMasTags: [{ name: 'Kesehatan Masyarakat' }],
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   methods: {
     handleClick(tab, event) {

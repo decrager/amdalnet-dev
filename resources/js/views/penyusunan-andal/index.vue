@@ -40,7 +40,7 @@ export default {
   },
   data() {
     return {
-      idProject: this.$route.params.id,
+      idProject: 0,
       compose: [],
       lastTime: null,
       activeName: 'formulir-ka',
@@ -56,11 +56,18 @@ export default {
       return this.$store.getters.roles.includes('initiator');
     },
   },
+  mounted() {
+    this.setProjectId();
+    this.getMarking();
+  },
   created() {
     this.checkExist();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
+    async getMarking() {
+      await this.$store.dispatch('getMarking', this.idProject);
+    },
     async checkExist() {
       this.loading = true;
       await cloneResource.list({
@@ -75,6 +82,10 @@ export default {
     },
     handleSubmitTanggapan() {
       this.handleSubmit();
+    },
+    setProjectId(){
+      const id = this.$route.params && this.$route.params.id;
+      this.idProject = id;
     },
     async checkDocument() {
       this.showDocument = await andalComposingResource.list({

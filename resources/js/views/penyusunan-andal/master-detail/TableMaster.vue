@@ -37,7 +37,8 @@
       <template slot-scope="scope">
         <el-button
           type="text"
-          @click="showDetail(scope.row.stage, scope.row.id)"
+          :disabled="isReadOnly"
+          @click="!isReadOnly && showDetail(scope.row.stage, scope.row.id)"
         >
           {{ isFormulator ? 'Edit' : 'Lihat' }}
         </el-button>
@@ -47,6 +48,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'TableMaster',
   props: {
@@ -57,6 +60,14 @@ export default {
     loading: Boolean,
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },

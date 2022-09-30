@@ -29,7 +29,7 @@
           action="#"
           :show-file-list="false"
         >
-          <el-button size="small" type="primary"> Upload </el-button>
+          <el-button size="small" :disabled="isReadOnly" type="primary"> Upload </el-button>
         </el-upload>
         <div class="el-upload__tip">
           {{ sppl.name }}
@@ -56,7 +56,7 @@
           action="#"
           :show-file-list="false"
         >
-          <el-button size="small" type="primary"> Upload </el-button>
+          <el-button size="small" :disabled="isReadOnly" type="primary"> Upload </el-button>
         </el-upload>
         <div class="el-upload__tip">
           {{ dpt.name }}
@@ -83,7 +83,7 @@
           action="#"
           :show-file-list="false"
         >
-          <el-button size="small" type="primary"> Upload </el-button>
+          <el-button size="small" :disabled="isReadOnly" type="primary"> Upload </el-button>
         </el-upload>
         <div class="el-upload__tip">
           {{ ktr.name }}
@@ -99,7 +99,7 @@
           "
         >
           <label>Lampiran lainnya</label>
-          <el-button type="primary" @click="handleAddOthers">
+          <el-button type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleAddOthers()">
             Tambah
           </el-button>
         </div>
@@ -143,7 +143,8 @@
                   <el-button
                     size="small"
                     type="warning"
-                    @click="selectedUpload = scope.$index"
+                    :disabled="isReadOnly"
+                    @click="!isReadOnly && (selectedUpload = scope.$index)"
                   >
                     Upload
                   </el-button>
@@ -161,7 +162,8 @@
                 type="text"
                 href="#"
                 icon="el-icon-delete"
-                @click="handleDeleteOthers(scope.row.id, scope.$index)"
+                :disabled="isReadOnly"
+                @click="!isReadOnly && handleDeleteOthers(scope.row.id, scope.$index)"
               >
                 Hapus
               </el-button>
@@ -174,7 +176,8 @@
           :loading="loadingSubmit"
           type="primary"
           style="margin-top: 10px"
-          @click="handleSubmit"
+          :disabled="isReadOnly"
+          @click="!isReadOnly && handleSubmit()"
         >
           Simpan
         </el-button>
@@ -185,6 +188,7 @@
 
 <script>
 import Resource from '@/api/resource';
+import { mapGetters } from 'vuex';
 const envManageDocsResource = new Resource('env-manage-docs');
 
 export default {
@@ -215,6 +219,14 @@ export default {
       loadingSubmit: false,
       selectedUpload: 0,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   mounted() {
     this.getData();

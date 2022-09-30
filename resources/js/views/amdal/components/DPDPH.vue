@@ -23,33 +23,68 @@
       > Refresh data
       </el-button>
     </div>
-    <dampak-hipotetik-master-table
-      :impacts="impacts"
-      :id-project="id_project"
-      :change-types="changeTypes"
-      :stages="stages"
-      :components="components"
-      :sub-projects="subProjects"
-      :hues="hues"
-      :pie-params="pieParams"
-      :total-changes="totalChanges"
-      :loading="isLoading"
-      :mode="mode"
-      @dataSelected="onDataSelected"
-      @saveChanges="saveChanges"
-    />
-    <dampak-hipotetik-detail-form
-      :data="selectedData"
-      :change-types="changeTypes"
-      :pie-params="pieParams"
-      :master="activities"
-      :mode="mode"
-      @hasChanges="hasChanges"
-      @saveData="onSaveData"
-    />
+    <div v-if="isReadOnly">
+      <dampak-hipotetik-master-table
+        :impacts="impacts"
+        :id-project="id_project"
+        :change-types="changeTypes"
+        :stages="stages"
+        :components="components"
+        :sub-projects="subProjects"
+        :hues="hues"
+        :pie-params="pieParams"
+        :total-changes="totalChanges"
+        :loading="isLoading"
+        :mode="mode"
+        :disabled="isReadOnly"
+        @dataSelected="!isReadOnly && onDataSelected"
+        @saveChanges="!isReadOnly && saveChanges"
+      />
+    </div>
+    <div v-else>
+      <dampak-hipotetik-master-table
+        :impacts="impacts"
+        :id-project="id_project"
+        :change-types="changeTypes"
+        :stages="stages"
+        :components="components"
+        :sub-projects="subProjects"
+        :hues="hues"
+        :pie-params="pieParams"
+        :total-changes="totalChanges"
+        :loading="isLoading"
+        :mode="mode"
+        @dataSelected="onDataSelected"
+        @saveChanges="saveChanges"
+      />
+    </div>
+    <div v-if="isReadOnly">
+      <dampak-hipotetik-detail-form
+        :data="selectedData"
+        :change-types="changeTypes"
+        :pie-params="pieParams"
+        :master="activities"
+        :mode="mode"
+        :disabled="isReadOnly"
+        @hasChanges="!isReadOnly && hasChanges"
+        @saveData="!isReadOnly && onSaveData"
+      />
+    </div>
+    <div v-else>
+      <dampak-hipotetik-detail-form
+        :data="selectedData"
+        :change-types="changeTypes"
+        :pie-params="pieParams"
+        :master="activities"
+        :mode="mode"
+        @hasChanges="hasChanges"
+        @saveData="onSaveData"
+      />
+    </div>
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import DampakHipotetikMasterTable from './tables/DPHMasterTable.vue';
 import DampakHipotetikDetailForm from './forms/DPHDetailForm.vue';
 
@@ -86,6 +121,15 @@ export default {
       activities: [],
       hues: [],
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   mounted(){
     this.id_project = parseInt(this.$route.params && this.$route.params.id);

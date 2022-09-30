@@ -7,6 +7,7 @@ const kbliEnvParamResource = new Resource('kbli-env-params');
 const ossProjectResource = new Resource('oss-projects');
 const lpjpResource = new Resource('lpjp');
 const formulatorResource = new Resource('formulators');
+const projectResource = new Resource('projects');
 // const SupportDocResource = new Resource('support-docs');
 
 // const API_URL = '/api/projects';
@@ -49,7 +50,7 @@ const projects = {
     unitOptions: [],
     teamType: '',
     formulators: [],
-
+    marking: null,
     loadingStatus: false,
   },
   mutations: {
@@ -89,8 +90,15 @@ const projects = {
     LOADING_STATUS(state, payload) {
       state.loadingStatus = payload;
     },
+    SET_MARKING(state, payload) {
+      state.marking = payload;
+    },
   },
   actions: {
+    async getMarking({ commit }, payload) {
+      const project = await projectResource.get(payload);
+      commit('SET_MARKING', project.marking);
+    },
     async getProjectOss({ commit }) {
       const { data } = await ossProjectResource.list({});
       const option = data.map((i) => {

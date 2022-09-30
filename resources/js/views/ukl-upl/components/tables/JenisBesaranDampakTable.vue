@@ -5,7 +5,8 @@
       size="small"
       icon="el-icon-check"
       style="margin-bottom: 10px;"
-      @click="handleSaveForm()"
+      :disabled="isReadOnly"
+      @click="!isReadOnly && handleSaveForm()"
     >
       Simpan Perubahan
     </el-button>
@@ -27,12 +28,14 @@
             <el-select
               v-model="scope.row.id_change_type"
               placeholder="Perubahan"
+              :disabled="isReadOnly"
             >
               <el-option
                 v-for="item of changeTypes"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
+                :disabled="isReadOnly"
               />
             </el-select>
             <template v-if="scope.row.id_change_type === 0">
@@ -58,7 +61,7 @@
       </el-table-column>
       <el-table-column label="Besaran Dampak" align="left">
         <template slot-scope="scope">
-          <el-input v-if="!scope.row.is_stage" v-model="scope.row.unit" type="textarea" :rows="2" />
+          <el-input v-if="!scope.row.is_stage" v-model="scope.row.unit" :disabled="isReadOnly" type="textarea" :rows="2" />
         </template>
       </el-table-column>
     </el-table>
@@ -68,6 +71,7 @@
 <script>
 import Resource from '@/api/resource';
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 const impactIdtResource = new Resource('impact-identifications');
 const changeTypeResource = new Resource('change-types');
 
@@ -82,6 +86,14 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },
