@@ -265,7 +265,7 @@ export default {
         },
         {
           param: 'No. Telepon',
-          value: this.selectedFeedback.phone,
+          value: '+62'+this.selectedFeedback.phone,
         },
         {
           param: 'Email',
