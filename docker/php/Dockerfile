@@ -15,5 +15,6 @@ RUN docker-php-ext-install gd
 
 COPY ./storage/logs/laravel.log storage/logs/laravel.log
 
-CMD ["tail",  "-f",  "/dev/null"]
+# CMD ["tail",  "-f",  "/dev/null"]
 # CMD ["bash", "./laravue-entrypoint.sh"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0"]
