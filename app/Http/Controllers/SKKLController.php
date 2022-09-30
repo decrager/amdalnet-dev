@@ -318,7 +318,7 @@ class SKKLController extends Controller
             }
 
             // PHPWord
-            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_skkl.docx'));
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_skkl.docx'));
             $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
             $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
             $templateProcessor->setValue('project_title', $project->project_title);
@@ -390,7 +390,7 @@ class SKKLController extends Controller
         }
 
         // PHPWord
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_pkplh.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_pkplh.docx'));
         $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
         $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
         $templateProcessor->setValue('project_title', $project->project_title);

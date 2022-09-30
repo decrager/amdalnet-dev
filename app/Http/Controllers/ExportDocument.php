@@ -295,7 +295,7 @@ class ExportDocument extends Controller
             ->orderBy('sops.code')
             ->get();
 
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_ukl-upl.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_ukl-upl.docx'));
 
         $templateProcessor->setValue('project_title', $getData->project_title);
         $templateProcessor->setValue('kbli', $getData->kbli);
@@ -410,7 +410,7 @@ class ExportDocument extends Controller
         $expert_bank_member = ExpertBankTeamMember::where([['id_expert_bank_team', $beritaAcara->expert_bank_team_id], ['position', 'Ketua']])->first();
         $ketua_tuk = $expert_bank_member->expertBank->name;
         $institution = $expert_bank_member->expertBank->institution;
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara.docx'));
 
         $templateProcessor->setValue('title', strtoupper($beritaAcara->project->project_title));
         $templateProcessor->setValue('address', strtoupper($beritaAcara->project->address));
@@ -737,7 +737,7 @@ class ExportDocument extends Controller
 
         $doc_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_ukl_upl.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_ukl_upl.docx'));
         $templateProcessor->setValue('project_title_big', $project_title_big);
         $templateProcessor->setValue('pemrakarsa', $pemrakarsa);
         $templateProcessor->setValue('pemrakarsa_address', $pemrakarsa_address);

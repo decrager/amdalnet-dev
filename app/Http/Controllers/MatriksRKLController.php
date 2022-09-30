@@ -81,7 +81,7 @@ class MatriksRKLController extends Controller
 
             $save_file_name = $request->idProject .'-rkl-rpl' . '.docx';
 
-            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_rkl_rpl.docx'));
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_rkl_rpl.docx'));
 
             $poinA = [];
             $poinB = [];

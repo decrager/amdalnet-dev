@@ -356,7 +356,7 @@ class FeasibilityTestController extends Controller
 
         $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_kelayakan.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_kelayakan.docx'));
         if($document_type == 'ukl-upl') {
             $templateProcessor = new TemplateProcessor('template_kelayakan_ukl_upl.docx');
         }

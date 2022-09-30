@@ -2015,7 +2015,7 @@ class AndalComposingController extends Controller
         $location_description = $project->location_desc ? $project->location_desc : '';
         $locDescTable = $this->renderHtmlTable($location_description, null, 'Arial', '15');
 
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_andal.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_andal.docx'));
 
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('project_title_s', strtolower($project->project_title));
@@ -2724,7 +2724,7 @@ class AndalComposingController extends Controller
         $project_description_content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 11px;">', $project_description_content);
         Html::addHtml($project_description_cell, $this->replaceHtmlList($project_description_content));
 
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_ka_andal.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_ka_andal.docx'));
 
         $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
         $templateProcessor->setValue('pic', $project->initiator->name);

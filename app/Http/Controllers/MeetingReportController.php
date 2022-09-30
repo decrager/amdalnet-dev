@@ -629,9 +629,9 @@ class MeetingReportController extends Controller
         $templateProcessor = null;
 
         if($authority_real == 'Pusat') {
-            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara.docx'));
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara.docx'));
         } else {
-            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_tuk.docx'));
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara_tuk.docx'));
             $templateProcessor->setValue('tuk_address', $tuk_address);
             $templateProcessor->setValue('tuk_telp', $tuk_telp);
 

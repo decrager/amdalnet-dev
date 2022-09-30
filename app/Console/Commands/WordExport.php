@@ -50,7 +50,7 @@ class WordExport extends Command
         // $expert_bank_member = ExpertBankTeamMember::where([['id_expert_bank_team', $beritaAcara->expert_bank_team_id], ['position', 'Ketua']])->first();
         // $ketua_tuk = $expert_bank_member->expertBank->name;
         // $institution = $expert_bank_member->expertBank->institution;
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara.docx'));
 
         $templateProcessor->setValue('title', 'Judul Besar');
         $templateProcessor->setValue('address', 'Alamat Institusi');

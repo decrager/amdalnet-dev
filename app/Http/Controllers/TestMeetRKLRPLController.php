@@ -696,9 +696,9 @@ class TestMeetRKLRPLController extends Controller
 
          if($document_type == 'rkl-rpl') {
              if($authority_big == 'PUSAT') {
-                 $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berkas_adm_ar_yes.docx'));
+                 $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_ar_yes.docx'));
              } else {
-                 $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berkas_adm_ar_yes_tuk.docx'));
+                 $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_ar_yes_tuk.docx'));
                  $templateProcessor->setValue('tuk_address', $tuk_address);
                  $templateProcessor->setValue('tuk_telp', $tuk_telp);
                  $templateProcessor->setValue('authority_big', $authority_big);
@@ -712,9 +712,9 @@ class TestMeetRKLRPLController extends Controller
              }
          } else {
              if($authority_big == 'PUSAT') {
-                 $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berkas_adm_uu_yes.docx'));
+                 $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_uu_yes.docx'));
              } else {
-                $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berkas_adm_uu_yes_tuk.docx'));
+                $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_uu_yes_tuk.docx'));
                 $templateProcessor->setValue('tuk_address', $tuk_address);
                 $templateProcessor->setValue('tuk_telp', $tuk_telp);
                 $templateProcessor->setValue('authority_big', $authority_big);
@@ -937,9 +937,9 @@ class TestMeetRKLRPLController extends Controller
             }
         }
 
-        $templateProcessor = new TemplateProcessor(storage_path('app/public/template_undangan_rapat_arr.docx'));
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_undangan_rapat_arr.docx'));
         if($document_type == 'ukl-upl') {
-            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_undangan_rapat_uu.docx'));
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_undangan_rapat_uu.docx'));
         }
 
         if($tuk_logo) {

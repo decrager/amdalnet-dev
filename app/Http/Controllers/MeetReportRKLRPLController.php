@@ -701,14 +701,14 @@ class MeetReportRKLRPLController extends Controller
         $templateProcessor = null;
 
         if($authority_real == 'Pusat') {
-            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_arr.docx'));
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara_arr.docx'));
             if($document_type == 'ukl-upl') {
-                $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_uu.docx'));
+                $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara_uu.docx'));
             }
         } else {
-            $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_arr_tuk.docx'));
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara_arr_tuk.docx'));
             if($document_type == 'ukl-upl') {
-                $templateProcessor = new TemplateProcessor(storage_path('app/public/template_berita_acara_uu_tuk.docx'));
+                $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara_uu_tuk.docx'));
             }
             $templateProcessor->setValue('tuk_address', $tuk_address);
             $templateProcessor->setValue('tuk_telp', $tuk_telp);
