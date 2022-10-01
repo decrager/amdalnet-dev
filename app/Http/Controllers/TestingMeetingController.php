@@ -165,18 +165,18 @@ class TestingMeetingController extends Controller
                     $tmpName = tempnam(sys_get_temp_dir(),'');
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
                     file_put_contents($tmpName, $tmpFile);
-                    
+
                     Notification::send($user, new MeetingInvitation($meeting, $tmpName));
-                    
+
                     unlink($tmpName);
-    
+
                     // === WORKFLOW === //
                     if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
                         $project->workflow_apply('send-amdal-form-ka-examination-invitation');
                         $project->workflow_apply('examine-amdal-form-ka');
                         $project->save();
                     }
-    
+
                     return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
                 }
 
@@ -232,7 +232,7 @@ class TestingMeetingController extends Controller
         if($request->invitation_file) {
             $project = Project::findOrFail($request->idProject);
             $file = $this->base64ToFile($request->invitation_file);
-            
+
             if($data['type'] != 'new') {
                 if($meeting->invitation_file) {
                     Storage::disk('public')->delete($meeting->rawInvitationFile());
@@ -905,7 +905,7 @@ class TestingMeetingController extends Controller
             }
         }
 
-        $templateProcessor = new TemplateProcessor('template_undangan_rapat_ka.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_undangan_rapat_ka.docx'));
 
         if($tuk_logo) {
             $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));

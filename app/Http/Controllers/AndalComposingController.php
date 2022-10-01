@@ -57,7 +57,7 @@ class AndalComposingController extends Controller
             if(!Storage::disk('public')->exists('workspace')) {
                 return 'false';
             }
-    
+
             $document_attachment = DocumentAttachment::where([['id_project', $request->idProject],['type', 'Dokumen Andal']])->first();
             if($document_attachment) {
                 return 'true';
@@ -216,7 +216,7 @@ class AndalComposingController extends Controller
                         $attachment = new AndalAttachment();
                         $attachment->id_project = $request->idProject;
                         $attachment->name = $pertek[$i];
-    
+
                         $file = $this->base64ToFile($request->input($fileRequest));
                         $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file['extension'];
                         Storage::disk('public')->put($fileName, $file['file']);
@@ -239,12 +239,12 @@ class AndalComposingController extends Controller
                         $attachment = new AndalAttachment();
                         $attachment->id_project = $request->idProject;
                         $attachment->name = $others[$i];
-    
+
                         $file = $this->base64ToFile($request->input($fileRequest));
                         $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file['extension'];
                         Storage::disk('public')->put($fileName, $file['file']);
                         $attachment->file = $fileName;
-    
+
                         $attachment->save();
                     }
                 }
@@ -420,9 +420,9 @@ class AndalComposingController extends Controller
                     $envAnalysis->condition_dev_with_plan = $analysis[$i]['condition_dev_with_plan'];
                     $envAnalysis->impact_size_difference = $analysis[$i]['impact_size_difference'];
                     $envAnalysis->save();
-    
+
                     $important_trait = $analysis[$i]['important_trait'];
-    
+
                     for ($a = 0; $a < count($important_trait); $a++) {
                         $detail = new ImpactAnalysisDetail();
                         $detail->id_env_impact_analysis = $envAnalysis->id;
@@ -772,10 +772,10 @@ class AndalComposingController extends Controller
             if($project->listSubProject->first()) {
                 foreach($project->listSubProject as $li) {
                     $sub_project_scale_block[] = [
-                        'desc' => str_replace('&', 'dan', $total_sub_project_scale . '. ' . $li->name . ' Seluas ' . $li->scale . ' ' . $li->scale_unit) 
+                        'desc' => str_replace('&', 'dan', $total_sub_project_scale . '. ' . $li->name . ' Seluas ' . $li->scale . ' ' . $li->scale_unit)
                     ];
                     $total_sub_project_scale++;
-                } 
+                }
             }
         }
 
@@ -1249,7 +1249,7 @@ class AndalComposingController extends Controller
                                 $important_trait_7_data
                             ];
                         }
-                        
+
                         // DESKRIPSI BATAS WILAYAH STUDI
                         if(strtolower($component_type) == 'geofisik kimia' || strtolower($component_type) == 'biologi') {
                             $pk_bwk[] = [
@@ -1434,7 +1434,7 @@ class AndalComposingController extends Controller
                     $dph_k[] = [
                         'dph_k' => $total,
                         'dph_k_component' => $component,
-                        'dph_k_unit' => str_replace('&', 'dan', $imp->projectComponent->measurement ?? ''), 
+                        'dph_k_unit' => str_replace('&', 'dan', $imp->projectComponent->measurement ?? ''),
                         'dph_k_plan' => '${dph_k_' . $imp->id . '_study_plan}',
                         'dph_k_rona_awal' => $ronaAwal,
                         'dph_k_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
@@ -1494,7 +1494,7 @@ class AndalComposingController extends Controller
                         ];
                     }
 
-                    
+
                     // PRAKIRAAN DAMPAK PENTING
                     if($imp->is_hypothetical_significant) {
                         if(!in_array($component, $dpg_o_block_name)) {
@@ -1934,7 +1934,7 @@ class AndalComposingController extends Controller
                     $ren_no = $desk_ren_no . '<w:vMerge w:val="continue"/>';
                     $ren_ru =  str_replace('&', 'dan', $sp->name ?? '') . '<w:vMerge w:val="continue"/>';
                 } else {
-                    $ren_no = $desk_ren_no . '<w:vMerge w:val="restart"/>'; 
+                    $ren_no = $desk_ren_no . '<w:vMerge w:val="restart"/>';
                     $ren_ru =  str_replace('&', 'dan', $sp->name ?? '') . '<w:vMerge w:val="restart"/>';
                 }
 
@@ -2015,7 +2015,7 @@ class AndalComposingController extends Controller
         $location_description = $project->location_desc ? $project->location_desc : '';
         $locDescTable = $this->renderHtmlTable($location_description, null, 'Arial', '15');
 
-        $templateProcessor = new TemplateProcessor('template_andal.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_andal.docx'));
 
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('project_title_s', strtolower($project->project_title));
@@ -2200,7 +2200,7 @@ class AndalComposingController extends Controller
             ];
         }
         $templateProcessor->cloneBlock('dpg_po_block', count($pdp), true, false, $pdp);
-        
+
         // DAMPAK PADA PRAKIRAAN DAMPAK PENTING
         if(count($dpg_pk_block) > 0) {
             for($i = 0; $i < count($dpg_pk_block); $i++) {
@@ -2241,7 +2241,7 @@ class AndalComposingController extends Controller
                         $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
                         $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
                         $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
-    
+
                         for($o = 1; $o < count($dpg_pk_block[$i]['important_trait'][$a]) + 1; $o++) {
                             $templateProcessor->setComplexBlock($dpg_pk_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_pk_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
                         }
@@ -2289,7 +2289,7 @@ class AndalComposingController extends Controller
                         $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
                         $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
                         $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
-    
+
                         for($o = 1; $o < count($dpg_k_block[$i]['important_trait'][$a]) + 1; $o++) {
                             $templateProcessor->setComplexBlock($dpg_k_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_k_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
                         }
@@ -2337,7 +2337,7 @@ class AndalComposingController extends Controller
                         $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
                         $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
                         $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
-    
+
                         for($o = 1; $o < count($dpg_o_block[$i]['important_trait'][$a]) + 1; $o++) {
                             $templateProcessor->setComplexBlock($dpg_o_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_o_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
                         }
@@ -2385,7 +2385,7 @@ class AndalComposingController extends Controller
                         $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
                         $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
                         $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
-    
+
                         for($o = 1; $o < count($dpg_po_block[$i]['important_trait'][$a]) + 1; $o++) {
                             $templateProcessor->setComplexBlock($dpg_po_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_po_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
                         }
@@ -2466,7 +2466,7 @@ class AndalComposingController extends Controller
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
             return array_search($model->getKey(), $ids);
         });
-        
+
         $project = Project::findOrFail($id_project);
 
         $save_file_name = 'ka-andal-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
@@ -2612,11 +2612,11 @@ class AndalComposingController extends Controller
                 if($s->name == 'Pra Konstruksi') {
                     $pra_konstruksi[] = $this->getFormulirIm(
                         $s,
-                        $total, 
-                        $changeType, 
-                        $ronaAwal, 
-                        $component, 
-                        $pA, 
+                        $total,
+                        $changeType,
+                        $ronaAwal,
+                        $component,
+                        $pA,
                         $ed_besaran_rencana_title,
                         $ed_kondisi_rona_title,
                         $ed_pengaruh_rencana_title,
@@ -2625,11 +2625,11 @@ class AndalComposingController extends Controller
                 } else if ($s->name == 'Konstruksi') {
                     $konstruksi[] = $this->getFormulirIm(
                         $s,
-                        $total, 
-                        $changeType, 
-                        $ronaAwal, 
-                        $component, 
-                        $pA, 
+                        $total,
+                        $changeType,
+                        $ronaAwal,
+                        $component,
+                        $pA,
                         $ed_besaran_rencana_title,
                         $ed_kondisi_rona_title,
                         $ed_pengaruh_rencana_title,
@@ -2638,11 +2638,11 @@ class AndalComposingController extends Controller
                 } else if ($s->name == 'Operasi') {
                     $operasi[] = $this->getFormulirIm(
                         $s,
-                        $total, 
-                        $changeType, 
-                        $ronaAwal, 
-                        $component, 
-                        $pA, 
+                        $total,
+                        $changeType,
+                        $ronaAwal,
+                        $component,
+                        $pA,
                         $ed_besaran_rencana_title,
                         $ed_kondisi_rona_title,
                         $ed_pengaruh_rencana_title,
@@ -2651,11 +2651,11 @@ class AndalComposingController extends Controller
                 } else {
                     $pasca_operasi[] = $this->getFormulirIm(
                         $s,
-                        $total, 
-                        $changeType, 
-                        $ronaAwal, 
-                        $component, 
-                        $pA, 
+                        $total,
+                        $changeType,
+                        $ronaAwal,
+                        $component,
+                        $pA,
                         $ed_besaran_rencana_title,
                         $ed_kondisi_rona_title,
                         $ed_pengaruh_rencana_title,
@@ -2724,7 +2724,7 @@ class AndalComposingController extends Controller
         $project_description_content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 11px;">', $project_description_content);
         Html::addHtml($project_description_cell, $this->replaceHtmlList($project_description_content));
 
-        $templateProcessor = new TemplateProcessor('template_ka_andal.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_ka_andal.docx'));
 
         $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
         $templateProcessor->setValue('pic', $project->initiator->name);
@@ -2737,7 +2737,7 @@ class AndalComposingController extends Controller
         $positive_no_html = 0;
         $negative_no_html = 0;
         foreach ($publicConsultation as $p) {
-            
+
             if($p->positive_feedback_summary) {
                 $positive_feedback = $p->positive_feedback_summary;
                 $positiveTable = new Table();
@@ -2819,11 +2819,11 @@ class AndalComposingController extends Controller
 
     private function getFormulirIm(
                         $s,
-                        $total, 
-                        $changeType, 
-                        $ronaAwal, 
-                        $component, 
-                        $pA, 
+                        $total,
+                        $changeType,
+                        $ronaAwal,
+                        $component,
+                        $pA,
                         $ed_besaran_rencana_title,
                         $ed_kondisi_rona_title,
                         $ed_pengaruh_rencana_title,
@@ -3062,7 +3062,7 @@ class AndalComposingController extends Controller
             }
         }
 
-        $pdf = PDF::loadView('document.template_ka_andal', 
+        $pdf = PDF::loadView('document.template_ka_andal',
             compact(
                 'project',
                 'team_member',
@@ -3125,7 +3125,7 @@ class AndalComposingController extends Controller
         $project = Project::findOrFail($id_project);
         $pertek = AndalAttachment::where([['id_project', $id_project],['is_pertek', true],['is_andal', true]])->get();
         $others = AndalAttachment::where([['id_project', $id_project],['is_pertek', false],['is_andal', true]])->get();
-        
+
         return [
             'kesesuaian_tata_ruang' => $project->ktr,
             'persetujuan_awal' => $project->pre_agreement_file,
@@ -3139,15 +3139,15 @@ class AndalComposingController extends Controller
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
-      
-        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
-      
+
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1);
+
         // find substring fro replace here eg: data:image/png;base64,
-      
-        $file = str_replace($replace, '', $file_64); 
-      
-        $file = str_replace(' ', '+', $file); 
-      
+
+        $file = str_replace($replace, '', $file_64);
+
+        $file = str_replace(' ', '+', $file);
+
         return [
             'extension' => $extension,
             'file' => base64_decode($file)

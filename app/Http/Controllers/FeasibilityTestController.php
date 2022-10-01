@@ -121,7 +121,7 @@ class FeasibilityTestController extends Controller
         $data = $request->feasibility;
 
         $feasibility = null;
-        
+
         if($data['type'] == 'new') {
             $feasibility = new FeasibilityTest();
             $feasibility->id_project = $data['idProject'];
@@ -132,7 +132,7 @@ class FeasibilityTestController extends Controller
                             })->orWhereHas('expertBank', function($query) {
                                 $query->where('email', Auth::user()->email);
                             })->first();
-            
+
             if($tuk_member) {
                 $feasibility->id_feasibility_test_team_member = $tuk_member->id;
             } else {
@@ -175,14 +175,14 @@ class FeasibilityTestController extends Controller
         //         $project->workflow_apply('draft-uklupl-recommendation');
         //         $project->workflow_apply('sign-uklupl-recommendation');
         //         $project->save();
-        //     } 
+        //     }
         // } else {
         //     if($project->marking == 'amdal.feasibility-ba-signed') {
         //         $project->workflow_apply('draft-amdal-recommendation');
         //         $project->workflow_apply('sign-amdal-recommendation');
         //         $project->save();
         //     }
-        // } 
+        // }
 
         return response()->json(['messsage' => 'success']);
     }
@@ -234,7 +234,7 @@ class FeasibilityTestController extends Controller
 
     private function getExistData($feasibility) {
         $data = [];
-        
+
         if($feasibility->detail->first()) {
             foreach($feasibility->detail as $d) {
                 $data[] = [
@@ -264,7 +264,7 @@ class FeasibilityTestController extends Controller
                 'notes' => null,
                 'expert_notes' => null,
                 'type' => 'new'
-            ]; 
+            ];
         }
 
         return [
@@ -288,7 +288,7 @@ class FeasibilityTestController extends Controller
                 'notes' => null,
                 'expert_notes' => null,
                 'type' => 'new'
-            ]; 
+            ];
         }
 
         return [
@@ -356,7 +356,7 @@ class FeasibilityTestController extends Controller
 
         $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
-        $templateProcessor = new TemplateProcessor('template_kelayakan.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_kelayakan.docx'));
         if($document_type == 'ukl-upl') {
             $templateProcessor = new TemplateProcessor('template_kelayakan_ukl_upl.docx');
         }
@@ -391,7 +391,7 @@ class FeasibilityTestController extends Controller
         $tmpName = $templateProcessor->save();
         Storage::disk('public')->put('uji-kelayakan/' . $save_file_name, file_get_contents($tmpName));
         unlink($tmpName);
-       
+
         if(!$document_attachment) {
             // === NOTIFICATION === //
             $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
@@ -403,7 +403,7 @@ class FeasibilityTestController extends Controller
             $document_attachment->id_project = $id_project;
             $document_attachment->type = 'Dokumen Uji Kelayakan';
         }
-        
+
         $document_attachment->attachment = 'uji-kelayakan/' . $save_file_name;
         $document_attachment->save();
 
@@ -479,7 +479,7 @@ class FeasibilityTestController extends Controller
                         }, 'expertBank' => function($q) {
                             $q->select('id', 'name', 'institution');
                         }])->get();
-        
+
         // === ANGGOTA SEKRETARIAT TUK === //
         $tuk_secretary_member = TukSecretaryMember::select('id', 'name', 'institution')
                                     ->whereHas('feasibilityTest', function($q) use($id_project) {
@@ -488,7 +488,7 @@ class FeasibilityTestController extends Controller
                                         $q->where('id_project', $id_project);
                                         $q->with('detail.eligibility');
                                     }])->get();
-                                    
+
         // === AHLI DARI UNDANGAN === //
         $tuk_invitation = FeasibilityTest::where([['id_project', $id_project],['email', '!=', null]])->with('detail.eligibility')->get();
         $email = [];
@@ -506,7 +506,7 @@ class FeasibilityTestController extends Controller
                                 $q->where('id_project', $id_project);
                             })->with('governmentInstitution')->get();
         }
-        
+
         return [
             'tuk_member' => $tuk_member,
             'tuk_secretary_member' => $tuk_secretary_member,
