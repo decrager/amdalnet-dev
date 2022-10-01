@@ -17,6 +17,12 @@
       </template>
     </el-table-column>
 
+    <el-table-column label="Email">
+      <template slot-scope="scope">
+        <span>{{ scope.row.email }}</span>
+      </template>
+    </el-table-column>
+
     <el-table-column label="Nomor Registrasi">
       <template slot-scope="scope">
         <span>{{ scope.row.reg_no }}</span>
