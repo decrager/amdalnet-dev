@@ -908,7 +908,7 @@ class TestingMeetingController extends Controller
         $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_undangan_rapat_ka.docx'));
 
         if($tuk_logo) {
-            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+            $templateProcessor->setImageValue('logo_tuk', $tuk_logo);
         } else {
             $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
         }
