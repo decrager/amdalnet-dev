@@ -188,6 +188,7 @@ export default {
           id_formulator: members.id,
           expertise: members.expertise,
           cv_file: members.cv_file,
+          email: members.email,
           reg_no: members.reg_no,
           membership_status: members.membership_status,
           cert_file: members.cert_file,
