@@ -32,7 +32,7 @@
           <a
             v-else-if="
               scope.row.generate &&
-              scope.row.name === 'a. Saran, Pendapat dan Tanggapan Masyarakat'
+              scope.row.name === ' Saran, Pendapat dan Tanggapan Masyarakat'
             "
             href="#"
             class="link-lampiran"
@@ -43,7 +43,7 @@
           </a>
           <a
             v-else-if="
-              scope.row.generate && scope.row.name === 'b. Konsultasi Publik'
+              scope.row.generate && scope.row.name === 'Konsultasi Publik'
             "
             href="#"
             class="link-lampiran"
@@ -115,12 +115,16 @@ export default {
   data() {
     return {
       list: [],
+      idProject: 0,
       loading: false,
       loadingAll: false,
       loadingPDFSPT: false,
       loadingExternalFile: {},
       loadingPublicConsultation: false,
     };
+  },
+  mounted() {
+    this.setProjectId();
   },
   created() {
     this.getAttachment();
@@ -142,6 +146,11 @@ export default {
 
       this.list = list;
       this.loading = false;
+      console.log({ gun: this.list });
+    },
+    setProjectId(){
+      const id = this.route.params && this.$route.params.id;
+      this.idProject = id;
     },
     async downloadPDFSPT() {
       this.loadingPDFSPT = true;

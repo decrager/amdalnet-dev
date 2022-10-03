@@ -82,7 +82,7 @@ class KaReviewController extends Controller
             $review->notes = $request->notes;
             $review->document_type = $request->documentType;
             $review->save();
-            
+
 
             $document_type = '';
             if($request->documentType == 'ka') {
@@ -91,7 +91,7 @@ class KaReviewController extends Controller
                 $document_type = 'ANDAL RKL RPL';
             } else if($request->documentType == 'ukl-upl') {
                 $document_type = 'UKL UPL';
-                
+
                 // if document is repairment
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject],['is_accepted', false]])->first();
                 if($meeting_report) {
@@ -409,34 +409,34 @@ class KaReviewController extends Controller
                 $file_berita_acara_pelaksanaan = [
                     // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
                     'file' => $file_array['filepath'],
-                    'file_name' => 'Berita Acara Pelaksanaan.' . $explode_extension[count($explode_extension) - 1] 
+                    'file_name' => 'Berita Acara Pelaksanaan.' . $explode_extension[count($explode_extension) - 1]
                 ];
             } else if($file_array['doc_type'] == 'Berita Acara Penunjukan Wakil Masyarakat') {
                 $file_berita_acara_penunjukan_wakil_masyarakat = [
                     // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
                     'file' => $file_array['filepath'],
-                    'file_name' => 'Berita Acara Penunjukan Wakil Masyarakat.' . $explode_extension[count($explode_extension) - 1] 
+                    'file_name' => 'Berita Acara Penunjukan Wakil Masyarakat.' . $explode_extension[count($explode_extension) - 1]
                 ];
             } else if($file_array['doc_type'] == 'Daftar Hadir') {
                 $file_daftar_hadir = [
                     // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
                     'file' => $file_array['filepath'],
-                    'file_name' => 'Daftar Hadir.' . $explode_extension[count($explode_extension) - 1] 
+                    'file_name' => 'Daftar Hadir.' . $explode_extension[count($explode_extension) - 1]
                 ];
             } else if($file_array['doc_type'] == 'Pengumuman') {
                 $file_pengumuman = [
                     // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
                     'file' => $file_array['filepath'],
-                    'file_name' => 'Pengumuman.' . $explode_extension[count($explode_extension) - 1] 
+                    'file_name' => 'Pengumuman.' . $explode_extension[count($explode_extension) - 1]
                 ];
             } else if($file_array['doc_type'] == 'Undangan') {
                 $file_undangan = [
                     'file' => $file_array['filepath'],
-                    'file_name' => 'Undangan.' . $explode_extension[count($explode_extension) - 1] 
+                    'file_name' => 'Undangan.' . $explode_extension[count($explode_extension) - 1]
                 ];
             }
         }
-        
+
 
         // === PDF RONA AWAL === //
         $rona_awal = ProjectRonaAwal::where([['id_project', $id_project],['file', '!=', null],['is_andal', false]])->get();
@@ -485,7 +485,7 @@ class KaReviewController extends Controller
 
         // === DATA PENDUKUNG DESKRIPSI KEGIATAN === //
         $deskripsi_kegiatan = AndalAttachment::where([['id_project', $id_project],['is_andal', false]])->get();
-        
+
         $attachment = [
             [
                 'no' => 1,
@@ -510,48 +510,48 @@ class KaReviewController extends Controller
             ],
             [
                 'no' => 5,
-                'name' => 'Hasil Pelibatan Masyarakat',
+                'name' => 'Saran, Pendapat dan Tanggapan Masyarakat',
                 'file' => 'undefined',
             ],
             [
                 'no' => null,
-                'name' => 'a. Saran, Pendapat dan Tanggapan Masyarakat',
+                'name' => 'Saran, Pendapat dan Tanggapan Masyarakat',
                 'file' => true,
                 'generate' => true,
             ],
             [
                 'no' => null,
-                'name' => 'b. Konsultasi Publik',
+                'name' => 'Konsultasi Publik',
                 'file' => true,
                 'generate' => true,
             ],
             [
                 'no' => null,
-                'name' => 'c. Berita Acara Pelaksanaan',
+                'name' => 'Berita Acara Pelaksanaan',
                 'file' => $file_berita_acara_pelaksanaan['file'],
                 'file_name' => $file_berita_acara_pelaksanaan['file_name'],
             ],
             [
                 'no' => null,
-                'name' => 'd. Berita Acara Penunjukan Wakil Masyarakat',
+                'name' => 'Berita Acara Penunjukan Wakil Masyarakat',
                 'file' => $file_berita_acara_penunjukan_wakil_masyarakat['file'],
                 'file_name' => $file_berita_acara_penunjukan_wakil_masyarakat['file_name'],
             ],
             [
                 'no' => null,
-                'name' => 'e. Daftar Hadir',
+                'name' => 'Daftar Hadir',
                 'file' => $file_daftar_hadir['file'],
                 'file_name' => $file_daftar_hadir['file_name'],
             ],
             [
                 'no' => null,
-                'name' => 'f. Pengumuman',
+                'name' => 'Pengumuman',
                 'file' => $file_pengumuman['file'],
                 'file_name' => $file_pengumuman['file_name'],
             ],
             [
                 'no' => null,
-                'name' => 'g. Undangan',
+                'name' => 'Undangan',
                 'file' => $file_undangan['file'],
                 'file_name' => $file_undangan['file_name'],
             ],
