@@ -686,9 +686,9 @@ class TestingMeetingController extends Controller
         $oss_char = $project->initiator->nib_doc_oss ? '_oss' : '';
 
         if($authority_big == 'PUSAT') {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes' . $oss_char .'.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_yes') . $oss_char .'.docx');
         } else {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes_tuk' . $oss_char . '.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_yes_tuk') . $oss_char . '.docx');
             $templateProcessor->setValue('tuk_address', $tuk_address);
             $templateProcessor->setValue('tuk_telp', $tuk_telp);
             $templateProcessor->setValue('authority_big', $authority_big);
