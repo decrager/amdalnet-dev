@@ -943,7 +943,7 @@ class TestMeetRKLRPLController extends Controller
         }
 
         if($tuk_logo) {
-            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+            $templateProcessor->setImageValue('logo_tuk', $tuk_logo);
         } else {
             $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
         }
