@@ -70,6 +70,12 @@
               </template>
             </el-table-column>
 
+            <el-table-column label="Email" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.email }}</span>
+              </template>
+            </el-table-column>
+
             <el-table-column label="Nomor Registrasi" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.row.reg_no }}</span>
@@ -182,6 +188,7 @@ export default {
           id_formulator: members.id,
           expertise: members.expertise,
           cv_file: members.cv_file,
+          email: members.email,
           reg_no: members.reg_no,
           membership_status: members.membership_status,
           cert_file: members.cert_file,

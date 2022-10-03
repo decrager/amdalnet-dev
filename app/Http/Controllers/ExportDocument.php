@@ -239,7 +239,7 @@ class ExportDocument extends Controller
         //Save it into PDF
         $getName = explode('.', $getProject->attachment);
         $PDFWriter = IOFactory::createWriter($Content, 'PDF');
-        
+
         unlink($tmpName);
 
         // $PDFWriter->save(storage_path('app/public/formulir/' . $getName[0]) . '.pdf');
@@ -295,7 +295,7 @@ class ExportDocument extends Controller
             ->orderBy('sops.code')
             ->get();
 
-        $templateProcessor = new TemplateProcessor('template_ukl-upl.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_ukl-upl.docx'));
 
         $templateProcessor->setValue('project_title', $getData->project_title);
         $templateProcessor->setValue('kbli', $getData->kbli);
@@ -410,7 +410,7 @@ class ExportDocument extends Controller
         $expert_bank_member = ExpertBankTeamMember::where([['id_expert_bank_team', $beritaAcara->expert_bank_team_id], ['position', 'Ketua']])->first();
         $ketua_tuk = $expert_bank_member->expertBank->name;
         $institution = $expert_bank_member->expertBank->institution;
-        $templateProcessor = new TemplateProcessor('template_berita_acara.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara.docx'));
 
         $templateProcessor->setValue('title', strtoupper($beritaAcara->project->project_title));
         $templateProcessor->setValue('address', strtoupper($beritaAcara->project->address));
@@ -452,7 +452,7 @@ class ExportDocument extends Controller
             $docName = 'form-ka-' . $request->project_name . '.docx';
             // $dokumenKa->storePubliclyAs('public/formulir/', $docName);
             $dokumenKa->storeAs('public/formulir', $docName);
-            
+
             $getDocumentData = DocumentAttachment::where('attachment', '=', $docName)
                 ->where('type', '=', 'Formulir KA')
                 ->where('id_project', '=', $request->id_project)
@@ -486,10 +486,10 @@ class ExportDocument extends Controller
         //     File::makeDirectory(storage_path('app/public/workspace/'));
         // }
 
-        
+
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
-        
+
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->first();
         if($document_attachment) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
@@ -538,7 +538,7 @@ class ExportDocument extends Controller
                 $project_district = ucwords(strtolower($project->address->first()->district));
                 $project_province = 'Provinsi ' . ucwords(strtolower($project->address->first()->prov));
                 $project_address_single = $project->address->first()->address;
-                $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . 
+                $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) .
                                     ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
             }
         }
@@ -577,7 +577,7 @@ class ExportDocument extends Controller
                 $component = '';
 
                 $id_stages = null;
-                
+
                 if ($imp->component) {
                     $id_stages = $imp->component->component->id_project_stage;
 
@@ -692,15 +692,15 @@ class ExportDocument extends Controller
         $pertek_columns = Schema::getColumnListing('project_filters');
         $pertek_columns = array_filter($pertek_columns, function($x) {
             return !(
-                        $x == 'id' || 
-                        $x == 'id_project' || 
-                        $x == 'nothing' || 
-                        $x == 'created_at' || 
-                        $x == 'updated_at' || 
-                        $x == 'high_pollution' || 
-                        $x == 'high_emission' || 
-                        $x == 'low_traffic' || 
-                        $x == 'mid_traffic' || 
+                        $x == 'id' ||
+                        $x == 'id_project' ||
+                        $x == 'nothing' ||
+                        $x == 'created_at' ||
+                        $x == 'updated_at' ||
+                        $x == 'high_pollution' ||
+                        $x == 'high_emission' ||
+                        $x == 'low_traffic' ||
+                        $x == 'mid_traffic' ||
                         $x == 'high_traffic'
                     );
         });
@@ -737,7 +737,7 @@ class ExportDocument extends Controller
 
         $doc_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
-        $templateProcessor = new TemplateProcessor('template_ukl_upl.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_ukl_upl.docx'));
         $templateProcessor->setValue('project_title_big', $project_title_big);
         $templateProcessor->setValue('pemrakarsa', $pemrakarsa);
         $templateProcessor->setValue('pemrakarsa_address', $pemrakarsa_address);

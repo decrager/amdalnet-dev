@@ -14,7 +14,7 @@
             </div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refPengelolaanSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
+            <input ref="refPengelolaanSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(1)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -26,7 +26,7 @@
             <div v-if="petaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanPDF)"><strong>{{ petaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
+            <input ref="refPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(2)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -41,7 +41,7 @@
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refPemantauanSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
+            <input ref="refPemantauanSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(3)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -55,7 +55,7 @@
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
+            <input ref="refPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(4)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -65,7 +65,7 @@
     <div id="mapView" class="map-wrapper" />
 
     <el-row v-if="isFormulator" style="text-align:right;">
-      <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
+      <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
     </el-row>
 
   </el-form>
@@ -84,6 +84,7 @@ import request from '@/utils/request';
 import axios from 'axios';
 
 // Map-related
+import { mapGetters } from 'vuex';
 import shp from 'shpjs';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
@@ -136,6 +137,14 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },

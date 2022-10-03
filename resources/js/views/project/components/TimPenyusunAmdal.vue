@@ -365,6 +365,7 @@ export default {
           name: member.name,
           id: member.id,
           db_id: member.id,
+          email: member.email,
           type: 'new',
           position: 'Anggota',
           expertise: member.expertise,

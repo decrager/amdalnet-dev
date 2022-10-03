@@ -14,7 +14,7 @@
         />
       </div>
       <!-- form -->
-      <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
+      <el-button icon="el-icon-plus" size="mini" circle type="primary" :disabled="isReadOnly" @click="!isReadOnly && addComponent()" />
       <form-komponen-lingkungan
         :show="showForm"
         :form-mode="formMode"
@@ -40,6 +40,7 @@
 import FormKomponenLingkungan from './forms/FormKomponenLingkungan.vue';
 import ComponentsList from './tables/ComponentsList.vue';
 import FormDeleteComponent from './forms/FormDeleteComponent.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'KomponenLingkungan',
@@ -70,6 +71,14 @@ export default {
       deleted: null,
       showDelete: false,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   methods: {
     onSaveData(obj){

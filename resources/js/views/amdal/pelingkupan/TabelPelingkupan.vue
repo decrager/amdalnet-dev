@@ -25,34 +25,65 @@
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Utama</span>
               </div>
-              <components-list
-                v-if="subProjects.length > 0"
-                :id="'main_'+stage.id"
-                :components="subProjects.filter(s => s.type === 'utama')"
-                :active-component="activeScoping.sub_projects"
-                :show-delete="false"
-                :show-edit="false"
-                :class-name="'scoping'"
-                :selectable="true"
-                :de-select-all="deSelectAllSPUtama"
-                @onSelect="onSelectSubProjects"
-              />
+              <div v-if="isReadOnly">
+                <components-list
+                  v-if="subProjects.length > 0"
+                  :id="'main_'+stage.id"
+                  :components="subProjects.filter(s => s.type === 'utama')"
+                  :active-component="activeScoping.sub_projects"
+                  :show-delete="false"
+                  :show-edit="false"
+                  :class-name="'scoping'"
+                  :selectable="true"
+                  :de-select-all="deSelectAllSPUtama"
+                  :disabled="isReadOnly"
+                  @onSelect="!isReadOnly && onSelectSubProjects()"
+                />
+              </div>
+              <div v-else>
+                <components-list
+                  v-if="subProjects.length > 0"
+                  :id="'main_'+stage.id"
+                  :components="subProjects.filter(s => s.type === 'utama')"
+                  :active-component="activeScoping.sub_projects"
+                  :show-delete="false"
+                  :show-edit="false"
+                  :class-name="'scoping'"
+                  :selectable="true"
+                  :de-select-all="deSelectAllSPUtama"
+                  @onSelect="onSelectSubProjects"
+                />
+              </div>
             </el-card>
             <el-card v-if="subProjects.length > 0" v-loading="loadingSubProjects" shadow="never" style="margin-top:1em;">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Pendukung</span>
               </div>
-              <components-list
-                :id="'supporting_'+stage.id"
-                :components="subProjects.filter(s => s.type === 'pendukung')"
-                :show-delete="false"
-                :show-edit="false"
-                :active-component="activeScoping.sub_projects"
-                :class-name="'scoping'"
-                :selectable="true"
-                :de-select-all="deSelectAllSPPendukung"
-                @onSelect="onSelectSubProjects"
-              />
+              <div v-if="isReadOnly">
+                <components-list
+                  :id="'supporting_'+stage.id"
+                  :components="subProjects.filter(s => s.type === 'pendukung')"
+                  :show-delete="false"
+                  :show-edit="false"
+                  :active-component="activeScoping.sub_projects"
+                  :class-name="'scoping'"
+                  :selectable="true"
+                  :disabled="isReadOnly"
+                  :de-select-all="!isReadOnly && deSelectAllSPPendukung"
+                />
+              </div>
+              <div v-else>
+                <components-list
+                  :id="'supporting_'+stage.id"
+                  :components="subProjects.filter(s => s.type === 'pendukung')"
+                  :show-delete="false"
+                  :show-edit="false"
+                  :active-component="activeScoping.sub_projects"
+                  :class-name="'scoping'"
+                  :selectable="true"
+                  :de-select-all="deSelectAllSPPendukung"
+                />
+              </div>
             </el-card>
           </el-col>
           <el-col :span="4">
@@ -177,6 +208,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import ComponentsList from './components/tables/ComponentsList.vue';
 import FormAddComponent from './components/forms/FormAddComponent.vue';
@@ -261,6 +293,14 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
     },

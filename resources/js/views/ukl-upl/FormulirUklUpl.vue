@@ -85,12 +85,16 @@ export default {
     this.setProjectId();
     this.$store.dispatch('getStep', 3);
     this.checkifUklUpl();
+    this.getMarking();
     this.data;
   },
   methods: {
     setProjectId(){
       const id = this.$route.params && this.$route.params.id;
       this.idProject = id;
+    },
+    async getMarking() {
+      await this.$store.dispatch('getMarking', this.idProject);
     },
     async checkifUklUpl() {
       const project = await projectResource.get(this.idProject);

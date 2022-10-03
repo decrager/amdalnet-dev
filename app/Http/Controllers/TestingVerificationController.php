@@ -655,9 +655,9 @@ class TestingVerificationController extends Controller
         }
 
         if($authority_big == 'PUSAT') {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_no.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_no.docx'));
         } else {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_no_tuk.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_no_tuk.docx'));
             $templateProcessor->setValue('authority', $authority);
             if($tuk_logo) {
                 $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
@@ -691,7 +691,7 @@ class TestingVerificationController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+            'url' => Storage::url('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx')
         ];
     }
 

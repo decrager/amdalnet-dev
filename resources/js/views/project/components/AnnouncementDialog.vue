@@ -163,34 +163,40 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <!-- <el-form-item ref="fileProofUpload" label="Bukti Pengumuman (Max 1MB)" prop="fileProof">
-             <div v-if="announcement.proof" style="clear: both !important; margin-bottom: 0.8em;">
-                <a :href="announcement.proof" target="_blank" style="font-weight: bold;">Bukti Pengumuman yang tersimpan <i class="el-icon-download" /></a>
-              </div>
-              <el-col :span="24"><div
-                style="
+
+            <div v-if="announcement.project_result != 'UKL-UPL'">
+
+              <el-form-item ref="fileProofUpload" label="Bukti Pengumuman (Max 1MB)" prop="fileProof">
+                <div v-if="announcement.proof" style="clear: both !important; margin-bottom: 0.8em;">
+                  <a :href="announcement.proof" target="_blank" style="font-weight: bold;">Bukti Pengumuman yang tersimpan <i class="el-icon-download" /></a>
+                </div>
+                <el-col :span="24"><div
+                  style="
                         border: 1px solid #ccc;
                         border-radius: 4px;
                         height: 36px;
                       "
-              >
-                <el-button
-                  icon="el-icon-document-copy"
-                  type="primary"
-                  size="mini"
-                  style="margin-left: 15px"
-                  @click="checkProofFile"
-                >Upload</el-button>
-                <span>{{ fileName }}</span>
-                <input
-                  id="proofFile"
-                  type="file"
-                  accept=".pdf"
-                  style="display: none"
-                  @change="checkProfFileSure"
                 >
-              </div></el-col>
-            </el-form-item>  -->
+                  <el-button
+                    icon="el-icon-document-copy"
+                    type="primary"
+                    size="mini"
+                    style="margin-left: 15px"
+                    @click="checkProofFile"
+                  >Upload</el-button>
+                  <span>{{ fileName }}</span>
+                  <input
+                    id="proofFile"
+                    type="file"
+                    accept=".pdf"
+                    style="display: none"
+                    @change="checkProfFileSure"
+                  >
+                </div></el-col>
+              </el-form-item>
+
+            </div>
+
           </div>
         </div>
         <div>
@@ -378,6 +384,11 @@ export default {
     },
     disabledPastDates(time){
       return time.getTime() < this.yesterday;
+    },
+    showFileAlert() {
+      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+        center: true,
+      });
     },
     setEndDate(val){
       this.announcement.end_date = null;

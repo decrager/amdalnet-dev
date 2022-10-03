@@ -11,7 +11,8 @@
         type="success"
         size="small"
         icon="el-icon-check"
-        @click="handleSaveForm()"
+        :disabled="isReadOnly"
+        @click="!isReadOnly && handleSaveForm()"
       >
         Simpan Perubahan
       </el-button>
@@ -20,6 +21,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import IdentifikasiDampakTable from './tables/IdentifikasiDampakTable.vue';
 
@@ -33,6 +35,14 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
     },

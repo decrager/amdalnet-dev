@@ -140,10 +140,14 @@ export default {
   },
   mounted() {
     this.setProjectId();
+    this.getMarking();
     this.checkifAmdal();
     this.$store.dispatch('getStep', 3);
   },
   methods: {
+    async getMarking() {
+      await this.$store.dispatch('getMarking', this.idProject);
+    },
     async checkifAmdal() {
       const project = await projectResource.get(this.idProject);
       if (project.required_doc !== 'AMDAL') {

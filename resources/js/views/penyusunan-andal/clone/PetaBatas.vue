@@ -18,7 +18,7 @@
               </div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="peSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
+              <input ref="peSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(1)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -30,7 +30,7 @@
               <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
+              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(2)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -45,7 +45,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="psSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
+              <input ref="psSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(3)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -59,7 +59,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
+              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(4)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -74,7 +74,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pwSHP" type="file" class="form-control-file" @change="onChangeFiles(5)">
+              <input ref="pwSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(5)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -87,7 +87,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(6)">
+              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(6)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -98,7 +98,7 @@
       <div id="mapView" class="map-wrapper" />
 
       <el-row v-if="isFormulator" style="text-align:right;">
-        <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
+        <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
       </el-row>
 
     </el-form>
@@ -122,6 +122,7 @@
  }
 </style>
 <script>
+import { mapGetters } from 'vuex';
 import Comment from '@/views/amdal/components/Comment.vue';
 import Resource from '@/api/resource';
 import request from '@/utils/request';
@@ -204,6 +205,13 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },

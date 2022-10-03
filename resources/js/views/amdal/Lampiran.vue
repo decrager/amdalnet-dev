@@ -14,7 +14,7 @@
             Silahkan Lengkapi Formulir Kerangka Acuan dengan Lampiran Data
             Pendukung Deskripsi Kegiatan (Opsional)
           </label>
-          <el-button type="primary" @click="handleAdd"> Tambah </el-button>
+          <el-button type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleAdd()"> Tambah </el-button>
         </div>
         <el-table
           :data="attachment"
@@ -74,7 +74,8 @@
                 type="text"
                 href="#"
                 icon="el-icon-delete"
-                @click="handleDelete(scope.row.id, scope.$index)"
+                :disabled="isReadOnly"
+                @click="!isReadOnly && handleDelete(scope.row.id, scope.$index)"
               >
                 Hapus
               </el-button>
@@ -87,7 +88,8 @@
           :loading="loadingSubmit"
           type="primary"
           style="margin-top: 10px"
-          @click="handleSubmit"
+          :disabled="isReadOnly"
+          @click="!isReadOnly && handleSubmit()"
         >
           Simpan
         </el-button>
@@ -97,6 +99,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const kaAttachmentResource = new Resource('ka-attachments');
 
@@ -110,6 +113,15 @@ export default {
       deleted: [],
       selectedUpload: null,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   created() {
     this.getData();
