@@ -104,21 +104,27 @@
             </el-form-item>
           </div>
           <el-form-item label="Deskripsi" prop="description">
-            <klseditor
-              :key="'master_kegiatan_lain_scoping_113'"
-              v-model="data.description"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :height="100"
-              :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-              style="width:100%"
-            />
+            <div v-if="isReadOnly">
+              <span v-html="master_kegiatan_lain_scoping_113" />
+            </div>
+            <div v-else>
+              <klseditor
+                :key="'master_kegiatan_lain_scoping_113'"
+                v-model="data.description"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :height="100"
+                :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                style="width:100%"
+              />
+            </div>
           </el-form-item>
           <el-form-item label="Besaran" prop="measurement">
             <el-input
               v-model="data.measurement"
               type="textarea"
+              :disabled="isReadOnly"
               :autosize="{ minRows: 3, maxRows: 5}"
             />
           </el-form-item>
@@ -126,12 +132,13 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave() || isReadOnly" @click="!isReadOnly && handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import KLSEditor from '@/components/Tinymce';
 import Resource from '@/api/resource';
 const klsResource = new Resource('kegiatan-lain-sekitar');
@@ -174,6 +181,14 @@ export default {
       districts: [],
       master: [],
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   mounted(){
     this.initData();

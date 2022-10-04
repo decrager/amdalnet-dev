@@ -58,22 +58,28 @@
             {{ 'Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
           </div>
           <el-form-item v-if="selected !== null" style="margin: 1em 0;">
-            <hueeditor
-              :key="'hue_scoping_editor_3'"
-              v-model="hue.description"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :height="100"
-              :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-              style="width:100%"
-            />
+            <div v-if="isReadOnly">
+              <span v-html="hue.description" />
+            </div>
+            <div v-else>
+              <hueeditor
+                :key="'hue_scoping_editor_3'"
+                v-model="hue.description"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :height="100"
+                :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                style="width:100%"
+              />
+            </div>
           </el-form-item>
           <el-form-item v-if="selected !== null " label="Besaran">
 
             <el-input
               v-model="hue.measurement"
               type="textarea"
+              :disabled="isReadOnly"
               :autosize="{ minRows: 3, maxRows: 5}"
             />
 
@@ -82,12 +88,13 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="isSaving || disableSave()" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly" @click="handleSaveForm">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import Deskripsi from '../helpers/Deskripsi.vue';
 import SCHEditor from '@/components/Tinymce';
@@ -139,6 +146,14 @@ export default {
       title: ['Tambah', 'Edit'],
       formMode: 0,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   mounted(){
     this.onOpen();
