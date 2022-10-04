@@ -130,7 +130,7 @@ export default {
     },
     handleDelete({ rows }) {
       this.$confirm(
-        'apakah anda yakin akan menghapus ' + rows.id + '. ?',
+        'apakah anda yakin akan menghapus ' + rows.name + '. ?',
         'Peringatan',
         {
           confirmButtonText: 'OK',
