@@ -1,7 +1,9 @@
 <template>
   <div style="padding: 2em;">
-    <p class="header">Unggah Tapak Proyek</p>
-    <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
+    <div v-if="isFomulator">
+      <p class="header">Unggah Tapak Proyek</p>
+      <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
+    </div>
     <p class="header">Tapak Proyek</p>
     <project-map v-if="data !== null" :id="data.id" />
     <p class="header">Alamat Kegiatan Utama</p>
@@ -51,6 +53,7 @@ import Legend from '@arcgis/core/widgets/Legend';
 import Expand from '@arcgis/core/widgets/Expand';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import Print from '@arcgis/core/widgets/Print';
+import { mapGetters } from 'vuex';
 
 const projectResource = new Resource('projects');
 
@@ -80,12 +83,17 @@ export default {
       geomProperties: null,
     };
   },
+  computed: {
+    ...mapGetters([
+      'roles',
+    ]),
+    isFomulator(){
+      return this.roles.some((role) => role === 'formulator');
+    },
+  },
   mounted(){
     const splice = (this.data.ktr).split('/');
     this.file_ktr = splice[splice.length - 1];
-  },
-  created(){
-    console.log({ dataProp: this.data });
   },
   methods: {
     handleFileTapakProyekMapUpload(e){
