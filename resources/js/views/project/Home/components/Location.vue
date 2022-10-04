@@ -1,14 +1,11 @@
 <template>
   <div style="padding: 2em;">
-    <div>
-      <h2>Unggah Tapak Proyek</h2>
-      <div>
-        <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
-      </div>
+    <div v-if="isFomulator">
+      <p class="header">Unggah Tapak Proyek</p>
+      <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
     </div>
     <p class="header">Tapak Proyek</p>
     <project-map v-if="data !== null" :id="data.id" />
-
     <p class="header">Alamat Kegiatan Utama</p>
     <p class="data">{{ data.project_address }}</p>
 
@@ -46,6 +43,7 @@ import Resource from '@/api/resource';
 import esriConfig from '@arcgis/core/config.js';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
+import Map from '@arcgis/core/Map';
 import shp from 'shpjs';
 import centroid from '@turf/centroid';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
@@ -55,6 +53,7 @@ import Legend from '@arcgis/core/widgets/Legend';
 import Expand from '@arcgis/core/widgets/Expand';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import Print from '@arcgis/core/widgets/Print';
+import { mapGetters } from 'vuex';
 
 const projectResource = new Resource('projects');
 
@@ -74,12 +73,23 @@ export default {
   data() {
     return {
       file_ktr: '',
+      isMapUploaded: false,
       loading: false,
       fileMap: null,
       fileMapName: 'No File Selected',
       map: null,
       currentTapakProyekLayer: null,
+      geomFromGeojson: null,
+      geomProperties: null,
     };
+  },
+  computed: {
+    ...mapGetters([
+      'roles',
+    ]),
+    isFomulator(){
+      return this.roles.some((role) => role === 'formulator');
+    },
   },
   mounted(){
     const splice = (this.data.ktr).split('/');
@@ -87,6 +97,10 @@ export default {
   },
   methods: {
     handleFileTapakProyekMapUpload(e){
+      this.map = new Map({
+        basemap: 'satellite',
+      });
+
       if (!e.target){
         return;
       }
@@ -150,6 +164,8 @@ export default {
       fr.onload = (event) => {
         const base = event.target.result;
         shp(base).then((datas) => {
+          this.geomFromGeojson = datas.features[0].geometry;
+          this.geomProperties = datas.features[0].properties;
           const mapSampleProperties = [
             'PEMRAKARSA',
             'KEGIATAN',
@@ -251,7 +267,6 @@ export default {
         center: [115.287, -1.588],
         zoom: 5,
       });
-      // this.$parent.mapView = mapView;
 
       const legend = new Legend({
         view: mapView,
@@ -308,18 +323,17 @@ export default {
     async handleSave() {
       this.loading = true;
       const formData = new FormData();
-      formData.projectName = true;
-      formData.type = 'locationDesc';
-      formData.locationDesc = this.data.location_desc;
-      formData.fileUploadTapakProject = this.fileUpload;
+      formData.append('projectHome', true);
+      formData.append('type', 'locationDesc');
+      formData.append('locationDesc', this.data.location_desc);
+      formData.append('fileMap', this.fileMap);
+      formData.append('fileMapName', this.fileMapName);
+      formData.append('geomFromGeojson', JSON.stringify(this.geomFromGeojson));
+      formData.append('geomProperties', JSON.stringify(this.geomProperties));
+      formData.append('geomStyles', JSON.stringify(1));
 
-      // await projectResource.updateMultipart
+      await projectResource.updateMultipart(this.$route.params.id, formData);
 
-      await projectResource.update(this.$route.params.id, {
-        projectHome: 'true',
-        type: 'locationDesc',
-        locationDesc: this.data.location_desc,
-      });
       this.$message({
         message: 'Data berhasil disimpan',
         type: 'success',
@@ -330,3 +344,16 @@ export default {
   },
 };
 </script>
+<style scoped>
+.map-container {
+  position: relative;
+  height: 500px;
+}
+#mapView {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0 10px;
+  position: absolute;
+}
+</style>
