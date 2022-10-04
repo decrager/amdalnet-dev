@@ -98,11 +98,11 @@ export default {
           } else if (value === 'pustanling'){
             value = 'Pusfaster';
           } else if (value === 'examiner-secretary'){
-            value = 'Kepala Sekretariat TUK';
+            value = 'Kepala Sekretariat';
           } else if (value === 'examiner-substance'){
-            value = 'TUK';
+            value = 'Validator';
           } else if (value === 'examiner-administration'){
-            value = 'TUK';
+            value = 'Validator';
           }
           const translatedRole = this.$t(value);
           return this.$options.filters.uppercaseFirst(translatedRole);
