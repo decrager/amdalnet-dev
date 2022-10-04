@@ -37,8 +37,7 @@
       <template slot-scope="scope">
         <el-button
           type="text"
-          :disabled="isReadOnly"
-          @click="!isReadOnly && showDetail(scope.row.stage, scope.row.id)"
+          @click="showDetail(scope.row.stage, scope.row.id)"
         >
           {{ isFormulator ? 'Edit' : 'Lihat' }}
         </el-button>
