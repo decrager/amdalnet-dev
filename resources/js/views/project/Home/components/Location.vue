@@ -321,7 +321,7 @@ export default {
       this.isMapUploaded = true;
     },
     async handleSave() {
-      this.loading = false;
+      this.loading = true;
       const formData = new FormData();
       formData.append('projectHome', true);
       formData.append('type', 'locationDesc');
