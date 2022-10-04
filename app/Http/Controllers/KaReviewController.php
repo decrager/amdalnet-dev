@@ -486,81 +486,109 @@ class KaReviewController extends Controller
         // === DATA PENDUKUNG DESKRIPSI KEGIATAN === //
         $deskripsi_kegiatan = AndalAttachment::where([['id_project', $id_project],['is_andal', false]])->get();
 
-        $attachment = [
-            [
-                'no' => 1,
-                'name' => 'Peta Lokasi Kegiatan',
-                // 'file' => $peta_lokasi_kegiatan ? Storage::url('map/' . $peta_lokasi_kegiatan->stored_filename) : null,
-                'file' => $peta_lokasi_kegiatan ? $peta_lokasi_kegiatan->stored_filename : null,
-            ],
-            [
-                'no' => 2,
-                'name' => 'Bukti Kesesuaian Tata Ruang',
-                'file' => $project->rawKtr(),
-            ],
-            [
-                'no' => 3,
-                'name' => 'Izin Persetujuan Awal',
-                'file' => $project->rawPreAgreementFile(),
-            ],
-            [
-                'no' => 4,
-                'name' => 'Bagan Alir Pelingkupan',
-                'file' => $bagan_alir_pelingkupan ? $bagan_alir_pelingkupan->rawAttachment() : null,
-            ],
-            [
-                'no' => 5,
-                'name' => 'Saran, Pendapat dan Tanggapan Masyarakat',
-                'file' => 'undefined',
-            ],
-            [
-                'no' => null,
-                'name' => 'Saran, Pendapat dan Tanggapan Masyarakat',
-                'file' => true,
-                'generate' => true,
-            ],
-            [
-                'no' => null,
-                'name' => 'Konsultasi Publik',
-                'file' => true,
-                'generate' => true,
-            ],
-            [
-                'no' => null,
-                'name' => 'Berita Acara Pelaksanaan',
-                'file' => $file_berita_acara_pelaksanaan['file'],
-                'file_name' => $file_berita_acara_pelaksanaan['file_name'],
-            ],
-            [
-                'no' => null,
-                'name' => 'Berita Acara Penunjukan Wakil Masyarakat',
-                'file' => $file_berita_acara_penunjukan_wakil_masyarakat['file'],
-                'file_name' => $file_berita_acara_penunjukan_wakil_masyarakat['file_name'],
-            ],
-            [
-                'no' => null,
-                'name' => 'Daftar Hadir',
-                'file' => $file_daftar_hadir['file'],
-                'file_name' => $file_daftar_hadir['file_name'],
-            ],
-            [
-                'no' => null,
-                'name' => 'Pengumuman',
-                'file' => $file_pengumuman['file'],
-                'file_name' => $file_pengumuman['file_name'],
-            ],
-            [
-                'no' => null,
-                'name' => 'Undangan',
-                'file' => $file_undangan['file'],
-                'file_name' => $file_undangan['file_name'],
-            ],
-            [
-                'no' => 6,
-                'name' => 'Rona Lingkungan Awal',
-                'file' => 'undefined',
-            ],
-        ];
+        if($project->required_doc === 'AMDAL') {
+            $attachment = [
+                [
+                    'no' => 1,
+                    'name' => 'Peta Lokasi Kegiatan',
+                    // 'file' => $peta_lokasi_kegiatan ? Storage::url('map/' . $peta_lokasi_kegiatan->stored_filename) : null,
+                    'file' => $peta_lokasi_kegiatan ? $peta_lokasi_kegiatan->stored_filename : null,
+                ],
+                [
+                    'no' => 2,
+                    'name' => 'Bukti Kesesuaian Tata Ruang',
+                    'file' => $project->rawKtr(),
+                ],
+                [
+                    'no' => 3,
+                    'name' => 'Izin Persetujuan Awal',
+                    'file' => $project->rawPreAgreementFile(),
+                ],
+                [
+                    'no' => 4,
+                    'name' => 'Bagan Alir Pelingkupan',
+                    'file' => $bagan_alir_pelingkupan ? $bagan_alir_pelingkupan->rawAttachment() : null,
+                ],
+                [
+                    'no' => 5,
+                    'name' => 'Hasil Pelibatan Masyarakat',
+                    'file' => 'undefined',
+                ],
+                [
+                    'no' => null,
+                    'name' => 'a. Saran, Pendapat dan Tanggapan Masyarakat',
+                    'file' => true,
+                    'generate' => true,
+                ],
+                [
+                    'no' => null,
+                    'name' => 'b. Konsultasi Publik',
+                    'file' => true,
+                    'generate' => true,
+                ],
+                [
+                    'no' => null,
+                    'name' => 'c. Berita Acara Pelaksanaan',
+                    'file' => $file_berita_acara_pelaksanaan['file'],
+                    'file_name' => $file_berita_acara_pelaksanaan['file_name'],
+                ],
+                [
+                    'no' => null,
+                    'name' => 'd. Berita Acara Penunjukan Wakil Masyarakat',
+                    'file' => $file_berita_acara_penunjukan_wakil_masyarakat['file'],
+                    'file_name' => $file_berita_acara_penunjukan_wakil_masyarakat['file_name'],
+                ],
+                [
+                    'no' => null,
+                    'name' => 'e. Daftar Hadir',
+                    'file' => $file_daftar_hadir['file'],
+                    'file_name' => $file_daftar_hadir['file_name'],
+                ],
+                [
+                    'no' => null,
+                    'name' => 'f. Pengumuman',
+                    'file' => $file_pengumuman['file'],
+                    'file_name' => $file_pengumuman['file_name'],
+                ],
+                [
+                    'no' => null,
+                    'name' => 'g. Undangan',
+                    'file' => $file_undangan['file'],
+                    'file_name' => $file_undangan['file_name'],
+                ],
+                [
+                    'no' => 6,
+                    'name' => 'Rona Lingkungan Awal',
+                    'file' => 'undefined',
+                ],
+            ];
+        } else if($project->required_doc === 'UKL-UPL') {
+            $attachment = [
+                [
+                    'no' => 1,
+                    'name' => 'Peta Lokasi Kegiatan',
+                    // 'file' => $peta_lokasi_kegiatan ? Storage::url('map/' . $peta_lokasi_kegiatan->stored_filename) : null,
+                    'file' => $peta_lokasi_kegiatan ? $peta_lokasi_kegiatan->stored_filename : null,
+                ],
+                [
+                    'no' => 2,
+                    'name' => 'Bukti Kesesuaian Tata Ruang',
+                    'file' => $project->rawKtr(),
+                ],
+                [
+                    'no' => 3,
+                    'name' => 'Izin Persetujuan Awal',
+                    'file' => $project->rawPreAgreementFile(),
+                ],
+                [
+                    'no' => 4,
+                    'name' => 'Saran, Pendapat dan Tanggapan Masyarakat',
+                    'file' => true,
+                    'generate' => true,
+                ],
+            ];
+        }
+
 
         $no_rona = 'a';
         if(count($geofisik_kimia) > 0) {
@@ -583,11 +611,13 @@ class KaReviewController extends Controller
             $attachment = $this->getRonaFileArray($attachment, $lain_lain, 'Lain-Lain', $no_rona);
         }
 
-        array_push($attachment,  [
-            'no' => 7,
-            'name' => 'Data Pendukung Deskripsi Kegiatan',
-            'file' => 'undefined',
-        ]);
+        if($project->required_doc === 'AMDAL') {
+            array_push($attachment,  [
+                'no' => 7,
+                'name' => 'Data Pendukung Deskripsi Kegiatan',
+                'file' => 'undefined',
+            ]);
+        }
 
         // ADD DATA PENDUKUNG DESKRIPSI KEGIATAN
         $dk_no = 'a';
@@ -601,13 +631,14 @@ class KaReviewController extends Controller
             ]);
             $dk_no++;
         }
-
-        array_push($attachment, [
-            'no' => 8,
-            'name' => 'Peta Batas Wilayah Studi',
-            // 'file' => $peta_batas_wilayah_studi ? Storage::url('map/' . $peta_batas_wilayah_studi->stored_filename) : null,
-            'file' => $peta_batas_wilayah_studi ? $peta_batas_wilayah_studi->stored_filename : null,
-        ]);
+        if($project->required_doc === 'AMDAL') {
+            array_push($attachment, [
+                'no' => 8,
+                'name' => 'Peta Batas Wilayah Studi',
+                // 'file' => $peta_batas_wilayah_studi ? Storage::url('map/' . $peta_batas_wilayah_studi->stored_filename) : null,
+                'file' => $peta_batas_wilayah_studi ? $peta_batas_wilayah_studi->stored_filename : null,
+            ]);
+        }
 
         return response()->json($attachment);
     }

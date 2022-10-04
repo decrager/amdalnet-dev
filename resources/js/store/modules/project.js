@@ -52,6 +52,7 @@ const projects = {
     formulators: [],
     marking: null,
     loadingStatus: false,
+    requiredDoc: null,
   },
   mutations: {
     SET_PROJECT_OPTIONS(state, payload) {
@@ -93,11 +94,18 @@ const projects = {
     SET_MARKING(state, payload) {
       state.marking = payload;
     },
+    SET_REQUIRED_DOC(state, payload) {
+      state.requiredDoc = payload;
+    },
   },
   actions: {
     async getMarking({ commit }, payload) {
       const project = await projectResource.get(payload);
       commit('SET_MARKING', project.marking);
+    },
+    async getRequiredDoc({ commit }, payload) {
+      const project = await projectResource.get(payload);
+      commit('SET_REQUIRED_DOC', project.required_doc);
     },
     async getProjectOss({ commit }) {
       const { data } = await ossProjectResource.list({});
