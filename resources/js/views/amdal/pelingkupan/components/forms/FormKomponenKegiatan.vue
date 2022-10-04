@@ -89,21 +89,27 @@
           <!-- -->
 
           <el-form-item label="Deskripsi">
-            <desceditor
-              v-model="data.description"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :height="100"
-              :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-              style="width:100%"
-            />
+            <div v-if="isReadOnly">
+              <span v-html="data.description" />
+            </div>
+            <div v-else>
+              <desceditor
+                v-model="data.description"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :height="100"
+                :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                style="width:100%"
+              />
+            </div>
           </el-form-item>
 
           <el-form-item label="Besaran">
             <el-input
               v-model="data.measurement"
               type="textarea"
+              :disabled="isReadOnly"
               :autosize="{ minRows: 3, maxRows: 5}"
             />
           </el-form-item>
@@ -111,12 +117,13 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave() || isReadOnly" @click="!isReadOnly && handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import DescEditor from '@/components/Tinymce';
 
@@ -165,6 +172,14 @@ export default {
       noMaster: false,
       saving: false,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   /* watch: {
     show: function(val){

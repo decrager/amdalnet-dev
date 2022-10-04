@@ -81,21 +81,27 @@
           />
         </el-form-item>
         <el-form-item label="Deskripsi">
-          <huedesceditor
-            v-model="data.description"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :height="100"
-            :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-            style="width:100%"
-          />
+          <div v-if="isReadOnly">
+            <span v-html="data.description" />
+          </div>
+          <div v-else>
+            <huedesceditor
+              v-model="data.description"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :height="100"
+              :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+              style="width:100%"
+            />
+          </div>
         </el-form-item>
 
         <el-form-item label="Besaran">
           <el-input
             v-model="data.measurement"
             type="textarea"
+            :disabled="isReadOnly"
             :autosize="{ minRows: 3, maxRows: 5}"
             placeholder="Besaran Rona Lingkungan..."
           />
@@ -115,19 +121,21 @@
         <el-upload
           action="#"
           :auto-upload="false"
-          :on-change="handleUploadPDF"
+          :disabled="isReadOnly"
+          :on-change="!isReadOnly && handleUploadPDF"
           :show-file-list="false"
           style="display: inline-block; margin-right: 11px;"
         >
-          <el-button type="warning"> Upload PDF </el-button>
+          <el-button :disabled="isReadOnly" type="warning"> Upload PDF </el-button>
         </el-upload>
         <el-button type="danger" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave() || isReadOnly" @click="!isReadOnly && handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import HueDescEditor from '@/components/Tinymce';
 const ronaAwalResource = new Resource('rona-awals');
@@ -180,6 +188,14 @@ export default {
       deletePdfId: null,
       showFile: false,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
   },
   /* watch: {
     show: function(val){

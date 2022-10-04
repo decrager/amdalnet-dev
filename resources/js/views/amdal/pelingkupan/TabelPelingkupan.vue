@@ -25,35 +25,18 @@
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Utama</span>
               </div>
-              <div v-if="isReadOnly">
-                <components-list
-                  v-if="subProjects.length > 0"
-                  :id="'main_'+stage.id"
-                  :components="subProjects.filter(s => s.type === 'utama')"
-                  :active-component="activeScoping.sub_projects"
-                  :show-delete="false"
-                  :show-edit="false"
-                  :class-name="'scoping'"
-                  :selectable="true"
-                  :de-select-all="deSelectAllSPUtama"
-                  :disabled="isReadOnly"
-                  @onSelect="!isReadOnly && onSelectSubProjects()"
-                />
-              </div>
-              <div v-else>
-                <components-list
-                  v-if="subProjects.length > 0"
-                  :id="'main_'+stage.id"
-                  :components="subProjects.filter(s => s.type === 'utama')"
-                  :active-component="activeScoping.sub_projects"
-                  :show-delete="false"
-                  :show-edit="false"
-                  :class-name="'scoping'"
-                  :selectable="true"
-                  :de-select-all="deSelectAllSPUtama"
-                  @onSelect="onSelectSubProjects"
-                />
-              </div>
+              <components-list
+                v-if="subProjects.length > 0"
+                :id="'main_'+stage.id"
+                :components="subProjects.filter(s => s.type === 'utama')"
+                :active-component="activeScoping.sub_projects"
+                :show-delete="false"
+                :show-edit="false"
+                :class-name="'scoping'"
+                :selectable="true"
+                :de-select-all="deSelectAllSPUtama"
+                @onSelect="onSelectSubProjects"
+              />
             </el-card>
             <el-card v-if="subProjects.length > 0" v-loading="loadingSubProjects" shadow="never" style="margin-top:1em;">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
@@ -116,7 +99,8 @@
                 circle
                 type="primary"
                 plain
-                @click="addComponent"
+                :disabled="isReadOnly"
+                @click="!isReadOnly && addComponent()"
               />
             </el-card>
           </el-col>
