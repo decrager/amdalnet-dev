@@ -781,7 +781,6 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-
         if ($project === null) {
             return response()->json(['error' => 'project not found'], 404);
         }
@@ -793,8 +792,43 @@ class ProjectController extends Controller
                 $project->description = $request->description;
             }
 
+            if ($files = $request->file('fileMap')) {
+                // check if fileMap exists in DB
+                $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
+                $files->storePubliclyAs('public/map/', $mapName);
+                ProjectMapAttachment::updateOrCreate(
+                [
+                    'id_project' => $project->id,
+                    'attachment_type' => 'tapak',
+                    'step' => 'ka',
+                ],
+                [
+                    'file_type' => 'SHP',
+                    'original_filename' => 'Peta Tapak',
+                    'stored_filename' => $mapName,
+                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                    'properties' => $request->geomProperties,
+                    'id_styles' => $request->geomStyles,
+                ]);
+                // clone for Andal
+                ProjectMapAttachment::updateOrCreate(
+                [
+                    'id_project' => $project->id,
+                    'attachment_type' => 'tapak',
+                    'step' => 'andal',
+                ],
+                [
+                    'file_type' => 'SHP',
+                    'original_filename' => 'Peta Tapak',
+                    'stored_filename' => $mapName,
+                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                    'properties' => $request->geomProperties,
+                    'id_styles' => $request->geomStyles,
+                ]);
+            }
+
             $project->save();
-            
+
             return response()->json(['message' => 'success']);
         }
 
@@ -987,14 +1021,14 @@ class ProjectController extends Controller
             $docFileName = 'project/docFile/' . uniqid() . '.' . $docFile->extension();
             $docFile->storePubliclyAs('public', $docFileName);
         }
-        
+
         $downloadUri = Storage::disk('public')->temporaryUrl($docFileName, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
         $key = Document::GenerateRevisionId($downloadUri);
         $convertedUri = null;
         $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
         return $convertedUri;
     }
-    
+
     public function getDistinctAuthorities(Request $request)
     {
         return DB::table('projects')
