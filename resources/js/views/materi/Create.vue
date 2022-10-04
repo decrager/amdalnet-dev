@@ -2,6 +2,7 @@
   <div class="app-container" style="padding: 24px">
     <el-form
       ref="categoryForm"
+      v-loading="loading"
       :model="currentParam"
       label-position="top"
       label-width="200px"
@@ -51,9 +52,16 @@
                 </el-row>
               </el-form>
               <div class="" style="margin-top: 0.5rem; text-align: right">
-                <el-button type="danger" @click="handleCancel">Kembali</el-button>
+                <el-button
+                  type="danger"
+                  :loading="loading"
+                  @click="handleCancel"
+                >
+                  Kembali
+                </el-button>
                 <el-button
                   type="primary"
+                  :loading="loading"
                   icon="el-icon-s-claim"
                   @click="saveMateri()"
                 >
@@ -76,6 +84,7 @@ export default {
   props: {},
   data() {
     return {
+      loading: false,
       form: {
         name: '',
         description: null,
@@ -91,6 +100,7 @@ export default {
       this.link = this.$refs.link.files[0];
     },
     async saveMateri() {
+      this.loading = true;
       const formData = new FormData();
       formData.append('link', this.link);
       formData.append('name', this.form.name);
@@ -110,6 +120,7 @@ export default {
             name: 'MateriDanKebijakan',
             params: { tabActive: 'materi' },
           });
+          this.loading = false;
         })
         .catch((error) => {
           this.errorMessage = error.message;
@@ -118,6 +129,7 @@ export default {
             type: 'error',
             duration: 5 * 1000,
           });
+          this.loading = false;
         });
     },
     handleCancel() {

@@ -48,8 +48,18 @@
     </el-table-column>
     <el-table-column label="Judul Materi" prop="name" sortable />
     <el-table-column label="Deskripsi" prop="description" sortable />
-    <el-table-column label="Tanggal Terbit" prop="raise_date" sortable />
-    <el-table-column label="Link" prop="link" sortable />
+    <el-table-column label="Tanggal Terbit" align="center" prop="raise_date" sortable />
+    <el-table-column label="Link" align="center" sortable>
+      <template slot-scope="scope">
+        <el-button
+          type="text"
+          icon="el-icon-download"
+          @click="download(scope.row.link)"
+        >
+          link
+        </el-button>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
@@ -71,6 +81,9 @@ export default {
     checkRole,
     handleView(row) {
       this.$emit('handleView', row);
+    },
+    download(url) {
+      window.open(url, '_blank').focus();
     },
     handleEditForm(row) {
       const currentParam = row;
