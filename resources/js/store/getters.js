@@ -25,6 +25,7 @@ const getters = {
   loadingStatus: state => state.announcement.loadingStatus,
   projectOptions: state => state.project.projectOptions,
   markingStatus: state => state.project.marking,
+  requiredDoc: state => state.project.requiredDoc,
   membershipOptions: state => state.project.membershipOptions,
   projectFieldOptions: state => state.project.projectFieldOptions,
   sectorOptions: state => state.project.sectorOptions,

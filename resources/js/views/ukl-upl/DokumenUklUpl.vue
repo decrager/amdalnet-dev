@@ -76,6 +76,7 @@ export default {
     return {
       loading: false,
       projectName: '',
+      idProject: 0,
       urlPdf: null,
       showDocument: false,
       docxUrl: null,
@@ -94,6 +95,10 @@ export default {
       return this.userInfo.roles.includes('initiator');
     },
   },
+  mounted() {
+    this.setProjectId();
+    this.getRequiredDoc();
+  },
   async created() {
     this.$store.dispatch('getStep', 5);
     await this.getData();
@@ -110,6 +115,12 @@ export default {
       this.projectName = data.data.file_name;
       this.loading = false;
       this.downloadDocxPath = this.docxUrl;
+    },
+    setProjectId() {
+      this.idProject = this.$route.params.id;
+    },
+    async getRequiredDoc() {
+      await this.$store.dispatch('getRequiredDoc', this.idProject);
     },
     workspace() {
       this.$router.push({

@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/html-indent -->
 <template>
   <div style="margin-top: 30px">
-    <el-button :loading="loadingAll" type="warning" @click="downloadAll">
+    <el-button :loading="loadingAll" type="warning" :disabled="isRequiredDocUklUpl" @click="downloadAll">
       Unduh Semua File
     </el-button>
     <el-table
@@ -106,6 +106,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import axios from 'axios';
 const kaReviewResource = new Resource('ka-reviews');
@@ -115,7 +116,6 @@ export default {
   data() {
     return {
       list: [],
-      idProject: 0,
       loading: false,
       loadingAll: false,
       loadingPDFSPT: false,
@@ -123,8 +123,14 @@ export default {
       loadingPublicConsultation: false,
     };
   },
-  mounted() {
-    this.setProjectId();
+  computed: {
+    ...mapGetters({
+      requiredDoc: 'requiredDoc',
+    }),
+    isRequiredDocUklUpl() {
+      console.log({ gun: this.requiredDoc });
+      return this.requiredDoc === 'AMDAL';
+    },
   },
   created() {
     this.getAttachment();
@@ -146,11 +152,6 @@ export default {
 
       this.list = list;
       this.loading = false;
-      console.log({ gun: this.list });
-    },
-    setProjectId(){
-      const id = this.route.params && this.$route.params.id;
-      this.idProject = id;
     },
     async downloadPDFSPT() {
       this.loadingPDFSPT = true;
