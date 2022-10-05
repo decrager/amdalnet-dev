@@ -330,4 +330,9 @@ export default {
   font-size:110%;
   color:#202020;
 }
+
+::v-deep p {
+  text-align: left !important;
+}
+
 </style>
