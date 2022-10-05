@@ -322,3 +322,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+  ::v-deep p {
+  text-align: left !important;
+}
+</style>
