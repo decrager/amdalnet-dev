@@ -98,7 +98,7 @@
       <div id="mapView" class="map-wrapper" />
 
       <el-row v-if="isFormulator" style="text-align:right;">
-        <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit">Unggah Peta</el-button>
+        <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
       </el-row>
 
     </el-form>
