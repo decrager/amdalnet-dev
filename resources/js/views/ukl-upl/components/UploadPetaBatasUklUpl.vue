@@ -8,7 +8,7 @@
       <el-col :span="11" style="margin-right:1em;">
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
+          <legend style="margin:0 2em;">File-File SHP yang suda di-zip
             <div v-if="petaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanSHP)"><strong>{{ petaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
@@ -36,7 +36,7 @@
     <el-form-item label="Peta Titik Pemantauan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
+          <legend style="margin:0 2em;">File-File SHP yang suda di-zip
             <div v-if="petaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanSHP)"><strong>{{ petaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
