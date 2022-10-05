@@ -62,6 +62,18 @@ class SKKLController extends Controller
         if ($request->spplOss || $request->pkplhOss) {
             return $this->getFileFromOSS($request->url);
         }
+
+        if ($request->sppl1){
+            // $templateProcessor = storage_path('app/public/template/template_sppl_pem.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_sppl_pem.docx')) ;
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('skkl/' . 'template_sppl_pem.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $spplDownload = Storage::disk('public')->temporaryUrl('skkl/' . 'template_sppl_pem.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+            return [
+                'url' => $spplDownload
+            ];
+        }
     }
 
     /**

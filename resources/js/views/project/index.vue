@@ -967,7 +967,10 @@ export default {
       });
     },
     download(url) {
-      window.open(url, '_blank').focus();
+      const a = document.createElement('a');
+      a.href = url;
+      a.click();
+      // window.open(url, '_blank').focus();
     },
     handleEditForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
@@ -1268,10 +1271,16 @@ export default {
         }).join(',');
 
       const districtData = await districtResource.get(this.initiator.district);
-
+      const uriUnduhSppl = await skklResource.list({
+        sppl1: 'true',
+      });
+      console.log(uriUnduhSppl);
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       // console.log(new Date(project.created_at.substring(0, 10)).toLocaleDateString('id-ID', options));
-
+      // const a = document.createElement('a');
+      // a.href = uriUnduhSppl.url;
+      // a.setAttribute('download', 'template_sppl_pem.docx');
+      // const b = a.click();
       PizZipUtils.getBinaryContent(
         '/template_sppl_pem.docx',
         (error, content) => {
@@ -1308,7 +1317,10 @@ export default {
           const formData = new FormData();
           formData.append('docFile', this.blobToFile(out, 'SPPL-' + project.project_title + '.docx'));
 
-          pdfResource.store(formData).then(value => this.download(value));
+          pdfResource.store(formData).then(value => {
+            console.log({ dowload: value });
+            this.download(value);
+          });
         }
       );
     },
