@@ -288,6 +288,15 @@ class Project extends Model implements Auditable
         return null;
     }
 
+    public function getOssSpplDocAttribute()
+    {
+        if(isset($this->attributes['oss_sppl_doc']) && $this->attributes['oss_sppl_doc'] != null) {
+            return Storage::disk('public')->temporaryUrl($this->attributes['oss_sppl_doc'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+        }
+
+        return null;
+    }
+
     public function applyWorkFlowTransition($transition, $fromState, $endState, $changeMarking = true){
         $userId = Auth::user()->id;
         $wflog = WorkflowLog::create([

@@ -394,7 +394,7 @@ class TestingVerificationController extends Controller
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
-                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' || $f->name == 'hasil_penapisan' || $f->name == 'dokumen_nib' ? 'download' : 'non-download';
+                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' || $f->name == 'hasil_penapisan' || $f->name == 'dokumen_sppl_oss' || $f->name == 'dokumen_nib' ? 'download' : 'non-download';
                         $link = null;
                         if($f->name == 'tata_ruang') {
                             $link = $project->ktr;
@@ -416,8 +416,9 @@ class TestingVerificationController extends Controller
                             $link = $project->oss_required_doc;
                         } else if($f->name == 'dokumen_nib') {
                             $link = $project->initiator->nib_doc_oss;
+                        } else if($f->name == 'dokumen_sppl_oss') {
+                            $link = $project->oss_sppl_doc;
                         }
-
 
                         $form[] = [
                             'id' => $f->id,
@@ -511,6 +512,12 @@ class TestingVerificationController extends Controller
                 ],[
                     'name' => 'dokumen_nib',
                     'link' => $project->initiator->nib_doc_oss,
+                    'suitability' => null,
+                    'description' => null,
+                    'type' => 'download'
+                ],[
+                    'name' => 'dokumen_sppl_oss',
+                    'link' => $project->oss_sppl_doc,
                     'suitability' => null,
                     'description' => null,
                     'type' => 'download'
