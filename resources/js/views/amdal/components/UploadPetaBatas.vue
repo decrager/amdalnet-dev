@@ -481,11 +481,19 @@ export default {
       switch (idx) {
         case 1: // ekologis SHP
           if (this.$refs.peSHP.files[0].size <= 1048576) {
-            this.files[index] = this.$refs.peSHP.files;
-            this.param[index] = {
-              attachment_type: 'ecology',
-              file_type: 'SHP',
-            };
+            if (this.$refs.peSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.peSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.peSHP.files;
+              this.param[index] = {
+                attachment_type: 'ecology',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.peSHP.value = null;
@@ -495,11 +503,19 @@ export default {
         case 2:
           // ekologis PDF
           if (this.$refs.pePDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pePDF.files;
-            this.param[index] = {
-              attachment_type: 'ecology',
-              file_type: 'PDF',
-            };
+            if (this.$refs.pePDF.files[0].type !== 'application/pdf'){
+              this.$refs.pePDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pePDF.files;
+              this.param[index] = {
+                attachment_type: 'ecology',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pePDF.value = null;
@@ -509,24 +525,41 @@ export default {
           break;
         case 3:
           if (this.$refs.psSHP.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.psSHP.files;
-            this.param[index] = {
-              attachment_type: 'social',
-              file_type: 'SHP',
-            };
+            if (this.$refs.psSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.psSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Sosial Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.psSHP.files;
+              this.param[index] = {
+                attachment_type: 'social',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.psSHP.value = null;
           }
+
           // sosial SHP
           break;
         case 4:
           if (this.$refs.psPDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.psPDF.files;
-            this.param[index] = {
-              attachment_type: 'social',
-              file_type: 'PDF',
-            };
+            if (this.$refs.psPDF.files[0].type !== 'application/pdf') {
+              this.$refs.psPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.psPDF.files;
+              this.param[index] = {
+                attachment_type: 'social',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.psPDF.value = null;
@@ -536,11 +569,19 @@ export default {
           break;
         case 5:
           if (this.$refs.pwSHP.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pwSHP.files;
-            this.param[index] = {
-              attachment_type: 'study',
-              file_type: 'SHP',
-            };
+            if (this.$refs.pwSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.pwSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Wilayah Studi Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pwSHP.files;
+              this.param[index] = {
+                attachment_type: 'study',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pwSHP.value = null;
@@ -549,11 +590,19 @@ export default {
           break;
         case 6:
           if (this.$refs.pwPDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pwPDF.files;
-            this.param[index] = {
-              attachment_type: 'study',
-              file_type: 'PDF',
-            };
+            if (this.$refs.pwPDF.files[0].type !== 'application/pdf') {
+              this.$refs.pwPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Wilayah Studi Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pwPDF.files;
+              this.param[index] = {
+                attachment_type: 'study',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pwPDF.value = null;
