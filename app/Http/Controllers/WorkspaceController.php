@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Entity\Workspace;
 use App\Utils\Jwt;
+use App\Laravue\Acl;
 use Illuminate\Support\Facades\Log;
 
 class WorkspaceController extends Controller
@@ -106,6 +107,19 @@ class WorkspaceController extends Controller
         }
         
         $dockey = md5($filename.$id.strval(count($dirs)));
+
+        // check comment only
+        $arroles = [ 
+            Acl::ROLE_EXAMINER, 
+            Acl::ROLE_EXAMINER_CHIEF, 
+            Acl::ROLE_EXAMINER_SECRETARY,
+            Acl::ROLE_EXAMINER_ADMINISTRATION,
+            Acl::ROLE_EXAMINER_SUBSTANCE,
+            Acl::ROLE_EXAMINER_COMMUNITY
+        ];
+
+        $commentOnly = $currentUser->hasRole($arroles);
+        
         $config = [
             'width' => '100%',
             'height' => '100%',
@@ -120,7 +134,7 @@ class WorkspaceController extends Controller
                 'url' => Storage::disk('public')->temporaryUrl('workspace/'.$filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                 'permissions' => [
                     'fillForms' => true,
-                    'edit' => true,
+                    'edit' => ($commentOnly)? false : true,
                     'modifyContentControl' => true,
                     'copy' => false,
                     'print' => false,
