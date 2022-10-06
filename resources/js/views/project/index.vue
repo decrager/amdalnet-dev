@@ -1274,15 +1274,10 @@ export default {
       const uriUnduhSppl = await skklResource.list({
         sppl1: 'true',
       });
-      console.log(uriUnduhSppl);
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      // console.log(new Date(project.created_at.substring(0, 10)).toLocaleDateString('id-ID', options));
-      // const a = document.createElement('a');
-      // a.href = uriUnduhSppl.url;
-      // a.setAttribute('download', 'template_sppl_pem.docx');
-      // const b = a.click();
+
       PizZipUtils.getBinaryContent(
-        '/template_sppl_pem.docx',
+        uriUnduhSppl.url,
         (error, content) => {
           if (error) {
             throw error;
@@ -1318,7 +1313,6 @@ export default {
           formData.append('docFile', this.blobToFile(out, 'SPPL-' + project.project_title + '.docx'));
 
           pdfResource.store(formData).then(value => {
-            console.log({ dowload: value });
             this.download(value);
           });
         }
