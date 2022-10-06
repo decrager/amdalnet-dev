@@ -10,7 +10,7 @@
               </p>
             </div>
           </div>
-          <p style="font-weight:bold;">Penanggung Jawab</p>
+          <p style="font-weight:bold;">Penanggung Jawab </p>
           <div style="padding:1em 2em; border: 1px solid #efefef; border-radius: 0.3em; margin: 1em auto;">
             <el-row :gutter="8">
               <el-col
