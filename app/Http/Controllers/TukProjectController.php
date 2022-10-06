@@ -29,7 +29,7 @@ class TukProjectController extends Controller
             $tuk_members = [];
 
             $project = Project::findOrFail($request->projectId);
-            
+
             // Get Team Id
             $where = [];
             if(strtolower($project->authority) == 'pusat') {
@@ -60,7 +60,7 @@ class TukProjectController extends Controller
                     $q->select('id', 'name', 'institution', 'email');
                 }])->get();
             }
-            
+
             return [
                 'secretary_members' => $secretary_members,
                 'tuk_members' => $tuk_members,
@@ -70,8 +70,8 @@ class TukProjectController extends Controller
 
         $team_id = $this->getIdTeamByMemberEmail(Auth::user()->email);
         $team = FeasibilityTestTeam::findOrFail($team_id);
-        
-        return Project::select('id', 'registration_no', 'project_title', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district')
+
+        return Project::select('id', 'registration_no', 'project_title', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district',)->select('projects.*', 'workflow_states.public_tracking as marking_label')
                     ->where(function($q) use($team) {
                         if($team->authority == 'Pusat') {
                             $q->whereIn('authority', ['Pusat', 'pusat']);
@@ -109,7 +109,9 @@ class TukProjectController extends Controller
                     })
                     ->with(['address', 'initiator' => function($q) {
                         $q->select('id', 'name');
-                    }])->orderBy('created_at', 'DESC')->paginate($request->limit);
+                    }])
+                    ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
+                    ->orderBy('created_at', 'DESC')->paginate($request->limit);
     }
 
     /**
@@ -133,7 +135,7 @@ class TukProjectController extends Controller
         $id_project = $request->idProject;
         $members = $request->members;
         $deleted_members = $request->deletedMembers;
-        
+
         if(count($members) > 0) {
             for($i = 0; $i < count($members); $i++) {
                 $member = null;
@@ -230,7 +232,7 @@ class TukProjectController extends Controller
                 $id_team = $team_member->id_feasibility_test_team;
             }
         }
-        
+
         return $id_team;
     }
 }
