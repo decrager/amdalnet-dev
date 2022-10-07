@@ -133,7 +133,7 @@ class WorkspaceController extends Controller
                 // 'url' => $callUrl.'/storage/workspace/'.$filename,
                 'url' => Storage::disk('public')->temporaryUrl('workspace/'.$filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                 'permissions' => [
-                    'fillForms' => true,
+                    // 'fillForms' => true,
                     'edit' => ($commentOnly)? false : true,
                     'modifyContentControl' => true,
                     'copy' => false,
