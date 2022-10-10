@@ -73,71 +73,87 @@ class ProjectMapAttachmentController extends Controller
                 $map->original_filename = $file->getClientOriginalName();
                 $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
 
-                if ($map->attachment_type === 'ecology' && $map->file_type === 'SHP') {
-                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomEcologyGeojson'), 4326)");
-                    $map->properties = $request->geomEcologyProperties;
-                    $map->id_styles = $request->geomEcologyStyles;
-                } else if ($map->attachment_type === 'social' && $map->file_type === 'SHP') {
-                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomSocialGeojson'), 4326)");
-                    $map->properties = $request->geomSocialProperties;
-                    $map->id_styles = $request->geomSocialStyles;
-                } else if ($map->attachment_type === 'study' && $map->file_type === 'SHP') {
-                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomStudyGeojson'), 4326)");
-                    $map->properties = $request->geomStudyProperties;
-                    $map->id_styles = $request->geomStudyStyles;
-                } else if ($map->attachment_type === 'pemantauan' && $map->file_type === 'SHP') {
-                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomPantauGeojson'), 4326)");
-                    $map->properties = $request->geomPantauProperties;
-                    $map->id_styles = $request->geomPantauStyles;
-                } else if ($map->attachment_type === 'pengelolaan' && $map->file_type === 'SHP') {
-                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomKelolaGeojson'), 4326)");
-                    $map->properties = $request->geomKelolaProperties;
-                    $map->id_styles = $request->geomKelolaStyles;
-                }
+                    if ($map->attachment_type === 'ecology' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomEcologyGeojson'), 4326)");
+                        $map->properties = $request->geomEcologyProperties;
+                        $map->id_styles = $request->geomEcologyStyles;
+                    } else if ($map->attachment_type === 'social' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomSocialGeojson'), 4326)");
+                        $map->properties = $request->geomSocialProperties;
+                        $map->id_styles = $request->geomSocialStyles;
+                    } else if ($map->attachment_type === 'study' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomStudyGeojson'), 4326)");
+                        $map->properties = $request->geomStudyProperties;
+                        $map->id_styles = $request->geomStudyStyles;
+                    } else if ($map->attachment_type === 'pemantauan' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomPantauGeojson'), 4326)");
+                        $map->properties = $request->geomPantauProperties;
+                        $map->id_styles = $request->geomPantauStyles;
+                    } else if ($map->attachment_type === 'pengelolaan' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomKelolaGeojson'), 4326)");
+                        $map->properties = $request->geomKelolaProperties;
+                        $map->id_styles = $request->geomKelolaStyles;
+                    } else if ($map->attachment_type === 'area-pengelolaan' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomAreaKelolaGeojson'), 4326)");
+                        $map->properties = $request->geomAreaKelolaProperties;
+                        $map->id_styles = $request->geomAreaKelolaStyles;
+                    } else if ($map->attachment_type === 'area-pemantauan' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomAreaPantauGeojson'), 4326)");
+                        $map->properties = $request->geomAreaPantauProperties;
+                        $map->id_styles = $request->geomAreaPantauStyles;
+                    }
 
-                $enableCloneAndal = false;
-                
-                // save file to S3
-                if (!Storage::disk('public')->exists('map')) {
-                    Storage::disk('public')->makeDirectory('map');
-                }
-                $filePut = Storage::disk('public')->put('map/' . $map->stored_filename, file_get_contents($file));
 
-                if ($filePut) {
-                    $map->save();
-                    // clone andal, if step = 'ka'
-                    if ($request['step'] == 'ka' && $enableCloneAndal) {
-                        $existingClone = ProjectMapAttachment::where('id_project', $id_project)
-                            ->where('attachment_type', $temp->attachment_type)
-                            ->where('file_type', $temp->file_type)
-                            ->where('step', 'andal')
-                            ->orderBy('created_at', 'desc')
-                            ->first();
-                        if ($existingClone) {
-                            // update
-                            $existingClone->original_filename = $map->original_filename;
-                            $existingClone->stored_filename = $map->stored_filename;
-                            $existingClone->geom = $map->geom;
-                            $existingClone->properties = $map->properties;
-                            $existingClone->id_styles = $map->id_styles;
-                            $existingClone->save();
-                        } else {
-                            // create new clone
-                            $clone = $map->replicate();
-                            $clone->step = 'andal';
-                            $clone->save();
+                    $enableCloneAndal = false;
+
+                    // save file to S3
+                    if (!Storage::disk('public')->exists('map')) {
+                        Storage::disk('public')->makeDirectory('map');
+                    }
+                    $filePut = Storage::disk('public')->put('map/' . $map->stored_filename, file_get_contents($file));
+                    if ($filePut) {
+                        $map->save();
+                        // clone andal, if step = 'ka'
+                        if ($request['step'] == 'ka' && $enableCloneAndal) {
+                            $existingClone = ProjectMapAttachment::where('id_project', $id_project)
+                                ->where('attachment_type', $temp->attachment_type)
+                                ->where('file_type', $temp->file_type)
+                                ->where('step', 'andal')
+                                ->orderBy('created_at', 'desc')
+                                ->first();
+                            if ($existingClone) {
+                                // update
+                                $existingClone->original_filename = $map->original_filename;
+                                $existingClone->stored_filename = $map->stored_filename;
+                                $existingClone->geom = $map->geom;
+                                $existingClone->properties = $map->properties;
+                                $existingClone->id_styles = $map->id_styles;
+                                $existingClone->save();
+                            } else {
+                                // create new clone
+                                $clone = $map->replicate();
+                                $clone->step = 'andal';
+                                $clone->save();
+                            }
+                        }
+                        // Add workflow
+                        $project = Project::findOrFail($id_project);
+                        if ($project->marking == 'uklupl-mt.matrix-upl') {
+                            $project->workflow_apply('submit-uklupl');
+                            $project->save();
                         }
                     }
-                    // Add workflow
-                    $project = Project::findOrFail($id_project);
-                    if ($project->marking == 'uklupl-mt.matrix-upl') {
-                        $project->workflow_apply('submit-uklupl');
-                        $project->save();
-                    }
                 }
+                DB::commit();
+                return request('success', 200);
             }
-            return request('success', 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 500);
         }
+
     }
 
     /**
@@ -253,11 +269,11 @@ class ProjectMapAttachmentController extends Controller
             ->select(DB::raw("json_build_object(
                 'type', 'FeatureCollection',
                 'crs',  json_build_object(
-                    'type',      'name', 
+                    'type',      'name',
                     'properties', json_build_object(
-                        'name', 'EPSG:4326'  
+                        'name', 'EPSG:4326'
                     )
-                ), 
+                ),
                 'features', json_agg(
                     json_build_object(
                         'type', 'Feature',
@@ -303,11 +319,11 @@ class ProjectMapAttachmentController extends Controller
             ->select(DB::raw("json_build_object(
                 'type', 'FeatureCollection',
                 'crs',  json_build_object(
-                    'type',      'name', 
+                    'type',      'name',
                     'properties', json_build_object(
-                        'name', 'EPSG:4326'  
+                        'name', 'EPSG:4326'
                     )
-                ), 
+                ),
                 'features', json_agg(
                     json_build_object(
                         'type', 'Feature',
