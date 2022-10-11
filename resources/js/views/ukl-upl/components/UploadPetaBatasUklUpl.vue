@@ -118,6 +118,10 @@ export default {
       idPengelolaanPDF: 0,
       idPemantauanPDF: 0,
       idPemantauanSHP: 0,
+      petaTapakPDF: '',
+      petaTapakSHP: '',
+      idTapakSHP: 0,
+      idTapakPDF: 0,
       index: 0,
       param: [],
       required: true,
@@ -204,6 +208,38 @@ export default {
       const map = new Map({
         basemap: 'satellite',
       });
+
+      axios.get(`api/map-geojson?id=${this.idProject}&type=tapak&step=ka&limit=1`)
+        .then((response) => {
+          response.data.forEach((item) => {
+            console.log({ guns: item });
+            const getType = JSON.parse(item.feature_layer);
+            const propType = getType.features[0].properties.type;
+            const propFields = getType.features[0].properties.field;
+            const propStyles = getType.features[0].properties.styles;
+            const step = getType.features[0].properties.step;
+
+            // Tapak
+            if (propType === 'tapak' && step === 'ka') {
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: urlBlob(item.feature_layer),
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Tapak Proyek',
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
+              });
+
+              mapView.on('layerview-create', async(event) => {
+                await mapView.goTo({
+                  target: geojsonLayerArray.fullExtent,
+                });
+              });
+
+              this.mapGeojsonArrayProject.push(geojsonLayerArray);
+            }
+          });
+        });
 
       axios.get(`api/map-geojson?id=${this.idProject}&step=ukl-upl`)
         .then((response) => {
@@ -292,8 +328,22 @@ export default {
         container: document.createElement('div'),
       });
 
-      mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layer-list',
+        expandTooltip: 'Layer List',
+        view: mapView,
+        content: layerList,
+      });
+
+      const legendExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap',
+        expandTooltip: 'Legend Layer',
+        view: mapView,
+        content: legend,
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendExpand, 'bottom-left');
     },
     async getData(){
       this.data = [];
@@ -306,6 +356,15 @@ export default {
     process(files){
       files.forEach((e) => {
         switch (e.attachment_type){
+          case 'tapak':
+            if (e.file_type === 'SHP') {
+              this.petaTapakSHP = e.original_filename;
+              this.idTapakSHP = e.id;
+            } else {
+              this.petaTapakPDF = e.original_filename;
+              this.idTapakPDF = e.id;
+            }
+            break;
           case 'pengelolaan':
             if (e.file_type === 'SHP') {
               this.petaPengelolaanSHP = e.original_filename;
@@ -479,6 +538,8 @@ export default {
         if (id === 'full-extent') {
           mapView.goTo({
             target: event.item.layer.fullExtent,
+          }).catch(function(error) {
+            console.error(error);
           });
         }
       });
@@ -504,6 +565,7 @@ export default {
 
       mapView.ui.add(layerListExpand, 'top-right');
       mapView.ui.add(legendExpand, 'top-right');
+      this.isMapUploaded = true;
     },
     handleSubmit(){
       const formData = new FormData();

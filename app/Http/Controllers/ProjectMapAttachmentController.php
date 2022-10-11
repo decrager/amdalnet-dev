@@ -140,7 +140,7 @@ class ProjectMapAttachmentController extends Controller
                 }
                 DB::commit();
                 return request('success', 200);
-            }
+            };
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

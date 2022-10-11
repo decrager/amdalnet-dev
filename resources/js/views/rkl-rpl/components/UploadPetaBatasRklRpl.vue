@@ -252,7 +252,6 @@ export default {
       console.log({ gun: this.markingStatus });
       return data.includes(this.markingStatus);
     },
-
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },
@@ -853,6 +852,8 @@ export default {
         if (id === 'full-extent') {
           mapView.goTo({
             target: event.item.layer.fullExtent,
+          }).catch(function(error) {
+            console.error(error);
           });
         }
       });
@@ -878,6 +879,7 @@ export default {
 
       mapView.ui.add(layerListExpand, 'top-right');
       mapView.ui.add(legendExpand, 'top-right');
+      this.isMapUploaded = true;
     },
     handleSubmit(){
       const formData = new FormData();
