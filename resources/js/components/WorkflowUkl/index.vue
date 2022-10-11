@@ -20,7 +20,7 @@ export default {
   name: 'WorkflowUkl',
   computed: {
     getStep() {
-      console.log(this.$store.getters.step);
+      console.log({ gun: this.$store.getters.step });
       return this.$store.getters.step;
     },
   },
