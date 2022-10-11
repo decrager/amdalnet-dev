@@ -52,6 +52,8 @@ class ProjectMapAttachmentController extends Controller
      */
     public function store(Request $request)
     {
+        DB::beginTransaction();
+        try{
         if ($request['files']) {
             $id_project = $request['id_project'];
             $params = $request['params'];
