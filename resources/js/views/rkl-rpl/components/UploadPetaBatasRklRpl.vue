@@ -964,69 +964,190 @@ export default {
     onChangeFiles(idx){
       const index = idx - 1;
       switch (idx) {
-        case 1: // ekologis SHP
-          this.files[index] = this.$refs.refPengelolaanSHP.files;
-          this.param[index] = {
-            attachment_type: 'pengelolaan',
-            file_type: 'SHP',
-          };
-
+        case 1:
+          if (this.$refs.refPengelolaanSHP.files[0].size <= 10485760) {
+            if (this.$refs.refPengelolaanSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.refPengelolaanSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Titik Pengelolaan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refPengelolaanSHP.files;
+              this.param[index] = {
+                attachment_type: 'pengelolaan',
+                file_type: 'SHP',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           // this.param[index]['file_type'] = 'SHP';
           break;
         case 2:
-          // ekologis PDF
-          this.files[index] = this.$refs.refPengelolaanPDF.files;
-          this.param[index] = {
-            attachment_type: 'pengelolaan',
-            file_type: 'PDF',
-          };
+          if (this.$refs.refPengelolaanPDF.files[0].size <= 10485760) {
+            if (this.$refs.refPengelolaanPDF.files[0].type !== 'application/pdf') {
+              this.$refs.refPengelolaanPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Titik Pengelolaan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.$refs.refPengelolaanPDF.value = null;
+              this.files[index] = this.$refs.refPengelolaanPDF.files;
+              this.param[index] = {
+                attachment_type: 'pengelolaan',
+                file_type: 'PDF',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
+
           // this.param[index]['file_type'] = 'PDF';
           // this.embedSrc = window.URL.createObjectURL(this.$refs.refPengelolaanPDF.files);
           break;
         case 3:
-          this.files[index] = this.$refs.refPemantauanSHP.files;
-          this.param[index] = {
-            attachment_type: 'pemantauan',
-            file_type: 'SHP',
-          };
-          // sosial SHP
+          if (this.$refs.refPemantauanSHP.files[0].size <= 10485760) {
+            if (this.$refs.refPemantauanSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.refPemantauanSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Titik Pemantauan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refPemantauanSHP.files;
+              this.param[index] = {
+                attachment_type: 'pemantauan',
+                file_type: 'SHP',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           break;
         case 4:
-          this.files[index] = this.$refs.refPemantauanPDF.files;
-          this.param[index] = {
-            attachment_type: 'pemantauan',
-            file_type: 'PDF',
-          };
-
-          // sosial PDF
+          if (this.$refs.refPemantauanPDF.files[0].size <= 10485760) {
+            if (this.$refs.refPemantauanPDF.files[0].type !== 'application/pdf') {
+              this.$refs.refPemantauanPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Titik Pemantauan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refPemantauanPDF.files;
+              this.param[index] = {
+                attachment_type: 'pemantauan',
+                file_type: 'PDF',
+              };
+            }
+          } else {
+            this.$refs.refPemantauanPDF.value = null;
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           break;
         case 5:
-          this.files[index] = this.$refs.refAreaPengelolaanSHP.files;
-          this.param[index] = {
-            attachment_type: 'area-pengelolaan',
-            file_type: 'SHP',
-          };
+          if (this.$refs.refAreaPengelolaanSHP.files[0].size <= 10485760) {
+            if (this.$refs.refAreaPengelolaanSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.refAreaPengelolaanSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Lokasi Pengelolaan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refAreaPengelolaanSHP.files;
+              this.param[index] = {
+                attachment_type: 'area-pengelolaan',
+                file_type: 'SHP',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           break;
         case 6:
-          this.files[index] = this.$refs.refAreaPengelolaanPDF.files;
-          this.param[index] = {
-            attachment_type: 'area-pengelolaan',
-            file_type: 'PDF',
-          };
+          if (this.$refs.refAreaPengelolaanPDF.files[0].size <= 10485760) {
+            if (this.$refs.refAreaPengelolaanPDF.files[0].type !== 'application/pdf') {
+              this.$refs.refAreaPengelolaanPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Lokasi Pengelolaan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refAreaPengelolaanPDF.files;
+              this.param[index] = {
+                attachment_type: 'area-pengelolaan',
+                file_type: 'PDF',
+              };
+            }
+          } else {
+            this.$refs.refAreaPengelolaanPDF.value = null;
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           break;
         case 7:
-          this.files[index] = this.$refs.refAreaPemantauanSHP.files;
-          this.param[index] = {
-            attachment_type: 'area-pemantauan',
-            file_type: 'SHP',
-          };
+          if (this.$refs.refAreaPemantauanSHP.files[0].size <= 10485760) {
+            if (this.$refs.refAreaPemantauanSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.refAreaPemantauanSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Lokasi Pemantauan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refAreaPemantauanSHP.files;
+              this.param[index] = {
+                attachment_type: 'area-pemantauan',
+                file_type: 'SHP',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
+
           break;
         case 8:
-          this.files[index] = this.$refs.refAreaPemantauanPDF.files;
-          this.param[index] = {
-            attachment_type: 'area-pemantauan',
-            file_type: 'PDF',
-          };
+          if (this.$refs.refAreaPemantauanPDF.files[0].size <= 10485760) {
+            if (this.$refs.refAreaPemantauanPDF.files[0].type !== 'application/pdf') {
+              this.$refs.refAreaPemantauanPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Lokasi Pemantauan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refAreaPemantauanPDF.files;
+              this.param[index] = {
+                attachment_type: 'area-pemantauan',
+                file_type: 'PDF',
+              };
+            }
+          } else {
+            this.$refs.refAreaPemantauanPDF.value = null;
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           break;
         default:
       }

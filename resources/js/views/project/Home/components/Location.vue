@@ -1,8 +1,26 @@
 <template>
   <div style="padding: 2em;">
-    <div v-if="isFomulator">
+    <div v-if="isFormulator">
+      <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
+        <div v-if="peta_tapak_shp_name != ''" class="current">tersimpan: <a style="color: green" :href="url_peta_tapak_shp"><strong>{{ peta_tapak_shp_name }}<i class="el-icon-circle-check" /></strong></a>
+          <!-- &nbsp;<i class="el-icon-delete"></i>-->
+        </div>
+      </legend>
       <p class="header">Unggah Tapak Proyek</p>
       <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
+    </div>
+    <div style="padding-top: 2em; padding-bottom: 2em;">
+      <div v-if="isFormulator">
+        <legend style="margin:0 2em;">Versi PDF
+          <div v-if="peta_tapak_pdf_name != ''" class="current">tersimpan: <a style="color: green" :href="url_peta_tapak_pdf" target="_blank"><strong>{{ peta_tapak_pdf_name }}<i class="el-icon-circle-check" /></strong></a>
+            <!-- &nbsp;<i class="el-icon-delete"></i>-->
+          </div>
+        </legend>
+        <span> <p class="header">* Upload Peta PDF (Max 10MB) <el-tooltip class="item" effect="dark" content="Peta yang diunggah adalah peta tapak proyek yang telah dibuat oleh pemrakarsa atau lampiran peta atas rekomendasi kesesuaian tata ruang(format pdf ukuran A3)" placement="top">
+          <i class="el-alert__icon el-icon-warning" />
+        </el-tooltip></p></span>
+        <classic-upload :name="filePdfName" :fid="'filePdf'" @handleFileUpload="handleFileTapakProyekPdfUpload" />
+      </div>
     </div>
     <p class="header">Tapak Proyek</p>
     <project-map v-if="data !== null" :id="data.id" />
@@ -76,6 +94,13 @@ export default {
       isMapUploaded: false,
       loading: false,
       fileMap: null,
+      idProject: 0,
+      filePdf: null,
+      url_peta_tapak_shp: null,
+      peta_tapak_shp_name: null,
+      url_peta_tapak_pdf: null,
+      peta_tapak_pdf_name: null,
+      filePdfName: 'No File Selected',
       fileMapName: 'No File Selected',
       map: null,
       currentTapakProyekLayer: null,
@@ -87,15 +112,49 @@ export default {
     ...mapGetters([
       'roles',
     ]),
-    isFomulator(){
+    isFormulator(){
       return this.roles.some((role) => role === 'formulator');
     },
   },
-  mounted(){
+  mounted() {
     const splice = (this.data.ktr).split('/');
     this.file_ktr = splice[splice.length - 1];
+    this.loadAttachment();
+    console.log({ setiyo: this.peta_tapak_shp_name });
   },
   methods: {
+    handleFileTapakProyekPdfUpload(e){
+      if (!e.target) {
+        return;
+      }
+
+      if (e.target.files[0].size > 10485760){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
+      if (e !== 'pdf'){
+        this.filePdf = e.target.files[0];
+        this.filePdfName = e.target.files[0].name;
+      }
+    },
+    loadAttachment() {
+      const data = this.data;
+      data.map_files.forEach((map) => {
+        if (map.file_type === 'SHP' && map.attachment_type === 'tapak') {
+          this.url_peta_tapak_shp = map.map_file_url;
+          this.peta_tapak_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'tapak') {
+          this.url_peta_tapak_pdf = map.map_file_url;
+          this.peta_tapak_pdf_name = map.original_filename;
+        }
+      });
+    },
     handleFileTapakProyekMapUpload(e){
       this.map = new Map({
         basemap: 'satellite',
@@ -328,6 +387,8 @@ export default {
       formData.append('locationDesc', this.data.location_desc);
       formData.append('fileMap', this.fileMap);
       formData.append('fileMapName', this.fileMapName);
+      formData.append('filePdf', this.filePdf);
+      formData.append('filePdfName', this.filePdfName);
       formData.append('geomFromGeojson', JSON.stringify(this.geomFromGeojson));
       formData.append('geomProperties', JSON.stringify(this.geomProperties));
       formData.append('geomStyles', JSON.stringify(1));

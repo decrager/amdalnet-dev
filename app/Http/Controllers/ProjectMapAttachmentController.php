@@ -53,24 +53,24 @@ class ProjectMapAttachmentController extends Controller
     public function store(Request $request)
     {
         DB::beginTransaction();
-        try{
-        if ($request['files']) {
-            $id_project = $request['id_project'];
-            $params = $request['params'];
-            foreach ($request->file('files') as $i => $file) {
-                $temp = json_decode($params[$i]);
-                $map = ProjectMapAttachment::firstOrNew([
-                    'id_project' => $id_project,
-                    'attachment_type' => $temp->attachment_type,
-                    'file_type' => $temp->file_type,
-                    'step' => $request['step'],
-                ]);
+        try {
+            if ($request['files']) {
+                $id_project = $request['id_project'];
+                $params = $request['params'];
+                foreach ($request->file('files') as $i => $file) {
+                    $temp = json_decode($params[$i]);
+                    $map = ProjectMapAttachment::firstOrNew([
+                        'id_project' => $id_project,
+                        'attachment_type' => $temp->attachment_type,
+                        'file_type' => $temp->file_type,
+                        'step' => $request['step'],
+                    ]);
 
-                if ($map->id) {
-                    if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
-                        Storage::disk('public')->delete('map/' . $map->stored_filename);
+                    if ($map->id) {
+                        if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
+                            Storage::disk('public')->delete('map/' . $map->stored_filename);
+                        }
                     }
-                }
 
                 $map->original_filename = $file->getClientOriginalName();
                 $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());

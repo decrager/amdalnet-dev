@@ -678,7 +678,7 @@ class ProjectController extends Controller
     private function getProject($id)
     {
 
-        $project = Project::with(['address', 'listSubProject', 'initiator'])->from('projects')
+        $project = Project::with(['address', 'listSubProject', 'initiator', 'mapFiles'])->from('projects')
             ->selectRaw('
         projects.*,
         concat(initcap(project_address.district), \', \', initcap(project_address.prov)) as project_address,
@@ -792,6 +792,34 @@ class ProjectController extends Controller
                 $project->description = $request->description;
             }
 
+            if ($files = $request->file('filePdf')) {
+                $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.pdf';
+                $files->storePubliclyAs('public/map/', $mapName);
+                ProjectMapAttachment::updateOrCreate(
+                [
+                    'id_project' => $project->id,
+                    'attachment_type' => 'tapak',
+                    'step' => 'ka',
+                    'file_type' => 'PDF',
+                ],
+                [
+                    'original_filename' => 'Peta Tapak',
+                    'stored_filename' => $mapName,
+                ]);
+                // clone for Andal
+                ProjectMapAttachment::updateOrCreate(
+                [
+                    'id_project' => $project->id,
+                    'attachment_type' => 'tapak',
+                    'step' => 'andal',
+                    'file_type' => 'PDF',
+                ],
+                [
+                    'original_filename' => 'Peta Tapak',
+                    'stored_filename' => $mapName,
+                ]);
+            }
+
             if ($files = $request->file('fileMap')) {
                 // check if fileMap exists in DB
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
@@ -801,9 +829,9 @@ class ProjectController extends Controller
                     'id_project' => $project->id,
                     'attachment_type' => 'tapak',
                     'step' => 'ka',
+                    'file_type' => 'SHP',
                 ],
                 [
-                    'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
@@ -816,9 +844,9 @@ class ProjectController extends Controller
                     'id_project' => $project->id,
                     'attachment_type' => 'tapak',
                     'step' => 'andal',
+                    'file_type' => 'SHP',
                 ],
                 [
-                    'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
