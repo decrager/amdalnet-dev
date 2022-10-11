@@ -6,6 +6,7 @@ use App\EntityHome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 // use App\Utils\Storage;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Utils\TemplateProcessor;
 use PhpOffice\PhpWord\IOFactory;
@@ -236,9 +237,14 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function s3check()
+    public function s3check(Request $request)
     {
-        $files = Storage::disk('public')->directories('workspace/sample.docx-hist');
-        var_dump($files);
+        if (Auth::check()) {
+            $user = Auth::user();
+            var_dump($user);
+        }
+        // $files = Storage::disk('public')->directories('workspace/sample.docx-hist');
+        // var_dump($files);
+        var_dump(Auth::check());
     }
 }

@@ -8,7 +8,7 @@
       <el-col :span="11" style="margin-right:1em;">
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
+          <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
             <div v-if="petaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanSHP)"><strong>{{ petaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
@@ -37,7 +37,7 @@
       <el-col :span="11" style="margin-right:1em;">
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
+          <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
             <div v-if="petaAreaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPengelolaanSHP)"><strong>{{ petaAreaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
@@ -65,7 +65,7 @@
     <el-form-item label="Peta Titik Pemantauan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
+          <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
             <div v-if="petaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanSHP)"><strong>{{ petaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
@@ -94,7 +94,7 @@
     <el-form-item label="Peta Lokasi Pemantauan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
+          <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
             <div v-if="petaAreaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPemantauanSHP)"><strong>{{ petaAreaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
@@ -230,7 +230,27 @@ export default {
     }),
 
     isReadOnly() {
-      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+      const data = [
+        'amdal.andal-drafting', // sementara
+        'amdal.rklrpl-drafting', // sementara
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+      console.log({ gun: this.markingStatus });
+      return data.includes(this.markingStatus);
     },
 
     isFormulator() {

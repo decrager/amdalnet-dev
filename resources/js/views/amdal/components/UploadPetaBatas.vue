@@ -12,7 +12,7 @@
         <el-col :span="11" style="margin-right:1em;">
 
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
+            <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPES)"><strong>{{ petaEkologisSHP }}<i class="el-icon-circle-check" /></strong></span>
                 <!-- &nbsp;<i class="el-icon-delete"></i>-->
               </div>
@@ -40,7 +40,7 @@
       <el-form-item label="Peta Batas Sosial" :required="required">
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
+            <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSS)"><strong>{{ petaSosialSHP }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
 
@@ -69,7 +69,7 @@
       <el-form-item label="Peta Batas Wilayah Studi" :required="required">
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
+            <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuS)"><strong>{{ petaStudiSHP }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
 
@@ -98,7 +98,7 @@
       <div id="mapView" class="map-wrapper" />
 
       <el-row v-if="isFormulator" style="text-align:right;">
-        <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit">Unggah Peta</el-button>
+        <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
       </el-row>
 
     </el-form>
@@ -214,7 +214,52 @@ export default {
     }),
 
     isReadOnly() {
-      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+
+      return data.includes(this.markingStatus);
     },
 
     isFormulator() {
@@ -481,11 +526,19 @@ export default {
       switch (idx) {
         case 1: // ekologis SHP
           if (this.$refs.peSHP.files[0].size <= 1048576) {
-            this.files[index] = this.$refs.peSHP.files;
-            this.param[index] = {
-              attachment_type: 'ecology',
-              file_type: 'SHP',
-            };
+            if (this.$refs.peSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.peSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.peSHP.files;
+              this.param[index] = {
+                attachment_type: 'ecology',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.peSHP.value = null;
@@ -495,11 +548,19 @@ export default {
         case 2:
           // ekologis PDF
           if (this.$refs.pePDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pePDF.files;
-            this.param[index] = {
-              attachment_type: 'ecology',
-              file_type: 'PDF',
-            };
+            if (this.$refs.pePDF.files[0].type !== 'application/pdf'){
+              this.$refs.pePDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pePDF.files;
+              this.param[index] = {
+                attachment_type: 'ecology',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pePDF.value = null;
@@ -509,24 +570,41 @@ export default {
           break;
         case 3:
           if (this.$refs.psSHP.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.psSHP.files;
-            this.param[index] = {
-              attachment_type: 'social',
-              file_type: 'SHP',
-            };
+            if (this.$refs.psSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.psSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Sosial Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.psSHP.files;
+              this.param[index] = {
+                attachment_type: 'social',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.psSHP.value = null;
           }
+
           // sosial SHP
           break;
         case 4:
           if (this.$refs.psPDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.psPDF.files;
-            this.param[index] = {
-              attachment_type: 'social',
-              file_type: 'PDF',
-            };
+            if (this.$refs.psPDF.files[0].type !== 'application/pdf') {
+              this.$refs.psPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.psPDF.files;
+              this.param[index] = {
+                attachment_type: 'social',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.psPDF.value = null;
@@ -536,11 +614,19 @@ export default {
           break;
         case 5:
           if (this.$refs.pwSHP.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pwSHP.files;
-            this.param[index] = {
-              attachment_type: 'study',
-              file_type: 'SHP',
-            };
+            if (this.$refs.pwSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.pwSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Wilayah Studi Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pwSHP.files;
+              this.param[index] = {
+                attachment_type: 'study',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pwSHP.value = null;
@@ -549,11 +635,19 @@ export default {
           break;
         case 6:
           if (this.$refs.pwPDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pwPDF.files;
-            this.param[index] = {
-              attachment_type: 'study',
-              file_type: 'PDF',
-            };
+            if (this.$refs.pwPDF.files[0].type !== 'application/pdf') {
+              this.$refs.pwPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Wilayah Studi Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pwPDF.files;
+              this.param[index] = {
+                attachment_type: 'study',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pwPDF.value = null;

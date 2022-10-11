@@ -3,7 +3,7 @@
     <div class="container">
       <el-row>
         <el-col :span="24">
-          <h2 class="fw white mb-1-5">List Cluster KBLI</h2>
+          <h2 class="fw white mb-1-5">Daftar Klaster KBLI yang memiliki tingkat resiko Menengah Rendah berdasarkan PP 5 Th. 2021 dan diproses Lampiran PKPLH Otomatis melalui Sistem Informasi Amdalnet terintegrasi OSS RBA</h2>
         </el-col>
       </el-row>
       <template>

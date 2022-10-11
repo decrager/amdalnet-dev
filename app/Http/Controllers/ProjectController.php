@@ -1014,11 +1014,10 @@ class ProjectController extends Controller
     public function generatePdfFromBlob(Request $request)
     {
         // return $request;
-
         $docFileName = '';
         if ($request->file('docFile')) {
             $docFile = $request->file('docFile');
-            $docFileName = 'project/docFile/' . uniqid() . '.' . $docFile->extension();
+            $docFileName = 'project/docFile/' . uniqid() . '_' . str_replace(' ', '_', strtolower($request->file('docFile')->getClientOriginalName()));
             $docFile->storePubliclyAs('public', $docFileName);
         }
 

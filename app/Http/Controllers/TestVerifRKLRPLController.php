@@ -411,7 +411,7 @@ class TestVerifRKLRPLController extends Controller
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
-                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' ? 'download' : 'non-download';
+                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'hasil_penapisan' || $f->name == 'dokumen_sppl_oss' || $f->name == 'pippib' ? 'download' : 'non-download';
                         $link = null;
                         if($f->name == 'tata_ruang') {
                             $link = $project->ktr;
@@ -436,6 +436,10 @@ class TestVerifRKLRPLController extends Controller
                                 $project->required_doc);
                         } else if($f->name == 'peta_titik') {
                             $link = $peta_titik;
+                        } else if($f->name == 'dokumen_sppl_oss') {
+                            $link = $project->oss_sppl_doc;
+                        } else if($f->name == 'hasil_penapisan') {
+                            $link = $project->oss_required_doc;
                         }
 
                         if($project->required_doc == 'UKL-UPL') {
@@ -549,12 +553,28 @@ class TestVerifRKLRPLController extends Controller
             }
 
             if($project->required_doc == 'UKL-UPL') {
+                if($project->initiator->nib_doc_oss) {
+                    $form[] = [
+                            'name' => 'dokumen_sppl_oss',
+                            'link' => $project->oss_sppl_doc,
+                            'suitability' => null,
+                            'description' => null,
+                            'type' => 'download'
+                    ];
+                    $form[] = [
+                            'name' => 'hasil_penapisan',
+                            'link' => $project->oss_required_doc,
+                            'suitability' => null,
+                            'description' => null,
+                            'type' => 'download'
+                    ];
+                }
                 $form[] = [
-                    'name' => 'pertek',
-                    'link' => $dokumen_pertek,
-                    'suitability' => null,
-                    'description' => null,
-                    'type' => 'download'
+                        'name' => 'pertek',
+                        'link' => $dokumen_pertek,
+                        'suitability' => null,
+                        'description' => null,
+                        'type' => 'download'
                 ];
             }
         }

@@ -196,8 +196,11 @@ class AnnouncementController extends Controller
             // 'fileProof' => 'required',
         ];
         $announcement = Announcement::where('project_id', $request->project_id)->first();
-        if(!$announcement || ($announcement->proof === '')){
-            $required['fileProof'] = 'required';
+        if(!$announcement || ($announcement->proof == "")){
+            if($request->project_result != "UKL-UPL"){
+                $required['fileProof'] = 'required';
+            }
+            
         }
 
         // return $announcement->rawProof();

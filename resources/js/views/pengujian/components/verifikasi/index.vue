@@ -334,6 +334,7 @@ export default {
         hasil_penapisan:
           'Hasil Penapisan OSS Rencana Usaha dan/atau Kegiatan di OSS',
         dokumen_nib: 'Dokumen NIB Pemrakarsa',
+        dokumen_sppl_oss: 'Dokumen SPPL dari oss',
       },
     };
   },
@@ -347,6 +348,8 @@ export default {
         verification: 'true',
         idProject: this.idProject,
       });
+
+      console.log({ gun: data });
 
       this.verifications = data;
       this.lpjp = data.lpjp;

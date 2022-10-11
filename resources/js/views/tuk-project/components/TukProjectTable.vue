@@ -35,6 +35,12 @@
       prop="complete_address"
       sortable
     />
+    <el-table-column
+      align="center"
+      label="Tahap"
+      prop="marking_label"
+      sortable
+    />
 
     <el-table-column align="center" label="Anggota Uji Kelayakan">
       <template slot-scope="scope">
