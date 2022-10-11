@@ -1,5 +1,6 @@
 <template>
-  <div v-if="isShown" class="app-container context-bar-container">
+  <div v-if="isShown" class="app-container context-bar-container parent-description-button">
+    <el-button type="warning" class="description-button" @click="$router.push('/project/home/' + $route.params.id)">Ringkasan Kegiatan</el-button>
     <el-collapse v-model="contextBar" class="collapse-context-bar">
       <el-collapse-item name="1" class="item-context-bar">
         <template slot="title">
@@ -115,6 +116,17 @@ export default {
 };
 </script>
 <style lang="scss">
+  .parent-description-button {
+    position: relative;
+  }
+
+  .description-button {
+    position: absolute;
+    z-index: 99;
+    right: 4rem;
+    top: 1.65rem;
+  }
+
 div.context-bar-container + section.app-main .app-container:first-child{
   padding-top:0 !important;
 }
