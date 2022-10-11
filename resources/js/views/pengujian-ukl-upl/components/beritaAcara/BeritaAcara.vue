@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
-      <WorkFlow />
+      <WorkflowUkl />
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane label="Catatan Form UKL UPL" name="notesRekapUKLUPL">
           <NotesRecap v-if="activeName === 'notesRekapUKLUPL'" :flow="'ukl-upl'" />
@@ -15,14 +15,14 @@
 </template>
 
 <script>
-import WorkFlow from '@/components/Workflow';
+import WorkflowUkl from '@/components/WorkflowUkl';
 import NotesRecap from '@/views/notes-recap/index';
 import BeritaAcaraUKLUPL from '@/views/pengujian-ukl-upl/components/beritaAcara/index';
 
 export default {
   name: 'BeritaAcaraUKLUPLIndex',
   components: {
-    WorkFlow,
+    WorkflowUkl,
     NotesRecap,
     BeritaAcaraUKLUPL,
   },
@@ -32,7 +32,7 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch('getStep', 3);
+    this.$store.dispatch('getStep', 5);
   },
 };
 </script>
