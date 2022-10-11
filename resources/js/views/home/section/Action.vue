@@ -26,7 +26,7 @@
           <div class="content" :hidden="!showPenapisan">
             <h1 style="color: white">Simulasi Penapisan Dokumen</h1>
             <div style="border-color: white; border-width: 1px; border-style: solid; padding: 10px; margin-bottom: 10px;">
-              <p align="justify" style="color: white; padding-bottom: 10px;">"Hasil simulasi penapisan otomatis ini bersifat indikatif. Untuk memperoleh hasil penapisan secara resmi sebagai dasar dalam proses pengajuan persetujuan lingkungan, silahkan lakukan input penapisan dengan melakukan registrasi terlebih dahulu sebagai Pemrakarsa."</p>
+              <p align="justify" style="color: white; padding-bottom: 10px;">Hasil simulasi penapisan otomatis ini bersifat indikatif. Untuk memperoleh hasil penapisan secara resmi sebagai dasar dalam proses pengajuan persetujuan lingkungan, silahkan lakukan input penapisan dengan melakukan registrasi terlebih dahulu sebagai Pemrakarsa.</p>
             </div>
             <el-select
               v-model="study_approach"
