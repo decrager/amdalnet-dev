@@ -72,8 +72,8 @@ class ProjectMapAttachmentController extends Controller
                         }
                     }
 
-                    $map->original_filename = $file->getClientOriginalName();
-                    $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
+                $map->original_filename = $file->getClientOriginalName();
+                $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
 
                     if ($map->attachment_type === 'ecology' && $map->file_type === 'SHP') {
                         $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomEcologyGeojson'), 4326)");
@@ -95,7 +95,16 @@ class ProjectMapAttachmentController extends Controller
                         $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomKelolaGeojson'), 4326)");
                         $map->properties = $request->geomKelolaProperties;
                         $map->id_styles = $request->geomKelolaStyles;
+                    } else if ($map->attachment_type === 'area-pengelolaan' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomAreaKelolaGeojson'), 4326)");
+                        $map->properties = $request->geomAreaKelolaProperties;
+                        $map->id_styles = $request->geomAreaKelolaStyles;
+                    } else if ($map->attachment_type === 'area-pemantauan' && $map->file_type === 'SHP') {
+                        $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomAreaPantauGeojson'), 4326)");
+                        $map->properties = $request->geomAreaPantauProperties;
+                        $map->id_styles = $request->geomAreaPantauStyles;
                     }
+
 
                     $enableCloneAndal = false;
 
@@ -104,7 +113,6 @@ class ProjectMapAttachmentController extends Controller
                         Storage::disk('public')->makeDirectory('map');
                     }
                     $filePut = Storage::disk('public')->put('map/' . $map->stored_filename, file_get_contents($file));
-
                     if ($filePut) {
                         $map->save();
                         // clone andal, if step = 'ka'
