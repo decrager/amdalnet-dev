@@ -108,8 +108,7 @@
       <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
-        <el-button @click="exportToPDF()">Cetak PDF</el-button>
-        <el-button @click="printWithApi()">Cetak PDF with API</el-button>
+        <el-button @click="print()">Cetak PDF</el-button>
       </div>
       <div>
         <img id="gambar" src="">
@@ -140,10 +139,6 @@ import shp from 'shpjs';
 import Workflow from '@/components/Workflow';
 import axios from 'axios';
 import popupTemplate from '../webgis/scripts/popupTemplate';
-import html2pdf from 'html2pdf.js';
-// import * as html2canvas from 'html2canvas';
-import JsPDF from 'jspdf';
-import * as html2canvas from 'html2canvas';
 
 export default {
   name: 'Publish',
@@ -249,7 +244,8 @@ export default {
     this.getMapPdf();
   },
   methods: {
-    async printWithApi() {
+    async print() {
+      document.body.style.cursor = 'wait';
       const options = {
         width: 800,
         height: 600,
@@ -259,61 +255,12 @@ export default {
       const screenshot = await this.mapView.takeScreenshot(options);
 
       formData.append('imageUrl', screenshot.dataUrl);
-      formData.append('image', screenshot.data);
 
-      await axios.post('api/print-penapisan', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'responseType': 'blob',
-        }}).then((response) => {
+      await axios.post('api/print-penapisan', formData).then((response) => {
+        document.body.style.cursor = 'default';
         const link = document.createElement('a');
-        link.href = response.data.imageUrl;
-        link.setAttribute('download', 'file.png');
-        document.body.appendChild(link);
+        link.href = response.data;
         link.click();
-      });
-    },
-    print() {
-      const h = document.getElementById('element-to-convert').scrollHeight;
-      const totalPdfPages = Math.ceil(Math.floor(h * 0.264583) / 297) - 1;
-      html2canvas(document.getElementById('element-to-convert'), {
-        imageTimeout: 4000,
-        useCORS: true,
-      }).then((canvas) => {
-        const img = canvas.toDataURL('image/png', 0.3);
-        const pdf = new JsPDF('l', 'mm', 'a3');
-        pdf.addImage(
-          img,
-          'png',
-          0,
-          0,
-          420,
-          Math.floor(h * 0.264583),
-          undefined,
-          'FAST'
-        ); // add image & convert height from px to mm
-        //  add additional page if image height more than a3 height
-        for (var i = 1; i <= totalPdfPages; i++) {
-          pdf.addPage('a3', 'l');
-          pdf.addImage(
-            img,
-            'png',
-            0,
-            -297 * i,
-            420,
-            Math.floor(h * 0.264583),
-            undefined,
-            'FAST'
-          );
-        }
-        pdf.save('test.pdf');
-      });
-    },
-    exportToPDF() {
-      html2pdf(document.getElementById('element-to-convert'), {
-        margin: 1,
-        filename: 'myfile.pdf',
-        jsPDF: { format: 'a3', orientation: 'landscape' },
       });
     },
     tableRowClassName({ row, rowIndex }) {

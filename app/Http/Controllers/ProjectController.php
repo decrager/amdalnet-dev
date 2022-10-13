@@ -36,6 +36,8 @@ use App\Entity\ProjectSkklFinal;
 use App\Utils\Document;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
+use PhpOffice\PhpWord\TemplateProcessor;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProjectController extends Controller
 {
@@ -1089,6 +1091,63 @@ class ProjectController extends Controller
 
     public function printPenapisan(Request $request)
     {
-        return response()->json($request->all());
+        $document = new TemplateProcessor(public_path('document/Template-Penapisan.docx'));
+        $dataProject = Project::with('address', 'listSubProject', 'initiator')->findOrFail($request->project_id);
+
+        $document->setValue('nama_project', $dataProject->project_title);
+        $document->setValue('no_registrasi', $dataProject->registration_no);
+        $document->setValue('pemrakarsa', $dataProject->initiator->name);
+        $document->setValue('penanggung_jawab', $dataProject->initiator->pic);
+        $document->setValue('alamat_penanggung_jawab', $dataProject->initiator->address);
+        $document->setValue('nomor_telepon', $dataProject->initiator->phone);
+        $document->setValue('jabatan', $dataProject->initiator->pic_role);
+        $document->setValue('email_pemrakarsa', $dataProject->initiator->email);
+        $document->setValue('jenis_dokumen', $dataProject->required_doc);
+        $document->setValue('tingkat_resiko', $dataProject->risk_level);
+        $document->setValue('kewenangan', $dataProject->authority);
+        $document->setValue('tanggal', now()->format('d M Y'));
+        $document->setValue('jam', now()->format('H:i:s'));
+        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'height' => 225, 'width' => 225]);
+
+        $outputQrcode = storage_path('app/public/qrcode.png');
+
+        QrCode::format('png')->size(300)->generate(env('APP_URL') . '/#/project/publish/' . $request->project_id, $outputQrcode);
+
+        $document->setImageValue('qrcode', ['path' => $outputQrcode, 'width' => 50, 'height' => 50]);
+
+        $dataDaftarKegiatan = [];
+        $dataDaftarLokasi = [];
+        $numberSubProject = 1;
+        $numberAddress = 1;
+        $listSubProject = array_values($dataProject->listSubProject->sortByDesc('type')->toArray());
+        foreach ($listSubProject as $key => $subProject) {
+            $dataDaftarKegiatan[$key]['no'] = $numberSubProject++;
+            $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['type']);
+            $dataDaftarKegiatan[$key]['jenis_keg'] = ucwords($subProject['type']);
+            $dataDaftarKegiatan[$key]['nama_kegiatan'] = $subProject['name'];
+            $dataDaftarKegiatan[$key]['skala_besaran'] = $subProject['scale'];
+        }
+
+        foreach ($dataProject->address as $key => $a) {
+            $dataDaftarLokasi[$key]['no_lokasi'] = $numberAddress++;
+            $dataDaftarLokasi[$key]['lokasi_provinsi'] = $a->prov;
+            $dataDaftarLokasi[$key]['lokasi_kota_kabupaten'] = $a->district;
+            $dataDaftarLokasi[$key]['alamat'] = $a->address;
+        }
+
+        $document->cloneRowAndSetValues('no', $dataDaftarKegiatan);
+        $document->cloneRowAndSetValues('no_lokasi', $dataDaftarLokasi);
+
+        $outputWord = storage_path('app/public/' . 'print-penapisan.docx');
+        // save word to local
+        $document->saveAs($outputWord);
+        // upload word to storage
+        $store = Storage::disk('public')->putFileAs('print-penapisan', $outputWord, $dataProject->registration_no . '_penapisan.docx');
+        // convert to temporary link
+        $downloadUri = Storage::disk('public')->temporaryUrl($store, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri = null;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 }
