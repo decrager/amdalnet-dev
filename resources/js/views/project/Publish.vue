@@ -1,12 +1,11 @@
 <template>
 
   <div v-loading="fullLoading" class="form-container" style="margin: 2em;">
-    <el-card class="box-card">
+    <el-card id="element-to-convert" class="box-card">
       <workflow :is-penapisan="true" />
       <el-row :gutter="10">
-        <el-col
-          :span="12"
-        ><h2>Informasi rencana Usaha/Kegiatan</h2>
+        <el-col :span="12">
+          <h2>Informasi rencana Usaha/Kegiatan</h2>
           <el-table
             :data="list"
             style="width: 100%"
@@ -109,6 +108,11 @@
       <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
+        <el-button @click="exportToPDF()">Cetak PDF</el-button>
+        <el-button @click="printWithApi()">Cetak PDF with API</el-button>
+      </div>
+      <div>
+        <img id="gambar" src="">
       </div>
     </el-card>
   </div>
@@ -136,6 +140,10 @@ import shp from 'shpjs';
 import Workflow from '@/components/Workflow';
 import axios from 'axios';
 import popupTemplate from '../webgis/scripts/popupTemplate';
+import html2pdf from 'html2pdf.js';
+// import * as html2canvas from 'html2canvas';
+import JsPDF from 'jspdf';
+import * as html2canvas from 'html2canvas';
 
 export default {
   name: 'Publish',
@@ -184,6 +192,7 @@ export default {
       fullLoading: false,
       geomStyles: 1,
       mapPdf: '',
+      mapView: null,
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -240,6 +249,73 @@ export default {
     this.getMapPdf();
   },
   methods: {
+    async printWithApi() {
+      const options = {
+        width: 800,
+        height: 600,
+      };
+      const formData = new FormData();
+      formData.append('project_id', this.project.id);
+      const screenshot = await this.mapView.takeScreenshot(options);
+
+      formData.append('imageUrl', screenshot.dataUrl);
+      formData.append('image', screenshot.data);
+
+      await axios.post('api/print-penapisan', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'responseType': 'blob',
+        }}).then((response) => {
+        const link = document.createElement('a');
+        link.href = response.data.imageUrl;
+        link.setAttribute('download', 'file.png');
+        document.body.appendChild(link);
+        link.click();
+      });
+    },
+    print() {
+      const h = document.getElementById('element-to-convert').scrollHeight;
+      const totalPdfPages = Math.ceil(Math.floor(h * 0.264583) / 297) - 1;
+      html2canvas(document.getElementById('element-to-convert'), {
+        imageTimeout: 4000,
+        useCORS: true,
+      }).then((canvas) => {
+        const img = canvas.toDataURL('image/png', 0.3);
+        const pdf = new JsPDF('l', 'mm', 'a3');
+        pdf.addImage(
+          img,
+          'png',
+          0,
+          0,
+          420,
+          Math.floor(h * 0.264583),
+          undefined,
+          'FAST'
+        ); // add image & convert height from px to mm
+        //  add additional page if image height more than a3 height
+        for (var i = 1; i <= totalPdfPages; i++) {
+          pdf.addPage('a3', 'l');
+          pdf.addImage(
+            img,
+            'png',
+            0,
+            -297 * i,
+            420,
+            Math.floor(h * 0.264583),
+            undefined,
+            'FAST'
+          );
+        }
+        pdf.save('test.pdf');
+      });
+    },
+    exportToPDF() {
+      html2pdf(document.getElementById('element-to-convert'), {
+        margin: 1,
+        filename: 'myfile.pdf',
+        jsPDF: { format: 'a3', orientation: 'landscape' },
+      });
+    },
     tableRowClassName({ row, rowIndex }) {
       if (row.no === 'A' || row.no === 'B') {
         return 'bold-row';
@@ -352,8 +428,8 @@ export default {
                 opacity: 0.7,
                 popupTemplate: popupTemplate(propFields),
               });
-              mapView.on('layerview-create', (event) => {
-                mapView.goTo({
+              this.mapView.on('layerview-create', (event) => {
+                this.mapView.goTo({
                   target: geojsonLayerArray.fullExtent,
                 });
               });
@@ -365,25 +441,25 @@ export default {
             });
           });
 
-        const mapView = new MapView({
+        this.mapView = new MapView({
           container: 'mapView',
           map: map,
           center: [115.287, -1.588],
           zoom: 6,
         });
-        this.$parent.mapView = mapView;
+        this.$parent.mapView = this.mapView;
 
         const attribution = new Attribution({
-          view: mapView,
+          view: this.mapView,
         });
-        mapView.ui.add(attribution, 'manual');
+        this.mapView.ui.add(attribution, 'manual');
 
         const legend = new Legend({
-          view: mapView,
+          view: this.mapView,
           container: document.createElement('div'),
         });
         const layerList = new LayerList({
-          view: mapView,
+          view: this.mapView,
           container: document.createElement('div'),
           listItemCreatedFunction: this.defineActions,
         });
@@ -391,21 +467,21 @@ export default {
         layerList.on('trigger-action', (event) => {
           const id = event.action.id;
           if (id === 'full-extent') {
-            mapView.goTo({
+            this.mapView.goTo({
               target: event.item.layer.fullExtent,
             });
           }
         });
 
         const legendExpand = new Expand({
-          view: mapView,
+          view: this.mapView,
           content: legend.domNode,
           expandIconClass: 'esri-icon-collection',
           expandTooltip: 'Legend',
         });
 
-        mapView.ui.add(legendExpand, 'bottom-left');
-        mapView.ui.add(layerList, 'top-right');
+        this.mapView.ui.add(legendExpand, 'bottom-left');
+        this.mapView.ui.add(layerList, 'top-right');
       } else {
         const map = new Map({
           basemap: 'satellite',
@@ -444,8 +520,8 @@ export default {
             });
 
             map.add(geojsonLayer);
-            mapView.on('layerview-create', (event) => {
-              mapView.goTo({
+            this.mapView.on('layerview-create', (event) => {
+              this.mapView.goTo({
                 target: geojsonLayer.fullExtent,
               });
             });
@@ -453,21 +529,21 @@ export default {
         };
         fr.readAsArrayBuffer(this.mapUpload);
 
-        const mapView = new MapView({
+        this.mapView = new MapView({
           container: 'mapView',
           map: map,
           center: [115.287, -1.588],
           zoom: 6,
         });
-        this.$parent.mapView = mapView;
+        this.$parent.mapView = this.mapView;
 
         const layerList = new LayerList({
-          view: mapView,
+          view: this.mapView,
           container: document.createElement('div'),
           listItemCreatedFunction: this.defineActions,
         });
 
-        mapView.ui.add(layerList, 'top-right');
+        this.mapView.ui.add(layerList, 'top-right');
       }
     },
     handleAddExpertTable(){

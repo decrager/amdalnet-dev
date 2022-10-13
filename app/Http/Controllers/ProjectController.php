@@ -50,9 +50,9 @@ class ProjectController extends Controller
             return Project::with('feasibilityTest')->whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
-            return Project::with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function($q) {
+            return Project::with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function ($q) {
                 $q->select('id', 'email');
-                $q->with(['user' => function($query) {
+                $q->with(['user' => function ($query) {
                     $query->select('id', 'email', 'avatar');
                 }]);
             }, 'kaReviews' => function ($q) {
@@ -109,7 +109,7 @@ class ProjectController extends Controller
                 ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
                 ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
                 ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
-                ->leftJoin('workflow_states', 'workflow_states.state', '=' , 'projects.marking')
+                ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
                 // ->distinct(['projects.id'])
                 ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'workflow_states.public_tracking')
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
@@ -126,9 +126,9 @@ class ProjectController extends Controller
             return response()->json(ProjectController::getProject($request->id));
         }
 
-        return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function($q) {
+        return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function ($q) {
             $q->select('id', 'email');
-            $q->with(['user' => function($query) {
+            $q->with(['user' => function ($query) {
                 $query->select('id', 'email', 'avatar');
             }]);
         }, 'kaReviews' => function ($q) {
@@ -186,24 +186,24 @@ class ProjectController extends Controller
             ->where(
                 function ($query) use ($request) {
                     if ($request->tuk) {
-                        if(!$request->filterTUK) {
+                        if (!$request->filterTUK) {
                             $query->whereHas('tukProject', function ($q) {
                                 $q->where('id_user', Auth::user()->id);
                             })->orWhereHas('testingMeeting', function ($q) {
                                 $q->whereHas('invitations', function ($que) {
-                                   $que->where('id_user', Auth::user()->id);
+                                    $que->where('id_user', Auth::user()->id);
                                 });
                             });
-                        } else if($request->filterTUK == 'pengujian') {
+                        } else if ($request->filterTUK == 'pengujian') {
                             $query->whereHas('testingMeeting', function ($q) {
                                 $q->whereHas('invitations', function ($que) {
                                     $que->where('id_user', Auth::user()->id);
                                 });
-                            })->whereDoesntHave('tukProject', function($q) {
+                            })->whereDoesntHave('tukProject', function ($q) {
                                 $q->where('id_user', Auth::user()->id);
                             });
                         } else {
-                            $query->whereHas('tukProject', function ($q) use($request) {
+                            $query->whereHas('tukProject', function ($q) use ($request) {
                                 $q->where('id_user', Auth::user()->id);
                                 $q->where('role', $request->filterTUK);
                             });
@@ -397,34 +397,36 @@ class ProjectController extends Controller
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
                 $files->storePubliclyAs('public/map/', $mapName);
                 ProjectMapAttachment::updateOrCreate(
-                [
-                    'id_project' => $project->id,
-                    'attachment_type' => 'tapak',
-                    'step' => 'ka',
-                ],
-                [
-                    'file_type' => 'SHP',
-                    'original_filename' => 'Peta Tapak',
-                    'stored_filename' => $mapName,
-                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
-                    'properties' => $request->geomProperties,
-                    'id_styles' => $request->geomStyles,
-                ]);
+                    [
+                        'id_project' => $project->id,
+                        'attachment_type' => 'tapak',
+                        'step' => 'ka',
+                    ],
+                    [
+                        'file_type' => 'SHP',
+                        'original_filename' => 'Peta Tapak',
+                        'stored_filename' => $mapName,
+                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                        'properties' => $request->geomProperties,
+                        'id_styles' => $request->geomStyles,
+                    ]
+                );
                 // clone for Andal
                 ProjectMapAttachment::updateOrCreate(
-                [
-                    'id_project' => $project->id,
-                    'attachment_type' => 'tapak',
-                    'step' => 'andal',
-                ],
-                [
-                    'file_type' => 'SHP',
-                    'original_filename' => 'Peta Tapak',
-                    'stored_filename' => $mapName,
-                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
-                    'properties' => $request->geomProperties,
-                    'id_styles' => $request->geomStyles,
-                ]);
+                    [
+                        'id_project' => $project->id,
+                        'attachment_type' => 'tapak',
+                        'step' => 'andal',
+                    ],
+                    [
+                        'file_type' => 'SHP',
+                        'original_filename' => 'Peta Tapak',
+                        'stored_filename' => $mapName,
+                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                        'properties' => $request->geomProperties,
+                        'id_styles' => $request->geomStyles,
+                    ]
+                );
             }
 
             if ($files = $request->file('filePdf')) {
@@ -546,10 +548,10 @@ class ProjectController extends Controller
 
             //create sub project
             foreach ($data['listSubProject'] as $subPro) {
-                if(gettype($subPro->biz_type) !== 'string'){
+                if (gettype($subPro->biz_type) !== 'string') {
                     $business = Business::find($subPro->biz_type);
                 }
-                if(gettype($subPro->sector) !== 'string'){
+                if (gettype($subPro->sector) !== 'string') {
                     $sector = Business::find($subPro->sector);
                 }
 
@@ -560,7 +562,7 @@ class ProjectController extends Controller
                     'type' => $subPro->type,
                     'biz_type' => gettype($subPro->biz_type) !== 'string' ? $subPro->biz_type : 0,
                     'id_project' => $project->id,
-                    'sector' => gettype($subPro->sector) !== 'string'? $subPro->sector : 0,
+                    'sector' => gettype($subPro->sector) !== 'string' ? $subPro->sector : 0,
                     'scale' => floatval(str_replace(',', '.', str_replace('.', '', $subPro->scale))),
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
                     'biz_name' => isset($business) ? $business->value : $subPro->biz_name,
@@ -763,7 +765,7 @@ class ProjectController extends Controller
         } else {
             $params = $request->all();
             $project->ppjk = $params['ppjk'];
-            if(isset($params['isppjk'])){
+            if (isset($params['isppjk'])) {
                 $project->isppjk = $params['isppjk'];
             }
             $project->save();
@@ -785,10 +787,10 @@ class ProjectController extends Controller
             return response()->json(['error' => 'project not found'], 404);
         }
 
-        if($request->projectHome) {
-            if($request->type === 'locationDesc') {
+        if ($request->projectHome) {
+            if ($request->type === 'locationDesc') {
                 $project->location_desc = $request->locationDesc;
-            } else if($request->type === 'description') {
+            } else if ($request->type === 'description') {
                 $project->description = $request->description;
             }
 
@@ -796,28 +798,30 @@ class ProjectController extends Controller
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.pdf';
                 $files->storePubliclyAs('public/map/', $mapName);
                 ProjectMapAttachment::updateOrCreate(
-                [
-                    'id_project' => $project->id,
-                    'attachment_type' => 'tapak',
-                    'step' => 'ka',
-                    'file_type' => 'PDF',
-                ],
-                [
-                    'original_filename' => 'Peta Tapak',
-                    'stored_filename' => $mapName,
-                ]);
+                    [
+                        'id_project' => $project->id,
+                        'attachment_type' => 'tapak',
+                        'step' => 'ka',
+                        'file_type' => 'PDF',
+                    ],
+                    [
+                        'original_filename' => 'Peta Tapak',
+                        'stored_filename' => $mapName,
+                    ]
+                );
                 // clone for Andal
                 ProjectMapAttachment::updateOrCreate(
-                [
-                    'id_project' => $project->id,
-                    'attachment_type' => 'tapak',
-                    'step' => 'andal',
-                    'file_type' => 'PDF',
-                ],
-                [
-                    'original_filename' => 'Peta Tapak',
-                    'stored_filename' => $mapName,
-                ]);
+                    [
+                        'id_project' => $project->id,
+                        'attachment_type' => 'tapak',
+                        'step' => 'andal',
+                        'file_type' => 'PDF',
+                    ],
+                    [
+                        'original_filename' => 'Peta Tapak',
+                        'stored_filename' => $mapName,
+                    ]
+                );
             }
 
             if ($files = $request->file('fileMap')) {
@@ -825,34 +829,36 @@ class ProjectController extends Controller
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
                 $files->storePubliclyAs('public/map/', $mapName);
                 ProjectMapAttachment::updateOrCreate(
-                [
-                    'id_project' => $project->id,
-                    'attachment_type' => 'tapak',
-                    'step' => 'ka',
-                    'file_type' => 'SHP',
-                ],
-                [
-                    'original_filename' => 'Peta Tapak',
-                    'stored_filename' => $mapName,
-                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
-                    'properties' => $request->geomProperties,
-                    'id_styles' => $request->geomStyles,
-                ]);
+                    [
+                        'id_project' => $project->id,
+                        'attachment_type' => 'tapak',
+                        'step' => 'ka',
+                        'file_type' => 'SHP',
+                    ],
+                    [
+                        'original_filename' => 'Peta Tapak',
+                        'stored_filename' => $mapName,
+                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                        'properties' => $request->geomProperties,
+                        'id_styles' => $request->geomStyles,
+                    ]
+                );
                 // clone for Andal
                 ProjectMapAttachment::updateOrCreate(
-                [
-                    'id_project' => $project->id,
-                    'attachment_type' => 'tapak',
-                    'step' => 'andal',
-                    'file_type' => 'SHP',
-                ],
-                [
-                    'original_filename' => 'Peta Tapak',
-                    'stored_filename' => $mapName,
-                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
-                    'properties' => $request->geomProperties,
-                    'id_styles' => $request->geomStyles,
-                ]);
+                    [
+                        'id_project' => $project->id,
+                        'attachment_type' => 'tapak',
+                        'step' => 'andal',
+                        'file_type' => 'SHP',
+                    ],
+                    [
+                        'original_filename' => 'Peta Tapak',
+                        'stored_filename' => $mapName,
+                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                        'properties' => $request->geomProperties,
+                        'id_styles' => $request->geomStyles,
+                    ]
+                );
             }
 
             $project->save();
@@ -974,15 +980,22 @@ class ProjectController extends Controller
     public function timeline(Request $request)
     {
         $project = Project::where('id', $request->id)->first();
-        if(!$project){
+        if (!$project) {
             return response('Status Kegiatan tidak ditemukan', 404);
         }
 
         return response(WorkflowStep::where('doc_type', $project->required_doc)
-            ->select('workflow_steps.code', 'workflow_logs.from_place', 'workflow_logs.to_place',
+            ->select(
+                'workflow_steps.code',
+                'workflow_logs.from_place',
+                'workflow_logs.to_place',
                 'workflow_logs.created_at as datetime',
-                'workflow_steps.rank', 'workflow_steps.is_conditional',
-                'workflow_states.public_tracking as label', 'users.name as username', 'workflow_states.state')
+                'workflow_steps.rank',
+                'workflow_steps.is_conditional',
+                'workflow_states.public_tracking as label',
+                'users.name as username',
+                'workflow_states.state'
+            )
             // ->addSelect(DB::raw('\''.$project->marking.'\' as current_marking'))
             ->leftJoin('workflow_states', 'workflow_states.code', '=', 'workflow_steps.code')
             ->leftJoin('workflow_logs',  function ($join) use ($project) {
@@ -1023,7 +1036,8 @@ class ProjectController extends Controller
         return response($res);*/
     }
 
-    public function states(Request $request){
+    public function states(Request $request)
+    {
 
         return response([
             'amdal' => ProjectSkklFinal::count(),
@@ -1071,5 +1085,10 @@ class ProjectController extends Controller
             ->whereRaw('sector ~ \'^[a-zA-Z ]*$\'')
             ->orderBy('sector', 'asc')
             ->get();
+    }
+
+    public function printPenapisan(Request $request)
+    {
+        return response()->json($request->all());
     }
 }
