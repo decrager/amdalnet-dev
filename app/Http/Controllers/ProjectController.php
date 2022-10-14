@@ -1125,7 +1125,7 @@ class ProjectController extends Controller
             $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['type']);
             $dataDaftarKegiatan[$key]['jenis_keg'] = ucwords($subProject['type']);
             $dataDaftarKegiatan[$key]['nama_kegiatan'] = $subProject['name'];
-            $dataDaftarKegiatan[$key]['skala_besaran'] = $subProject['scale'];
+            $dataDaftarKegiatan[$key]['skala_besaran'] = $subProject['scale'] . ' ' . $subProject['scale_unit'];
         }
 
         foreach ($dataProject->address as $key => $a) {
