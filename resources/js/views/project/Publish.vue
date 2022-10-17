@@ -108,7 +108,7 @@
       <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
-        <el-button @click="print()">Cetak PDF</el-button>
+        <el-button v-if="isProjectIdExist" @click="print()">Cetak PDF</el-button>
       </div>
       <div>
         <img id="gambar" src="">
@@ -220,6 +220,9 @@ export default {
       }
 
       return true;
+    },
+    isProjectIdExist() {
+      return this.project.id;
     },
   },
   async mounted() {
