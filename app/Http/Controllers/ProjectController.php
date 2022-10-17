@@ -1103,8 +1103,10 @@ class ProjectController extends Controller
         $document->setValue('jabatan', $dataProject->initiator->pic_role ?? '-');
         $document->setValue('email_pemrakarsa', $dataProject->initiator->email ?? '-');
         $document->setValue('jenis_dokumen', $dataProject->required_doc ?? '-');
-        $document->setValue('tingkat_resiko', $dataProject->risk_level ?? '-');
+        $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->risk_level : '-');
         $document->setValue('kewenangan', $dataProject->authority ?? '-');
+        $document->setValue('deskripsi_kegiatan', $dataProject->description ?? '-');
+        $document->setValue('deskripsi_lokasi', $dataProject->location_desc ?? '-');
         $document->setValue('tanggal', now()->format('d M Y'));
         $document->setValue('jam', now()->format('H:i:s'));
         $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'height' => 225, 'width' => 225]);

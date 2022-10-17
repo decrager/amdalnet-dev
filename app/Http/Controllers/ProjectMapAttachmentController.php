@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ProjectMapAttachmentResource;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
@@ -411,9 +412,15 @@ class ProjectMapAttachmentController extends Controller
         $fileUrl = Storage::temporaryUrl('public/map/' . $filename, Carbon::now()->addMinutes(30));
         $replaced = str_contains(dirname(__FILE__), '\app\Http\Controllers') ?
             '\app\Http\Controllers' : '/app/Http/Controllers';
+
+        if (!File::exists(public_path('storage/map'))) {
+            File::makeDirectory(public_path('storage/map'), 0775, true);
+        }
+
         $tempFile = str_replace($replaced, '', dirname(__FILE__)) . '/public/storage/map/' . $filename;
         if (!file_exists($tempFile)) {
-            copy($fileUrl, $tempFile);
+            // dd($tempFile);
+            (File::copy($fileUrl, str_replace('\\', '/', $tempFile)));
         }
         return file_get_contents($fileUrl);
     }
