@@ -1109,7 +1109,7 @@ class ProjectController extends Controller
         $document->setValue('jam', now()->format('H:i:s'));
         $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'height' => 225, 'width' => 225]);
 
-        $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . urlencode(env('APP_URL') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 100, 'height' => 100]);
+        $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 100, 'height' => 100]);
 
         $dataDaftarKegiatan = [];
         $dataDaftarLokasi = [];
