@@ -174,6 +174,7 @@ class FormulatorTeamController extends Controller
                     'num' => $num,
                     'id' => $f->id,
                     'name' => $f->formulator->name,
+                    'email' => $f->formulator->email,
                     'id_formulator' => $f->id_formulator,
                     'type' => 'update',
                     'position' => $f->position,

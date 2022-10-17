@@ -31,6 +31,10 @@ export default {
   name: 'TrackingDocumentDialog',
   props: {
     show: Boolean,
+    noRegistration: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
@@ -43,15 +47,22 @@ export default {
       loading: false,
     };
   },
+  watch: {
+    noRegistration(newValue, oldValue){
+      if (newValue != null) {
+        this.getProject(newValue);
+      }
+    },
+  },
   methods: {
     isValidRegistrationNo(registration_no){
       return registration_no !== undefined &&
         registration_no !== null &&
         registration_no.replace(/\s+/g, '').trim() !== '';
     },
-    async getProject(){
+    async getProject(noRegistration){
       this.loading = true;
-      await projectResource.list({ registration_no: this.form.registrationNo }).then((res) => {
+      await projectResource.list({ registration_no: noRegistration }).then((res) => {
         if (res.data.length > 0) {
           this.$emit('showTrackingDocumentDetail', res.data[0]);
           // this.handleClose();
@@ -66,7 +77,6 @@ export default {
         this.loading = false;
       });
     },
-
     handleSubmit() {
       // '';
       /* const { data } = await projectResource.list({
@@ -78,7 +88,7 @@ export default {
           return false;
         }
 
-        this.getProject();
+        this.getProject(this.form.registrationNo);
 
         /* if (valid && data.length > 0) {
           if (this.isValidRegistrationNo(data[0].registration_no)) {

@@ -62,7 +62,7 @@ deploy_api-dev_menlhk:
     - php artisan route:clear
     - npm install
     - npm run production
-    - sudo supervisorctl restart all
+    #- sudo supervisorctl restart all
   only:
     - master
   tags:

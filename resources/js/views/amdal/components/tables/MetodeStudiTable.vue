@@ -166,10 +166,13 @@ export default {
       type: Array,
       default: () => [],
     },
+    loading: {
+      type: Boolean,
+      default: () => [],
+    },
   },
   data() {
     return {
-      loading: true,
       kolom: [
         {
           label: 'Data dan Informasi yang Relevan dan Dibutuhkan',
@@ -256,11 +259,11 @@ export default {
     },
   },
   mounted() {
-    this.getData();
+    // this.getData();
   },
   methods: {
     getData() {
-      this.loading = false;
+      this.loading = true;
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.is_comment && columnIndex === 0) {

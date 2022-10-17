@@ -219,8 +219,8 @@ Route::get('ka-docx/{id}', [ExportDocument::class, 'KADocx']);
 Route::apiResource('scoping', 'ScopingController');
 Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
-Route::get('subproject-components', [SubProjectComponentController::class,'subProjectComponents']);
-Route::get('subproject-hues', [SubProjectRonaAwalController::class,'subProjectHues']);
+Route::get('subproject-components', [SubProjectComponentController::class, 'subProjectComponents']);
+Route::get('subproject-hues', [SubProjectRonaAwalController::class, 'subProjectHues']);
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::post('bagan-alir-pelingkupan/pdf', [BaganAlirController::class, 'storeBaganAlirPelingkupanPDF']);
 Route::get('bagan-alir-dampak-penting/{id}', [BaganAlirController::class, 'baganAlirDampakPenting']);
@@ -321,7 +321,7 @@ Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
 // dashboard
 Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
 Route::get('latest-activities', [DashboardController::class, 'latestActivities']);
-Route::group(['prefix' => 'dashboard'], function($r) {
+Route::group(['prefix' => 'dashboard'], function ($r) {
     $r->get('permit-authority', [DashboardController::class, 'permitAuthority']);
     $r->get('status', [DashboardController::class, 'status']);
     $r->get('initiator', [DashboardController::class, 'initiator']);
@@ -377,7 +377,7 @@ Route::put('activateUser/{user}', function (User $user) {
         return response()->json(['error' => 'User not found'], 404);
     }
 
-    if ($user->active == 1){
+    if ($user->active == 1) {
         return response()->json(['error' => 'User not active not found'], 404);
     }
 
@@ -388,6 +388,7 @@ Route::put('activateUser/{user}', function (User $user) {
 });
 
 Route::get('project-attachments/{id}', [ProjectAttachmentController::class, 'show']);
+Route::post('print-penapisan', [ProjectController::class, 'printPenapisan']);
 
 // workflow related
 // Route::get('workflow-states', WorkflowStateController::class, 'index');
