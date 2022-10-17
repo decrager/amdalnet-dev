@@ -213,7 +213,7 @@ export default {
       return this.$store.getters.lpjps;
     },
     isRiskShow() {
-      if (this.project.required_doc === 'UKL-UPL') {
+      if (this.project.required_doc != null) {
         if (this.$store.getters.isPemerintah) {
           return false;
         }
