@@ -120,9 +120,13 @@ export default {
     const splice = (this.data.ktr).split('/');
     this.file_ktr = splice[splice.length - 1];
     this.loadAttachment();
-    console.log({ setiyo: this.peta_tapak_shp_name });
   },
   methods: {
+    showFileAlert() {
+      this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+        center: true,
+      });
+    },
     handleFileTapakProyekPdfUpload(e){
       if (!e.target) {
         return;
