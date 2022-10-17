@@ -32,6 +32,12 @@
       </template>
     </el-table-column>
 
+    <el-table-column label="Email">
+      <template slot-scope="scope">
+        <span>{{ scope.row.email }}</span>
+      </template>
+    </el-table-column>
+
     <el-table-column label="Posisi">
       <template slot-scope="scope">
         <el-select
