@@ -126,6 +126,7 @@
     <public-question-dialog :show="showPublicQues" @cancel="() => showPublicQues = false" />
     <tracking-document-dialog
       :show="showTrackingDocument"
+      :no-registration="noRegistration"
       @handleClose="closeAllDialog"
       @showTrackingDocumentDetail="showTrackingDocumentDetailDialog"
     />
@@ -191,12 +192,19 @@ export default {
       video1: '',
       video2: '',
       video3: '',
+      noRegistration: null,
     };
   },
   computed: {
     getListKbli() {
       return this.$store.getters.kblis;
     },
+  },
+  mounted(){
+    if (this.$route.query['tracking-document']) {
+      this.noRegistration = this.$route.query['tracking-document'];
+      this.showTrackingDialog();
+    }
   },
   created(){
     this.getAll();
