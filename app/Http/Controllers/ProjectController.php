@@ -1110,7 +1110,7 @@ class ProjectController extends Controller
         $document->setValue('deskripsi_lokasi', $dataProject->location_desc ?? '-');
         $document->setValue('tanggal', Carbon::parse(now())->translatedFormat('d F Y'));
         $document->setValue('jam', now()->format('H:i:s'));
-        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'height' => 300, 'width' => 200]);
+        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'width' => 200, 'height' => 200, 'ratio' => true]);
 
         $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 80, 'height' => 80]);
 
@@ -1124,7 +1124,7 @@ class ProjectController extends Controller
             $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['type'] ?? '-');
             $dataDaftarKegiatan[$key]['jenis_keg'] = ucwords($subProject['type'] ?? '-');
             $dataDaftarKegiatan[$key]['nama_kegiatan'] = $subProject['name'] ?? '-';
-            $dataDaftarKegiatan[$key]['skala_besaran'] = $subProject['scale'] ?? '0' . ' ' . $subProject['scale_unit'] ?? '-';
+            $dataDaftarKegiatan[$key]['skala_besaran'] = ($subProject['scale'] ?? '0') . ' ' . $subProject['scale_unit'];
         }
 
         foreach ($dataProject->address as $key => $a) {
