@@ -1109,9 +1109,9 @@ class ProjectController extends Controller
         $document->setValue('deskripsi_lokasi', $dataProject->location_desc ?? '-');
         $document->setValue('tanggal', now()->format('d M Y'));
         $document->setValue('jam', now()->format('H:i:s'));
-        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'height' => 225, 'width' => 225]);
+        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'height' => 300, 'width' => 200]);
 
-        $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 100, 'height' => 100]);
+        $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 80, 'height' => 80]);
 
         $dataDaftarKegiatan = [];
         $dataDaftarLokasi = [];
