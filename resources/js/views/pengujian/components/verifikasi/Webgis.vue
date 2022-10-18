@@ -24,13 +24,19 @@ export default {
       geomProperties: {},
       mapUpload: null,
       idProject: 0,
+      urlKa: null,
     };
   },
   mounted() {
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
+    this.loadDocumentType();
     this.loadMap();
   },
   methods: {
+    async loadDocumentType() {
+      const data = this.$route.name;
+      this.urlKa = data;
+    },
     async loadMap() {
       axios.get('api/map/' + this.idProject).then((response) => {
         const map = new Map({
@@ -103,11 +109,11 @@ export default {
             layerTitle = 'Layer Batas Sosial';
             layerOutlineColor = 'blue';
             socialAdded = true;
-          } else if (projects[i].attachment_type === 'pengelolaan' && !pengelolaanAdded) {
+          } else if (projects[i].attachment_type === 'pengelolaan' && !pengelolaanAdded && this.urlKa !== 'ujiBerkasAdministrasiKA') {
             layerTitle = 'Layer Batas Pengelolaan';
             layerOutlineColor = 'purple';
             pengelolaanAdded = true;
-          } else if (projects[i].attachment_type === 'pemantauan' && !pemantuanAdded) {
+          } else if (projects[i].attachment_type === 'pemantauan' && !pemantuanAdded && this.urlKa !== 'ujiBerkasAdministrasiKA') {
             layerTitle = 'Layer Batas Pemantuan';
             layerOutlineColor = 'yellow';
             pemantuanAdded = true;
