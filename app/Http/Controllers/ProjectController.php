@@ -1106,11 +1106,11 @@ class ProjectController extends Controller
         $document->setValue('jenis_dokumen', $dataProject->required_doc ?? '-');
         $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->risk_level : '-');
         $document->setValue('kewenangan', $dataProject->authority ?? '-');
-        $document->setValue('deskripsi_kegiatan', strip_tags($dataProject->description) ?? '-');
-        $document->setValue('deskripsi_lokasi', strip_tags($dataProject->location_desc) ?? '-');
+        $document->setValue('deskripsi_kegiatan', trim(html_entity_decode($dataProject->description ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
+        $document->setValue('deskripsi_lokasi', trim(html_entity_decode($dataProject->location_desc ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
         $document->setValue('tanggal', Carbon::parse(now())->translatedFormat('d F Y'));
         $document->setValue('jam', now()->format('H:i:s'));
-        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'width' => 200, 'height' => 200, 'ratio' => true]);
+        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'width' => 150, 'height' => 150, 'ratio' => true]);
 
         $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 80, 'height' => 80]);
 
