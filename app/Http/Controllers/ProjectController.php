@@ -34,6 +34,7 @@ use App\Entity\WorkflowStep;
 use App\Notifications\CreateProjectNotification;
 use App\Entity\ProjectSkklFinal;
 use App\Utils\Document;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -1107,7 +1108,7 @@ class ProjectController extends Controller
         $document->setValue('kewenangan', $dataProject->authority ?? '-');
         $document->setValue('deskripsi_kegiatan', $dataProject->description ?? '-');
         $document->setValue('deskripsi_lokasi', $dataProject->location_desc ?? '-');
-        $document->setValue('tanggal', now()->format('d M Y'));
+        $document->setValue('tanggal', Carbon::parse(now())->translatedFormat('d F Y'));
         $document->setValue('jam', now()->format('H:i:s'));
         $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'height' => 300, 'width' => 200]);
 
