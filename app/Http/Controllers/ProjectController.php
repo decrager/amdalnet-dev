@@ -34,6 +34,7 @@ use App\Entity\WorkflowStep;
 use App\Notifications\CreateProjectNotification;
 use App\Entity\ProjectSkklFinal;
 use App\Utils\Document;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -1105,13 +1106,13 @@ class ProjectController extends Controller
         $document->setValue('jenis_dokumen', $dataProject->required_doc ?? '-');
         $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->risk_level : '-');
         $document->setValue('kewenangan', $dataProject->authority ?? '-');
-        $document->setValue('deskripsi_kegiatan', $dataProject->description ?? '-');
-        $document->setValue('deskripsi_lokasi', $dataProject->location_desc ?? '-');
-        $document->setValue('tanggal', now()->format('d M Y'));
+        $document->setValue('deskripsi_kegiatan', trim(html_entity_decode($dataProject->description ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
+        $document->setValue('deskripsi_lokasi', trim(html_entity_decode($dataProject->location_desc ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
+        $document->setValue('tanggal', Carbon::parse(now())->translatedFormat('d F Y'));
         $document->setValue('jam', now()->format('H:i:s'));
-        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'height' => 225, 'width' => 225]);
+        $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'width' => 150, 'height' => 150, 'ratio' => true]);
 
-        $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 100, 'height' => 100]);
+        $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 80, 'height' => 80]);
 
         $dataDaftarKegiatan = [];
         $dataDaftarLokasi = [];
@@ -1123,7 +1124,7 @@ class ProjectController extends Controller
             $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['type'] ?? '-');
             $dataDaftarKegiatan[$key]['jenis_keg'] = ucwords($subProject['type'] ?? '-');
             $dataDaftarKegiatan[$key]['nama_kegiatan'] = $subProject['name'] ?? '-';
-            $dataDaftarKegiatan[$key]['skala_besaran'] = $subProject['scale'] ?? '0' . ' ' . $subProject['scale_unit'] ?? '-';
+            $dataDaftarKegiatan[$key]['skala_besaran'] = ($subProject['scale'] ?? '0') . ' ' . $subProject['scale_unit'];
         }
 
         foreach ($dataProject->address as $key => $a) {
