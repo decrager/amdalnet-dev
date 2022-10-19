@@ -24,8 +24,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="* Upload Dokumen Kesesuaian Tata Ruang (Max 10MB, Opsional)" prop="fileKtr">
-                  <span slot="label"><span>* Upload Dokumen Kesesuaian Tata Ruang (Max 10MB, Opsional)
+                <el-form-item label="* Upload Dokumen Kesesuaian Tata Ruang (Max 10MB)" prop="fileKtr">
+                  <span slot="label"><span>* Upload Dokumen Kesesuaian Tata Ruang (Max 10MB)
                     <el-tooltip class="item" effect="dark" placement="top">
                       <template #content>Dokumen yang diupload dapat berupa :<br>&nbsp;&nbsp;1. Persetujuan Kesesuaian Kegiatan Pemanfaatan Ruang (PKKPR) yang diterbitkan OSS atau<br>&nbsp;&nbsp;2. Rekomendasi Kesesuaian Tata Ruang yang diterbitkan oleh Kementerian ATR/BPN atau<br>&nbsp;&nbsp;3. Pernyataan Mandiri Kesesuaian Tata Ruang (untuk jenis Usaha Mikro Kecil / UMK).<br><br>Catatan: Dokumen yang diupload masih bisa diperbarui pada tahap penyusunan Formulir KA, ANDAL atau UKL-UPL<br></template>
                       <i class="el-alert__icon el-icon-warning" />
@@ -878,12 +878,12 @@ export default {
       callback();
     };
 
-    // var validateKtr = (rule, value, callback) => {
-    //   if (!this.currentProject.fileKtr){
-    //     callback(new Error('File KTR Belum Diunggah'));
-    //   }
-    //   callback();
-    // };
+    var validateKtr = (rule, value, callback) => {
+      if (!this.currentProject.fileKtr){
+        callback(new Error('File KTR Belum Diunggah'));
+      }
+      callback();
+    };
 
     // var validatePippib = (rule, value, callback) => {
     //   if (!this.currentProject.filepippib){
@@ -1120,18 +1120,15 @@ export default {
         project_title: [
           { required: true, trigger: 'change', message: 'Nama Kegiatan Belum Diisi' },
         ],
-        fileKtr: [
-          { required: true, trigger: 'change', message: 'File Kesesuaian Tata Ruang Belum Diupload' },
-        ],
         location_desc: [
           { required: true, trigger: 'blur', message: 'Data Lokasi Kegiatan Belum Diisi' },
         ],
         description: [
           { required: true, trigger: 'blur', message: 'Data Deskripsi Kegiatan Belum Diisi' },
         ],
-        // fileKtr: [
-        //   { validator: validateKtr, trigger: 'change' },
-        // ],
+        fileKtr: [
+          { validator: validateKtr, trigger: 'change' },
+        ],
         // filepippib: [
         //   { validator: validatePippib, trigger: 'change' },
         // ],
