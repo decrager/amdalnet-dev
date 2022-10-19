@@ -79,6 +79,7 @@ export default {
     return {
       limit: 5,
       loadingNotif: false,
+      isPemerintah: false,
     };
   },
   computed: {
@@ -92,7 +93,7 @@ export default {
     ]),
     getRole() {
       const roles = this.$store.getters.roles.map(value => {
-        if (value === 'institution' || value === 'pustanling' || value === 'examiner-secretary' || value === 'examiner-substance' || value === 'examiner-administration') {
+        if (value === 'institution' || value === 'initiator' || value === 'pustanling' || value === 'examiner-secretary' || value === 'examiner-substance' || value === 'examiner-administration') {
           if (value === 'institution'){
             value = 'LSP';
           } else if (value === 'pustanling'){
@@ -103,6 +104,10 @@ export default {
             value = 'Validator';
           } else if (value === 'examiner-administration'){
             value = 'Validator';
+          } else if (value === 'initiator' && this.$store.getters.isPemerintah === true) {
+            value = 'Pemrakarsa Pemerintah';
+          } else if (value === 'initiator' && this.$store.getters.isPemerintah === false) {
+            value = 'Pemrakarsa Pelaku Usaha';
           }
           const translatedRole = this.$t(value);
           return this.$options.filters.uppercaseFirst(translatedRole);
