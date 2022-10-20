@@ -24,7 +24,14 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 10MB, Opsional)" prop="fileKtr">
+                <el-form-item label="* Upload Dokumen Kesesuaian Tata Ruang (Max 10MB)" prop="fileKtr">
+                  <span slot="label"><span>* Upload Dokumen Kesesuaian Tata Ruang (Max 10MB)
+                    <el-tooltip class="item" effect="dark" placement="top">
+                      <template #content>Dokumen yang diupload dapat berupa :<br>&nbsp;&nbsp;1. Persetujuan Kesesuaian Kegiatan Pemanfaatan Ruang (PKKPR) yang diterbitkan OSS atau<br>&nbsp;&nbsp;2. Rekomendasi Kesesuaian Tata Ruang yang diterbitkan oleh Kementerian ATR/BPN atau<br>&nbsp;&nbsp;3. Pernyataan Mandiri Kesesuaian Tata Ruang (untuk jenis Usaha Mikro Kecil / UMK).<br><br>Catatan: Dokumen yang diupload masih bisa diperbarui pada tahap penyusunan Formulir KA, ANDAL atau UKL-UPL<br></template>
+                      <i class="el-alert__icon el-icon-warning" />
+                    </el-tooltip>
+                  </span>
+                  </span>
                   <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -33,8 +40,8 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Deskripsi Kegiatan" prop="description">
-                    <span slot="label">
-                      <span>Deskripsi Kegiatan <el-tooltip class="item" effect="dark" content="Deskripsi rencana usaha/kegiatan yang akan dilakukan mencakup kegiatan utama yang akan dilakukan dan sarana serta prasarana kegiatan pendukung yang akan dibangun. kegiatan utama yang akan dilakukan bisa saja lebih dari 1 jenis kegiatan dan begitu pula dengan kegiatan pendukungnya. Jelaskan pula keterkaitan lokasi rencana usaha dan/atau kegiatan dan kesesuaiannya dengan rencana tata ruang wilayah" placement="top">
+                    <span slot="label"><span>Deskripsi Kegiatan
+                      <el-tooltip class="item" effect="dark" content="Deskripsi rencana usaha/kegiatan yang akan dilakukan mencakup kegiatan utama yang akan dilakukan dan sarana serta prasarana kegiatan pendukung yang akan dibangun. kegiatan utama yang akan dilakukan bisa saja lebih dari 1 jenis kegiatan dan begitu pula dengan kegiatan pendukungnya. Jelaskan pula keterkaitan lokasi rencana usaha dan/atau kegiatan dan kesesuaiannya dengan rencana tata ruang wilayah" placement="top">
                         <i class="el-alert__icon el-icon-warning" />
                       </el-tooltip></span>
                     </span>
@@ -871,12 +878,12 @@ export default {
       callback();
     };
 
-    // var validateKtr = (rule, value, callback) => {
-    //   if (!this.currentProject.fileKtr){
-    //     callback(new Error('File KTR Belum Diunggah'));
-    //   }
-    //   callback();
-    // };
+    var validateKtr = (rule, value, callback) => {
+      if (!this.currentProject.fileKtr){
+        callback(new Error('File KTR Belum Diunggah'));
+      }
+      callback();
+    };
 
     // var validatePippib = (rule, value, callback) => {
     //   if (!this.currentProject.filepippib){
@@ -1119,9 +1126,9 @@ export default {
         description: [
           { required: true, trigger: 'blur', message: 'Data Deskripsi Kegiatan Belum Diisi' },
         ],
-        // fileKtr: [
-        //   { validator: validateKtr, trigger: 'change' },
-        // ],
+        fileKtr: [
+          { validator: validateKtr, trigger: 'change' },
+        ],
         // filepippib: [
         //   { validator: validatePippib, trigger: 'change' },
         // ],

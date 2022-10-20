@@ -5,7 +5,7 @@
       <workflow :is-penapisan="true" />
       <el-row :gutter="10">
         <el-col :span="12">
-          <h2>Informasi rencana Usaha/Kegiatan</h2>
+          <h2>Informasi rencana Usaha/Kegiatan test</h2>
           <el-table
             :data="list"
             style="width: 100%"
@@ -283,22 +283,26 @@ export default {
     },
     setDataTables(){
       const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
+        var	reverse = e.scale.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+        projectScale = projectScale.join('.').split('').reverse().join('');
         return {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.biz_name,
-          skala: e.scale + ' ' + (e.scale_unit || ''),
+          skala: projectScale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
       const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
+        var	reverse = e.scale.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+        projectScale = projectScale.join('.').split('').reverse().join('');
         return {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.biz_name,
-          skala: e.scale + ' ' + (e.scale_unit || ''),
+          skala: projectScale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
@@ -688,6 +692,8 @@ export default {
         });
     },
     async updateList() {
+      var	reverse = this.project.scale.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+      projectScale = projectScale.join('.').split('').reverse().join('');
       this.list = [
         {
           param: 'Nama Kegiatan',
@@ -699,7 +705,8 @@ export default {
         },
         {
           param: 'Skala/Besaran',
-          value: this.project.scale + ' ' + this.project.scale_unit,
+          // value: this.project.scale + ' ' + this.project.scale_unit,
+          value: projectScale + ' ' + this.project.scale_unit,
         },
         {
           param: 'Alamat',
@@ -719,7 +726,7 @@ export default {
         },
         {
           param: 'No. Telp Pemrakarsa',
-          value: this.project.initiatorData.phone,
+          value: '0' + this.project.initiatorData.phone,
         },
         {
           param: 'Email Pemrakarsa',

@@ -1150,8 +1150,9 @@ class ProjectController extends Controller
         $document->setValue('jenis_dokumen', $dataProject->required_doc ?? '-');
         $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->risk_level : '-');
         $document->setValue('kewenangan', $dataProject->authority ?? '-');
-        $document->setComplexBlock('deskripsi_kegiatan', $this->renderHtmlTable($dataProject->description, null, null, 10));
-        $document->setValue('deskripsi_lokasi', $dataProject->location_desc ?? '-');
+        $document->setValue('tipe_pemrakarsa', $dataProject->initiator->user_type === 'Pemrakarsa' ? 'Pemrakarsa Pelaku Usaha' : 'Pemrakarsa Pemerintah');
+        $document->setValue('deskripsi_kegiatan', trim(html_entity_decode($dataProject->description ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
+        $document->setValue('deskripsi_lokasi', trim(html_entity_decode($dataProject->location_desc ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
         $document->setValue('tanggal', Carbon::parse(now())->translatedFormat('d F Y'));
         $document->setValue('jam', now()->format('H:i:s'));
         $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'width' => 150, 'height' => 150, 'ratio' => true]);
