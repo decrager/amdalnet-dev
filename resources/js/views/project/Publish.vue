@@ -5,7 +5,7 @@
       <workflow :is-penapisan="true" />
       <el-row :gutter="10">
         <el-col :span="12">
-          <h2>Informasi rencana Usaha/Kegiatan test</h2>
+          <h2>Informasi rencana Usaha/Kegiatan</h2>
           <el-table
             :data="list"
             style="width: 100%"
@@ -283,7 +283,8 @@ export default {
     },
     setDataTables(){
       const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
-        var	reverse = e.scale.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+        var rmDecimalMain = ~~e.scale;
+        var	reverse = rmDecimalMain.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
         projectScale = projectScale.join('.').split('').reverse().join('');
         return {
           no: index + 1,
@@ -295,7 +296,8 @@ export default {
         };
       });
       const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
-        var	reverse = e.scale.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+        var rmDecimalSupp = ~~e.scale;
+        var	reverse = rmDecimalSupp.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
         projectScale = projectScale.join('.').split('').reverse().join('');
         return {
           no: index + 1,
@@ -692,7 +694,8 @@ export default {
         });
     },
     async updateList() {
-      var	reverse = this.project.scale.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+      var rmDecimal = ~~this.project.scale;
+      var	reverse = rmDecimal.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
       projectScale = projectScale.join('.').split('').reverse().join('');
       this.list = [
         {
