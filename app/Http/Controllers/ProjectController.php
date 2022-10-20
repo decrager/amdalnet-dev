@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Business;
-use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
@@ -19,7 +18,6 @@ use App\Http\Resources\ProjectResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
-use App\Services\OssService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,17 +26,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use Workflow;
-use App\Entity\WorkflowLog;
 use App\Entity\WorkflowStep;
 use App\Notifications\CreateProjectNotification;
 use App\Entity\ProjectSkklFinal;
 use App\Utils\Document;
+use App\Utils\ListRender;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
-use PhpOffice\PhpWord\TemplateProcessor;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Utils\TemplateProcessor;
+use PhpOffice\PhpWord\Element\Table;
+use PhpOffice\PhpWord\Shared\Html;
 
 class ProjectController extends Controller
 {
@@ -1090,14 +1088,60 @@ class ProjectController extends Controller
             ->get();
     }
 
+    private function removeNestedParagraph($data)
+    {
+        $old_data = $data;
+        $new_data = null;
+
+        while (true) {
+            $new_data = preg_replace('/(.*<p>)(((?!<\/p>).)*?)(<p>)(.*?)(<\/p>)(.*)/', '\1\2\5\7', $old_data);
+            if ($new_data == $old_data) {
+                break;
+            } else {
+                $old_data = $new_data;
+            }
+        }
+
+        return $new_data;
+    }
+
+    private function replaceHtmlList($data, $font = 'Bookman Old Style')
+    {
+        if ($data) {
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p, $font, '11px');
+        } else {
+            return '';
+        }
+    }
+
+    private function renderHtmlTable($data, $width = null, $font = null, $font_size = null)
+    {
+        $table = new Table();
+        $table->addRow();
+        $cell = null;
+        if ($width) {
+            $cell = $table->addCell($width);
+        } else {
+            $cell = $table->addCell();
+        }
+        $selected_font = $font ? $font : 'Bookman Old Style';
+        $selected_font_size = $font_size ? $font_size : '9.5';
+        $content = '';
+        if ($data) {
+            $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
+        }
+        Html::addHtml($cell, $content);
+        return $table;
+    }
+
     public function printPenapisan(Request $request)
     {
         $document = new TemplateProcessor(public_path('document/Template-Penapisan.docx'));
         $dataProject = Project::with('address', 'listSubProject', 'initiator')->findOrFail($request->project_id);
-
         $document->setValue('nama_project', $dataProject->project_title ?? '-');
         $document->setValue('no_registrasi', $dataProject->registration_no ?? '-');
-        $document->setValue('pemrakarsa', $dataProject->initiator->name ?? '-');
+        $document->setValue('pemrakarsa', htmlspecialchars($dataProject->initiator->name ?? '-'));
         $document->setValue('penanggung_jawab', $dataProject->initiator->pic ?? '-');
         $document->setValue('alamat_penanggung_jawab', $dataProject->initiator->address ?? '-');
         $document->setValue('nomor_telepon', $dataProject->initiator->phone ?? '-');
@@ -1106,8 +1150,8 @@ class ProjectController extends Controller
         $document->setValue('jenis_dokumen', $dataProject->required_doc ?? '-');
         $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->risk_level : '-');
         $document->setValue('kewenangan', $dataProject->authority ?? '-');
-        $document->setValue('deskripsi_kegiatan', trim(html_entity_decode($dataProject->description ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
-        $document->setValue('deskripsi_lokasi', trim(html_entity_decode($dataProject->location_desc ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
+        $document->setComplexBlock('deskripsi_kegiatan', $this->renderHtmlTable($dataProject->description, null, null, 10));
+        $document->setValue('deskripsi_lokasi', $dataProject->location_desc ?? '-');
         $document->setValue('tanggal', Carbon::parse(now())->translatedFormat('d F Y'));
         $document->setValue('jam', now()->format('H:i:s'));
         $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'width' => 150, 'height' => 150, 'ratio' => true]);
