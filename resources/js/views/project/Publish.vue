@@ -5,7 +5,7 @@
       <workflow :is-penapisan="true" />
       <el-row :gutter="10">
         <el-col :span="12">
-          <h2>Informasi rencana Usaha/Kegiatan test</h2>
+          <h2>Informasi rencana Usaha/Kegiatan</h2>
           <el-table
             :data="list"
             style="width: 100%"
