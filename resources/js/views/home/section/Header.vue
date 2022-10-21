@@ -71,7 +71,7 @@
                 <a href="#" @click="handleSetMenu('LPJP')">Daftar LPJP</a>
               </li>
               <li>
-                <a href="https://amdal.menlhk.go.id/info_persuratan">Informasi Persuratan</a>
+                <a href="https://amdal.menlhk.go.id/info_persuratan" target="_blank">Informasi Persuratan</a>
               </li>
             </ul>
           </li>
