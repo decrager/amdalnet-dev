@@ -164,7 +164,7 @@
                   Dokumen UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -173,7 +173,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
