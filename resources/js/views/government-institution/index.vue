@@ -147,8 +147,8 @@
           <div class="form-group">
             <label>Alamat Kantor</label>
             <el-input
-              v-model="currentData.name"
-              :class="{ 'is-error': errors.name }"
+              v-model="currentData.kantor"
+              :class="{ 'is-error': errors.kantor }"
             />
           </div>
         </el-col>
@@ -156,8 +156,8 @@
           <div class="form-group">
             <label>Alamat Website Resmi</label>
             <el-input
-              v-model="currentData.name"
-              :class="{ 'is-error': errors.name }"
+              v-model="currentData.website"
+              :class="{ 'is-error': errors.webiste }"
             />
           </div>
         </el-col>
@@ -218,6 +218,8 @@ export default {
         id_district: null,
         name: null,
         email: null,
+        kantor: null,
+        website: null,
       },
       institutionType: [
         {
@@ -279,6 +281,16 @@ export default {
       if (!this.currentData.name) {
         errors++;
         this.errors.name = true;
+      }
+
+      if (!this.currentData.kantor) {
+        errors++;
+        this.errors.kantor = true;
+      }
+
+      if (!this.currentData.website) {
+        errors++;
+        this.errors.website = true;
       }
 
       if (!this.currentData.email) {
@@ -358,6 +370,8 @@ export default {
         id_district: institution.id_district,
         email: institution.email,
         old_email: institution.email,
+        kantor: institution.kantor,
+        website: institution.website,
       };
       this.handleShowForm('update');
     },
@@ -399,6 +413,8 @@ export default {
         id_district: null,
         name: null,
         email: null,
+        kantor: null,
+        website: null,
       };
     },
     validateEmail(mail) {
