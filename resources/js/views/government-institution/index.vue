@@ -143,6 +143,24 @@
             </small>
           </div>
         </el-col>
+        <el-col :md="24" :sm="24">
+          <div class="form-group">
+            <label>Alamat Kantor</label>
+            <el-input
+              v-model="currentData.name"
+              :class="{ 'is-error': errors.name }"
+            />
+          </div>
+        </el-col>
+        <el-col :md="24" :sm="24">
+          <div class="form-group">
+            <label>Alamat Website Resmi</label>
+            <el-input
+              v-model="currentData.name"
+              :class="{ 'is-error': errors.name }"
+            />
+          </div>
+        </el-col>
         <el-col :md="24" align="right">
           <el-button
             type="warning"
