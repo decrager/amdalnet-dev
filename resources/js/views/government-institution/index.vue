@@ -146,19 +146,13 @@
         <el-col :md="24" :sm="24">
           <div class="form-group">
             <label>Alamat Kantor</label>
-            <el-input
-              v-model="currentData.kantor"
-              :class="{ 'is-error': errors.kantor }"
-            />
+            <el-input v-model="currentData.office" />
           </div>
         </el-col>
         <el-col :md="24" :sm="24">
           <div class="form-group">
             <label>Alamat Website Resmi</label>
-            <el-input
-              v-model="currentData.website"
-              :class="{ 'is-error': errors.webiste }"
-            />
+            <el-input v-model="currentData.website" />
           </div>
         </el-col>
         <el-col :md="24" align="right">
@@ -218,7 +212,7 @@ export default {
         id_district: null,
         name: null,
         email: null,
-        kantor: null,
+        office: null,
         website: null,
       },
       institutionType: [
@@ -283,15 +277,15 @@ export default {
         this.errors.name = true;
       }
 
-      if (!this.currentData.kantor) {
-        errors++;
-        this.errors.kantor = true;
-      }
+      // if (!this.currentData.office) {
+      //   errors++;
+      //   this.errors.office = true;
+      // }
 
-      if (!this.currentData.website) {
-        errors++;
-        this.errors.website = true;
-      }
+      // if (!this.currentData.website) {
+      //   errors++;
+      //   this.errors.website = true;
+      // }
 
       if (!this.currentData.email) {
         errors++;
@@ -370,7 +364,7 @@ export default {
         id_district: institution.id_district,
         email: institution.email,
         old_email: institution.email,
-        kantor: institution.kantor,
+        office: institution.office,
         website: institution.website,
       };
       this.handleShowForm('update');
@@ -413,7 +407,7 @@ export default {
         id_district: null,
         name: null,
         email: null,
-        kantor: null,
+        office: null,
         website: null,
       };
     },
