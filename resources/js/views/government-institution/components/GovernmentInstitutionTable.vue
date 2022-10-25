@@ -32,6 +32,20 @@
     />
 
     <el-table-column
+      align="center"
+      label="Alamat kantor"
+      sortable
+      prop="office"
+    />
+
+    <el-table-column
+      align="center"
+      label="Alamat Website"
+      sortable
+      prop="website"
+    />
+
+    <el-table-column
       v-if="checkPermission(['manage institution']) || checkRole(['admin'])"
       align="center"
       label="Aksi"
