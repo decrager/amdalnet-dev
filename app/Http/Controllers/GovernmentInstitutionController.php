@@ -34,6 +34,10 @@ class GovernmentInstitutionController extends Controller
                     $query->whereRaw("LOWER(institution_type) LIKE '%" . strtolower($request->search) . "%'");
                 })->orWhere(function($query) use($request) {
                     $query->whereRaw("LOWER(email) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(office) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(website) LIKE '%" . strtolower($request->search) . "%'");
                 });
             }
         })->orderBy('id', 'desc')->paginate($request->limit);
@@ -69,6 +73,8 @@ class GovernmentInstitutionController extends Controller
         $institutions->name = $request->name;
         $institutions->institution_type = $request->institutionType;
         $institutions->email = $request_email;
+        $institutions->office = $request->office;
+        $institutions->website = $request->website;
         $institutions->id_province = $request->id_province;
         $institutions->id_district = $request->id_district;
         $institutions->save();
