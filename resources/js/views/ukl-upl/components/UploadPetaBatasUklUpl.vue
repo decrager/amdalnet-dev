@@ -595,9 +595,14 @@ export default {
             return;
           }
 
-          this.geomAreaKelolaGeojson = data.features[0].geometry;
-          this.geomAreaKelolaProperties = data.features[0].properties;
+          this.geomAreaKelolaGeojson = [];
+          this.geomAreaKelolaProperties = [];
           this.geomAreaKelolaStyles = 6;
+
+          data.features.map((value, index) => {
+            this.geomAreaKelolaGeojson.push(value.geometry);
+            this.geomAreaKelolaProperties.push(value.properties);
+          });
 
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
