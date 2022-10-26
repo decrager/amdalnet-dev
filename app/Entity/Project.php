@@ -157,6 +157,11 @@ class Project extends Model implements Auditable
         return $this->hasMany(DocumentAttachment::class, 'id_project', 'id');
     }
 
+    public function projectFilter()
+    {
+        return $this->hasMany(ProjectFilter::class, 'id_project', 'id');
+    }
+
     public function getFillingDateAttribute()
     {
         Carbon::setLocale('id');
@@ -277,6 +282,15 @@ class Project extends Model implements Auditable
     public function rawPreAgreementFile()
     {
         return $this->attributes['pre_agreement_file'];
+    }
+
+    public function getOssSpplDocAttribute()
+    {
+        if(isset($this->attributes['oss_sppl_doc']) && $this->attributes['oss_sppl_doc'] != null) {
+            return Storage::disk('public')->temporaryUrl($this->attributes['oss_sppl_doc'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+        }
+
+        return null;
     }
 
     public function getOssRequiredDocAttribute()

@@ -82,7 +82,7 @@
                 >
                   Publish
                 </el-button>
-                <!-- <el-button
+                <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
@@ -90,7 +90,7 @@
                   @click="handleEditForm(scope.row.id)"
                 >
                   Edit
-                </el-button> -->
+                </el-button>
                 <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
@@ -970,17 +970,17 @@ export default {
       window.open(url, '_blank').focus();
     },
     handleEditForm(id) {
-      const currentProject = this.filtered.find((item) => item.id === id);
+      // const currentProject = this.filtered.find((item) => item.id === id);
 
-      // change project_year to string
-      currentProject.project_year = currentProject.project_year.toString();
+      // // change project_year to string
+      // currentProject.project_year = currentProject.project_year.toString();
 
-      // change field to number and formulator team
-      currentProject.field = Number(currentProject.field);
-      currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
+      // // change field to number and formulator team
+      // currentProject.field = Number(currentProject.field);
+      // currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
       this.$router.push({
-        name: 'createProject',
-        params: { project: currentProject },
+        name: 'editProject',
+        params: { id },
       });
     },
     handleViewForm(id) {

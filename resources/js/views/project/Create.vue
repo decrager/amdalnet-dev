@@ -798,6 +798,11 @@ const SupportDocResource = new Resource('support-docs');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const authorityResource = new Resource('authorities');
+const projectResource = new Resource('projects');
+// const projectMapResource = new Resource('project-map');
+
+const kbliEnvParamResource = new Resource('kbli-env-params');
+const kbliResource = new Resource('business');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import esriConfig from '@arcgis/core/config.js';
@@ -816,6 +821,7 @@ import centroid from '@turf/centroid';
 import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
 import Print from '@arcgis/core/widgets/Print';
 import editor from '@/components/Tinymce';
+// import { saveAs } from 'file-saver';
 
 export default {
   name: 'CreateProject',
@@ -1245,6 +1251,119 @@ export default {
     if (this.$store.getters.isPemerintah){
       this.currentProject.isPemerintah = 'true';
     }
+
+    if (this.$route.params.id){
+      this.currentProject = await projectResource.list({ id: this.$route.params.id });
+      if (this.currentProject.published){
+        this.$router.push('/project');
+      }
+      this.currentProject.address = this.currentProject.address.map(e => {
+        e.isUsed = true;
+        return e;
+      });
+      for (const sproj of this.currentProject.list_sub_project) {
+        await this.getBusinessByField(sproj);
+        this.refresh++;
+      }
+      this.listSubProject = this.currentProject.list_sub_project.map(e => {
+        e.isUsed = true;
+        e.biz_type = parseInt(e.biz_type, 10);
+        e.sector = parseInt(e.sector, 10);
+        return e;
+      });
+      this.currentProject.pippib = this.currentProject.ppib;
+      this.fileKtrName = this.currentProject.ktr.substring(
+        this.currentProject.ktr.indexOf('/k') + 1,
+        this.currentProject.ktr.lastIndexOf('?X')
+      );
+      this.fileKtrNameOld = this.fileKtrName;
+      this.currentProject.fileKtr = await this.getFileFromUrl(this.currentProject.ktr, this.fileKtrName, 'application/pdf');
+
+      const petaPdf = this.currentProject.map_files.filter(e => e.attachment_type === 'tapak' && e.file_type === 'PDF')[0];
+      const petaZip = this.currentProject.map_files.filter(e => e.attachment_type === 'tapak' && e.file_type === 'SHP')[0];
+
+      console.log('adad', { petaPdf, petaZip });
+      this.filePdfName = petaPdf.stored_filename.substring(
+        petaPdf.stored_filename.indexOf('public/') + 7,
+        petaPdf.stored_filename.lastIndexOf('?X')
+      );
+      this.filePdf = await this.getFileFromUrl(petaPdf.stored_filename, this.filePdfName, 'application/pdf');
+
+      this.fileMapName = petaZip.stored_filename.substring(
+        petaZip.stored_filename.indexOf('public/') + 7,
+        petaZip.stored_filename.lastIndexOf('?X')
+      );
+      this.fileMap = await this.getFileFromUrl(petaZip.stored_filename, this.fileMapName, 'application/zip');
+
+      if (this.currentProject.ppib_file){
+        this.filepippibName = this.currentProject.ppib_file.substring(
+          this.currentProject.ppib_file.indexOf('/k') + 1,
+          this.currentProject.ppib_file.lastIndexOf('?X')
+        );
+        this.filepippibNameOld = this.filepippibName;
+        this.filepippib = await this.getFileFromUrl(this.currentProject.ppib_file, this.filepippibName, 'application/pdf');
+      }
+
+      if (this.currentProject.kawasan_lindung_file){
+        this.fileKawasanLindungName = this.currentProject.kawasan_lindung_file.substring(
+          this.currentProject.kawasan_lindung_file.indexOf('/k') + 1,
+          this.currentProject.kawasan_lindung_file.lastIndexOf('?X')
+        );
+        this.fileKawasanLindungNameOld = this.fileKawasanLindungName;
+        this.fileKawasanLindung = await this.getFileFromUrl(this.currentProject.kawasan_lindung_file, this.fileKawasanLindungName, 'application/pdf');
+      }
+
+      if (this.currentProject.oss_required_doc){
+        this.fileOssReqDocName = this.currentProject.oss_required_doc.substring(
+          this.currentProject.oss_required_doc.indexOf('ossReqDoc/') + 10,
+          this.currentProject.oss_required_doc.lastIndexOf('?X')
+        );
+        this.fileOssReqDocNameOld = this.fileOssReqDocName;
+        this.fileOssReqDoc = await this.getFileFromUrl(this.currentProject.oss_required_doc, this.fileOssReqDocName, 'application/pdf');
+      }
+
+      if (this.currentProject.oss_sppl_doc){
+        this.fileOssSpplDocName = this.currentProject.oss_sppl_doc.substring(
+          this.currentProject.oss_sppl_doc.indexOf('ossSpplDoc/') + 11,
+          this.currentProject.oss_sppl_doc.lastIndexOf('?X')
+        );
+        this.fileOssSpplDocNameOld = this.fileOssSpplDocName;
+        this.fileOssSppl = await this.getFileFromUrl(this.currentProject.oss_sppl_doc, this.fileOssSpplDocName, 'application/pdf');
+      }
+
+      if (this.currentProject.pre_agreement_file){
+        this.filePreAgreementName = this.currentProject.pre_agreement_file.substring(
+          this.currentProject.pre_agreement_file.indexOf('project/') + 8,
+          this.currentProject.pre_agreement_file.lastIndexOf('?X')
+        );
+        this.filePreAgreementNameOld = this.filePreAgreementName;
+        this.filePreAgreement = await this.getFileFromUrl(this.currentProject.pre_agreement_file, this.filePreAgreementName, 'application/pdf');
+      }
+
+      this.currentProject.b3 = this.currentProject.project_filter[0].b3;
+      this.currentProject.chimney = this.currentProject.project_filter[0].chimney;
+      this.currentProject.collect_b3 = this.currentProject.project_filter[0].collect_b3;
+      this.currentProject.disposal_wastewater = this.currentProject.project_filter[0].disposal_wastewater;
+      this.currentProject.dumping_b3 = this.currentProject.project_filter[0].dumping_b3;
+      this.currentProject.emission = this.currentProject.project_filter[0].emission;
+      this.currentProject.genset = this.currentProject.project_filter[0].genset;
+      this.currentProject.high_emission = this.currentProject.project_filter[0].high_emission;
+      this.currentProject.high_pollution = this.currentProject.project_filter[0].high_pollution;
+      this.currentProject.high_traffic = this.currentProject.project_filter[0].high_traffic;
+      this.currentProject.hoard_b3 = this.currentProject.project_filter[0].hoard_b3;
+      this.currentProject.low_traffic = this.currentProject.project_filter[0].low_traffic;
+      this.currentProject.mid_traffic = this.currentProject.project_filter[0].mid_traffic;
+      this.currentProject.nothing = this.currentProject.project_filter[0].nothing;
+      this.currentProject.process_b3 = this.currentProject.project_filter[0].process_b3;
+      this.currentProject.tps = this.currentProject.project_filter[0].tps;
+      this.currentProject.traffic = this.currentProject.project_filter[0].traffic;
+      this.currentProject.transport_b3 = this.currentProject.project_filter[0].transport_b3;
+      this.currentProject.utilization_b3 = this.currentProject.project_filter[0].utilization_b3;
+      this.currentProject.utilization_wastewater = this.currentProject.project_filter[0].utilization_wastewater;
+      this.currentProject.wastewater = this.currentProject.project_filter[0].wastewater;
+      console.log(this.currentProject);
+      console.log(this.listSubProject);
+    }
     // console.log(this.currentProject);
     // load info user and initiator
     // const { email } = await this.$store.dispatch('user/getInfo');
@@ -1309,6 +1428,117 @@ export default {
     this.initMap();
   },
   methods: {
+    async getFieldBySector(sproject) {
+      if (this.currentProject.isPemerintah === 'true'){
+        // const { value } = await kbliResource.get(sproject.sector);
+
+        const { data } = await kbliResource.list({
+          fieldBySectorName: sproject.sector,
+        });
+
+        sproject.sector_name = sproject.sector;
+
+        sproject.listField = data.map((i) => {
+          return { value: i.value, label: i.value };
+        });
+      } else {
+        const { data } = await kbliResource.list({
+          fieldBySector: sproject.sector,
+        });
+        sproject.listField = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      }
+    },
+    async getSectorByKbli(sproject) {
+      if (sproject.kbli === 'non kbli') {
+        const { data } = await kbliResource.list({
+          sectorsByKbli: 'Non KBLI',
+        });
+        sproject.listSector = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      } else if (sproject.kbli) {
+        const { data } = await kbliResource.list({
+          sectorsByKbli: sproject.kbli,
+        });
+        sproject.listSector = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      }
+
+      console.log(sproject.listSector);
+    },
+    getResultRiskByResult(result){
+      if (result === 'AMDAL'){
+        return 'Tinggi';
+      } else if (result === 'UKL-UPL'){
+        return 'Menengah Rendah';
+      } else {
+        return 'Rendah';
+      }
+    },
+    async getBusinessByField(sproject) {
+      console.log(sproject);
+
+      if (this.currentProject.isPemerintah === 'true'){
+        // const { value } = await kbliResource.get(sproject.sector);
+
+        sproject.biz_name = sproject.biz_type;
+
+        const { data } = await kbliEnvParamResource.list({
+          businessTypePem: sproject.biz_name,
+          sectorName: sproject.sector,
+        });
+
+        sproject.listSubProjectParams = data.map((i) => {
+          for (const oldPar of sproject.list_sub_project_params) {
+            if (oldPar.param === i.param && oldPar.scale_unit === i.unit){
+              i.result = oldPar.result;
+              i.result_risk = this.getResultRiskByResult(oldPar.result);
+              i.used = true;
+              i.scaleNumber = parseFloat(oldPar.scale);
+              i.scale = oldPar.scale.replace('.', ',');
+              i.id = oldPar.id;
+            }
+          }
+          return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit, result: i.result, used: i.used, scale: i.scale, scaleNumber: i.scaleNumber, result_risk: i.result_risk, id: i.id };
+        });
+      } else {
+        // get all sector by its kbli
+        await this.getSectorByKbli(sproject);
+
+        const { value } = await kbliResource.get(sproject.biz_type);
+        sproject.biz_name = value;
+        const { data } = await kbliEnvParamResource.list({
+          fieldId: sproject.biz_type,
+          businessType: true,
+        });
+        sproject.listSubProjectParams = data.map((i) => {
+          for (const oldPar of sproject.list_sub_project_params) {
+            // console.log({ old: oldPar.param, new: i.param });
+            // console.log({ old: oldPar.scale_unit, new: i.scale_unit });
+            // console.log(oldPar.param === i.param && oldPar.scale_unit === i.unit);
+            if (oldPar.param === i.param && oldPar.scale_unit === i.unit){
+              i.result = oldPar.result;
+              i.result_risk = this.getResultRiskByResult(oldPar.result);
+              i.used = true;
+              i.scaleNumber = parseFloat(oldPar.scale);
+              i.scale = oldPar.scale.replace('.', ',');
+              i.id = oldPar.id;
+            }
+          }
+          return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit, result: i.result, used: i.used, scale: i.scale, scaleNumber: i.scaleNumber, result_risk: i.result_risk, id: i.id };
+        });
+      }
+    },
+    async getFileFromUrl(url, name, defaultType = 'image/jpeg'){
+      const response = await fetch(url);
+      const data = await response.blob();
+      return new File([data], name, {
+        type: data.type || defaultType,
+      });
+    },
     initMap() {
       // init map
       this.map = new Map({
@@ -1808,6 +2038,7 @@ export default {
           this.calculateListSubProjectResult();
           this.calculateChoosenProject();
           this.goToStatusKegiatan();
+          console.log(this.currentProject);
         } else {
           console.log('error submit!!');
           return false;

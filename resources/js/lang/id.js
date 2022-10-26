@@ -77,6 +77,7 @@ export default {
     listProjectProcess: 'Dalam Pengujian',
     listProjectIssued: 'Sudah Terbit PL',
     addProject: 'Tambah Kegiatan',
+    editProject: 'Ubah Kegiatan',
     publishProject: 'Publikasi Kegiatan',
     initiator: 'Pemrakarsa',
     formulator: 'Penyusun',

@@ -630,6 +630,7 @@ export default {
             this.$router.push('/project');
           }).catch(error => {
             console.log(error);
+            this.fullLoading = false;
           });
         } else {
           projectResource
