@@ -108,7 +108,7 @@
       <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
-        <el-button v-if="isProjectIdExist" @click="print()">Cetak PDF</el-button>
+        <el-button @click="printOrAlert()">Cetak PDF</el-button>
       </div>
       <div>
         <img id="gambar" src="">
@@ -272,6 +272,15 @@ export default {
       }
 
       return '';
+    },
+    printOrAlert(){
+      if (this.isProjectIdExist){
+        return this.print();
+      } else {
+        return this.$alert('Cetak penapisan hanya bisa digunakan setelah Penapisan di simpan.', 'Informasi', {
+          confirmButtonText: 'OK',
+        });
+      }
     },
     setAddressDataTables(){
       this.addressTableData.push({
