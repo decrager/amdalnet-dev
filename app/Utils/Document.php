@@ -27,7 +27,7 @@ final class Document
      *
      * @return Supported key
      */
-    public static function GenerateRevisionId($expected_key) 
+    public static function GenerateRevisionId($expected_key)
     {
         if (strlen($expected_key) > 20) $expected_key = crc32( $expected_key);  // if the expected key length is greater than 20, calculate the crc32 for it
         $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
@@ -41,7 +41,7 @@ final class Document
      * Example:
      * string convertedDocumentUri;
      * GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
-     * 
+     *
      * @param string $document_uri            Uri for the document to convert
      * @param string $from_extension          Document extension
      * @param string $to_extension            Extension to which to convert
@@ -51,7 +51,7 @@ final class Document
      *
      * @return The percentage of completion of conversion
      */
-    public static function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass = '') 
+    public static function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass = '')
     {
         $converted_document_uri = "";
         $responceFromConvertService = self::SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass);
@@ -89,7 +89,7 @@ final class Document
      *
      * @return Document request result of conversion
      */
-    public static function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass = '') 
+    public static function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass = '')
     {
         if (empty($from_extension))
         {
@@ -110,7 +110,7 @@ final class Document
         // generate document token
         $document_revision_id = self::GenerateRevisionId($document_revision_id);
 
-        $urlToConverter = env('OFFICE_CONVERT_URL', 'http://localhost:8008/ConvertService.ashx');
+        $urlToConverter = env('OFFICE_CONVERT_URL', 'https://amdalnet-dev.menlhk.go.id/oods/ConvertService.ashx');
 
         $arr = [
             "async" => $is_async,
@@ -135,7 +135,7 @@ final class Document
         $opts = array(
             'http' => array(
                 'method'  => 'POST',
-                'header'=> "Content-type: application/json\r\n" . 
+                'header'=> "Content-type: application/json\r\n" .
                     "Accept: application/json\r\n" .
                     (empty($headerToken) ? "" : "Authorization: Bearer $headerToken\r\n"),
                 'content' => $data
@@ -145,7 +145,7 @@ final class Document
         if (substr($urlToConverter, 0, strlen("https")) === "https") {
             $opts['ssl'] = array( 'verify_peer'   => FALSE );
         }
-    
+
         $context = stream_context_create($opts);
         $response_data = file_get_contents($urlToConverter, FALSE, $context);
 
@@ -159,7 +159,7 @@ final class Document
      *
      * @return null
      */
-    public static function ProcessConvServResponceError($errorCode) 
+    public static function ProcessConvServResponceError($errorCode)
     {
         $errorMessageTemplate = "Error occurred in the document service: ";
         $errorMessage = '';
@@ -203,18 +203,18 @@ final class Document
     //// common ////
     /**
      * Get correct name
-     * 
+     *
      * @param string $fileName
      * @param string $userAddress
      */
     public static function GetCorrectName($fileName, $userAddress = NULL) {
         $path_parts = pathinfo($fileName);
-    
+
         $ext = strtolower($path_parts['extension']);
         $name = $path_parts['basename'];
         $baseNameWithoutExt = substr($name, 0, strlen($name) - strlen($ext) - 1);  // get file name from the basename without extension
         $name = $baseNameWithoutExt . "." . $ext;
-        
+
         $dir_disk = env('OFFICE_STORAGE_DISK', 'public');
         // for ($i = 1; file_exists(self::getStoragePath($name, $userAddress)); $i++)  // if a file with such a name already exists in this directory
         for ($i = 1; Storage::disk($dir_disk)->exists(self::getStoragePath($name, $userAddress)); $i++)  // if a file with such a name already exists in this directory
@@ -226,20 +226,20 @@ final class Document
 
     /**
      * Get storage path document
-     * 
+     *
      * @param string $fileName
      * @param string $userAddress
      */
     public static function getStoragePath($fileName, $userAddress = NULL) {
         // $conf_storage_path = env('OFFICE_STORAGE_PATH', '/var/www/storage/app/public/workspace');
-        
+
         // $storagePath = rtrim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $conf_storage_path), DIRECTORY_SEPARATOR);
         // $directory = $storagePath;
-    
+
         // if ($storagePath != "")
         // {
         //     $directory =  $directory  . DIRECTORY_SEPARATOR;
-    
+
         //     // if the file directory doesn't exist, make it
         //     if (!file_exists($directory) && !is_dir($directory)) {
         //         mkdir($directory);
@@ -249,9 +249,9 @@ final class Document
         $dir_disk = env('OFFICE_STORAGE_DISK', 'public');
 
         $directory = $dir_path;
-        
+
         if ($dir_path != '') {
-            
+
             $directory =  $directory  . (substr($directory,-1) !='/' ? '/':'');
 
             if (!in_array($dir_path, Storage::disk($dir_disk)->directories(dirname($directory)))) {
@@ -259,14 +259,14 @@ final class Document
                 Storage::disk($dir_disk)->makeDirectory($dir_path);
             }
         }
-    
+
         Log::info("getStoragePath result: " . $directory . basename($fileName));
         return $directory . basename($fileName);
     }
 
     /**
      * Get current user host address
-     * 
+     *
      * @param string $userAddress
      * @return string safe string user address
      */
@@ -277,7 +277,7 @@ final class Document
 
     /**
      * Get client ip address
-     * 
+     *
      * @return string client ip address
      */
     public static function getClientIp() {
@@ -289,15 +289,15 @@ final class Document
             getenv('HTTP_FORWARDED')?:
             getenv('REMOTE_ADDR')?:
             'Storage';
-    
+
         $ipaddress = preg_replace("/[^0-9a-zA-Z.=]/", "_", $ipaddress);
-    
+
         return $ipaddress;
     }
 
     /**
      * get the path to the file history
-     * 
+     *
      * @return string history dir
      */
     public static function getHistoryDir($storagePath) {
@@ -316,8 +316,8 @@ final class Document
 
     /**
      * get the path to the specified file version
-     * 
-     * @return string versiondir 
+     *
+     * @return string versiondir
      */
     public static function getVersionDir($histDir, $version) {
         return $histDir . DIRECTORY_SEPARATOR . $version;
@@ -325,7 +325,7 @@ final class Document
 
     /**
      * get a number of the last file version from the history directory
-     */ 
+     */
     public static function getFileVersion($histDir) {
         $dir_disk = env('OFFICE_STORAGE_DISK', 'public');
 
@@ -377,7 +377,7 @@ final class Document
         Storage::disk($dir_disk)->makeDirectory($directory);
 
         $directory = $directory . '/' . $fileName;
-        
+
         // if (!$create && !file_exists($directory)) return "";
         if (!$create && Storage::disk($dir_disk)->exists($directory)) return "";
 
@@ -389,14 +389,14 @@ final class Document
      */
     public static function createMeta($fileName, $uid, $uname, $userAddress = NULL) {
         $histDir = self::getHistoryDir(self::getStoragePath($fileName, $userAddress));  // get the history directory
-    
+
         // turn the file information into the json format
         $json = [
             "created" => date("Y-m-d H:i:s"),
             "uid" => $uid,
             "name" => $uname,
         ];
-    
+
         // write the encoded file information to the createdInfo.json file
         // file_put_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json", json_encode($json, JSON_PRETTY_PRINT));
         $dir_disk = env('OFFICE_STORAGE_DISK', 'public');
@@ -407,17 +407,17 @@ final class Document
         $conf_storage_path = env('OFFICE_STORAGE_PATH', '/var/www/storage/app/public/workspace');
         $storagePath = rtrim(str_replace(array('/','\\'), '/', $conf_storage_path), '/');
         $storagePath = $storagePath != "" ? $storagePath . '/' : "";
-    
-    
+
+
         // $virtPath = self::serverPath($forDocumentServer) . '/' . $storagePath . self::getCurUserHostAddress() . '/';
         $virtPath = self::serverPath($forDocumentServer) . '/' . $storagePath . '/';
         Log::debug("getVirtualPath virtPath: " . $virtPath);
         return $virtPath;
     }
-    
+
     /**
      * get server url
-     * */ 
+     * */
     public static function serverPath($forDocumentServer = NULL) {
         return env('APP_URL') ? env('APP_URL') : (self::getScheme() . '://' . $_SERVER['HTTP_HOST']);
     }

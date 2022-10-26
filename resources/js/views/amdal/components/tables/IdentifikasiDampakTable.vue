@@ -2,7 +2,7 @@
   <div>
     <dampak-potensial-table v-if="isDampakPotensialTable" :data="data" />
     <dampak-penting-hipotetik-table v-if="isDampakPentingHipotetikTable" :data="data" />
-    <metode-studi-table v-if="isMetodeStudiTable" :data="data" />
+    <metode-studi-table v-if="isMetodeStudiTable" :loading="loading" :data="data" />
   </div>
 </template>
 
@@ -29,6 +29,7 @@ export default {
   data() {
     return {
       data: [],
+      loading: true,
       projectStages: [],
       isDampakPotensialTable: false,
       isDampakPentingHipotetikTable: false,
@@ -142,6 +143,7 @@ export default {
       }
       this.data = this.createDataArray(dataList, this.projectStages);
       this.$emit('handleSetData', this.data);
+      this.loading = false;
     },
   },
 };

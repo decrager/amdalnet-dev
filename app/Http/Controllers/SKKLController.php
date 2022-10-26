@@ -62,6 +62,18 @@ class SKKLController extends Controller
         if ($request->spplOss || $request->pkplhOss) {
             return $this->getFileFromOSS($request->url);
         }
+
+        if ($request->sppl1){
+            // $templateProcessor = storage_path('app/public/template/template_sppl_pem.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_sppl_pem.docx')) ;
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('skkl/' . 'template_sppl_pem.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $spplDownload = Storage::disk('public')->temporaryUrl('skkl/' . 'template_sppl_pem.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+            return [
+                'url' => $spplDownload
+            ];
+        }
     }
 
     /**
@@ -86,14 +98,14 @@ class SKKLController extends Controller
         if($request->hasFile('skkl')) {
             $project = Project::findOrFail($data['idProject']);
             $file_name = $project->project_title .' - ' . $project->initiator->name;
-            
+
 
              //create file
              $file = $request->file('skkl');
              $name = 'skkl/' . $file_name . '.' . $file->extension();
              $file->storePubliclyAs('public', $name);
- 
-             //create environmental expert  
+
+             //create environmental expert
             $skkl = ProjectSkkl::where('id_project', $data['idProject'])->first();
 
             if(!$skkl) {
@@ -257,17 +269,17 @@ class SKKLController extends Controller
         $document_attachment = DocumentAttachment::where('id_project', $idProject)
                                     ->whereIn('type', ['Formulir KA', 'Dokumen Andal', 'Dokumen RKL RPL'])
                                     ->get();
-        $dokumen_ka = $document_attachment->where('type', 'Formulir KA')->first() ? 
+        $dokumen_ka = $document_attachment->where('type', 'Formulir KA')->first() ?
                       $document_attachment->where('type', 'Formulir KA')->first()->attachment : null;
-        $dokumen_andal = $document_attachment->where('type', 'Dokumen Andal')->first() ? 
+        $dokumen_andal = $document_attachment->where('type', 'Dokumen Andal')->first() ?
                          $document_attachment->where('type', 'Dokumen Andal')->first()->attachment : null;
-        $dokumen_rkl_rpl = $document_attachment->where('type', 'Dokumen RKL RPL')->first() ? 
+        $dokumen_rkl_rpl = $document_attachment->where('type', 'Dokumen RKL RPL')->first() ?
                            $document_attachment->where('type', 'Dokumen RKL RPL')->first()->attachment : null;
 
         // Date
         $andalDate = '';
         $andal = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($idProject) {
-           $q->where('id_project', $idProject); 
+           $q->where('id_project', $idProject);
         })->orderBy('updated_at', 'desc')->first();
         if($andal) {
             $andalDate = $andal->updated_at->locale('id')->isoFormat('D MMMM Y');
@@ -275,7 +287,7 @@ class SKKLController extends Controller
 
         $rklDate = '';
         $rkl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
-            $q->where('id_project', $idProject); 
+            $q->where('id_project', $idProject);
          })->orderBy('updated_at', 'desc')->first();
          if($rkl) {
              $rklDate = $rkl->updated_at;
@@ -283,7 +295,7 @@ class SKKLController extends Controller
 
         $rplDate = '';
         $rpl = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($idProject) {
-            $q->where('id_project', $idProject); 
+            $q->where('id_project', $idProject);
          })->orderBy('updated_at', 'desc')->first();
          if($rpl) {
             $rplDate = $rpl->updated_at;
@@ -318,7 +330,7 @@ class SKKLController extends Controller
             }
 
             // PHPWord
-            $templateProcessor = new TemplateProcessor('template_skkl.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_skkl.docx'));
             $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
             $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
             $templateProcessor->setValue('project_title', $project->project_title);
@@ -344,9 +356,9 @@ class SKKLController extends Controller
 
             $update_date_skkl = $project->updated_at->locale('id')->isoFormat('D MMMM Y');
         }
- 
 
-        return [ 
+
+        return [
                 [
                     'name' => 'Persetujuan Lingkungan SKKL',
                     // 'file' => $skkl_download_name,
@@ -390,7 +402,7 @@ class SKKLController extends Controller
         }
 
         // PHPWord
-        $templateProcessor = new TemplateProcessor('template_pkplh.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_pkplh.docx'));
         $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
         $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
         $templateProcessor->setValue('project_title', $project->project_title);
@@ -414,7 +426,7 @@ class SKKLController extends Controller
 
         $uklDate = '';
         $ukl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
-            $q->where('id_project', $idProject); 
+            $q->where('id_project', $idProject);
          })->orderBy('updated_at', 'desc')->first();
          if($ukl) {
              $uklDate = $ukl->updated_at;
@@ -422,7 +434,7 @@ class SKKLController extends Controller
 
         $uplDate = '';
         $upl = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($idProject) {
-            $q->where('id_project', $idProject); 
+            $q->where('id_project', $idProject);
          })->orderBy('updated_at', 'desc')->first();
          if($upl) {
             $uplDate = $upl->updated_at;
@@ -442,9 +454,9 @@ class SKKLController extends Controller
         //     $project->workflow_apply('publish-uklupl-pkplh');
         //     $project->save();
         // }
- 
 
-        return [ 
+
+        return [
                 [
                     'name' => 'PKPLH',
                     // 'file' => Storage::url('pkplh/' . $save_file_name),
@@ -504,7 +516,7 @@ class SKKLController extends Controller
                             }
                         }
                     }
-                }                
+                }
                 if (count($idIzinList) == 0) {
                     $dataIzin = $this->getDataIzinFromInqueryNIB($jsonContent['nib'], $subProject->id_proyek, $type);
                     if ($dataIzin != null) {
@@ -571,7 +583,7 @@ class SKKLController extends Controller
                 }
             }
         }
-        
+
         return [
             'file_url' => $fileUrl,
             'user_key' => env('OSS_USER_KEY'),
@@ -586,6 +598,6 @@ class SKKLController extends Controller
         header('Content-Type: application/pdf');
         $headers = $response->getHeaders();
         header('Content-Disposition: ' . $headers['Content-Disposition'][0]);
-        return $response->getBody();           
+        return $response->getBody();
     }
 }

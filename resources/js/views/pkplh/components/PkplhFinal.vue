@@ -9,14 +9,14 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="Nomor Persetujuan Lingkungan" prop="number">
-            <el-input v-model="postForm.number" :disabled="disableEdit" />
+            <el-input v-model="postForm.number" :disabled="disableEdit || postForm.number != null " />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item label="Judul/Perihal Persetujuan Lingkungan" prop="title">
-            <el-input v-model="postForm.title" :disabled="disableEdit" />
+            <el-input v-model="postForm.title" :disabled="disableEdit || postForm.title != null " />
           </el-form-item>
         </el-col>
       </el-row>
@@ -29,7 +29,7 @@
               format="dd/MM/yyyy"
               value-format="yyyy-MM-dd"
               placeholder="dd/mm/yyyy"
-              :disabled="disableEdit"
+              :disabled="disableEdit || postForm.date_published != null "
             />
           </el-form-item>
         </el-col>
@@ -46,7 +46,7 @@
               :file-list="fileList"
               style="display: inline;"
             >
-              <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
+              <el-button :loading="loadingUpload" :disabled="fileList != null " type="warning" size="mini">Upload</el-button>
             </el-upload>
             <div v-if="disableEdit" style="color: red;">
               <i>*Hanya penguji yang dapat mengunggah dokumen</i>
@@ -78,9 +78,9 @@
       </el-row>
     </el-form>
     <div v-if="!disableEdit" slot="footer" class="dialog-footer">
-      <el-button :loading="loadingSubmit" type="primary" @click="handleSubmit()"> Submit </el-button>
+      <el-button :loading="loadingSubmit" :disabled="postForm.number != null || postForm.title != null || postForm.date_published != null || fileList != null" type="primary" @click="handleSubmit()"> Submit </el-button>
     </div>
-    <el-row v-if="!isPemerintah" style="margin-top: 20px;">
+    <!-- <el-row v-if="!isPemerintah" style="margin-top: 20px;">
       <el-col :span="24">
         <span style="margin-right: 10px;"><h4>Unduh PKPLH Final Dari OSS</h4></span>
         <el-button
@@ -92,7 +92,7 @@
           Unduh
         </el-button>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 

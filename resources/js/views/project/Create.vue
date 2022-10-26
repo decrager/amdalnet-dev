@@ -24,7 +24,14 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 10MB, Opsional)" prop="fileKtr">
+                <el-form-item label="* Upload Dokumen Kesesuaian Tata Ruang (Max 10MB)" prop="fileKtr">
+                  <span slot="label"><span>* Upload Dokumen Kesesuaian Tata Ruang (Max 10MB)
+                    <el-tooltip class="item" effect="dark" placement="top">
+                      <template #content>Dokumen yang diupload dapat berupa :<br>&nbsp;&nbsp;1. Persetujuan Kesesuaian Kegiatan Pemanfaatan Ruang (PKKPR) yang diterbitkan OSS atau<br>&nbsp;&nbsp;2. Rekomendasi Kesesuaian Tata Ruang yang diterbitkan oleh Kementerian ATR/BPN atau<br>&nbsp;&nbsp;3. Pernyataan Mandiri Kesesuaian Tata Ruang (untuk jenis Usaha Mikro Kecil / UMK).<br><br>Catatan: Dokumen yang diupload masih bisa diperbarui pada tahap penyusunan Formulir KA, ANDAL atau UKL-UPL<br></template>
+                      <i class="el-alert__icon el-icon-warning" />
+                    </el-tooltip>
+                  </span>
+                  </span>
                   <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -33,8 +40,8 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Deskripsi Kegiatan" prop="description">
-                    <span slot="label">
-                      <span>Deskripsi Kegiatan <el-tooltip class="item" effect="dark" content="Deskripsi rencana usaha/kegiatan yang akan dilakukan mencakup kegiatan utama yang akan dilakukan dan sarana serta prasarana kegiatan pendukung yang akan dibangun. kegiatan utama yang akan dilakukan bisa saja lebih dari 1 jenis kegiatan dan begitu pula dengan kegiatan pendukungnya. Jelaskan pula keterkaitan lokasi rencana usaha dan/atau kegiatan dan kesesuaiannya dengan rencana tata ruang wilayah" placement="top">
+                    <span slot="label"><span>Deskripsi Kegiatan
+                      <el-tooltip class="item" effect="dark" content="Deskripsi rencana usaha/kegiatan yang akan dilakukan mencakup kegiatan utama yang akan dilakukan dan sarana serta prasarana kegiatan pendukung yang akan dibangun. kegiatan utama yang akan dilakukan bisa saja lebih dari 1 jenis kegiatan dan begitu pula dengan kegiatan pendukungnya. Jelaskan pula keterkaitan lokasi rencana usaha dan/atau kegiatan dan kesesuaiannya dengan rencana tata ruang wilayah" placement="top">
                         <i class="el-alert__icon el-icon-warning" />
                       </el-tooltip></span>
                     </span>
@@ -87,9 +94,13 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="fileMap">
                     <div slot="label">
-                      <span>* Upload SHP Peta Tapak Proyek (File .zip max 10 MB)</span>
-                      <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" title="Download Sample SHP" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
-                      <a href="/amdalnet-juknis-penyiapan-peta.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
+                      <span>* Upload SHP Peta Tapak Proyek (File-File SHP yang sudah di-zip,max 10 MB) <el-tooltip class="item" effect="dark" content="File SHP yang diupload dalam Zip hanya terbatas 1 layer saja yang bisa dibaca sistem. Jika terdapat beberapa polygon tapak proyek, silakan masukkan dalam 1 layer SHP Peta Tapak Proyek" placement="top">
+                        <i class="el-alert__icon el-icon-warning" />
+                      </el-tooltip></span>
+                      <div>
+                        <a href="/sample_map/template_shp_tapak_proyek_amdalnet.zip" class="download__sample" title="Download Sample SHP" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+                        <a href="/JUKNIS-DATA-SPASIAL-AMDALNET-PEMRAKARSA-TAPAK-PROYEK.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
+                      </div>
                     </div>
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
                   </el-form-item>
@@ -487,10 +498,19 @@
             :model="currentProject"
             :rules="statusKegiatanRules"
             label-position="top"
-            label-width="200px"
+            label-width="100%"
             style="max-width: 100%"
           >
             <el-row>
+              <el-col :span="12" style="width: 100%;">
+                <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
+                  <div class="el-alert__content">
+                    <p class="el-alert__description">
+                      Untuk pengajuan persetujuan yang sudah berjalan, saat ini masih dalam tahap pengembangan.
+                    </p>
+                  </div>
+                </div>
+              </el-col>
               <el-col :span="12">
                 <el-form-item
                   label="Rencana Kegiatan Baru atau Kegiatan Yang Sudah Berjalan"
@@ -508,6 +528,7 @@
                       :key="item.value.id"
                       :label="item.label"
                       :value="item.value"
+                      :disabled="item.disabled"
                     />
                   </el-select>
                 </el-form-item>
@@ -534,6 +555,15 @@
             style="max-width: 100%"
           >
             <el-row>
+              <el-col :span="12" style="width: 100%;">
+                <div role="alert" class="el-alert el-alert--error is-dark" style="margin-top: 10px">
+                  <div class="el-alert__content">
+                    <p class="el-alert__description">
+                      Untuk pengajuan persetujuan kegiatan pengembangan, saat ini masih dalam tahap pengembangan.
+                    </p>
+                  </div>
+                </div>
+              </el-col>
               <el-col :span="12">
                 <el-form-item
                   label="Kegiatan Baru atau Bagian dari Kegiatan Sebelumnya?"
@@ -551,6 +581,7 @@
                       :key="item.value.id"
                       :label="item.label"
                       :value="item.value"
+                      :disabled="item.disabled"
                     />
                   </el-select>
                 </el-form-item>
@@ -822,6 +853,7 @@ import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
 import Print from '@arcgis/core/widgets/Print';
 import editor from '@/components/Tinymce';
 // import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
 
 export default {
   name: 'CreateProject',
@@ -855,12 +887,12 @@ export default {
       callback();
     };
 
-    // var validateKtr = (rule, value, callback) => {
-    //   if (!this.currentProject.fileKtr){
-    //     callback(new Error('File KTR Belum Diunggah'));
-    //   }
-    //   callback();
-    // };
+    var validateKtr = (rule, value, callback) => {
+      if (!this.currentProject.fileKtr){
+        callback(new Error('File KTR Belum Diunggah'));
+      }
+      callback();
+    };
 
     // var validatePippib = (rule, value, callback) => {
     //   if (!this.currentProject.filepippib){
@@ -1013,20 +1045,24 @@ export default {
       ],
       statusOptions: [
         {
+          disabled: false,
           value: 'Rencana',
           label: 'Rencana',
         },
         {
+          disabled: true,
           value: 'Berjalan',
           label: 'Berjalan',
         },
       ],
       projectTypeOptions: [
         {
+          disabled: false,
           value: 'Baru',
           label: 'Baru',
         },
         {
+          disabled: true,
           value: 'Pengembangan',
           label: 'Pengembangan',
         },
@@ -1099,9 +1135,9 @@ export default {
         description: [
           { required: true, trigger: 'blur', message: 'Data Deskripsi Kegiatan Belum Diisi' },
         ],
-        // fileKtr: [
-        //   { validator: validateKtr, trigger: 'change' },
-        // ],
+        fileKtr: [
+          { validator: validateKtr, trigger: 'change' },
+        ],
         // filepippib: [
         //   { validator: validatePippib, trigger: 'change' },
         // ],
@@ -2243,6 +2279,35 @@ export default {
       const fr = new FileReader();
       fr.onload = (event) => {
         const base = event.target.result;
+        const zip = new JSZip();
+
+        zip.loadAsync(base).then(function(zip) {
+          let count = 0;
+          zip.forEach((item) => {
+            if (item.includes('.shp')) {
+              count++;
+            }
+          });
+          if (count > 1) {
+            document.getElementById('fileMap').value = '';
+            this.fileMapName = 'No File Selected';
+            this.fileMap = null;
+            this.isMapUploaded = false;
+            return this.$alert('File SHP yang di upload lebih dari 1', {
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
+          }
+        });
+
         shp(base).then((datas) => {
           const mapSampleProperties = [
             'PEMRAKARSA',
@@ -2274,8 +2339,19 @@ export default {
           if (datas.features[0].geometry.type !== 'Polygon') {
             document.getElementById('fileMap').value = '';
             this.fileMapName = 'No File Selected';
+            this.fileMap = null;
+            this.isMapUploaded = false;
             return this.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
-              confirmButtonText: 'Confirm',
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
             });
           }
 
@@ -2287,8 +2363,10 @@ export default {
           if (!checkShapefile) {
             document.getElementById('fileMap').value = '';
             this.fileMapName = 'No File Selected';
+            this.fileMap = null;
+            this.isMapUploaded = false;
             return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
-              confirmButtonText: 'Confirm',
+              confirmButtonText: 'Download Sample',
               callback: action => {
                 this.$notify({
                   type: 'warning',
@@ -2334,6 +2412,23 @@ export default {
             await mapView.goTo({
               target: geojsonLayer.fullExtent,
             });
+          });
+        }).catch((result) => {
+          document.getElementById('fileMap').value = '';
+          this.fileMapName = 'No File Selected';
+          this.fileMap = null;
+          this.isMapUploaded = false;
+          return this.$alert('File yang anda upload tidak terdapat file .shp', 'Format Salah', {
+            confirmButtonText: 'Download Sample',
+            callback: action => {
+              this.$notify({
+                type: 'warning',
+                title: 'Perhatian!',
+                message: 'Download Sample Peta Yang Telah Disediakan!!',
+                duration: 5000,
+              });
+              window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+            },
           });
         });
       };

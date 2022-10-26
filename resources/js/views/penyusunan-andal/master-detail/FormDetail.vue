@@ -3,15 +3,15 @@
     <el-col :md="12" :sm="24">
       <div class="form-group">
         <label>Tahap</label>
-        <el-input v-model="andal.stage" :readonly="true" />
+        <el-input v-model="andal.stage" :disabled="isReadOnly" :readonly="true" />
       </div>
       <div class="form-group">
         <label>Dampak Penting Hipotetik</label>
-        <el-input v-model="andal.name" :readonly="true" />
+        <el-input v-model="andal.name" :disabled="isReadOnly" :readonly="true" />
       </div>
       <div class="form-group">
         <label>Komponen Rona Awal Lingkungan</label>
-        <el-input v-model="andal.ronaAwal" :readonly="true" />
+        <el-input v-model="andal.ronaAwal" :disabled="isReadOnly" :readonly="true" />
       </div>
       <!-- <div class="form-group">
         <label>Besaran Dampak</label>
@@ -21,19 +21,24 @@
         <label>Perubahan Kondisi Dengan dan Tanpa Rencana Kegiatan</label>
         <div class="wrapper-form">
           <div class="form-group">
-            <label>1. Kondisi Saat Studi Dilakukan</label>
-            <Tinymce
-              v-if="isFormulator"
-              v-model="andal.studies_condition"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :toolbar="[
-                'bold italic underline bullist numlist  preview undo redo fullscreen',
-              ]"
-              :height="50"
-            />
-            <div v-else v-html="andal.studies_condition" />
+            <label>1. Kondisi Saat Studi Dilakukan</label>]
+            <div v-if="isReadOnly">
+              <span v-html="andal.studies_condition" />
+            </div>
+            <div v-else>
+              <Tinymce
+                v-if="isFormulator"
+                v-model="andal.studies_condition"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div v-else v-html="andal.studies_condition" />
+            </div>
             <small v-if="errors.studies_condition" style="color: #f56c6c">
               Kondisi Wajib Diisi
             </small>
@@ -42,18 +47,23 @@
             <label>
               2.A. Perkembangan Kondisi TANPA Adanya Rencana Kegiatan
             </label>
-            <Tinymce
-              v-if="isFormulator"
-              v-model="andal.condition_dev_no_plan"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :toolbar="[
-                'bold italic underline bullist numlist  preview undo redo fullscreen',
-              ]"
-              :height="50"
-            />
-            <div v-else v-html="andal.condition_dev_no_plan" />
+            <div v-if="isReadOnly">
+              <span v-html="andal.condition_dev_no_plan" />
+            </div>
+            <div v-else>
+              <Tinymce
+                v-if="isFormulator"
+                v-model="andal.condition_dev_no_plan"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div v-else v-html="andal.condition_dev_no_plan" />
+            </div>
             <small v-if="errors.condition_dev_no_plan" style="color: #f56c6c">
               Kondisi Wajib Diisi
             </small>
@@ -62,36 +72,46 @@
             <label>
               B. Perkembangan Kondisi DENGAN Adanya Rencana Kegiatan
             </label>
-            <Tinymce
-              v-if="isFormulator"
-              v-model="andal.condition_dev_with_plan"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :toolbar="[
-                'bold italic underline bullist numlist  preview undo redo fullscreen',
-              ]"
-              :height="50"
-            />
-            <div v-else v-html="andal.condition_dev_with_plan" />
+            <div v-if="isReadOnly">
+              <span v-html="andal.condition_dev_with_plan" />
+            </div>
+            <div v-else>
+              <Tinymce
+                v-if="isFormulator"
+                v-model="andal.condition_dev_with_plan"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div v-else v-html="andal.condition_dev_with_plan" />
+            </div>
             <small v-if="errors.condition_dev_with_plan" style="color: #f56c6c">
               Kondisi Wajib Diisi
             </small>
           </div>
           <div class="form-group">
             <label> 3. Selisih Besaran Dampak</label>
-            <Tinymce
-              v-if="isFormulator"
-              v-model="andal.impact_size_difference"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :toolbar="[
-                'bold italic underline bullist numlist  preview undo redo fullscreen',
-              ]"
-              :height="50"
-            />
-            <div v-else v-html="andal.impact_size_difference" />
+            <div v-if="isReadOnly">
+              <span v-html="andal.impact_size_difference" />
+            </div>
+            <div v-else>
+              <Tinymce
+                v-if="isFormulator"
+                v-model="andal.impact_size_difference"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div v-else v-html="andal.impact_size_difference" />
+            </div>
             <small v-if="errors.impact_size_difference" style="color: #f56c6c">
               Selisih Besaran Dampak Wajib Diisi
             </small>
@@ -104,7 +124,7 @@
           <el-select
             v-model="andal.impact_type"
             placeholder="Pilih Jenis Dampak"
-            :disabled="!isFormulator"
+            :disabled="!isFormulator || isReadOnly"
             :class="{ 'is-error': errors.impact_type }"
           >
             <el-option
@@ -112,6 +132,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
+              :disabled="isReadOnly"
             />
           </el-select>
           <small v-if="errors.impact_type" style="color: #f56c6c">
@@ -126,7 +147,7 @@
           <el-select
             v-model="andal.impact_eval_result"
             placeholder="Pilih Hasil Evaluasi Dampak"
-            :disabled="!isFormulator"
+            :disabled="!isFormulator || isReadOnly"
             :class="{ 'is-error': errors.impact_eval_result }"
           >
             <el-option
@@ -134,6 +155,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
+              :disabled="isReadOnly"
             />
           </el-select>
           <small v-if="errors.impact_eval_result" style="color: #f56c6c">
@@ -160,18 +182,23 @@
           </el-row>
           <el-row :gutter="24" style="display: flex; align-items: center">
             <el-col :md="16" :sm="24">
-              <Tinymce
-                v-if="isFormulator"
-                v-model="andal.important_trait[index].desc"
-                output-format="html"
-                :menubar="''"
-                :image="false"
-                :toolbar="[
-                  'bold italic underline bullist numlist  preview undo redo fullscreen',
-                ]"
-                :height="50"
-              />
-              <div v-else v-html="andal.important_trait[index].desc" />
+              <div v-if="isReadOnly">
+                <span v-html="andal.important_trait[index].desc" />
+              </div>
+              <div v-else>
+                <Tinymce
+                  v-if="isFormulator"
+                  v-model="andal.important_trait[index].desc"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :toolbar="[
+                    'bold italic underline bullist numlist  preview undo redo fullscreen',
+                  ]"
+                  :height="50"
+                />
+                <div v-else v-html="andal.important_trait[index].desc" />
+              </div>
               <small
                 v-if="importantTraitError(index, 'desc')"
                 style="color: #f56c6c"
@@ -182,32 +209,33 @@
             <el-col :md="8" :sm="24">
               <el-radio-group
                 v-model="andal.important_trait[index].important_trait"
+                :disabled="isReadOnly"
                 style="display: grid; grid-template-columns: 0.5fr 0.5fr"
               >
                 <el-radio
                   label="+P"
-                  :disabled="!isFormulator"
+                  :disabled="!isFormulator || isReadOnly"
                   :class="{ 'is-error': errors.status }"
                 >
                   +P
                 </el-radio>
                 <el-radio
                   label="-P"
-                  :disabled="!isFormulator"
+                  :disabled="!isFormulator || isReadOnly"
                   :class="{ 'is-error': errors.status }"
                 >
                   -P
                 </el-radio>
                 <el-radio
                   label="+TP"
-                  :disabled="!isFormulator"
+                  :disabled="!isFormulator || isReadOnly"
                   :class="{ 'is-error': errors.status }"
                 >
                   +TP
                 </el-radio>
                 <el-radio
                   label="-TP"
-                  :disabled="!isFormulator"
+                  :disabled="!isFormulator || isReadOnly"
                   :class="{ 'is-error': errors.status }"
                 >
                   -TP
@@ -230,8 +258,8 @@
       :sm="24"
       style="text-align: right; margin-top: 10px"
     >
-      <el-button @click="reset">Reset</el-button>
-      <el-button type="primary" :loading="loadingsubmit" @click="checkSubmit">
+      <el-button :disabled="isReadOnly" @click="!isReadOnly && reset()">Reset</el-button>
+      <el-button type="primary" :loading="loadingsubmit" :disabled="isReadOnly" @click="!isReadOnly && checkSubmit()">
         Simpan
       </el-button>
     </el-col>
@@ -246,6 +274,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Comment from '@/views/amdal/components/Comment.vue';
 import Tinymce from '@/components/Tinymce';
 
@@ -327,6 +356,34 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      const data = [
+        'amdal.andal-drafting', // sementara
+        'amdal.rklrpl-drafting', // sementara
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+      console.log({ gun: this.markingStatus });
+      return data.includes(this.markingStatus);
+    },
+
     isAndalNotEmpty() {
       if (this.andal) {
         return true;

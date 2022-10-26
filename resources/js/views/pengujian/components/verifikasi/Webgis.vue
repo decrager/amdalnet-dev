@@ -6,10 +6,14 @@
 import axios from 'axios';
 import Map from '@arcgis/core/Map';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import esriConfig from '@arcgis/core/config.js';
 import MapView from '@arcgis/core/views/MapView';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import shp from 'shpjs';
+import Expand from '@arcgis/core/widgets/Expand';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 
 export default {
   name: 'WebgisVerifikasi',
@@ -20,28 +24,76 @@ export default {
       geomProperties: {},
       mapUpload: null,
       idProject: 0,
+      urlKa: null,
     };
   },
   mounted() {
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
+    this.loadDocumentType();
     this.loadMap();
   },
   methods: {
+    async loadDocumentType() {
+      const data = this.$route.name;
+      this.urlKa = data;
+    },
     async loadMap() {
       axios.get('api/map/' + this.idProject).then((response) => {
         const map = new Map({
           basemap: 'satellite',
         });
 
+        esriConfig.request.proxyUrl = 'https://sigap.menlhk.go.id/proxy/proxy.php';
+        const penutupanLahan2020 = new MapImageLayer({
+          url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
+          sublayers: [
+            {
+              id: 0,
+              visible: true,
+            },
+          ],
+        });
+
+        const kawasanHutanB = new MapImageLayer({
+          url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+          sublayers: [
+            {
+              id: 0,
+              visible: true,
+            },
+          ],
+        });
+
+        const pippib2022Periode1 = new MapImageLayer({
+          url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_1/MapServer',
+          sublayers: [
+            {
+              id: 0,
+              visible: true,
+            },
+          ],
+        });
+
+        const sigapLayer = new GroupLayer({
+          title: 'Peta Tematik Status',
+          visible: true,
+          layers: [penutupanLahan2020, kawasanHutanB, pippib2022Periode1],
+          opacity: 0.90,
+        });
+
+        map.add(sigapLayer);
+
         const projects = response.data;
         let tapakAdded = false;
         let socialAdded = false;
         let studyAdded = false;
         let ecologyAdded = false;
+        let pemantuanAdded = false;
+        let pengelolaanAdded = false;
         for (let i = 0; i < projects.length; i++) {
           let layerTitle = '';
           let layerOutlineColor = '';
-          if (projects[i].attachment_type === 'tapak' && !tapakAdded) {
+          if (projects[i].attachment_type === 'tapak' && !tapakAdded && projects[i].step === 'ka') {
             layerTitle = 'Layer Tapak Proyek';
             layerOutlineColor = '#964B00';
             tapakAdded = true;
@@ -57,6 +109,14 @@ export default {
             layerTitle = 'Layer Batas Sosial';
             layerOutlineColor = 'blue';
             socialAdded = true;
+          } else if (projects[i].attachment_type === 'pengelolaan' && !pengelolaanAdded && this.urlKa !== 'ujiBerkasAdministrasiKA') {
+            layerTitle = 'Layer Batas Pengelolaan';
+            layerOutlineColor = 'purple';
+            pengelolaanAdded = true;
+          } else if (projects[i].attachment_type === 'pemantauan' && !pemantuanAdded && this.urlKa !== 'ujiBerkasAdministrasiKA') {
+            layerTitle = 'Layer Batas Pemantuan';
+            layerOutlineColor = 'yellow';
+            pemantuanAdded = true;
           }
           if (layerTitle !== '') {
             axios({
@@ -98,6 +158,7 @@ export default {
             });
           }
         }
+
         const mapView = new MapView({
           container: 'mapView',
           map: map,
@@ -126,8 +187,22 @@ export default {
           container: document.createElement('div'),
         });
 
-        mapView.ui.add(layerList, 'top-right');
-        mapView.ui.add(legend, 'bottom-left');
+        const layerListExpand = new Expand({
+          expandIconClass: 'esri-icon-layer-list',
+          expandTooltip: 'Layer List',
+          view: mapView,
+          content: layerList,
+        });
+
+        const legendExpand = new Expand({
+          expandIconClass: 'esri-icon-basemap',
+          expandTooltip: 'Legend Layer',
+          view: mapView,
+          content: legend,
+        });
+
+        mapView.ui.add(layerListExpand, 'top-right');
+        mapView.ui.add(legendExpand, 'top-right');
       });
     },
     defineActions(event) {

@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'MetodeStudiTable',
@@ -71,6 +72,14 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+    },
+
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
     },

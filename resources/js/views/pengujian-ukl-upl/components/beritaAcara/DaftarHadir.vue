@@ -283,7 +283,7 @@ export default {
       this.$emit('deleteinvitation', { idx, id });
     },
     checkHandleUploadChange(file, fileList) {
-      if (file.raw.size > 1048576) {
+      if (file.raw.size > 5242880) {
         this.showFileAlert();
         return;
       } else {
@@ -323,7 +323,7 @@ export default {
       window.open(url, '_blank').focus();
     },
     showFileAlert() {
-      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+      this.$alert('Ukuran file tidak boleh lebih dari 5 MB', '', {
         center: true,
       });
     },

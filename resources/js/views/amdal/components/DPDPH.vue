@@ -23,33 +23,68 @@
       > Refresh data
       </el-button>
     </div>
-    <dampak-hipotetik-master-table
-      :impacts="impacts"
-      :id-project="id_project"
-      :change-types="changeTypes"
-      :stages="stages"
-      :components="components"
-      :sub-projects="subProjects"
-      :hues="hues"
-      :pie-params="pieParams"
-      :total-changes="totalChanges"
-      :loading="isLoading"
-      :mode="mode"
-      @dataSelected="onDataSelected"
-      @saveChanges="saveChanges"
-    />
-    <dampak-hipotetik-detail-form
-      :data="selectedData"
-      :change-types="changeTypes"
-      :pie-params="pieParams"
-      :master="activities"
-      :mode="mode"
-      @hasChanges="hasChanges"
-      @saveData="onSaveData"
-    />
+    <div v-if="isReadOnly">
+      <dampak-hipotetik-master-table
+        :impacts="impacts"
+        :id-project="id_project"
+        :change-types="changeTypes"
+        :stages="stages"
+        :components="components"
+        :sub-projects="subProjects"
+        :hues="hues"
+        :pie-params="pieParams"
+        :total-changes="totalChanges"
+        :loading="isLoading"
+        :mode="mode"
+        :disabled="isReadOnly"
+        @dataSelected="!isReadOnly && onDataSelected"
+        @saveChanges="!isReadOnly && saveChanges"
+      />
+    </div>
+    <div v-else>
+      <dampak-hipotetik-master-table
+        :impacts="impacts"
+        :id-project="id_project"
+        :change-types="changeTypes"
+        :stages="stages"
+        :components="components"
+        :sub-projects="subProjects"
+        :hues="hues"
+        :pie-params="pieParams"
+        :total-changes="totalChanges"
+        :loading="isLoading"
+        :mode="mode"
+        @dataSelected="onDataSelected"
+        @saveChanges="saveChanges"
+      />
+    </div>
+    <div v-if="isReadOnly">
+      <dampak-hipotetik-detail-form
+        :data="selectedData"
+        :change-types="changeTypes"
+        :pie-params="pieParams"
+        :master="activities"
+        :mode="mode"
+        :disabled="isReadOnly"
+        @hasChanges="!isReadOnly && hasChanges"
+        @saveData="!isReadOnly && onSaveData"
+      />
+    </div>
+    <div v-else>
+      <dampak-hipotetik-detail-form
+        :data="selectedData"
+        :change-types="changeTypes"
+        :pie-params="pieParams"
+        :master="activities"
+        :mode="mode"
+        @hasChanges="hasChanges"
+        @saveData="onSaveData"
+      />
+    </div>
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import DampakHipotetikMasterTable from './tables/DPHMasterTable.vue';
 import DampakHipotetikDetailForm from './forms/DPHDetailForm.vue';
 
@@ -86,6 +121,60 @@ export default {
       activities: [],
       hues: [],
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+
+      return data.includes(this.markingStatus);
+    },
   },
   mounted(){
     this.id_project = parseInt(this.$route.params && this.$route.params.id);

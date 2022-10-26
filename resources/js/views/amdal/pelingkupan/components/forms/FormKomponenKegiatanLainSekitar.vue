@@ -104,21 +104,27 @@
             </el-form-item>
           </div>
           <el-form-item label="Deskripsi" prop="description">
-            <klseditor
-              :key="'master_kegiatan_lain_scoping_113'"
-              v-model="data.description"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :height="100"
-              :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-              style="width:100%"
-            />
+            <div v-if="isReadOnly">
+              <span v-html="master_kegiatan_lain_scoping_113" />
+            </div>
+            <div v-else>
+              <klseditor
+                :key="'master_kegiatan_lain_scoping_113'"
+                v-model="data.description"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :height="100"
+                :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                style="width:100%"
+              />
+            </div>
           </el-form-item>
           <el-form-item label="Besaran" prop="measurement">
             <el-input
               v-model="data.measurement"
               type="textarea"
+              :disabled="isReadOnly"
               :autosize="{ minRows: 3, maxRows: 5}"
             />
           </el-form-item>
@@ -126,12 +132,13 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave() || isReadOnly" @click="!isReadOnly && handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import KLSEditor from '@/components/Tinymce';
 import Resource from '@/api/resource';
 const klsResource = new Resource('kegiatan-lain-sekitar');
@@ -174,6 +181,59 @@ export default {
       districts: [],
       master: [],
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+
+      return data.includes(this.markingStatus);
+    },
   },
   mounted(){
     this.initData();
@@ -307,3 +367,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+  ::v-deep p {
+  text-align: left !important;
+}
+</style>

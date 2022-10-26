@@ -104,7 +104,7 @@ class TestVerifRKLRPLController extends Controller
         } else {
             $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
         }
-        
+
         $verification->notes = $data['notes'];
 
         if($request->complete) {
@@ -338,7 +338,7 @@ class TestVerifRKLRPLController extends Controller
         }
 
         // PETA TITIK
-        $peta_titik = [ 
+        $peta_titik = [
             [
                 'name' => 'Peta Titik Pengelolaan',
                 'link' => $peta_titik_pengelolaan,
@@ -350,7 +350,7 @@ class TestVerifRKLRPLController extends Controller
                 'pdf' => $peta_titik_pemantauan_pdf
             ],
         ];
-        
+
         $announcement = Announcement::where('project_id', $id_project)->first();
 
         // LPJP
@@ -382,10 +382,10 @@ class TestVerifRKLRPLController extends Controller
 
         // Andal Pertek
         $pertek = AndalAttachment::where([['id_project', $project->id],['is_pertek', true]])->get();
-        
+
         // Verification Form Disable
         $is_disabled = false;
-        
+
         $form = [];
 
         // Dokumen Persetujuan Teknis
@@ -394,7 +394,7 @@ class TestVerifRKLRPLController extends Controller
         if($env_manage_docs) {
             $dokumen_pertek = $env_manage_docs->filepath;
         }
-        
+
         if($verification) {
             // Verification Form Disable
             if($verification->is_complete !== null) {
@@ -411,7 +411,7 @@ class TestVerifRKLRPLController extends Controller
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
-                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' ? 'download' : 'non-download';
+                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'hasil_penapisan' || $f->name == 'dokumen_sppl_oss' || $f->name == 'pippib' ? 'download' : 'non-download';
                         $link = null;
                         if($f->name == 'tata_ruang') {
                             $link = $project->ktr;
@@ -421,9 +421,9 @@ class TestVerifRKLRPLController extends Controller
                             $link = $project->pre_agreement_file;
                         } else if($f->name == 'peta') {
                             $link = $this->petaLink(
-                                $peta_tapak, 
-                                $peta_sosial, 
-                                $peta_ekologis, 
+                                $peta_tapak,
+                                $peta_sosial,
+                                $peta_ekologis,
                                 $peta_wilayah_studi,
                                 $peta_titik_pemantauan,
                                 $peta_titik_pengelolaan,
@@ -436,6 +436,16 @@ class TestVerifRKLRPLController extends Controller
                                 $project->required_doc);
                         } else if($f->name == 'peta_titik') {
                             $link = $peta_titik;
+                        } else if($f->name == 'dokumen_sppl_oss') {
+                            $link = $project->oss_sppl_doc;
+                        } else if($f->name == 'hasil_penapisan') {
+                            $link = $project->oss_required_doc;
+                        }
+
+                        if($project->required_doc == 'UKL-UPL') {
+                            if (in_array($f->name, ['surat_penyusun', 'sertifikasi_penyusun', 'cv_penyusun', 'konsul_publik'])) {
+                                continue;
+                            }
                         }
 
                         $form[] = [
@@ -473,23 +483,11 @@ class TestVerifRKLRPLController extends Controller
                     'type' => 'download'
                   ],
                   [
-                    'name' => 'surat_penyusun',
-                    'suitability' => null,
-                    'description' => null,
-                    'type' => 'non-download'
-                  ],
-                  [
-                    'name' => 'sertifikasi_penyusun',
-                    'suitability' => null,
-                    'description' => null,
-                    'type' => 'non-download'
-                  ],
-                  [
                     'name' => 'peta',
                     'link' => $this->petaLink(
-                        $peta_tapak, 
-                        $peta_sosial, 
-                        $peta_ekologis, 
+                        $peta_tapak,
+                        $peta_sosial,
+                        $peta_ekologis,
                         $peta_wilayah_studi,
                         $peta_titik_pemantauan,
                         $peta_titik_pengelolaan,
@@ -505,18 +503,6 @@ class TestVerifRKLRPLController extends Controller
                     'type' => 'non-download'
                   ],
                   [
-                    'name' => 'konsul_publik',
-                    'suitability' => null,
-                    'description' => null,
-                    'type' => 'non-download'
-                  ],
-                  [
-                    'name' => 'cv_penyusun',
-                    'suitability' => null,
-                    'description' => null,
-                    'type' => 'non-download'
-                  ],
-                  [
                     'name' => 'sistematika_penyusunan',
                     'suitability' => 'Sesuai',
                     'description' => null,
@@ -525,27 +511,70 @@ class TestVerifRKLRPLController extends Controller
             ];
 
             if($project->required_doc == 'AMDAL') {
-                $form[] = [
-                    'name' => 'pertek',
-                    'suitability' => null,
-                    'description' => null,
-                    'type' => 'non-download'
+                $form = [
+                    [
+                        'name' => 'pertek',
+                        'suitability' => null,
+                        'description' => null,
+                        'type' => 'non-download'
+                    ],
+                    [
+                        'name' => 'peta_titik',
+                        'link' => $peta_titik,
+                        'suitability' => null,
+                        'description' => null,
+                        'type' => 'non-download'
+                    ],
+                    [
+                        'name' => 'konsul_publik',
+                        'suitability' => null,
+                        'description' => null,
+                        'type' => 'non-download'
+                    ],
+                    [
+                        'name' => 'cv_penyusun',
+                        'suitability' => null,
+                        'description' => null,
+                        'type' => 'non-download'
+                    ],
+                    [
+                        'name' => 'surat_penyusun',
+                        'suitability' => null,
+                        'description' => null,
+                        'type' => 'non-download'
+                    ],
+                    [
+                        'name' => 'sertifikasi_penyusun',
+                        'suitability' => null,
+                        'description' => null,
+                        'type' => 'non-download'
+                    ],
                 ];
-                
-                $form[] =  [
-                  'name' => 'peta_titik',
-                  'link' => $peta_titik,
-                  'suitability' => null,
-                  'description' => null,
-                  'type' => 'non-download'
-                ];
-            } else if($project->required_doc == 'UKL-UPL') {
+            }
+
+            if($project->required_doc == 'UKL-UPL') {
+                if($project->initiator->nib_doc_oss) {
+                    $form[] = [
+                            'name' => 'dokumen_sppl_oss',
+                            'link' => $project->oss_sppl_doc,
+                            'suitability' => null,
+                            'description' => null,
+                            'type' => 'download'
+                    ];
+                    $form[] = [
+                            'name' => 'hasil_penapisan',
+                            'link' => $project->oss_required_doc,
+                            'suitability' => null,
+                            'description' => null,
+                            'type' => 'download'
+                    ];
+                }
                 $form[] = [
-                    'name' => 'pertek',
-                    'link' => $dokumen_pertek,
-                    'suitability' => null,
-                    'description' => null,
-                    'type' => 'download'
+                        'name' => 'pertek',
+                        'link' => $dokumen_pertek,
+                        'suitability' => null,
+                        'description' => null,
+                        'type' => 'download'
                 ];
             }
         }
@@ -572,9 +601,9 @@ class TestVerifRKLRPLController extends Controller
     }
 
     private function petaLink(
-        $peta_tapak, 
-        $peta_sosial, 
-        $peta_ekologis, 
+        $peta_tapak,
+        $peta_sosial,
+        $peta_ekologis,
         $peta_wilayah_studi,
         $peta_titik_pemantauan,
         $peta_titik_pengelolaan,
@@ -637,7 +666,7 @@ class TestVerifRKLRPLController extends Controller
 
         $project = Project::findOrFail($id_project);
         $verification = TestingVerification::where([['id_project', $id_project],['document_type', $document_type]])->first();
-        
+
         Carbon::setLocale('id');
 
         $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', $verification->updated_at)->isoFormat('D MMMM Y');
@@ -649,7 +678,7 @@ class TestVerifRKLRPLController extends Controller
             }
         }
 
-        // === TUK === // 
+        // === TUK === //
         $tuk = null;
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
@@ -675,7 +704,7 @@ class TestVerifRKLRPLController extends Controller
                 $authority_big = strtoupper($tuk->districtAuthority->name);
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $tuk_telp = $tuk->phone;
@@ -692,9 +721,9 @@ class TestVerifRKLRPLController extends Controller
         }
 
         if($authority_big == 'PUSAT') {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_no.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_no.docx'));
         } else {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_no_tuk.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_no_tuk.docx'));
             $templateProcessor->setValue('authority', $authority);
             if($tuk_logo) {
                 $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
@@ -732,7 +761,7 @@ class TestVerifRKLRPLController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+            'url' => Storage::url('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx')
         ];
     }
 

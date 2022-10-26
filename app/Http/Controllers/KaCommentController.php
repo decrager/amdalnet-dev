@@ -68,7 +68,7 @@ class KaCommentController extends Controller
                 ];
 
             }
-            
+
             return $comment_list;
         }
 
@@ -111,9 +111,9 @@ class KaCommentController extends Controller
 
             $comments[] = [
                 'id' => $c->id,
-                'id_impact_identification' => 
-                        $c->id_impact_identification ? 
-                        $c->id_impact_identification : 
+                'id_impact_identification' =>
+                        $c->id_impact_identification ?
+                        $c->id_impact_identification :
                         $c->id_impact_identification_clone,
                 'stage' => $c->id_stage ? ProjectStage::findOrFail($c->id_stage)->name : null,
                 'id_project' => $c->id_project,
@@ -180,9 +180,9 @@ class KaCommentController extends Controller
         if($request->type == 'parent-comment') {
             return [
                 'id' => $comment->id,
-                'id_impact_identification' => 
-                    $comment->id_impact_identification ? 
-                    $comment->id_impact_identification : 
+                'id_impact_identification' =>
+                    $comment->id_impact_identification ?
+                    $comment->id_impact_identification :
                     $comment->id_impact_identification_clone,
                 'created_at' => $comment->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
                 'user' => $comment->user->name,
@@ -312,10 +312,12 @@ class KaCommentController extends Controller
             $document_type = ['peta-batas-andal', 'pelingkupan-andal', 'dpdph-andal', 'metode-studi-andal', 'andal'];
         } else if($type == 'rkl-rpl') {
             $document_type = ['rkl', 'rpl'];
+        } else if($type == 'ukl-upl') {
+            $document_type = ['pelingkupan'];
         }
 
         $comments = Comment::where([['reply_to', null],['id_project', $id_project]])->whereIn('document_type', $document_type)->get();
-        
+
 
         foreach($comments as $c) {
             // stage
@@ -358,7 +360,7 @@ class KaCommentController extends Controller
 
         }
 
-        $templateProcessor = new TemplateProcessor('template_rekap_komentar.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_rekap_komentar.docx'));
         $templateProcessor->cloneRowAndSetValues('recap', $comment_list);
 
         if(count($html) > 0) {
@@ -372,7 +374,7 @@ class KaCommentController extends Controller
         $tmpName = $templateProcessor->save();
         Storage::disk('public')->put($save_file_name, file_get_contents($tmpName));
         // unlink($tmpName);
-        
+
         return response()->download($tmpName)->deleteFileAfterSend(true);
         // return redirect()->away(Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
@@ -414,8 +416,12 @@ class KaCommentController extends Controller
             case 'rpl':
                 $title = 'Matriks Rencana Pemantauan Lingkungan Hidup';
                 break;
+            case 'ukl-upl':
+                $title = 'Identifikasi Komponen Kegiatan dan Komponen Lingkungan';
+                break;
             default:
                 break;
+
         }
 
         return $title;

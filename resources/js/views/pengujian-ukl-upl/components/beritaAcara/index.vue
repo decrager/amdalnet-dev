@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
-      <WorkflowUkl />
+      <!-- <WorkflowUkl /> -->
       <div class="filter-container" align="right">
         <el-button
           :loading="loadingSubmit"
@@ -88,7 +88,7 @@ const meetingReportResource = new Resource('meet-report-rkl-rpl');
 const institutionResource = new Resource('government-institution');
 import FormBerita from '@/views/pengujian-ukl-upl/components/beritaAcara/FormBerita';
 import DaftarHadir from '@/views/pengujian-ukl-upl/components/beritaAcara/DaftarHadir';
-import WorkflowUkl from '@/components/WorkflowUkl';
+// import WorkflowUkl from '@/components/WorkflowUkl';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
@@ -99,7 +99,6 @@ export default {
   components: {
     FormBerita,
     DaftarHadir,
-    WorkflowUkl,
   },
   data() {
     return {

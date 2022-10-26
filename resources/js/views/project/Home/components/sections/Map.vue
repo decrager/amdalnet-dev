@@ -52,14 +52,12 @@ export default {
         basemap: 'satellite',
       });
 
-      // console.log('map: ', this.id);
-
       axios.get('api/map/' + this.id)
         .then(response => {
           const projects = response.data;
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].attachment_type === 'tapak') {
-              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+              shp(projects[i].file_url).then(data => {
                 const blob = new Blob([JSON.stringify(data)], {
                   type: 'application/json',
                 });

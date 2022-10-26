@@ -4,7 +4,6 @@ use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\LaravueController;
 use App\Http\Controllers\WebgisController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProjectMapAttachmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,10 +15,6 @@ use App\Http\Controllers\ProjectMapAttachmentController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::get('doc-uklupl/{id}', [ExportDocument::class, 'ExportUklUpl']);
 Route::get('berita-acara/{id}/{type}', [ExportDocument::class, 'ExportBA']);

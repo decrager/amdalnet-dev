@@ -14,7 +14,7 @@
     </div>
     <el-row :gutter="32">
       <el-col :sm="24" :md="12">
-        <h4 align="center">FORMULIR KELENGKAPAN ADMINISTRASI</h4>
+        <h4 align="center">FORMULIR KELENGKAPAN ADMINISTRASI UKL UPL</h4>
         <el-table
           v-loading="loadingverification"
           :data="verifications.ka_forms"
@@ -313,9 +313,12 @@ export default {
           'Bukti pengumuman di media massa dan konsultasi publik yang telah dilakukan beserta penunjukkan wakil masyarakat yang akan dilibatkan dalam rapat komisi',
         cv_penyusun: 'CV Penyusun UKL UPL',
         sistematika_penyusunan:
-          'Sistematika penyusunan dokumen sesuai dengan PP 22/2021',
+          'Sistematika penyusunan formulir sesuai dengan PP 22/2021',
         pertek: 'Persetujuan Teknis',
         peta_titik: 'Penambahan Peta Titik Pengelolaan dan Titik Pemantauan',
+        dokumen_sppl_oss: 'Dokumen SPPL dari oss',
+        hasil_penapisan:
+          'Hasil Penapisan OSS Rencana Usaha dan/atau Kegiatan di OSS',
       },
     };
   },

@@ -44,6 +44,9 @@
               <li>
                 <a href="#" @click="handleSetMenu('SOP')">SOP Pengelolaan dan Pemantauan Lingkungan</a>
               </li>
+              <li>
+                <a href="#" @click="handleSetMenu('CLUSTER')">Daftar Cluster KBLI UKL UPL Menengah Rendah</a>
+              </li>
             </ul>
           </li>
           <li class="nav__item" style="margin-top:1.2rem">
@@ -67,13 +70,17 @@
               <li>
                 <a href="#" @click="handleSetMenu('LPJP')">Daftar LPJP</a>
               </li>
+              <li>
+                <a href="https://amdal.menlhk.go.id/info_persuratan" target="_blank">Informasi Persuratan</a>
+              </li>
             </ul>
           </li>
           <li class="nav__item">
             <a href="#" class="nav__link" :class="{'active-link':(activeMenu === 'Kebijakan')}" @click="handleSetMenu('KEBIJAKAN')">Kebijakan</a>
           </li>
           <li class="nav__item">
-            <a href="#about" class="nav__link" :class="{'active-link':(activeMenu === 'Tentang')}" @click="handleSetMenu('TENTANG')">Tentang Kami</a>
+            <!-- <a href="#about" class="nav__link" :class="{'active-link':(activeMenu === 'Tentang')}" @click="handleSetMenu('TENTANG')">Tentang Kami</a> -->
+            <a href="" class="nav__link" :class="{'active-link':(activeMenu === '')}">Tentang Kami</a>
           </li>
           <li class="nav__item">
             <router-link to="login" class="btn__link login_link">Masuk</router-link>
@@ -148,7 +155,7 @@ export default {
       if (e === 'MATERI'){
         this.activeMenu = 'Materi';
       }
-      if (e === 'FORMULIR' || e === 'UKL_UPL_M' || e === 'UKL_UPL_S' || e === 'SOP'){
+      if (e === 'FORMULIR' || e === 'UKL_UPL_M' || e === 'UKL_UPL_S' || e === 'SOP' || e === 'CLUSTER'){
         this.isActiveFormulir = !this.isActiveFormulir;
         this.activeMenu = 'Formulir';
       }
@@ -160,7 +167,8 @@ export default {
         this.activeMenu = 'Kebijakan';
       }
       if (e === 'TENTANG'){
-        this.activeMenu = 'Tentang';
+        alert('Sedang dalam pengembangan');
+        // this.activeMenu = 'Tentang';
       }
       if (e === 'IZIN' || e === 'TEMPLATE'){
         this.isActiveDaftar = false;

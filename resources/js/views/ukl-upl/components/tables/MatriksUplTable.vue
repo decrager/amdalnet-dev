@@ -6,7 +6,8 @@
       size="small"
       icon="el-icon-check"
       style="margin-bottom: 10px;"
-      @click="handleSaveForm"
+      :disabled="isReadOnly"
+      @click="!isReadOnly && handleSaveForm()"
     >
       Simpan Perubahan
     </el-button>
@@ -57,7 +58,8 @@
                     type="default"
                     size="medium"
                     :style="formButtonStyle(form)"
-                    @click="handleViewPlans(scope.row, form)"
+                    :disabled="isReadOnly"
+                    @click="!isReadOnly && handleViewPlans(scope.row, form)"
                   >
                     <el-button
                       v-if="isFormulator"
@@ -66,7 +68,8 @@
                       icon="el-icon-close"
                       style="margin-left: 0px; margin-right: 10px;"
                       class="button-action-mini"
-                      @click="handleDeleteForm(scope.$index, form.id, form.num)"
+                      :disabled="isReadOnly"
+                      @click="!isReadOnly && handleDeleteForm(scope.$index, form.id, form.num)"
                     />
                     <span>{{ trimForm(form.description) }}</span>
                     <!-- <el-button
@@ -80,8 +83,8 @@
                   </el-button>
                 </el-tooltip>
               </div>
-              <el-input v-model="scope.row.new_form" placeholder="Bentuk Pemantauan..." type="textarea" :rows="2" />
-              <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round @click="handleAddForm(scope.$index)" />
+              <el-input v-model="scope.row.new_form" :disabled="isReadOnly" placeholder="Bentuk Pemantauan..." type="textarea" :rows="2" />
+              <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round :disabled="isReadOnly" @click="!isReadOnly && handleAddForm(scope.$index)" />
               <small
                 v-if="checkError(scope.row.env_monitor_plan.errors, 'forms')"
                 style="color: #f56c6c; display: block"
@@ -103,16 +106,18 @@
                     type="default"
                     size="medium"
                     :style="formButtonStyle(location)"
-                    @click="handleViewPlans(scope.row, location)"
+                    :disabled="isReadOnly"
+                    @click="!isReadOnly && handleViewPlans(scope.row, location)"
                   >
                     <el-button
                       v-if="isFormulator"
                       type="danger"
                       size="mini"
                       icon="el-icon-close"
+                      :disabled="isReadOnly"
                       style="margin-left: 0px; margin-right: 10px;"
                       class="button-action-mini"
-                      @click="handleDeleteLocation(scope.$index, location.id, location.num)"
+                      @click="!isReadOnly && handleDeleteLocation(scope.$index, location.id, location.num)"
                     />
                     <!-- <span>{{ trimForm(form.description) }}</span> -->
                     <span>{{ trimForm(location.description) }}</span>
@@ -127,8 +132,8 @@
                   </el-button>
                 </el-tooltip>
               </div>
-              <el-input v-model="scope.row.new_location" placeholder="Lokasi..." type="textarea" :rows="2" />
-              <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round @click="handleAddLocation(scope.$index)" />
+              <el-input v-model="scope.row.new_location" :disabled="isReadOnly" placeholder="Lokasi..." type="textarea" :rows="2" />
+              <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round :disabled="isReadOnly" @click="!isReadOnly && handleAddLocation(scope.$index)" />
               <small
                 v-if="checkError(scope.row.env_monitor_plan.errors, 'locations')"
                 style="color: #f56c6c; display: block"
@@ -145,7 +150,7 @@
                 v-model="scope.row.env_monitor_plan.period_number"
                 :min="0"
                 :max="100"
-                :disabled="!isFormulator"
+                :disabled="!isFormulator || isReadOnly"
                 size="mini"
               />
               <small
@@ -158,13 +163,14 @@
               <el-select
                 v-model="scope.row.env_monitor_plan.period_description"
                 placeholder="Pilihan"
-                :disabled="!isFormulator"
+                :disabled="!isFormulator || isReadOnly"
               >
                 <el-option
                   v-for="item in periode"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
+                  :disabled="isReadOnly"
                 />
               </el-select>
               <small
@@ -180,21 +186,21 @@
       <el-table-column :key="iplhKey" label="Institusi Pemantau Lingkungan Hidup">
         <template slot-scope="scope">
           <div v-if="!scope.row.is_stage">
-            <div>Pelaksana: <el-input v-model="scope.row.env_monitor_plan.executor" /></div>
+            <div>Pelaksana: <el-input v-model="scope.row.env_monitor_plan.executor" :disabled="isReadOnly" /></div>
             <small
               v-if="checkError(scope.row.env_monitor_plan.errors, 'executor')"
               style="color: #f56c6c; display: block"
             >
               Silahkan Isi Kolom Pelaksana
             </small>
-            <div>Pengawas: <el-input v-model="scope.row.env_monitor_plan.supervisor" /></div>
+            <div>Pengawas: <el-input v-model="scope.row.env_monitor_plan.supervisor" :disabled="isReadOnly" /></div>
             <small
               v-if="checkError(scope.row.env_monitor_plan.errors, 'supervisor')"
               style="color: #f56c6c; display: block"
             >
               Silahkan Isi Kolom Pengawas
             </small>
-            <div>Penerima Laporan: <el-input v-model="scope.row.env_monitor_plan.report_recipient" /></div>
+            <div>Penerima Laporan: <el-input v-model="scope.row.env_monitor_plan.report_recipient" :disabled="isReadOnly" /></div>
             <small
               v-if="checkError(scope.row.env_monitor_plan.errors, 'report_recipient')"
               style="color: #f56c6c; display: block"
@@ -211,6 +217,7 @@
               v-model="scope.row.env_monitor_plan.description"
               type="textarea"
               :rows="4"
+              :disabled="isReadOnly"
             />
             <small
               v-if="checkError(scope.row.env_monitor_plan.errors, 'description')"
@@ -226,6 +233,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import axios from 'axios';
 const impactIdtResource = new Resource('impact-identifications');
@@ -267,6 +275,30 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+      ];
+
+      return data.includes(this.markingStatus);
+    },
+
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },

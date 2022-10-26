@@ -1,20 +1,20 @@
 <template>
   <el-form label-position="top" label-width="100px">
     <div style="margin-bottom: 10px;">
-      <a href="/sample_map/Sample_Peta_Kelola_Pantau.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+      <a href="/sample_map/template_shp_titik_kelola_pantau_amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
     </div>
     <!-- ekologis -->
     <el-form-item label="Peta Titik Pengelolaan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
+          <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
             <div v-if="petaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanSHP)"><strong>{{ petaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refPengelolaanSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
+            <input ref="refPengelolaanSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(1)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -26,7 +26,36 @@
             <div v-if="petaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanPDF)"><strong>{{ petaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
+            <input ref="refPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(2)">
+            <!-- <button type="submit">Unggah</button> -->
+          </form>
+        </fieldset>
+      </el-col>
+    </el-form-item>
+
+    <el-form-item label="Peta Lokasi Pengelolaan" :required="required">
+      <el-col :span="11" style="margin-right:1em;">
+
+        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+          <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
+            <div v-if="petaAreaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPengelolaanSHP)"><strong>{{ petaAreaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
+              <!-- &nbsp;<i class="el-icon-delete"></i>-->
+            </div>
+          </legend>
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
+            <input ref="refAreaPengelolaanSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(5)">
+            <!-- <button type="submit">Unggah</button> -->
+          </form>
+        </fieldset>
+
+      </el-col>
+      <el-col :span="11" style="margin-right:1em;">
+        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+          <legend style="margin:0 2em;">Versi PDF
+            <div v-if="petaAreaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPengelolaanPDF)"><strong>{{ petaAreaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+          </legend>
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
+            <input ref="refAreaPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(6)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -36,12 +65,12 @@
     <el-form-item label="Peta Titik Pemantauan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
+          <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
             <div v-if="petaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanSHP)"><strong>{{ petaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refPemantauanSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
+            <input ref="refPemantauanSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(3)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -55,7 +84,36 @@
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
+            <input ref="refPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(4)">
+            <!-- <button type="submit">Unggah</button> -->
+          </form>
+        </fieldset>
+      </el-col>
+    </el-form-item>
+
+    <el-form-item label="Peta Lokasi Pemantauan" :required="required">
+      <el-col :span="11" style="margin-right:1em;">
+        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+          <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
+            <div v-if="petaAreaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPemantauanSHP)"><strong>{{ petaAreaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+          </legend>
+
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
+            <input ref="refAreaPemantauanSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(7)">
+            <!-- <button type="submit">Unggah</button> -->
+          </form>
+        </fieldset>
+
+      </el-col>
+
+      <el-col :span="11" style="margin-right:1em;">
+        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+          <legend style="margin:0 2em;">Versi PDF
+            <div v-if="petaAreaPemantauanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPemantauanPDF)"><strong>{{ petaAreaPemantauanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+          </legend>
+
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
+            <input ref="refAreaPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(8)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -65,7 +123,7 @@
     <div id="mapView" class="map-wrapper" />
 
     <el-row v-if="isFormulator" style="text-align:right;">
-      <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
+      <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
     </el-row>
 
   </el-form>
@@ -84,6 +142,7 @@ import request from '@/utils/request';
 import axios from 'axios';
 
 // Map-related
+import { mapGetters } from 'vuex';
 import shp from 'shpjs';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
@@ -117,6 +176,10 @@ export default {
       idPengelolaanPDF: 0,
       idPemantauanPDF: 0,
       idPemantauanSHP: 0,
+      petaTapakPDF: '',
+      petaTapakSHP: '',
+      idTapakSHP: 0,
+      idTapakPDF: 0,
       index: 0,
       param: [],
       required: true,
@@ -130,12 +193,42 @@ export default {
       geomPantauProperties: {},
       geomKelolaStyles: null,
       geomPantauStyles: null,
+      geomAreaKelolaGeojson: {},
+      geomAreaPantauGeojson: {},
+      geomAreaKelolaProperties: {},
+      geomAreaPantauProperties: {},
+      geomAreaKelolaStyles: null,
+      geomAreaPantauStyles: null,
       mapGeojsonArrayProject: [],
       // isVisible: false,
       // visible: [false, false, false, false, false, false, false],
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+      ];
+
+      return data.includes(this.markingStatus);
+    },
+
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },
@@ -180,6 +273,38 @@ export default {
         basemap: 'satellite',
       });
 
+      axios.get(`api/map-geojson?id=${this.idProject}&type=tapak&step=ka&limit=1`)
+        .then((response) => {
+          response.data.forEach((item) => {
+            console.log({ guns: item });
+            const getType = JSON.parse(item.feature_layer);
+            const propType = getType.features[0].properties.type;
+            const propFields = getType.features[0].properties.field;
+            const propStyles = getType.features[0].properties.styles;
+            const step = getType.features[0].properties.step;
+
+            // Tapak
+            if (propType === 'tapak' && step === 'ka') {
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: urlBlob(item.feature_layer),
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Tapak Proyek',
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
+              });
+
+              mapView.on('layerview-create', async(event) => {
+                await mapView.goTo({
+                  target: geojsonLayerArray.fullExtent,
+                });
+              });
+
+              this.mapGeojsonArrayProject.push(geojsonLayerArray);
+            }
+          });
+        });
+
       axios.get(`api/map-geojson?id=${this.idProject}&step=ukl-upl`)
         .then((response) => {
           response.data.forEach((item) => {
@@ -222,6 +347,20 @@ export default {
               this.mapGeojsonArrayProject.push(geojsonLayerArray);
             }
 
+            // Area Pemantauan
+            if (propType === 'area-pemantauan') {
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: urlBlob(item.feature_layer),
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Area Pemantauan',
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
+              });
+
+              this.mapGeojsonArrayProject.push(geojsonLayerArray);
+            }
+
             // Pengelolaan
             if (propType === 'pengelolaan') {
               const geojsonLayerArray = new GeoJSONLayer({
@@ -235,205 +374,24 @@ export default {
 
               this.mapGeojsonArrayProject.push(geojsonLayerArray);
             }
+
+            // Area Pengelolaan
+            if (propType === 'area-pengelolaan') {
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: urlBlob(item.feature_layer),
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Area Pengelolaan',
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
+              });
+
+              this.mapGeojsonArrayProject.push(geojsonLayerArray);
+            }
+
             map.addMany(this.mapGeojsonArrayProject);
           });
         });
-
-      const mapView = new MapView({
-        container: 'mapView',
-        map: map,
-        center: [115.287, -1.588],
-        zoom: 5,
-      });
-      this.$parent.mapView = mapView;
-
-      const layerList = new LayerList({
-        view: mapView,
-        container: document.createElement('div'),
-        listItemCreatedFunction: this.defineActions,
-      });
-
-      layerList.on('trigger-action', (event) => {
-        const id = event.action.id;
-        if (id === 'full-extent') {
-          mapView.goTo({
-            target: event.item.layer.fullExtent,
-          });
-        }
-      });
-
-      const legend = new Legend({
-        view: mapView,
-        container: document.createElement('div'),
-      });
-
-      mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
-    },
-    async getData(){
-      this.data = [];
-      const files = await uploadMaps.list({
-        id_project: this.idProject,
-      });
-      this.data = files.data;
-      this.process(files.data);
-    },
-    process(files){
-      files.forEach((e) => {
-        switch (e.attachment_type){
-          case 'pengelolaan':
-            if (e.file_type === 'SHP') {
-              this.petaPengelolaanSHP = e.original_filename;
-              this.idPengelolaanSHP = e.id;
-            } else {
-              this.petaPengelolaanPDF = e.original_filename;
-              this.idPengelolaanPDF = e.id;
-            }
-            break;
-          case 'pemantauan':
-            if (e.file_type === 'SHP') {
-              this.petaPemantauanSHP = e.original_filename;
-              this.idPemantauanSHP = e.id;
-            } else {
-              this.petaPemantauanPDF = e.original_filename;
-              this.idPemantauanPDF = e.id;
-            }
-            break;
-        }
-      });
-    },
-    uploadMap(){
-      const map = new Map({
-        basemap: 'satellite',
-      });
-
-      //  Map Pengelolaan
-      const mapPengelolaan = this.$refs.refPengelolaanSHP.files[0];
-      const readerPengelolaan = new FileReader();
-      readerPengelolaan.onload = (event) => {
-        const base = event.target.result;
-        shp(base).then((data) => {
-          const valid = [
-            'ID',
-            'KETERANGAN',
-            'PEMRAKARSA',
-            'KEGIATAN',
-            'TAHUN',
-            'LAYER',
-            'TIPE_DOKUM',
-            'PROVINSI',
-            'KODE',
-          ];
-
-          const uploaded = Object.keys(data.features[0].properties);
-          const checker = (arr, target) => target.every(v => arr.includes(v));
-          const checkShapefile = checker(uploaded, valid);
-
-          if (!checkShapefile) {
-            alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
-            return;
-          }
-
-          this.geomKelolaGeojson = data.features[0].geometry;
-          this.geomKelolaProperties = data.features[0].properties;
-          this.geomKelolaStyles = 6;
-
-          const blob = new Blob([JSON.stringify(data)], {
-            type: 'application/json',
-          });
-
-          const renderer = {
-            type: 'simple',
-            field: '*',
-            symbol: {
-              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-              url: '/titik_kelola.png',
-              width: '24px',
-              height: '24px',
-            },
-          };
-          const url = URL.createObjectURL(blob);
-          const layerPengelolaan = new GeoJSONLayer({
-            url: url,
-            visible: true,
-            outFields: ['*'],
-            opacity: 0.75,
-            title: 'Layer Titik Pengelolaan',
-            renderer: renderer,
-            popupTemplate: popupTemplateKelolaPantau(this.geomKelolaProperties),
-          });
-
-          map.add(layerPengelolaan);
-        });
-      };
-      readerPengelolaan.readAsArrayBuffer(mapPengelolaan);
-
-      //  Map Pemantauan
-      const mapPemantauan = this.$refs.refPemantauanSHP.files[0];
-      const readerPemantauan = new FileReader();
-      readerPemantauan.onload = (event) => {
-        const base = event.target.result;
-        shp(base).then((data) => {
-          const valid = [
-            'ID',
-            'KETERANGAN',
-            'PEMRAKARSA',
-            'KEGIATAN',
-            'TAHUN',
-            'LAYER',
-            'TIPE_DOKUM',
-            'PROVINSI',
-            'KODE',
-          ];
-
-          const uploaded = Object.keys(data.features[0].properties);
-
-          const checker = (arr, target) => target.every(v => arr.includes(v));
-          const checkShapefile = checker(uploaded, valid);
-
-          if (!checkShapefile) {
-            alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
-            return;
-          }
-
-          this.geomPantauGeojson = data.features[0].geometry;
-          this.geomPantauProperties = data.features[0].properties;
-          this.geomPantauStyles = 5;
-
-          const blob = new Blob([JSON.stringify(data)], {
-            type: 'application/json',
-          });
-
-          const renderer = {
-            type: 'simple',
-            field: '*',
-            symbol: {
-              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-              url: '/titik_pantau.png',
-              width: '24px',
-              height: '24px',
-            },
-          };
-          const url = URL.createObjectURL(blob);
-          const layerPemantauan = new GeoJSONLayer({
-            url: url,
-            visible: true,
-            outFields: ['*'],
-            opacity: 0.75,
-            title: 'Layer Titik Pemantauan',
-            renderer: renderer,
-            popupTemplate: popupTemplateKelolaPantau(this.geomPantauProperties),
-          });
-
-          map.add(layerPemantauan);
-          mapView.on('layerview-create', async(event) => {
-            await mapView.goTo({
-              target: layerPemantauan.fullExtent,
-            });
-          });
-        });
-      };
-      readerPemantauan.readAsArrayBuffer(mapPemantauan);
 
       const mapView = new MapView({
         container: 'mapView',
@@ -478,7 +436,395 @@ export default {
       });
 
       mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendExpand, 'bottom-left');
+    },
+    async getData(){
+      this.data = [];
+      const files = await uploadMaps.list({
+        id_project: this.idProject,
+      });
+      this.data = files.data;
+      this.process(files.data);
+    },
+    process(files){
+      files.forEach((e) => {
+        switch (e.attachment_type){
+          case 'tapak':
+            if (e.file_type === 'SHP') {
+              this.petaTapakSHP = e.original_filename;
+              this.idTapakSHP = e.id;
+            } else {
+              this.petaTapakPDF = e.original_filename;
+              this.idTapakPDF = e.id;
+            }
+            break;
+          case 'pengelolaan':
+            if (e.file_type === 'SHP') {
+              this.petaPengelolaanSHP = e.original_filename;
+              this.idPengelolaanSHP = e.id;
+            } else {
+              this.petaPengelolaanPDF = e.original_filename;
+              this.idPengelolaanPDF = e.id;
+            }
+            break;
+          case 'pemantauan':
+            if (e.file_type === 'SHP') {
+              this.petaPemantauanSHP = e.original_filename;
+              this.idPemantauanSHP = e.id;
+            } else {
+              this.petaPemantauanPDF = e.original_filename;
+              this.idPemantauanPDF = e.id;
+            }
+            break;
+          case 'area-pengelolaan':
+            if (e.file_type === 'SHP') {
+              this.petaAreaPengelolaanSHP = e.original_filename;
+              this.idAreaPengelolaanSHP = e.id;
+            } else {
+              this.petaAreaPengelolaanPDF = e.original_filename;
+              this.idAreaPengelolaanPDF = e.id;
+            }
+            break;
+          case 'area-pemantauan':
+            if (e.file_type === 'SHP') {
+              this.petaAreaPemantauanSHP = e.original_filename;
+              this.idAreaPemantauanSHP = e.id;
+            } else {
+              this.petaAreaPemantauanPDF = e.original_filename;
+              this.idAreaPemantauanPDF = e.id;
+            }
+            break;
+        }
+      });
+    },
+    uploadMap(){
+      const map = new Map({
+        basemap: 'satellite',
+      });
+
+      //  Map Pengelolaan
+      const mapPengelolaan = this.$refs.refPengelolaanSHP.files[0];
+      const readerPengelolaan = new FileReader();
+      readerPengelolaan.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then((data) => {
+          const valid = [
+            'ID',
+            'KETERANGAN',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'LAYER',
+            'TIPE_DOKUM',
+            'PROVINSI',
+            'KODE',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
+
+          if (!checkShapefile) {
+            alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            return;
+          }
+
+          this.geomKelolaGeojson = [];
+          this.geomKelolaProperties = [];
+          this.geomKelolaStyles = 6;
+
+          data.features.map((value, index) => {
+            this.geomKelolaGeojson.push(value.geometry);
+            this.geomKelolaProperties.push(value.properties);
+          });
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_kelola.png',
+              width: '24px',
+              height: '24px',
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerPengelolaan = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Titik Pengelolaan',
+            renderer: renderer,
+            popupTemplate: popupTemplateKelolaPantau(this.geomKelolaProperties),
+          });
+
+          map.add(layerPengelolaan);
+        });
+      };
+      readerPengelolaan.readAsArrayBuffer(mapPengelolaan);
+
+      //  Map Area Pengelolaan
+      const mapAreaPengelolaan = this.$refs.refAreaPengelolaanSHP.files[0];
+      const readerAreaPengelolaan = new FileReader();
+      readerAreaPengelolaan.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then((data) => {
+          const valid = [
+            'ID',
+            'KETERANGAN',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'LAYER',
+            'TIPE_DOKUM',
+            'PROVINSI',
+            'KODE',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
+
+          if (!checkShapefile) {
+            alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            return;
+          }
+
+          this.geomAreaKelolaGeojson = [];
+          this.geomAreaKelolaProperties = [];
+          this.geomAreaKelolaStyles = 6;
+
+          data.features.map((value, index) => {
+            this.geomAreaKelolaGeojson.push(value.geometry);
+            this.geomAreaKelolaProperties.push(value.properties);
+          });
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_kelola.png',
+              width: '24px',
+              height: '24px',
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerAreaPengelolaan = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Area Pengelolaan',
+            renderer: renderer,
+            popupTemplate: popupTemplateKelolaPantau(this.geomAreaKelolaProperties),
+          });
+
+          map.add(layerAreaPengelolaan);
+        });
+      };
+      readerAreaPengelolaan.readAsArrayBuffer(mapAreaPengelolaan);
+
+      //  Map Pemantauan
+      const mapPemantauan = this.$refs.refPemantauanSHP.files[0];
+      const readerPemantauan = new FileReader();
+      readerPemantauan.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then((data) => {
+          const valid = [
+            'ID',
+            'KETERANGAN',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'LAYER',
+            'TIPE_DOKUM',
+            'PROVINSI',
+            'KODE',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
+
+          if (!checkShapefile) {
+            alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            return;
+          }
+
+          this.geomPantauGeojson = [];
+          this.geomPantauProperties = [];
+          this.geomPantauStyles = 5;
+
+          data.features.map((value, index) => {
+            this.geomPantauGeojson.push(value.geometry);
+            this.geomPantauProperties.push(value.properties);
+          });
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_pantau.png',
+              width: '24px',
+              height: '24px',
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerPemantauan = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Titik Pemantauan',
+            renderer: renderer,
+            popupTemplate: popupTemplateKelolaPantau(this.geomPantauProperties),
+          });
+
+          map.add(layerPemantauan);
+          mapView.on('layerview-create', async(event) => {
+            await mapView.goTo({
+              target: layerPemantauan.fullExtent,
+            });
+          });
+        });
+      };
+      readerPemantauan.readAsArrayBuffer(mapPemantauan);
+
+      //  Map Area Pemantauan
+      const mapAreaPemantauan = this.$refs.refAreaPemantauanSHP.files[0];
+      const readerAreaPemantauan = new FileReader();
+      readerAreaPemantauan.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then((data) => {
+          const valid = [
+            'ID',
+            'KETERANGAN',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'LAYER',
+            'TIPE_DOKUM',
+            'PROVINSI',
+            'KODE',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
+
+          if (!checkShapefile) {
+            alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            return;
+          }
+
+          this.geomAreaPantauGeojson = [];
+          this.geomAreaPantauProperties = [];
+          this.geomAreaPantauStyles = 5;
+
+          data.features.map((value, index) => {
+            this.geomAreaPantauGeojson.push(value.geometry);
+            this.geomAreaPantauProperties.push(value.properties);
+          });
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_pantau.png',
+              width: '24px',
+              height: '24px',
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerAreaPemantauan = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Area Pemantauan',
+            renderer: renderer,
+            popupTemplate: popupTemplateKelolaPantau(this.geomAreaPantauProperties),
+          });
+
+          map.add(layerAreaPemantauan);
+          mapView.on('layerview-create', async(event) => {
+            await mapView.goTo({
+              target: layerAreaPemantauan.fullExtent,
+            });
+          });
+        });
+      };
+      readerAreaPemantauan.readAsArrayBuffer(mapAreaPemantauan);
+
+      const mapView = new MapView({
+        container: 'mapView',
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 5,
+      });
+      this.$parent.mapView = mapView;
+
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          }).catch(function(error) {
+            console.error(error);
+          });
+        }
+      });
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layer-list',
+        expandTooltip: 'Layer List',
+        view: mapView,
+        content: layerList,
+      });
+
+      const legendExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap',
+        expandTooltip: 'Legend Layer',
+        view: mapView,
+        content: legend,
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
       mapView.ui.add(legendExpand, 'top-right');
+      this.isMapUploaded = true;
     },
     handleSubmit(){
       const formData = new FormData();
@@ -493,12 +839,22 @@ export default {
       this.files.forEach((e, i) => {
         formData.append('files[]', e[0]);
         formData.append('params[]', JSON.stringify(this.param[i]));
+
+        // titik
         formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
         formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
         formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
         formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
         formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
         formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
+
+        // Area
+        formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
+        formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
+        formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
+        formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
+        formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
+        formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
 
         var projectTitle = '';
 
@@ -557,41 +913,190 @@ export default {
     onChangeFiles(idx){
       const index = idx - 1;
       switch (idx) {
-        case 1: // ekologis SHP
-          this.files[index] = this.$refs.refPengelolaanSHP.files;
-          this.param[index] = {
-            attachment_type: 'pengelolaan',
-            file_type: 'SHP',
-          };
-
+        case 1:
+          if (this.$refs.refPengelolaanSHP.files[0].size <= 10485760) {
+            if (this.$refs.refPengelolaanSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.refPengelolaanSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Titik Pengelolaan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refPengelolaanSHP.files;
+              this.param[index] = {
+                attachment_type: 'pengelolaan',
+                file_type: 'SHP',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           // this.param[index]['file_type'] = 'SHP';
           break;
         case 2:
-          // ekologis PDF
-          this.files[index] = this.$refs.refPengelolaanPDF.files;
-          this.param[index] = {
-            attachment_type: 'pengelolaan',
-            file_type: 'PDF',
-          };
+          if (this.$refs.refPengelolaanPDF.files[0].size <= 10485760) {
+            if (this.$refs.refPengelolaanPDF.files[0].type !== 'application/pdf') {
+              this.$refs.refPengelolaanPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Titik Pengelolaan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.$refs.refPengelolaanPDF.value = null;
+              this.files[index] = this.$refs.refPengelolaanPDF.files;
+              this.param[index] = {
+                attachment_type: 'pengelolaan',
+                file_type: 'PDF',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
+
           // this.param[index]['file_type'] = 'PDF';
           // this.embedSrc = window.URL.createObjectURL(this.$refs.refPengelolaanPDF.files);
           break;
         case 3:
-          this.files[index] = this.$refs.refPemantauanSHP.files;
-          this.param[index] = {
-            attachment_type: 'pemantauan',
-            file_type: 'SHP',
-          };
-          // sosial SHP
+          if (this.$refs.refPemantauanSHP.files[0].size <= 10485760) {
+            if (this.$refs.refPemantauanSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.refPemantauanSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Titik Pemantauan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refPemantauanSHP.files;
+              this.param[index] = {
+                attachment_type: 'pemantauan',
+                file_type: 'SHP',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           break;
         case 4:
-          this.files[index] = this.$refs.refPemantauanPDF.files;
-          this.param[index] = {
-            attachment_type: 'pemantauan',
-            file_type: 'PDF',
-          };
+          if (this.$refs.refPemantauanPDF.files[0].size <= 10485760) {
+            if (this.$refs.refPemantauanPDF.files[0].type !== 'application/pdf') {
+              this.$refs.refPemantauanPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Titik Pemantauan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refPemantauanPDF.files;
+              this.param[index] = {
+                attachment_type: 'pemantauan',
+                file_type: 'PDF',
+              };
+            }
+          } else {
+            this.$refs.refPemantauanPDF.value = null;
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
+          break;
+        case 5:
+          if (this.$refs.refAreaPengelolaanSHP.files[0].size <= 10485760) {
+            if (this.$refs.refAreaPengelolaanSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.refAreaPengelolaanSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Lokasi Pengelolaan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refAreaPengelolaanSHP.files;
+              this.param[index] = {
+                attachment_type: 'area-pengelolaan',
+                file_type: 'SHP',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
+          break;
+        case 6:
+          if (this.$refs.refAreaPengelolaanPDF.files[0].size <= 10485760) {
+            if (this.$refs.refAreaPengelolaanPDF.files[0].type !== 'application/pdf') {
+              this.$refs.refAreaPengelolaanPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Lokasi Pengelolaan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refAreaPengelolaanPDF.files;
+              this.param[index] = {
+                attachment_type: 'area-pengelolaan',
+                file_type: 'PDF',
+              };
+            }
+          } else {
+            this.$refs.refAreaPengelolaanPDF.value = null;
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
+          break;
+        case 7:
+          if (this.$refs.refAreaPemantauanSHP.files[0].size <= 10485760) {
+            if (this.$refs.refAreaPemantauanSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.refAreaPemantauanSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Lokasi Pemantauan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refAreaPemantauanSHP.files;
+              this.param[index] = {
+                attachment_type: 'area-pemantauan',
+                file_type: 'SHP',
+              };
+            }
+          } else {
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
 
-          // sosial PDF
+          break;
+        case 8:
+          if (this.$refs.refAreaPemantauanPDF.files[0].size <= 10485760) {
+            if (this.$refs.refAreaPemantauanPDF.files[0].type !== 'application/pdf') {
+              this.$refs.refAreaPemantauanPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Lokasi Pemantauan Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.refAreaPemantauanPDF.files;
+              this.param[index] = {
+                attachment_type: 'area-pemantauan',
+                file_type: 'PDF',
+              };
+            }
+          } else {
+            this.$refs.refAreaPemantauanPDF.value = null;
+            this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+              center: true,
+            });
+            return;
+          }
           break;
         default:
       }

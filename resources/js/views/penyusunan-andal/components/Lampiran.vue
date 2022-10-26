@@ -25,7 +25,7 @@
             :on-change="handleUploadKtr"
             :show-file-list="false"
           >
-            <el-button size="small" type="warning"> Upload </el-button>
+            <el-button size="small" :disabled="isReadOnly" type="warning"> Upload </el-button>
             <div slot="tip" class="el-upload__tip">
               {{ ktr.name }}
             </div>
@@ -64,7 +64,7 @@
             :on-change="handleUploadPa"
             :show-file-list="false"
           >
-            <el-button size="small" type="warning"> Upload </el-button>
+            <el-button size="small" :disabled="isReadOnly" type="warning"> Upload </el-button>
             <div slot="tip" class="el-upload__tip">
               {{ preAgreement.name }}
             </div>
@@ -100,7 +100,7 @@
             :on-change="handleUploadPippib"
             :show-file-list="false"
           >
-            <el-button size="small" type="warning"> Upload </el-button>
+            <el-button size="small" :disabled="isReadOnly" type="warning"> Upload </el-button>
             <div slot="tip" class="el-upload__tip">
               {{ pippib.name }}
             </div>
@@ -131,7 +131,7 @@
             :on-change="handleUploadKl"
             :show-file-list="false"
           >
-            <el-button size="small" type="warning"> Upload </el-button>
+            <el-button size="small" :disabled="isReadOnly" type="warning"> Upload </el-button>
             <div slot="tip" class="el-upload__tip">
               {{ kawasanLindung.name }}
             </div>
@@ -148,7 +148,7 @@
           "
         >
           <label>Persetujuan Teknis (Pertek)</label>
-          <el-button type="primary" @click="handleAdd('pertek')">
+          <el-button type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleAdd('pertek')">
             Tambah
           </el-button>
         </div>
@@ -192,7 +192,8 @@
                   <el-button
                     size="small"
                     type="warning"
-                    @click="selectedUploadPertek = scope.$index"
+                    :disabled="isReadOnly"
+                    @click="!isReadOnly && (selectedUploadPertek = scope.$index)"
                   >
                     Upload
                   </el-button>
@@ -210,7 +211,8 @@
                 type="text"
                 href="#"
                 icon="el-icon-delete"
-                @click="handleDelete(scope.row.id, scope.$index, 'pertek')"
+                :disabled="isReadOnly"
+                @click="!isReadOnly && handleDelete(scope.row.id, scope.$index, 'pertek')"
               >
                 Hapus
               </el-button>
@@ -228,7 +230,7 @@
           "
         >
           <label>Lampiran lainnya</label>
-          <el-button type="primary" @click="handleAdd('lainnya')">
+          <el-button type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleAdd('lainnya')">
             Tambah
           </el-button>
         </div>
@@ -272,7 +274,8 @@
                   <el-button
                     size="small"
                     type="warning"
-                    @click="selectedUpload = scope.$index"
+                    :disabled="isReadOnly"
+                    @click="!isReadOnly && (selectedUpload = scope.$index)"
                   >
                     Upload
                   </el-button>
@@ -290,7 +293,8 @@
                 type="text"
                 href="#"
                 icon="el-icon-delete"
-                @click="handleDelete(scope.row.id, scope.$index, 'lainnya')"
+                :disabled="isReadOnly"
+                @click="!isReadOnly && handleDelete(scope.row.id, scope.$index, 'lainnya')"
               >
                 Hapus
               </el-button>
@@ -303,7 +307,8 @@
           :loading="loadingSubmit"
           type="primary"
           style="margin-top: 10px"
-          @click="handleSubmit"
+          :disabled="isReadOnly"
+          @click="!isReadOnly && handleSubmit()"
         >
           Simpan
         </el-button>
@@ -313,6 +318,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 
@@ -352,6 +358,35 @@ export default {
       selectedUpload: null,
       selectedUploadPertek: null,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      const data = [
+        'amdal.andal-drafting', // sementara
+        'amdal.rklrpl-drafting', // sementara
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+      console.log({ gun: this.markingStatus });
+      return data.includes(this.markingStatus);
+    },
   },
   created() {
     this.getData();

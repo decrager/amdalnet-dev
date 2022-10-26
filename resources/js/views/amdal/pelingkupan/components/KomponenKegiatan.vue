@@ -14,7 +14,7 @@
         />
       </div>
       <!-- form -->
-      <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
+      <el-button icon="el-icon-plus" size="mini" circle type="primary" :disabled="isReadOnly" @click="!isReadOnly && addComponent()" />
       <form-komponen-kegiatan
         :show="showForm"
         :form-mode="formMode"
@@ -41,6 +41,7 @@
 import FormKomponenKegiatan from './forms/FormKomponenKegiatan.vue';
 import FormDeleteComponent from './forms/FormDeleteComponent.vue';
 import ComponentsList from './tables/ComponentsList.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'KomponenKegiatan',
@@ -72,6 +73,59 @@ export default {
       showDelete: false,
       deleted: null,
     };
+  },
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+
+      return data.includes(this.markingStatus);
+    },
   },
   methods: {
     onSaveData(obj){

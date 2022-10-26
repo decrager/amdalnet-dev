@@ -2,8 +2,8 @@
   <div>
     <el-form label-position="top" label-width="100px">
       <div style="margin-bottom: 10px;">
-        <a href="/sample_map/Peta_Batas_Sample.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
-        <a href="/amdalnet-juknis-penyiapan-peta.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
+        <a href="/sample_map/template_shp_batas_amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+        <a href="/JUKNIS-DATA-SPASIAL-AMDALNET-PEMRAKARSA-TAPAK-PROYEK.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
 
       </div>
 
@@ -12,13 +12,13 @@
         <el-col :span="11" style="margin-right:1em;">
 
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
+            <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPES)"><strong>{{ petaEkologisSHP }}<i class="el-icon-circle-check" /></strong></span>
                 <!-- &nbsp;<i class="el-icon-delete"></i>-->
               </div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="peSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
+              <input ref="peSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(1)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -30,7 +30,7 @@
               <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
+              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(2)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -40,12 +40,12 @@
       <el-form-item label="Peta Batas Sosial" :required="required">
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
+            <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSS)"><strong>{{ petaSosialSHP }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="psSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
+              <input ref="psSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(3)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -59,7 +59,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
+              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(4)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -69,12 +69,12 @@
       <el-form-item label="Peta Batas Wilayah Studi" :required="required">
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
+            <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuS)"><strong>{{ petaStudiSHP }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pwSHP" type="file" class="form-control-file" @change="onChangeFiles(5)">
+              <input ref="pwSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(5)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -87,7 +87,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(6)">
+              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(6)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -98,7 +98,7 @@
       <div id="mapView" class="map-wrapper" />
 
       <el-row v-if="isFormulator" style="text-align:right;">
-        <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
+        <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
       </el-row>
 
     </el-form>
@@ -121,6 +121,7 @@
  }
 </style>
 <script>
+import { mapGetters } from 'vuex';
 import Comment from '@/views/amdal/components/Comment.vue';
 import Resource from '@/api/resource';
 import request from '@/utils/request';
@@ -207,6 +208,60 @@ export default {
     };
   },
   computed: {
+
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+
+      return data.includes(this.markingStatus);
+    },
+
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },
@@ -471,11 +526,19 @@ export default {
       switch (idx) {
         case 1: // ekologis SHP
           if (this.$refs.peSHP.files[0].size <= 1048576) {
-            this.files[index] = this.$refs.peSHP.files;
-            this.param[index] = {
-              attachment_type: 'ecology',
-              file_type: 'SHP',
-            };
+            if (this.$refs.peSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.peSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.peSHP.files;
+              this.param[index] = {
+                attachment_type: 'ecology',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.peSHP.value = null;
@@ -485,11 +548,19 @@ export default {
         case 2:
           // ekologis PDF
           if (this.$refs.pePDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pePDF.files;
-            this.param[index] = {
-              attachment_type: 'ecology',
-              file_type: 'PDF',
-            };
+            if (this.$refs.pePDF.files[0].type !== 'application/pdf'){
+              this.$refs.pePDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pePDF.files;
+              this.param[index] = {
+                attachment_type: 'ecology',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pePDF.value = null;
@@ -499,24 +570,41 @@ export default {
           break;
         case 3:
           if (this.$refs.psSHP.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.psSHP.files;
-            this.param[index] = {
-              attachment_type: 'social',
-              file_type: 'SHP',
-            };
+            if (this.$refs.psSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.psSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Sosial Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.psSHP.files;
+              this.param[index] = {
+                attachment_type: 'social',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.psSHP.value = null;
           }
+
           // sosial SHP
           break;
         case 4:
           if (this.$refs.psPDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.psPDF.files;
-            this.param[index] = {
-              attachment_type: 'social',
-              file_type: 'PDF',
-            };
+            if (this.$refs.psPDF.files[0].type !== 'application/pdf') {
+              this.$refs.psPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Ekologis Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.psPDF.files;
+              this.param[index] = {
+                attachment_type: 'social',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.psPDF.value = null;
@@ -526,11 +614,19 @@ export default {
           break;
         case 5:
           if (this.$refs.pwSHP.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pwSHP.files;
-            this.param[index] = {
-              attachment_type: 'study',
-              file_type: 'SHP',
-            };
+            if (this.$refs.pwSHP.files[0].type !== 'application/x-zip-compressed') {
+              this.$refs.pwSHP.value = null;
+              this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Wilayah Studi Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pwSHP.files;
+              this.param[index] = {
+                attachment_type: 'study',
+                file_type: 'SHP',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pwSHP.value = null;
@@ -539,11 +635,19 @@ export default {
           break;
         case 6:
           if (this.$refs.pwPDF.files[0].size <= 10485760) {
-            this.files[index] = this.$refs.pwPDF.files;
-            this.param[index] = {
-              attachment_type: 'study',
-              file_type: 'PDF',
-            };
+            if (this.$refs.pwPDF.files[0].type !== 'application/pdf') {
+              this.$refs.pwPDF.value = null;
+              this.$alert('File yang diterima hanya .pdf', 'Format Peta Batas Wilayah Studi Salah', {
+                center: true,
+              });
+              return;
+            } else {
+              this.files[index] = this.$refs.pwPDF.files;
+              this.param[index] = {
+                attachment_type: 'study',
+                file_type: 'PDF',
+              };
+            }
           } else {
             errorSize = 1;
             this.$refs.pwPDF.value = null;
@@ -618,8 +722,13 @@ export default {
             });
           }
 
-          this.geomEcologyGeojson = data.features[0].geometry;
-          this.geomEcologyProperties = data.features[0].properties;
+          this.geomEcologyGeojson = [];
+          this.geomEcologyProperties = [];
+
+          data.features.map((value, index) => {
+            this.geomEcologyGeojson.push(value.geometry);
+            this.geomEcologyProperties.push(value.properties);
+          });
 
           var propFields = Object.entries(this.geomEcologyProperties).reduce(function(a, _a) {
             var key = _a[0], value = _a[1];
@@ -696,8 +805,13 @@ export default {
             });
           }
 
-          this.geomSocialGeojson = data.features[0].geometry;
-          this.geomSocialProperties = data.features[0].properties;
+          this.geomSocialGeojson = [];
+          this.geomSocialProperties = [];
+
+          data.features.map((value, index) => {
+            this.geomSocialGeojson.push(value.geometry);
+            this.geomSocialProperties.push(value.properties);
+          });
 
           var propFields = Object.entries(this.geomSocialProperties).reduce(function(a, _a) {
             var key = _a[0], value = _a[1];
@@ -776,8 +890,13 @@ export default {
             });
           }
 
-          this.geomStudyGeojson = data.features[0].geometry;
-          this.geomStudyProperties = data.features[0].properties;
+          this.geomStudyGeojson = [];
+          this.geomStudyProperties = [];
+
+          data.features.map((value, index) => {
+            this.geomStudyGeojson.push(value.geometry);
+            this.geomStudyProperties.push(value.properties);
+          });
 
           var propFields = Object.entries(this.geomStudyProperties).reduce(function(a, _a) {
             var key = _a[0], value = _a[1];

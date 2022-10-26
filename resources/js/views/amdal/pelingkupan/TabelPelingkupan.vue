@@ -42,17 +42,31 @@
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Pendukung</span>
               </div>
-              <components-list
-                :id="'supporting_'+stage.id"
-                :components="subProjects.filter(s => s.type === 'pendukung')"
-                :show-delete="false"
-                :show-edit="false"
-                :active-component="activeScoping.sub_projects"
-                :class-name="'scoping'"
-                :selectable="true"
-                :de-select-all="deSelectAllSPPendukung"
-                @onSelect="onSelectSubProjects"
-              />
+              <div v-if="isReadOnly">
+                <components-list
+                  :id="'supporting_'+stage.id"
+                  :components="subProjects.filter(s => s.type === 'pendukung')"
+                  :show-delete="false"
+                  :show-edit="false"
+                  :active-component="activeScoping.sub_projects"
+                  :class-name="'scoping'"
+                  :selectable="true"
+                  :disabled="isReadOnly"
+                  :de-select-all="!isReadOnly && deSelectAllSPPendukung"
+                />
+              </div>
+              <div v-else>
+                <components-list
+                  :id="'supporting_'+stage.id"
+                  :components="subProjects.filter(s => s.type === 'pendukung')"
+                  :show-delete="false"
+                  :show-edit="false"
+                  :active-component="activeScoping.sub_projects"
+                  :class-name="'scoping'"
+                  :selectable="true"
+                  :de-select-all="deSelectAllSPPendukung"
+                />
+              </div>
             </el-card>
           </el-col>
           <el-col :span="4">
@@ -85,7 +99,8 @@
                 circle
                 type="primary"
                 plain
-                @click="addComponent"
+                :disabled="isReadOnly"
+                @click="!isReadOnly && addComponent()"
               />
             </el-card>
           </el-col>
@@ -131,7 +146,8 @@
                       circle
                       type="primary"
                       plain
-                      @click="addHue(ct.id)"
+                      :disabled="isReadOnly"
+                      @click="!isReadOnly && addHue(ct.id)"
                     />
                   </td>
                 </tr>
@@ -177,6 +193,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import ComponentsList from './components/tables/ComponentsList.vue';
 import FormAddComponent from './components/forms/FormAddComponent.vue';
@@ -261,6 +278,59 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+
+    isReadOnly() {
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+
+      return data.includes(this.markingStatus);
+    },
+
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
     },

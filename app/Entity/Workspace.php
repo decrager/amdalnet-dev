@@ -33,9 +33,9 @@ class Workspace
 
     /**
      * Get Track statyus
-     * 
+     *
      * @param Int $status
-     * @return 
+     * @return
      */
     public function getTrackstatus($status)
     {
@@ -101,7 +101,7 @@ class Workspace
             $node = $this->getNode($headings);
             $node['pid'] = $pid;
             $children[] = $node;
-            $depthNode = $this->getNextNodeDepth($headings);    
+            $depthNode = $this->getNextNodeDepth($headings);
         }
 
         return $children;
@@ -184,14 +184,14 @@ class Workspace
 
     /**
      * send command to document server editor
-     * 
+     *
      * @param string $method
      * @param string $key
-     * @return string 
+     * @return string
      */
-    public function commandRequest($method, $key) 
+    public function commandRequest($method, $key)
     {
-        $docCommandUrl = env('OFFICE_COMMAND_URL', 'http://localhost:8008/coauthoring/CommandService.ashx');
+        $docCommandUrl = env('OFFICE_COMMAND_URL', 'https://amdalnet-dev.menlhk.go.id/oods/coauthoring/CommandService.ashx');
 
         $arr = [
             "c" => $method,
@@ -225,10 +225,10 @@ class Workspace
 
     /**
      * process save document
-     * 
+     *
      * @param array|mixed $data
      * @param string $fileName
-     * @return array|mixed $userAddress 
+     * @return array|mixed $userAddress
      */
     public function processSave($data, $fileName, $userAddress)
     {
@@ -272,10 +272,10 @@ class Workspace
             $storagePath = Document::getStoragePath($newFileName, $userAddress);  // get the file path
             $histDir = Document::getHistoryDir($storagePath);  // get the path to the history directory
             $verDir = Document::getVersionDir($histDir, Document::getFileVersion($histDir));  // get the path to the file version
-    
+
             // mkdir($verDir);  // if the path doesn't exist, create it
             Storage::disk($this->disk)->makeDirectory($verDir);
-    
+
             // get the path to the previous file version and rename the storage path with it
             // rename(Document::getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);
             Storage::disk($this->disk)->move(Document::getStoragePath($fileName, $userAddress), $verDir . '/prev' . $curExt);
@@ -283,13 +283,13 @@ class Workspace
             Log::debug('put latest: '. $storagePath);
             // file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
             Storage::disk($this->disk)->put($storagePath, $new_data); // save file to the storage directory
-    
+
             // save file changes to the diff.zip archive
             if ($changesData = file_get_contents($data["changesurl"])) {
                 // file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);
                 Storage::disk($this->disk)->put($verDir . '/diff.zip', $changesData);
             }
-    
+
             $histData = isset($data["changeshistory"]) ? $data["changeshistory"]:'';
             if (empty($histData)) {
                 $histData = json_encode($data["history"], JSON_PRETTY_PRINT);
@@ -301,27 +301,27 @@ class Workspace
             }
             // file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data["key"], LOCK_EX);  // write the key value to the key.txt file
             Storage::disk($this->disk)->put($verDir . '/key.txt', $data["key"]);
-            
+
             $forcesavePath = Document::getForcesavePath($newFileName, $userAddress, false);  // get the path to the forcesaved file version
             if ($forcesavePath != "") {  // if the forcesaved file version exists
                 // unlink($forcesavePath);  // remove it
                 Storage::disk($this->disk)->deleteDirectory($forcesavePath);
             }
-    
+
             $saved = 0;
         }
-    
+
         $result["error"] = $saved;
-    
-        return $result;        
+
+        return $result;
     }
 
     /**
      * process force save document
-     * 
+     *
      * @param array|mixed $data
      * @param string $fileName
-     * @return array|mixed $userAddress 
+     * @return array|mixed $userAddress
      */
     function processForceSave($data, $fileName, $userAddress) {
         $downloadUri = $data["url"];
@@ -329,15 +329,15 @@ class Workspace
             $result["error"] = 1;
             return $result;
         }
-    
+
         $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
         $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));  // get the extension of the downloaded file
         $newFileName = false;
-    
+
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if ($downloadExt != $curExt) {
             $key = Document::GenerateRevisionId($downloadUri);
-    
+
             try {
                 Log::debug("   Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt);
                 $convertedUri;  // convert file and give url to a new file
@@ -354,14 +354,15 @@ class Workspace
                 $newFileName = true;
             }
         }
-    
+
         $saved = 1;
-        
+        Log::debug('processForceSave: ' . $downloadUri . ' from ' . $downloadExt . ' to ' . $curExt);
+
         // donwload data from oods
         if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
             $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
             $isSubmitForm = $data["forcesavetype"] == 3;  // SubmitForm
-    
+
             if ($isSubmitForm) {
                 if ($newFileName){
                     $fileName = Document::GetCorrectName($baseNameWithoutExt . "-form" . $downloadExt, $userAddress);  // get the correct file name if it already exists
@@ -379,21 +380,21 @@ class Workspace
                     $forcesavePath = Document::getForcesavePath($fileName, $userAddress, true);
                 }
             }
-    
+
             // save file
             // file_put_contents($forcesavePath, $new_data, LOCK_EX);
             Storage::disk($this->disk)->put($forcesavePath, $new_data);
-    
+
             if ($isSubmitForm) {
                 $uid = $data["actions"][0]["userid"];  // get the user id
                 Document::createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
             }
-    
+
             $saved = 0;
         }
-    
+
         $result["error"] = $saved;
-    
+
         return $result;
     }
 }

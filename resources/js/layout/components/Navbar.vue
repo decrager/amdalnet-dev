@@ -79,6 +79,7 @@ export default {
     return {
       limit: 5,
       loadingNotif: false,
+      isPemerintah: false,
     };
   },
   computed: {
@@ -92,15 +93,28 @@ export default {
     ]),
     getRole() {
       const roles = this.$store.getters.roles.map(value => {
-        // if (value === 'initiator'){
-        //   value = 'pemrakarsa';
-        // } else if (value === 'formulator'){
-        //   value = 'penyusun';
-        // } else if (value === 'examiner'){
-        //   value = 'ahli';
-        // }
-        const translatedRole = this.$t('roles.title.' + value);
-        return this.$options.filters.uppercaseFirst(translatedRole);
+        if (value === 'institution' || value === 'initiator' || value === 'pustanling' || value === 'examiner-secretary' || value === 'examiner-substance' || value === 'examiner-administration') {
+          if (value === 'institution'){
+            value = 'LSP';
+          } else if (value === 'pustanling'){
+            value = 'Pusfaster';
+          } else if (value === 'examiner-secretary'){
+            value = 'Kepala Sekretariat';
+          } else if (value === 'examiner-substance'){
+            value = 'Validator';
+          } else if (value === 'examiner-administration'){
+            value = 'Validator';
+          } else if (value === 'initiator' && this.$store.getters.isPemerintah === true) {
+            value = 'Pemrakarsa Pemerintah';
+          } else if (value === 'initiator' && this.$store.getters.isPemerintah === false) {
+            value = 'Pemrakarsa Pelaku Usaha';
+          }
+          const translatedRole = this.$t(value);
+          return this.$options.filters.uppercaseFirst(translatedRole);
+        } else if (value !== 'institution' || value !== 'pustanling' || value !== 'examiner-secretary' || value !== 'examiner-substance' || value !== 'examiner-administration') {
+          const translatedRole = this.$t('roles.title.' + value);
+          return this.$options.filters.uppercaseFirst(translatedRole);
+        }
       });
       return roles.join(' | ');
     },

@@ -34,7 +34,7 @@
             @handleDokPendukungUploaded="handleDokPendukungUploaded"
           />
         </el-collapse-item>
-        <el-collapse-item name="4" title="PETA TITIK PEMANTAUAN & PENGELOLAAN" :disabled="petaBatasDisabled">
+        <el-collapse-item name="4" title="PETA TITIK PENGELOLAAN & PEMANTAUAN" :disabled="petaBatasDisabled">
           <upload-peta-batas-ukl-upl
             v-if="activeName === '4'"
             @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan"
@@ -67,6 +67,7 @@ export default {
   },
   data() {
     return {
+      idProject: 0,
       isSubmitEnabled: false,
       isFormulirComplete: false,
       vsaListKey: 0,
@@ -83,8 +84,10 @@ export default {
     };
   },
   mounted() {
+    this.setProjectId();
     this.checkImpactIdentificationData();
     this.checkIfFormComplete();
+    this.getMarking();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
@@ -121,6 +124,13 @@ export default {
         .then(response => {
           this.isSubmitEnabled = response.data.data && this.petaBatasUploaded;
         });
+    },
+    setProjectId(){
+      const id = this.$route.params && this.$route.params.id;
+      this.idProject = id;
+    },
+    async getMarking() {
+      await this.$store.dispatch('getMarking', this.idProject);
     },
     handleEnableSimpanLanjutkan() {
       this.checkIfFormComplete();

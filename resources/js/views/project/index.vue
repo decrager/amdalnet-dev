@@ -164,7 +164,7 @@
                   Dokumen UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -173,7 +173,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -308,7 +308,7 @@
                   Workspace UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork && isPemerintah && scope.row.required_doc === 'SPPL'"
+                  v-if="isInitiator && !isScoping && !isDigiWork && isPemerintah"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -317,7 +317,7 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork && !isPemerintah"
+                  v-if="isInitiator && !isScoping && !isDigiWork && !isPemerintah && scope.row.required_doc === 'SPPL'"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -967,7 +967,10 @@ export default {
       });
     },
     download(url) {
-      window.open(url, '_blank').focus();
+      const a = document.createElement('a');
+      a.href = url;
+      a.click();
+      // window.open(url, '_blank').focus();
     },
     handleEditForm(id) {
       // const currentProject = this.filtered.find((item) => item.id === id);
@@ -1268,12 +1271,13 @@ export default {
         }).join(',');
 
       const districtData = await districtResource.get(this.initiator.district);
-
+      const uriUnduhSppl = await skklResource.list({
+        sppl1: 'true',
+      });
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      // console.log(new Date(project.created_at.substring(0, 10)).toLocaleDateString('id-ID', options));
 
       PizZipUtils.getBinaryContent(
-        '/template_sppl_pem.docx',
+        uriUnduhSppl.url,
         (error, content) => {
           if (error) {
             throw error;
@@ -1308,7 +1312,9 @@ export default {
           const formData = new FormData();
           formData.append('docFile', this.blobToFile(out, 'SPPL-' + project.project_title + '.docx'));
 
-          pdfResource.store(formData).then(value => this.download(value));
+          pdfResource.store(formData).then(value => {
+            this.download(value);
+          });
         }
       );
     },

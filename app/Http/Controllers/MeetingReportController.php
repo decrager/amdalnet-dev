@@ -136,7 +136,7 @@ class MeetingReportController extends Controller
             if(count($receiver) > 0) {
                 Notification::send($receiver, new MeetingReportNotification($meeting_report, 'disetujui'));
             }
-            
+
             // Notification Penyusunan Andal
             if(count($receiver_andal) > 0) {
                 Notification::send($receiver_andal, new AndalNotification($project));
@@ -629,9 +629,9 @@ class MeetingReportController extends Controller
         $templateProcessor = null;
 
         if($authority_real == 'Pusat') {
-            $templateProcessor = new TemplateProcessor('template_berita_acara.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara.docx'));
         } else {
-            $templateProcessor = new TemplateProcessor('template_berita_acara_tuk.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berita_acara_tuk.docx'));
             $templateProcessor->setValue('tuk_address', $tuk_address);
             $templateProcessor->setValue('tuk_telp', $tuk_telp);
 

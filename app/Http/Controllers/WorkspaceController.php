@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Entity\Workspace;
+use App\Utils\Jwt;
+use App\Laravue\Acl;
 use Illuminate\Support\Facades\Log;
 
 class WorkspaceController extends Controller
@@ -92,11 +94,32 @@ class WorkspaceController extends Controller
     public function getConfig(Request $request, String $id) {
         $currentUser = Auth::user();
         // $officeUrl = env('MIX_OFFICE_URL'); 
-        // $officeSecret = env('OFFICE_SECRET');
+        $officeSecret = env('OFFICE_SECRET');
+
         $appUrl = env('APP_URL');
         $callUrl = env('OFFICE_CALLBACK_URL');
         $filename = $request->query('filename', 'sample.docx');
-        $dockey = md5($filename.$id);
+        $dirs = [];
+        try {
+            $dirs = Storage::disk('public')->directories('workspace/'.$filename.'-hist');
+        } catch (\Aws\S3\Exception\S3Exception $e) {
+            $dirs = [];
+        }
+        
+        $dockey = md5($filename.$id.strval(count($dirs)));
+
+        // check comment only
+        $arroles = [ 
+            Acl::ROLE_EXAMINER, 
+            Acl::ROLE_EXAMINER_CHIEF, 
+            Acl::ROLE_EXAMINER_SECRETARY,
+            Acl::ROLE_EXAMINER_ADMINISTRATION,
+            Acl::ROLE_EXAMINER_SUBSTANCE,
+            Acl::ROLE_EXAMINER_COMMUNITY
+        ];
+
+        $commentOnly = $currentUser->hasRole($arroles);
+        
         $config = [
             'width' => '100%',
             'height' => '100%',
@@ -105,13 +128,13 @@ class WorkspaceController extends Controller
             'document' => [
                 'fileType' => 'docx',
                 'key' => $dockey,
-                'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
+                'title' => 'Edited Document.docx',
                 // 'url' => $appUrl.'/workspace/document/download?fileName=61943e88ad99a.docx',
                 // 'url' => $callUrl.'/storage/workspace/'.$filename,
                 'url' => Storage::disk('public')->temporaryUrl('workspace/'.$filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                 'permissions' => [
-                    'fillForms' => true,
-                    'edit' => true,
+                    // 'fillForms' => true,
+                    'edit' => ($commentOnly)? false : true,
                     'modifyContentControl' => true,
                     'copy' => false,
                     'print' => false,
@@ -155,6 +178,12 @@ class WorkspaceController extends Controller
                 'callbackUrl' => $callUrl.'/api/workspace/document/track?fileName='.$filename,
             ],
         ];
+        $token = Jwt::encode($config);
+        $config['token'] = $token;
+        // $config['width'] = '100%';
+        // $config['height'] = '100%';
+        // $config['type'] = 'desktop';
+        // $config['documentType'] = 'word';
         return response()->json($config);
     }
 

@@ -394,7 +394,7 @@ class TestingVerificationController extends Controller
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
-                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' || $f->name == 'hasil_penapisan' || $f->name == 'dokumen_nib' ? 'download' : 'non-download';
+                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' || $f->name == 'hasil_penapisan' || $f->name == 'dokumen_sppl_oss' || $f->name == 'dokumen_nib' ? 'download' : 'non-download';
                         $link = null;
                         if($f->name == 'tata_ruang') {
                             $link = $project->ktr;
@@ -416,8 +416,9 @@ class TestingVerificationController extends Controller
                             $link = $project->oss_required_doc;
                         } else if($f->name == 'dokumen_nib') {
                             $link = $project->initiator->nib_doc_oss;
+                        } else if($f->name == 'dokumen_sppl_oss') {
+                            $link = $project->oss_sppl_doc;
                         }
-
 
                         $form[] = [
                             'id' => $f->id,
@@ -511,6 +512,12 @@ class TestingVerificationController extends Controller
                 ],[
                     'name' => 'dokumen_nib',
                     'link' => $project->initiator->nib_doc_oss,
+                    'suitability' => null,
+                    'description' => null,
+                    'type' => 'download'
+                ],[
+                    'name' => 'dokumen_sppl_oss',
+                    'link' => $project->oss_sppl_doc,
                     'suitability' => null,
                     'description' => null,
                     'type' => 'download'
@@ -655,9 +662,9 @@ class TestingVerificationController extends Controller
         }
 
         if($authority_big == 'PUSAT') {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_no.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_no.docx'));
         } else {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_no_tuk.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_no_tuk.docx'));
             $templateProcessor->setValue('authority', $authority);
             if($tuk_logo) {
                 $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
@@ -691,7 +698,7 @@ class TestingVerificationController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+            'url' => Storage::url('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx')
         ];
     }
 

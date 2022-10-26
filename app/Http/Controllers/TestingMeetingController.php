@@ -165,18 +165,18 @@ class TestingMeetingController extends Controller
                     $tmpName = tempnam(sys_get_temp_dir(),'');
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
                     file_put_contents($tmpName, $tmpFile);
-                    
+
                     Notification::send($user, new MeetingInvitation($meeting, $tmpName));
-                    
+
                     unlink($tmpName);
-    
+
                     // === WORKFLOW === //
                     if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
                         $project->workflow_apply('send-amdal-form-ka-examination-invitation');
                         $project->workflow_apply('examine-amdal-form-ka');
                         $project->save();
                     }
-    
+
                     return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
                 }
 
@@ -232,7 +232,7 @@ class TestingMeetingController extends Controller
         if($request->invitation_file) {
             $project = Project::findOrFail($request->idProject);
             $file = $this->base64ToFile($request->invitation_file);
-            
+
             if($data['type'] != 'new') {
                 if($meeting->invitation_file) {
                     Storage::disk('public')->delete($meeting->rawInvitationFile());
@@ -686,9 +686,9 @@ class TestingMeetingController extends Controller
         $oss_char = $project->initiator->nib_doc_oss ? '_oss' : '';
 
         if($authority_big == 'PUSAT') {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes' . $oss_char .'.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_yes') . $oss_char .'.docx');
         } else {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes_tuk' . $oss_char . '.docx');
+            $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_yes_tuk') . $oss_char . '.docx');
             $templateProcessor->setValue('tuk_address', $tuk_address);
             $templateProcessor->setValue('tuk_telp', $tuk_telp);
             $templateProcessor->setValue('authority_big', $authority_big);
@@ -905,10 +905,10 @@ class TestingMeetingController extends Controller
             }
         }
 
-        $templateProcessor = new TemplateProcessor('template_undangan_rapat_ka.docx');
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_undangan_rapat_ka.docx'));
 
         if($tuk_logo) {
-            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+            $templateProcessor->setImageValue('logo_tuk', $tuk_logo);
         } else {
             $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
         }

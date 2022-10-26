@@ -40,7 +40,7 @@
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Upload Dokumen">
+                  <el-form-item label="Upload Dokumen (MAX 10MB)">
                     <el-input
                       v-model="currentParam.link"
                       type="hidden"
@@ -90,8 +90,19 @@ export default {
     }
   },
   methods: {
-    handleFileUpload() {
+    handleFileUpload(e) {
       this.link = this.$refs.link.files[0];
+
+      if (this.link.size > 10485760){
+        this.showFileAlert();
+        return;
+      }
+    },
+
+    showFileAlert(){
+      this.$alert(`File Yang Diupload Melebihi 10 MB`, {
+        confirmButtonText: 'OK',
+      });
     },
     async saveMateri() {
       const formData = new FormData();

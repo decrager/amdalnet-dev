@@ -1,12 +1,11 @@
 <template>
 
   <div v-loading="fullLoading" class="form-container" style="margin: 2em;">
-    <el-card class="box-card">
+    <el-card id="element-to-convert" class="box-card">
       <workflow :is-penapisan="true" />
       <el-row :gutter="10">
-        <el-col
-          :span="12"
-        ><h2>Informasi rencana Usaha/Kegiatan</h2>
+        <el-col :span="12">
+          <h2>Informasi rencana Usaha/Kegiatan</h2>
           <el-table
             :data="list"
             style="width: 100%"
@@ -109,6 +108,10 @@
       <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
+        <el-button v-if="isProjectIdExist" @click="print()">Cetak PDF</el-button>
+      </div>
+      <div>
+        <img id="gambar" src="">
       </div>
     </el-card>
   </div>
@@ -184,6 +187,7 @@ export default {
       fullLoading: false,
       geomStyles: 1,
       mapPdf: '',
+      mapView: null,
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -209,13 +213,16 @@ export default {
       return this.$store.getters.lpjps;
     },
     isRiskShow() {
-      if (this.project.required_doc === 'UKL-UPL') {
+      if (this.project.required_doc != null) {
         if (this.$store.getters.isPemerintah) {
           return false;
         }
       }
 
       return true;
+    },
+    isProjectIdExist() {
+      return this.project.id;
     },
   },
   async mounted() {
@@ -240,6 +247,25 @@ export default {
     this.getMapPdf();
   },
   methods: {
+    async print() {
+      document.body.style.cursor = 'wait';
+      const options = {
+        width: 800,
+        height: 600,
+      };
+      const formData = new FormData();
+      formData.append('project_id', this.project.id);
+      const screenshot = await this.mapView.takeScreenshot(options);
+
+      formData.append('imageUrl', screenshot.dataUrl);
+
+      await axios.post('api/print-penapisan', formData).then((response) => {
+        document.body.style.cursor = 'default';
+        const link = document.createElement('a');
+        link.href = response.data;
+        link.click();
+      });
+    },
     tableRowClassName({ row, rowIndex }) {
       if (row.no === 'A' || row.no === 'B') {
         return 'bold-row';
@@ -257,22 +283,28 @@ export default {
     },
     setDataTables(){
       const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
+        var rmDecimalMain = ~~e.scale;
+        var	reverse = rmDecimalMain.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+        projectScale = projectScale.join('.').split('').reverse().join('');
         return {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.biz_name,
-          skala: e.scale + ' ' + (e.scale_unit || ''),
+          skala: projectScale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
       const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
+        var rmDecimalSupp = ~~e.scale;
+        var	reverse = rmDecimalSupp.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+        projectScale = projectScale.join('.').split('').reverse().join('');
         return {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.biz_name,
-          skala: e.scale + ' ' + (e.scale_unit || ''),
+          skala: projectScale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
@@ -352,8 +384,8 @@ export default {
                 opacity: 0.7,
                 popupTemplate: popupTemplate(propFields),
               });
-              mapView.on('layerview-create', (event) => {
-                mapView.goTo({
+              this.mapView.on('layerview-create', (event) => {
+                this.mapView.goTo({
                   target: geojsonLayerArray.fullExtent,
                 });
               });
@@ -365,25 +397,25 @@ export default {
             });
           });
 
-        const mapView = new MapView({
+        this.mapView = new MapView({
           container: 'mapView',
           map: map,
           center: [115.287, -1.588],
           zoom: 6,
         });
-        this.$parent.mapView = mapView;
+        this.$parent.mapView = this.mapView;
 
         const attribution = new Attribution({
-          view: mapView,
+          view: this.mapView,
         });
-        mapView.ui.add(attribution, 'manual');
+        this.mapView.ui.add(attribution, 'manual');
 
         const legend = new Legend({
-          view: mapView,
+          view: this.mapView,
           container: document.createElement('div'),
         });
         const layerList = new LayerList({
-          view: mapView,
+          view: this.mapView,
           container: document.createElement('div'),
           listItemCreatedFunction: this.defineActions,
         });
@@ -391,21 +423,21 @@ export default {
         layerList.on('trigger-action', (event) => {
           const id = event.action.id;
           if (id === 'full-extent') {
-            mapView.goTo({
+            this.mapView.goTo({
               target: event.item.layer.fullExtent,
             });
           }
         });
 
         const legendExpand = new Expand({
-          view: mapView,
+          view: this.mapView,
           content: legend.domNode,
           expandIconClass: 'esri-icon-collection',
           expandTooltip: 'Legend',
         });
 
-        mapView.ui.add(legendExpand, 'bottom-left');
-        mapView.ui.add(layerList, 'top-right');
+        this.mapView.ui.add(legendExpand, 'bottom-left');
+        this.mapView.ui.add(layerList, 'top-right');
       } else {
         const map = new Map({
           basemap: 'satellite',
@@ -444,8 +476,8 @@ export default {
             });
 
             map.add(geojsonLayer);
-            mapView.on('layerview-create', (event) => {
-              mapView.goTo({
+            this.mapView.on('layerview-create', (event) => {
+              this.mapView.goTo({
                 target: geojsonLayer.fullExtent,
               });
             });
@@ -453,21 +485,21 @@ export default {
         };
         fr.readAsArrayBuffer(this.mapUpload);
 
-        const mapView = new MapView({
+        this.mapView = new MapView({
           container: 'mapView',
           map: map,
           center: [115.287, -1.588],
           zoom: 6,
         });
-        this.$parent.mapView = mapView;
+        this.$parent.mapView = this.mapView;
 
         const layerList = new LayerList({
-          view: mapView,
+          view: this.mapView,
           container: document.createElement('div'),
           listItemCreatedFunction: this.defineActions,
         });
 
-        mapView.ui.add(layerList, 'top-right');
+        this.mapView.ui.add(layerList, 'top-right');
       }
     },
     handleAddExpertTable(){
@@ -663,6 +695,9 @@ export default {
         });
     },
     async updateList() {
+      var rmDecimal = ~~this.project.scale;
+      var	reverse = rmDecimal.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+      projectScale = projectScale.join('.').split('').reverse().join('');
       this.list = [
         {
           param: 'Nama Kegiatan',
@@ -674,7 +709,8 @@ export default {
         },
         {
           param: 'Skala/Besaran',
-          value: this.project.scale + ' ' + this.project.scale_unit,
+          // value: this.project.scale + ' ' + this.project.scale_unit,
+          value: projectScale + ' ' + this.project.scale_unit,
         },
         {
           param: 'Alamat',
@@ -694,7 +730,7 @@ export default {
         },
         {
           param: 'No. Telp Pemrakarsa',
-          value: this.project.initiatorData.phone,
+          value: '0' + this.project.initiatorData.phone,
         },
         {
           param: 'Email Pemrakarsa',

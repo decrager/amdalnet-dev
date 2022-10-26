@@ -12,7 +12,7 @@
         :data-id="comp.id"
         @click.self="select"
       >
-        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
+        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" :disabled="isReadOnly" @click="!isReadOnly && removeComponent(comp.id)" />
         <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
         {{ comp.name }}  <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
       </p>
@@ -22,7 +22,7 @@
         class="selected"
         @click.self="deSelect"
       >
-        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
+        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" :disabled="isReadOnly" @click="!isReadOnly && removeComponent(comp.id)" />
         <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
         <!-- <el-button type="primary" icon="el-icon-close" size="mini" plain circle style="float:right; width:20px; padding: 3px 0;" @click="deSelect(comp.id)" />-->
         {{ comp.name }} <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
@@ -40,6 +40,8 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'ComponentsList',
   props: {
@@ -80,7 +82,59 @@ export default {
       selected: [],
     };
   },
-
+  computed: {
+    ...mapGetters({
+      markingStatus: 'markingStatus',
+    }),
+    isReadOnly() {
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.returned',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.returned',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+      console.log({ gun: this.markingStatus });
+      return data.includes(this.markingStatus);
+    },
+  },
   watch: {
     deSelectAll: function(val) {
       // console.log('deselect? ' + this.id, val);
@@ -89,7 +143,6 @@ export default {
       }
     },
   },
-
   methods: {
     removeComponent(id){
       // const e = this.components.find( c => c.id === id);

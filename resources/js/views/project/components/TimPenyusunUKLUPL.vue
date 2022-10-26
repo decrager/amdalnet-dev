@@ -2,6 +2,19 @@
   <div class="form-container" style="margin: 24px">
     <el-card>
       <h3>Daftar Tim Penyusun Kegiatan</h3>
+      <div role="alert" class="el-alert el-alert--info is-light" style="margin-top: 10px; margin-bottom: 10px">
+        <div class="el-alert__content">
+          <p class="el-alert__description">
+            <b>Penyusunan UKL-UPL:</b>
+            <ul>
+              <li>Dapat dilakukan oleh pemrakarsa secara mandiri</li>
+              <li>Setiap penyusunan UKL-UPL (termasuk apabila dilakukan oleh pemrakasa sendiri), wajib membuat akun penyusun di amdalnet melalui <span style="color: blue" @click="logout">link</span> berikut</li>
+              <li>Apabila penyusun sudah memiliki akun, silahkan cari nama penyusun pada tombol pencarian dibawah</li>
+              <li>Untuk penyusunan UKL-UPL tidak harus dari KTPA atau ATPA</li>
+            </ul>
+          </p>
+        </div>
+      </div>
       <el-row :gutter="32">
         <el-col :sm="24" :md="12">
           <el-row :gutter="32">
@@ -54,6 +67,12 @@
             <el-table-column label="Nama" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.row.name }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="Email" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.email }}</span>
               </template>
             </el-table-column>
 
@@ -169,6 +188,7 @@ export default {
           id_formulator: members.id,
           expertise: members.expertise,
           cv_file: members.cv_file,
+          email: members.email,
           reg_no: members.reg_no,
           membership_status: members.membership_status,
           cert_file: members.cert_file,
@@ -231,6 +251,12 @@ export default {
       await this.getTimPenyusun();
 
       this.loadingSubmit = false;
+    },
+    logout() {
+      this.$store.dispatch('user/logout').then(() => {
+        // this.$store.dispatch('user/setPage', 'register')
+        this.$router.push({ path: '/login' });
+      });
     },
     download(url) {
       window.open(url, '_blank').focus();

@@ -42,7 +42,7 @@
             </el-button>
           </el-form-item>
           <el-row type="flex" class="row-bg" justify="space-between">
-            <el-button type="text" style="background-color: transparent; color: blue;">Lupa Kata Sandi?</el-button>
+            <!-- <el-button type="text" style="background-color: transparent; color: blue;">Lupa Kata Sandi?</el-button> -->
             <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak Memiliki Akun? <span style="color: red">Buat Akun Baru</span> </el-button>
           </el-row>
         </el-form>
@@ -71,8 +71,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Unggah Dokumen NIB dari OSS (Max 10MB)" prop="fileNibDocOss">
-                  <classic-upload :name="fileNibDocOssName" :fid="'nibDocOssFile'" @handleFileUpload="handleFilenibDocOssUpload($event)" />
+                <el-form-item label="Unggah Dokumen NIB dan SPPL dari OSS" prop="fileNibDocOss">
+                  <classic-upload :name="fileNibDocOssName" style="border: 0px !important" :fid="'nibDocOssFile'" @handleFileUpload="handleFilenibDocOssUpload($event)" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -110,6 +110,7 @@
                 <el-form-item prop="province" :label="$t('login.province')">
                   <el-select
                     v-model="registrationForm.province"
+                    filterable
                     name="province"
                     :placeholder="$t('login.province')"
                     style="width: 100%"
@@ -128,6 +129,7 @@
                 <el-form-item prop="district" :label="$t('login.district')">
                   <el-select
                     v-model="registrationForm.district"
+                    filterable
                     name="district"
                     :placeholder="$t('login.district')"
                     style="width: 100%"
@@ -254,6 +256,7 @@
                 <el-form-item prop="province" :label="$t('login.province')">
                   <el-select
                     v-model="registrationForm.province"
+                    filterable
                     name="province"
                     :placeholder="$t('login.province')"
                     style="width: 100%"
@@ -272,6 +275,7 @@
                 <el-form-item prop="district" :label="$t('login.district')">
                   <el-select
                     v-model="registrationForm.district"
+                    filterable
                     name="district"
                     :placeholder="$t('login.district')"
                     style="width: 100%"
@@ -388,6 +392,7 @@
                 <el-form-item prop="province" :label="$t('login.province')">
                   <el-select
                     v-model="registrationForm.province"
+                    filterable
                     name="province"
                     :placeholder="$t('login.province')"
                     style="width: 100%"
@@ -406,6 +411,7 @@
                 <el-form-item prop="district" :label="$t('login.district')">
                   <el-select
                     v-model="registrationForm.district"
+                    filterable
                     name="district"
                     :placeholder="$t('login.district')"
                     style="width: 100%"
@@ -732,6 +738,50 @@ export default {
         {
           value: 'pt',
           label: 'Perseroan Terbatas (PT)',
+        },
+        {
+          value: 'ptpr',
+          label: 'Perseroan Terbatas (PT) Perorangan',
+        },
+        {
+          value: 'cv',
+          label: 'Persekutuan Komanditer (CV / Commanditaire Vennootschap)',
+        },
+        {
+          value: 'fa',
+          label: 'Persekutuan Firma (FA / Vennootschap Onder Firma)',
+        },
+        {
+          value: 'pp',
+          label: 'Persekutuan Perdata',
+        },
+        {
+          value: 'kpi',
+          label: 'Koperasi',
+        },
+        {
+          value: 'pap',
+          label: 'Persyarikatan atau Perkumpulan',
+        },
+        {
+          value: 'ysn',
+          label: 'Yayasan',
+        },
+        {
+          value: 'perum',
+          label: 'Perusahaan Umum (Perum)',
+        },
+        {
+          value: 'perumda',
+          label: 'Perusahaan Umum Daerah (Perumda)',
+        },
+        {
+          value: 'blu',
+          label: 'Badan Layanan Umum',
+        },
+        {
+          value: 'bhl',
+          label: 'Badan Hukum Lainnya',
         },
       ],
       form: 'login',

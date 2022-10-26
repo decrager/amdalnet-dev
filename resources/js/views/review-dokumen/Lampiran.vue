@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/html-indent -->
 <template>
   <div style="margin-top: 30px">
-    <el-button :loading="loadingAll" type="warning" @click="downloadAll">
+    <el-button :loading="loadingAll" type="warning" :disabled="isRequiredDocUklUpl" @click="downloadAll">
       Unduh Semua File
     </el-button>
     <el-table
@@ -32,7 +32,7 @@
           <a
             v-else-if="
               scope.row.generate &&
-              scope.row.name === 'a. Saran, Pendapat dan Tanggapan Masyarakat'
+              scope.row.name === ' Saran, Pendapat dan Tanggapan Masyarakat'
             "
             href="#"
             class="link-lampiran"
@@ -43,7 +43,7 @@
           </a>
           <a
             v-else-if="
-              scope.row.generate && scope.row.name === 'b. Konsultasi Publik'
+              scope.row.generate && scope.row.name === 'Konsultasi Publik'
             "
             href="#"
             class="link-lampiran"
@@ -106,6 +106,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import axios from 'axios';
 const kaReviewResource = new Resource('ka-reviews');
@@ -121,6 +122,15 @@ export default {
       loadingExternalFile: {},
       loadingPublicConsultation: false,
     };
+  },
+  computed: {
+    ...mapGetters({
+      requiredDoc: 'requiredDoc',
+    }),
+    isRequiredDocUklUpl() {
+      console.log({ gun: this.requiredDoc });
+      return this.requiredDoc === 'AMDAL';
+    },
   },
   created() {
     this.getAttachment();
