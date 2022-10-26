@@ -21,6 +21,13 @@ const projectRoutes = {
         permissions: ['view menu project'],
       },
     },
+    {
+      path: 'edit/:id',
+      component: () => import('@/views/project/Create'),
+      name: 'editProject',
+      hidden: true,
+      meta: { title: 'editProject', icon: 'apps-sort' },
+    },
     // {
     //   path: 'post',
     //   component: () => import('@/views/project'),
