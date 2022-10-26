@@ -94,7 +94,9 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="fileMap">
                     <div slot="label">
-                      <span>* Upload SHP Peta Tapak Proyek (File-File SHP yang sudah di-zip,max 10 MB)</span>
+                      <span>* Upload SHP Peta Tapak Proyek (File-File SHP yang sudah di-zip,max 10 MB) <el-tooltip class="item" effect="dark" content="File SHP yang diupload dalam Zip hanya terbatas 1 layer saja yang bisa dibaca sistem. Jika terdapat beberapa polygon tapak proyek, silakan masukkan dalam 1 layer SHP Peta Tapak Proyek" placement="top">
+                        <i class="el-alert__icon el-icon-warning" />
+                      </el-tooltip></span>
                       <div>
                         <a href="/sample_map/template_shp_tapak_proyek_amdalnet.zip" class="download__sample" title="Download Sample SHP" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
                         <a href="/JUKNIS-DATA-SPASIAL-AMDALNET-PEMRAKARSA-TAPAK-PROYEK.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
@@ -2043,10 +2045,38 @@ export default {
 
       this.map.add(sigapLayer);
 
-      const errors = [];
       const fr = new FileReader();
       fr.onload = (event) => {
         const base = event.target.result;
+        const zip = new JSZip();
+
+        zip.loadAsync(base).then(function(zip) {
+          let count = 0;
+          zip.forEach((item) => {
+            if (item.includes('.shp')) {
+              count++;
+            }
+          });
+          if (count > 1) {
+            document.getElementById('fileMap').value = '';
+            this.fileMapName = 'No File Selected';
+            this.fileMap = null;
+            this.isMapUploaded = false;
+            return this.$alert('File SHP yang di upload lebih dari 1', {
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
+          }
+        });
+
         shp(base).then((datas) => {
           const mapSampleProperties = [
             'PEMRAKARSA',
@@ -2057,24 +2087,6 @@ export default {
             'LAYER',
           ];
 
-          const zip = new JSZip();
-          const that = this;
-          zip.loadAsync(base).then(function(zip) {
-            let count = 0;
-            zip.forEach((item, index) => {
-              if (item.includes('.shp')) {
-                count++;
-              }
-            });
-            if (count > 1) {
-              errors.push('File SHP yang di upload lebih dari 1');
-              that.$alert('File SHP yang di upload lebih dari 1', {
-                confirmButtonText: 'OK',
-              });
-              return;
-            }
-          });
-          console.log({ guns_cahyo: 'gun' });
           const mapUploadProperties = Object.keys(datas.features[0].properties);
           var getPropFields = datas.features[0].properties;
 
@@ -2096,9 +2108,19 @@ export default {
           if (datas.features[0].geometry.type !== 'Polygon') {
             document.getElementById('fileMap').value = '';
             this.fileMapName = 'No File Selected';
-            errors.push('SHP yang dimasukkan harus Polygon!');
+            this.fileMap = null;
+            this.isMapUploaded = false;
             return this.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
-              confirmButtonText: 'Confirm',
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
             });
           }
 
@@ -2110,8 +2132,10 @@ export default {
           if (!checkShapefile) {
             document.getElementById('fileMap').value = '';
             this.fileMapName = 'No File Selected';
+            this.fileMap = null;
+            this.isMapUploaded = false;
             return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
-              confirmButtonText: 'Confirm',
+              confirmButtonText: 'Download Sample',
               callback: action => {
                 this.$notify({
                   type: 'warning',
@@ -2159,24 +2183,25 @@ export default {
             });
           });
         }).catch((result) => {
-          console.log({ result });
-          errors.push('Mohon maaf file yang anda upload tidak terdapat file SHP');
-          return;
+          document.getElementById('fileMap').value = '';
+          this.fileMapName = 'No File Selected';
+          this.fileMap = null;
+          this.isMapUploaded = false;
+          return this.$alert('File yang anda upload tidak terdapat file .shp', 'Format Salah', {
+            confirmButtonText: 'Download Sample',
+            callback: action => {
+              this.$notify({
+                type: 'warning',
+                title: 'Perhatian!',
+                message: 'Download Sample Peta Yang Telah Disediakan!!',
+                duration: 5000,
+              });
+              window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+            },
+          });
         });
       };
       fr.readAsArrayBuffer(this.fileMap);
-
-      console.log({ error: errors[0] });
-
-      console.log(errors.length);
-
-      if (errors.length > 0) {
-        console.log(errors.length);
-        this.$alert(errors[0], {
-          confirmButtonText: 'OK',
-        });
-        return;
-      }
 
       const mapView = new MapView({
         container: 'mapView',
