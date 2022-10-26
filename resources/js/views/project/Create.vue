@@ -845,6 +845,7 @@ import centroid from '@turf/centroid';
 import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
 import Print from '@arcgis/core/widgets/Print';
 import editor from '@/components/Tinymce';
+import JSZip from 'jszip';
 
 export default {
   name: 'CreateProject',
@@ -2042,6 +2043,7 @@ export default {
 
       this.map.add(sigapLayer);
 
+      const errors = [];
       const fr = new FileReader();
       fr.onload = (event) => {
         const base = event.target.result;
@@ -2055,6 +2057,24 @@ export default {
             'LAYER',
           ];
 
+          const zip = new JSZip();
+          const that = this;
+          zip.loadAsync(base).then(function(zip) {
+            let count = 0;
+            zip.forEach((item, index) => {
+              if (item.includes('.shp')) {
+                count++;
+              }
+            });
+            if (count > 1) {
+              errors.push('File SHP yang di upload lebih dari 1');
+              that.$alert('File SHP yang di upload lebih dari 1', {
+                confirmButtonText: 'OK',
+              });
+              return;
+            }
+          });
+          console.log({ guns_cahyo: 'gun' });
           const mapUploadProperties = Object.keys(datas.features[0].properties);
           var getPropFields = datas.features[0].properties;
 
@@ -2076,6 +2096,7 @@ export default {
           if (datas.features[0].geometry.type !== 'Polygon') {
             document.getElementById('fileMap').value = '';
             this.fileMapName = 'No File Selected';
+            errors.push('SHP yang dimasukkan harus Polygon!');
             return this.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
               confirmButtonText: 'Confirm',
             });
@@ -2137,9 +2158,25 @@ export default {
               target: geojsonLayer.fullExtent,
             });
           });
+        }).catch((result) => {
+          console.log({ result });
+          errors.push('Mohon maaf file yang anda upload tidak terdapat file SHP');
+          return;
         });
       };
       fr.readAsArrayBuffer(this.fileMap);
+
+      console.log({ error: errors[0] });
+
+      console.log(errors.length);
+
+      if (errors.length > 0) {
+        console.log(errors.length);
+        this.$alert(errors[0], {
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
 
       const mapView = new MapView({
         container: 'mapView',
