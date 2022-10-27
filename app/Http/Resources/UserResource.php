@@ -42,7 +42,7 @@ class UserResource extends JsonResource
                 },
                 $this->getAllPermissions()->toArray()
             ),
-            'notifications' => $this->notifications,
+            // 'notifications' => $this->notifications,
             'avatar' => $avatar, // 'avatar' => $this->avatar,
         ];
     }

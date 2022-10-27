@@ -722,8 +722,13 @@ export default {
             });
           }
 
-          this.geomEcologyGeojson = data.features[0].geometry;
-          this.geomEcologyProperties = data.features[0].properties;
+          this.geomEcologyGeojson = [];
+          this.geomEcologyProperties = [];
+
+          data.features.map((value, index) => {
+            this.geomEcologyGeojson.push(value.geometry);
+            this.geomEcologyProperties.push(value.properties);
+          });
 
           var propFields = Object.entries(this.geomEcologyProperties).reduce(function(a, _a) {
             var key = _a[0], value = _a[1];
@@ -800,8 +805,13 @@ export default {
             });
           }
 
-          this.geomSocialGeojson = data.features[0].geometry;
-          this.geomSocialProperties = data.features[0].properties;
+          this.geomSocialGeojson = [];
+          this.geomSocialProperties = [];
+
+          data.features.map((value, index) => {
+            this.geomSocialGeojson.push(value.geometry);
+            this.geomSocialProperties.push(value.properties);
+          });
 
           var propFields = Object.entries(this.geomSocialProperties).reduce(function(a, _a) {
             var key = _a[0], value = _a[1];
@@ -880,8 +890,13 @@ export default {
             });
           }
 
-          this.geomStudyGeojson = data.features[0].geometry;
-          this.geomStudyProperties = data.features[0].properties;
+          this.geomStudyGeojson = [];
+          this.geomStudyProperties = [];
+
+          data.features.map((value, index) => {
+            this.geomStudyGeojson.push(value.geometry);
+            this.geomStudyProperties.push(value.properties);
+          });
 
           var propFields = Object.entries(this.geomStudyProperties).reduce(function(a, _a) {
             var key = _a[0], value = _a[1];

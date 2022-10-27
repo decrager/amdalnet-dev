@@ -55,7 +55,8 @@
     "webpack": "^4.46.0",
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-chunk-rename-plugin": "^1.0.3",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "@vue/compiler-dom": "^3.2.41"
   },
   "dependencies": {
     "@arcgis/core": "^4.21.2",
