@@ -77,6 +77,7 @@ export default {
     listProjectProcess: 'Examining',
     listProjectIssued: 'Issued',
     addProject: 'Add Project',
+    editProject: 'Edit Project',
     publishProject: 'publish Project',
     initiator: 'Initiator',
     masterData: 'Master Data',
