@@ -92,6 +92,7 @@ final class Acl
     const PERMISSION_VIEW_MENU_RONA_AWAL = 'view menu examiner rona awal';
     const PERMISSION_VIEW_MENU_TUK_MEMBER_LIST = 'view menu tuk member list';
     const PERMISSION_VIEW_MENU_MATERIALS_AND_POLICIES = 'view menu materials and policies';
+    const PERMISSION_VIEW_MENU_EXAMINER_SECRETARY = 'view menu examiner secretary';
     const PERMISSION_VIEW_MENU_PERMISSION_LIST = 'view menu permission list';
     const PERMISSION_VIEW_MENU_ENV_APPROVE = 'view menu env approve';
     const PERMISSION_VIEW_MENU_UKL_UPL = 'view menu ukl upl';
