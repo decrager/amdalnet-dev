@@ -26,6 +26,41 @@ const masterRoutes = {
   },
   children: [
     {
+      path: 'lsp',
+      component: () => import('@/views/lsp/index'),
+      name: 'LSP',
+      meta: {
+        title: 'LSP',
+        icon: 'documentation',
+        noCache: true,
+        permissions: ['view menu lsp'],
+      },
+    },
+    {
+      path: 'lsp/create',
+      component: () => import('@/views/lsp/Create'),
+      name: 'createLSP',
+      hidden: true,
+      meta: {
+        title: 'Tambah LSP',
+        icon: 'documentation',
+        noCache: true,
+        permissions: ['manage lsp'],
+      },
+    },
+    {
+      path: 'lsp/edit/:id',
+      component: () => import('@/views/lsp/Create'),
+      name: 'editLsp',
+      hidden: true,
+      meta: {
+        title: 'Edit LSP',
+        icon: 'documentation',
+        noCache: true,
+        permissions: ['manage lsp'],
+      },
+    },
+    {
       path: '/provinces',
       component: () => import('@/views/master-data/province'),
       name: 'province',
