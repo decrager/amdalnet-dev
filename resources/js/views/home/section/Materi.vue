@@ -165,7 +165,7 @@ export default {
       },
       keyword: '',
       optionValue: null,
-      sort: 'ASC',
+      sort: 'DESC',
       limit: 10,
     };
   },
