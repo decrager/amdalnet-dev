@@ -2,17 +2,6 @@
   <div class="app-container" style="padding: 24px">
     <el-card>
       <div class="filter-container">
-        <el-button
-          v-if="
-            checkPermission(['manage tuk member list']) || checkRole(['admin'])
-          "
-          class="filter-item"
-          type="primary"
-          icon="el-icon-plus"
-          @click="handleSubmitRoute"
-        >
-          {{ 'Tambah Anggota TUK' }}
-        </el-button>
         <el-row :gutter="32">
           <el-col :sm="24" :md="10">
             <el-input
@@ -55,7 +44,7 @@ import Resource from '@/api/resource';
 const employeeTukResource = new Resource('employee-tuk');
 
 export default {
-  name: 'Employee',
+  name: 'KepalaSekretariat',
   components: {
     EmployeeTable,
     Pagination,
@@ -67,7 +56,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        type: 'list',
+        type: 'listKepalaSekretariat',
         search: null,
       },
       total: 0,
