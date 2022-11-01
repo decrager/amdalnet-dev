@@ -239,6 +239,7 @@ export default {
       'view menu profile': 'view menu profil',
       'view menu examiner team': 'view menu tim penguji',
       'manage lpjp': 'kelola lpjp',
+      'manage lsp': 'kelola lsp',
       'manage formulator team': 'mengelola tim perumus',
       'manage luk': 'kelola luk',
       'manage component': 'mengelola komponen',

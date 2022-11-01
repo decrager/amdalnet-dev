@@ -2325,7 +2325,7 @@ export default {
       });
 
       this.map.add(sigapLayer);
-
+      const that = this;
       const fr = new FileReader();
       fr.onload = (event) => {
         const base = event.target.result;
@@ -2338,60 +2338,13 @@ export default {
               count++;
             }
           });
+
           if (count > 1) {
             document.getElementById('fileMap').value = '';
-            this.fileMapName = 'No File Selected';
-            this.fileMap = null;
-            this.isMapUploaded = false;
-            return this.$alert('File SHP yang di upload lebih dari 1', {
-              confirmButtonText: 'Download Sample',
-              callback: action => {
-                this.$notify({
-                  type: 'warning',
-                  title: 'Perhatian!',
-                  message: 'Download Sample Peta Yang Telah Disediakan!!',
-                  duration: 5000,
-                });
-                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
-              },
-            });
-          }
-        });
-
-        shp(base).then((datas) => {
-          const mapSampleProperties = [
-            'PEMRAKARSA',
-            'KEGIATAN',
-            'TAHUN',
-            'PROVINSI',
-            'KETERANGAN',
-            'LAYER',
-          ];
-
-          const mapUploadProperties = Object.keys(datas.features[0].properties);
-          var getPropFields = datas.features[0].properties;
-
-          var propFields = Object.entries(getPropFields).reduce(function(a, _a) {
-            var key = _a[0], value = _a[1];
-            a[key.toUpperCase()] = value;
-            return a;
-          }, {});
-
-          var centroids = centroid(datas.features[0]);
-          var getCoordinates = centroids.geometry.coordinates;
-
-          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
-            .then(response => response.json())
-            .then(data => {
-              this.full_address = data.display_name;
-            });
-
-          if (datas.features[0].geometry.type !== 'Polygon') {
-            document.getElementById('fileMap').value = '';
-            this.fileMapName = 'No File Selected';
-            this.fileMap = null;
-            this.isMapUploaded = false;
-            return this.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
+            that.fileMapName = 'No File Selected';
+            that.fileMap = null;
+            that.isMapUploaded = false;
+            return that.$alert('File SHP yang di upload lebih dari 1', {
               confirmButtonText: 'Download Sample',
               callback: action => {
                 this.$notify({
@@ -2405,80 +2358,128 @@ export default {
             });
           }
 
-          const checker = (arr, target) => target.every(v => arr.includes(v));
-          const validDataSet = mapSampleProperties.map(element => element.toLowerCase());
-          const uploadDataSet = mapUploadProperties.map(element => element.toLowerCase());
-          const checkShapefile = checker(uploadDataSet, validDataSet);
+          shp(base).then((datas) => {
+            const mapSampleProperties = [
+              'PEMRAKARSA',
+              'KEGIATAN',
+              'TAHUN',
+              'PROVINSI',
+              'KETERANGAN',
+              'LAYER',
+            ];
 
-          if (!checkShapefile) {
-            document.getElementById('fileMap').value = '';
-            this.fileMapName = 'No File Selected';
-            this.fileMap = null;
-            this.isMapUploaded = false;
-            return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
-              confirmButtonText: 'Download Sample',
-              callback: action => {
-                this.$notify({
-                  type: 'warning',
-                  title: 'Perhatian!',
-                  message: 'Download Sample Peta Yang Telah Disediakan!!',
-                  duration: 5000,
-                });
-                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
-              },
-            });
-          }
+            const mapUploadProperties = Object.keys(datas.features[0].properties);
+            var getPropFields = datas.features[0].properties;
 
-          const blob = new Blob([JSON.stringify(datas)], {
-            type: 'application/json',
-          });
+            var propFields = Object.entries(getPropFields).reduce(function(a, _a) {
+              var key = _a[0], value = _a[1];
+              a[key.toUpperCase()] = value;
+              return a;
+            }, {});
 
-          const renderer = {
-            type: 'simple',
-            field: '*',
-            symbol: {
-              type: 'simple-fill',
-              color: [200, 0, 0, 1],
-              outline: {
-                color: [200, 0, 0, 1],
-              },
-            },
-          };
-          const url = URL.createObjectURL(blob);
+            var centroids = centroid(datas.features[0]);
+            var getCoordinates = centroids.geometry.coordinates;
 
-          const geojsonLayer = new GeoJSONLayer({
-            url: url,
-            visible: true,
-            outFields: ['*'],
-            opacity: 0.75,
-            title: 'Peta Tapak Proyek',
-            renderer: renderer,
-            popupTemplate: popupTemplate(propFields),
-          });
-
-          this.map.add(geojsonLayer);
-          this.currentTapakProyekLayer = geojsonLayer;
-          mapView.on('layerview-create', async(event) => {
-            await mapView.goTo({
-              target: geojsonLayer.fullExtent,
-            });
-          });
-        }).catch((result) => {
-          document.getElementById('fileMap').value = '';
-          this.fileMapName = 'No File Selected';
-          this.fileMap = null;
-          this.isMapUploaded = false;
-          return this.$alert('File yang anda upload tidak terdapat file .shp', 'Format Salah', {
-            confirmButtonText: 'Download Sample',
-            callback: action => {
-              this.$notify({
-                type: 'warning',
-                title: 'Perhatian!',
-                message: 'Download Sample Peta Yang Telah Disediakan!!',
-                duration: 5000,
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
+              .then(response => response.json())
+              .then(data => {
+                that.full_address = data.display_name;
               });
-              window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
-            },
+
+            if (datas.features[0].geometry.type !== 'Polygon') {
+              document.getElementById('fileMap').value = '';
+              that.fileMapName = 'No File Selected';
+              that.fileMap = null;
+              that.isMapUploaded = false;
+              return that.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
+                confirmButtonText: 'Download Sample',
+                callback: action => {
+                  that.$notify({
+                    type: 'warning',
+                    title: 'Perhatian!',
+                    message: 'Download Sample Peta Yang Telah Disediakan!!',
+                    duration: 5000,
+                  });
+                  window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+                },
+              });
+            }
+
+            const checker = (arr, target) => target.every(v => arr.includes(v));
+            const validDataSet = mapSampleProperties.map(element => element.toLowerCase());
+            const uploadDataSet = mapUploadProperties.map(element => element.toLowerCase());
+            const checkShapefile = checker(uploadDataSet, validDataSet);
+
+            if (!checkShapefile) {
+              document.getElementById('fileMap').value = '';
+              that.fileMapName = 'No File Selected';
+              that.fileMap = null;
+              that.isMapUploaded = false;
+              return that.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+                confirmButtonText: 'Download Sample',
+                callback: action => {
+                  that.$notify({
+                    type: 'warning',
+                    title: 'Perhatian!',
+                    message: 'Download Sample Peta Yang Telah Disediakan!!',
+                    duration: 5000,
+                  });
+                  window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+                },
+              });
+            }
+
+            const blob = new Blob([JSON.stringify(datas)], {
+              type: 'application/json',
+            });
+
+            const renderer = {
+              type: 'simple',
+              field: '*',
+              symbol: {
+                type: 'simple-fill',
+                color: [200, 0, 0, 1],
+                outline: {
+                  color: [200, 0, 0, 1],
+                },
+              },
+            };
+            const url = URL.createObjectURL(blob);
+
+            const geojsonLayer = new GeoJSONLayer({
+              url: url,
+              visible: true,
+              outFields: ['*'],
+              opacity: 0.75,
+              title: 'Peta Tapak Proyek',
+              renderer: renderer,
+              popupTemplate: popupTemplate(propFields),
+            });
+
+            that.map.add(geojsonLayer);
+            that.currentTapakProyekLayer = geojsonLayer;
+            mapView.on('layerview-create', async(event) => {
+              await mapView.goTo({
+                target: geojsonLayer.fullExtent,
+              });
+            });
+          }).catch((result) => {
+            document.getElementById('fileMap').value = '';
+            that.fileMapName = 'No File Selected';
+            that.fileMap = null;
+            that.isMapUploaded = false;
+            return that.$alert('File yang anda upload tidak terdapat file .shp', 'Format Salah', {
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                that.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
           });
         });
       };

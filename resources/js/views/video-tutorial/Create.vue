@@ -10,7 +10,8 @@
             <div class="form-container">
               <el-form>
                 <el-row>
-                  <el-form-item label="Jenis Tutorial">
+                  <el-form-item :class="{ 'is-error': errors.tutorial_type }">
+                    <label style="color: #606266">Jenis Tutorial<small style="color: red">*</small></label>
                     <el-select v-model="value" placeholder="Jenis Tutorial" style="width:100%">
                       <el-option
                         v-for="item in form.tutorial_type"
@@ -19,18 +20,22 @@
                         :value="item.value"
                       />
                     </el-select>
+                    <small v-if="errors.tutorial_type" style="color: #f56c6c">Jenis Tutorial Wajib Diisi</small>
                   </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Video">
+                  <el-form-item :class="{ 'is-error': errors.video_upload || errors.video_maks }">
+                    <label style="color: #606266">Video (Maksimal 40 MB)<small style="color: red">*</small></label>
                     <input
                       ref="file"
                       type="file"
                       class="el-input__inner"
                       @change="handleFileUpload()"
                     >
+                    <small v-if="errors.video_upload" style="color: #f56c6c">Video Wajib Diisi</small>
+                    <small v-if="errors.video_maks" style="color: #f56c6c">Ukuran File Video Terlalu Besar</small>
                   </el-form-item>
                 </el-row>
               </el-form>
@@ -39,7 +44,7 @@
                 <el-button
                   type="primary"
                   icon="el-icon-s-claim"
-                  @click="saveVideoTutorial()"
+                  @click="checkSubmit"
                 >
                   Simpan
                 </el-button>
@@ -59,6 +64,11 @@ export default {
   data() {
     return {
       file: '',
+      errors: {
+        tutorial_type: null,
+        video_upload: null,
+        video_maks: null,
+      },
       form: {
         tutorial_type: [
           {
@@ -82,6 +92,28 @@ export default {
   methods: {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
+    },
+    checkSubmit() {
+      this.resetErrors();
+
+      let errors = 0;
+
+      if (!this.value) {
+        errors++;
+        this.errors.tutorial_type = true;
+      }
+
+      if (!this.file) {
+        errors++;
+        this.errors.video_upload = true;
+      } else if (this.$refs.file.files[0].size > 1024 * 1024 * 40) {
+        errors++;
+        this.errors.video_maks = true;
+      }
+
+      if (errors === 0) {
+        this.saveVideoTutorial();
+      }
     },
     async saveVideoTutorial() {
       console.log(this.value);
@@ -109,6 +141,13 @@ export default {
             duration: 5 * 1000,
           });
         });
+    },
+    resetErrors() {
+      this.errors = {
+        tutorial_type: null,
+        video_upload: null,
+        video_maks: null,
+      };
     },
     handleCancel() {
       this.$router.push({
@@ -150,5 +189,11 @@ export default {
   justify-content: right;
   display: flex;
   margin-top: 1rem;
+}
+</style>
+
+<style>
+.is-error {
+  border-color: #f56c6c;
 }
 </style>

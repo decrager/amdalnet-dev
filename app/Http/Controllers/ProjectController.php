@@ -1345,10 +1345,10 @@ class ProjectController extends Controller
         $listSubProject = array_values($dataProject->listSubProject->sortByDesc('type')->toArray());
         foreach ($listSubProject as $key => $subProject) {
             $dataDaftarKegiatan[$key]['no'] = $numberSubProject++;
-            $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['type'] ?? '-');
+            $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['biz_name'] ?? '-');
             $dataDaftarKegiatan[$key]['jenis_keg'] = ucwords($subProject['type'] ?? '-');
             $dataDaftarKegiatan[$key]['nama_kegiatan'] = $subProject['name'] ?? '-';
-            $dataDaftarKegiatan[$key]['skala_besaran'] = ($subProject['scale'] ?? '0') . ' ' . $subProject['scale_unit'];
+            $dataDaftarKegiatan[$key]['skala_besaran'] = ($subProject['scale'] ?? '0') . ' ' . str_replace('(menengah tinggi)', '', $subProject['scale_unit']);
         }
 
         foreach ($dataProject->address as $key => $a) {
