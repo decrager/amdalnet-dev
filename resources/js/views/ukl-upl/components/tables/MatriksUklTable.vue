@@ -147,9 +147,10 @@
         <el-table-column label="Periode">
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
-              <el-input-number
+              <el-input
                 v-model="scope.row.env_manage_plan.period_number"
                 :min="0"
+                type="number"
                 :max="100"
                 :disabled="!isFormulator || isReadOnly"
                 size="mini"

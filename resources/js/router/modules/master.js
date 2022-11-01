@@ -22,6 +22,7 @@ const masterRoutes = {
       'view menu ukl upl',
       'view menu sop management',
       'view menu video tutorial',
+      'view menu examiner secretary',
     ],
   },
   children: [
@@ -368,6 +369,17 @@ const masterRoutes = {
         icon: 'documentation',
         noCache: true,
         permissions: ['view menu materials and policies'],
+      },
+    },
+    {
+      path: 'master-data/kepala-sekretariat',
+      component: () => import('@/views/master-kepala-sekretariat/index'),
+      name: 'KepalaSekretariat',
+      meta: {
+        title: 'Kepala Sekretariat',
+        icon: 'documentation',
+        noCache: true,
+        permissions: ['view menu examiner secretary'],
       },
     },
     {
