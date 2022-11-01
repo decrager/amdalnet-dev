@@ -517,6 +517,26 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row v-if="registrationForm.isCertified" :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="id_lsp" :label="$t('login.lspName')">
+                  <el-select
+                    v-model="registrationForm.id_lsp"
+                    filterable
+                    name="lsp"
+                    :placeholder="$t('login.lspName')"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in lspOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-form>
         </el-row>
         <el-row type="flex" justify="space-between">
@@ -582,6 +602,7 @@ import { validEmail } from '@/utils/validate';
 import { csrf } from '@/api/auth';
 import Resource from '@/api/resource';
 import ClassicUpload from '@/components/ClassicUpload';
+const lspResource = new Resource('lsp');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const initiatorResource = new Resource('initiators');
@@ -712,6 +733,7 @@ export default {
       registrationForm: {},
       provinceOptions: [],
       districtOptions: [],
+      lspOptions: [],
       agencyTypeoptions: [
         {
           value: 'Kementerian',
@@ -806,6 +828,7 @@ export default {
   },
   mounted() {
     this.getProvinces();
+    this.getLsp();
   },
   methods: {
     onChangeRadioUserType(){
@@ -955,6 +978,14 @@ export default {
       const { data } = await provinceResource.list({});
       this.provinceOptions = data.map((i) => {
         return { value: i.id, label: i.name };
+      });
+    },
+    async getLsp() {
+      const { data } = await lspResource.list({
+        options: 'true',
+      });
+      this.lspOptions = data.map((i) => {
+        return { value: i.id, label: i.lsp_name };
       });
     },
     handleReg(){

@@ -301,6 +301,8 @@ export default {
               });
 
               this.mapGeojsonArrayProject.push(geojsonLayerArray);
+              map.addMany(this.mapGeojsonArrayProject);
+              console.log({ gunk: this.mapGeojsonArrayProject });
             }
           });
         });
@@ -312,26 +314,6 @@ export default {
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
             const propStyles = getType.features[0].properties.styles;
-
-            // Tapak
-            if (propType === 'tapak') {
-              const geojsonLayerArray = new GeoJSONLayer({
-                url: urlBlob(item.feature_layer),
-                outFields: ['*'],
-                visible: true,
-                title: 'Layer Tapak Proyek',
-                renderer: propStyles,
-                popupTemplate: popupTemplate(propFields),
-              });
-
-              mapView.on('layerview-create', async function() {
-                await mapView.goTo({
-                  target: geojsonLayerArray.fullExtent,
-                });
-              });
-
-              this.mapGeojsonArrayProject.push(geojsonLayerArray);
-            }
 
             // Pemantauan
             if (propType === 'pemantauan') {
@@ -388,7 +370,6 @@ export default {
 
               this.mapGeojsonArrayProject.push(geojsonLayerArray);
             }
-
             map.addMany(this.mapGeojsonArrayProject);
           });
         });
