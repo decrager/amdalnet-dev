@@ -85,6 +85,57 @@ class EmployeeTUKController extends Controller
             }])->orderBy('id', 'desc')->paginate($request->limit);
             return $employees;
         }
+
+        if($request->type == 'listKepalaSekretariat') {
+            $employees = LukMember::where(function($q) use($request) {
+                $search = $request->search;
+                if($search) {
+                    $search = str_replace('tim', '', strtolower($search));
+                    $search = str_replace('uji', '', $search);
+                    $search = str_replace('kelayakan', '', $search);
+                    $search = str_replace('provinsi', '', $search);
+                    $search = trim($search);
+
+                    $q->where(function($query) use($search) {
+                        $query->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhere(function($query) use($search) {
+                        $query->whereRaw("LOWER(institution) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhere(function($query) use($search) {
+                        $query->whereRaw("LOWER(position) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhere(function($query) use($search) {
+                        $query->whereRaw("LOWER(nik) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhere(function($query) use($search) {
+                        $query->whereHas('feasibilityTestTeamMember', function($que) use($search) {
+                            $que->whereHas('feasibilityTestTeam', function($qu) use($search) {
+                                if($search == 'pusat') {
+                                    $qu->where('authority', 'Pusat');
+                                } else {
+                                    $qu->where(function($quer) use($search) {
+                                        $quer->where('authority', 'Provinsi');
+                                        $quer->whereHas('provinceAuthority', function($queryy) use($search) {
+                                            $queryy->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                                        });
+                                    })->orWhere(function($quer) use($search) {
+                                        $quer->where('authority', 'Kabupaten/Kota');
+                                        $quer->whereHas('districtAuthority', function($queryy) use($search) {
+                                            $queryy->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                                        });
+                                    });
+                                }
+                            });
+                        });
+                    });
+                }
+            })
+            ->whereHas('feasibilityTestTeamMember', function($query) {
+                $query->where('position', 'Kepala Sekretariat');
+            })
+            ->with(['province', 'district', 'feasibilityTestTeamMember.feasibilityTestTeam' => function($q) {
+                $q->with('provinceAuthority');
+                $q->with('districtAuthority');
+            }])->orderBy('id', 'desc')->paginate($request->limit);
+            return $employees;
+        }
     }
 
     /**
@@ -94,7 +145,7 @@ class EmployeeTUKController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
@@ -112,7 +163,7 @@ class EmployeeTUKController extends Controller
         if($validator->fails()) {
             return response()->json(['errors' => $validator->messages()]);
         }
-        
+
         DB::beginTransaction();
         $request_email = $request->email ? strtolower($request->email) : $request->email;
 
@@ -129,7 +180,7 @@ class EmployeeTUKController extends Controller
             } else {
                 return response()->json(['errors_alert' => 'Email yang anda masukkan sudah terpakai']);
             }
-            
+
             $employee_tuk = new LukMember();
         } else {
             $employee_tuk = LukMember::findOrFail($request->idEmployee);
@@ -203,7 +254,7 @@ class EmployeeTUKController extends Controller
                  $check_tuk = FeasibilityTestTeamMember::where('id_luk_member', $employee_tuk->id)->first();
                  if($check_tuk) {
                      $old_id_team = $check_tuk->id_feasibility_test_team;
-     
+
                      if($old_id_team != $request->id_feasibility_test_team) {
                          $check_tuk->id_feasibility_test_team = $request->id_feasibility_test_team;
                          $check_tuk->position = null;
@@ -216,7 +267,7 @@ class EmployeeTUKController extends Controller
                      $tuk_member->save();
                  }
              }
-             
+
             DB::commit();
 
             // send notification if existing user email changed
