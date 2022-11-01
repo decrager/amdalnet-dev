@@ -10,7 +10,4 @@ class ShowLandingTuk extends Model
     use HasFactory;
 
     public $table = "showlandingtuk";
-    // public function showNameTuk(){
-    //     return (CONCAT('Tim Uji Kelayakan '.$this->authority));
-    // }
 }
