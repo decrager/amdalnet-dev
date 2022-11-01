@@ -30,6 +30,7 @@ final class Acl
     const ROLE_FORMULATOR_MEMBER = 'formulator-member'; // penyusun atpa
     const ROLE_FORMULATOR_EXPERT = 'formulator-expert'; // penyusun tenaga ahli
     const ROLE_LPJP = 'lpjp'; // lembaga penyedia jasa penyusunan dokumen amdal (lpjp)
+    const ROLE_LSP = 'lsp'; // lembaga (lsp)
     const ROLE_PUSTANLING = 'pustanling'; // pustanling
     const ROLE_LUK = 'luk'; // lembaga uji kelayakan
     const ROLE_EXAMINER = 'examiner'; // tim uji kelayakan
@@ -38,7 +39,7 @@ final class Acl
     const ROLE_EXAMINER_ADMINISTRATION = 'examiner-administration'; // tim uji kelayakan
     const ROLE_EXAMINER_SUBSTANCE = 'examiner-substance'; // tim uji kelayakan
     const ROLE_EXAMINER_COMMUNITY = 'examiner-community'; // tim uji kelayakan
-        
+
     const ROLE_ADMIN_SYSTEM = 'admin-system'; // admin system
     const ROLE_ADMIN_CENTRAL = 'admin-central'; // admin lh pusat
     const ROLE_ADMIN_REGIONAL = 'admin-regional'; // admin lh daerah
@@ -59,7 +60,7 @@ final class Acl
     // const PERMISSION_VIEW_MENU_I18N = 'view menu i18n';
 
     // const PERMISSION_ARTICLE_MANAGE = 'manage article';
-    
+
     const PERMISSION_VIEW_MENU_USER = 'view menu user';
     const PERMISSION_VIEW_MENU_PERMISSION = 'view menu permission';
     const PERMISSION_VIEW_MENU_ROLE = 'view menu role';
@@ -71,6 +72,7 @@ final class Acl
     const PERMISSION_VIEW_MENU_PROJECT_ISSUED = 'view menu project issued'; // Sudah Terbit PL
     const PERMISSION_VIEW_MENU_INITIATOR = 'view menu initiator'; // Pemrakarsa
     const PERMISSION_VIEW_MENU_LPJP = 'view menu lpjp'; // lpjp
+    const PERMISSION_VIEW_MENU_LSP = 'view menu lsp'; // lsp
     const PERMISSION_VIEW_MENU_FORMULATOR = 'view menu formulator'; // tenaga ahli penyusun
     const PERMISSION_VIEW_MENU_FORMULATOR_EXPERT = 'view menu formulator expert'; // tenaga ahli penyusun
     const PERMISSION_VIEW_MENU_FORMULATOR_TEAM = 'view menu formulator team'; // tim penyusun
@@ -84,12 +86,13 @@ final class Acl
     // const PERMISSION_VIEW_MENU_TECHNICAL_REGULATIONS = 'view menu technical regulation';
 
     const PERMISSION_VIEW_MENU_PROFILE = 'view menu profile'; // profile
-    
+
     const PERMISSION_VIEW_MENU_EXAMINER = 'view menu examiner';
     const PERMISSION_VIEW_MENU_EXAMINER_TEAM = 'view menu examiner team';
     const PERMISSION_VIEW_MENU_RONA_AWAL = 'view menu examiner rona awal';
     const PERMISSION_VIEW_MENU_TUK_MEMBER_LIST = 'view menu tuk member list';
     const PERMISSION_VIEW_MENU_MATERIALS_AND_POLICIES = 'view menu materials and policies';
+    const PERMISSION_VIEW_MENU_EXAMINER_SECRETARY = 'view menu examiner secretary';
     const PERMISSION_VIEW_MENU_PERMISSION_LIST = 'view menu permission list';
     const PERMISSION_VIEW_MENU_ENV_APPROVE = 'view menu env approve';
     const PERMISSION_VIEW_MENU_UKL_UPL = 'view menu ukl upl';
@@ -123,7 +126,7 @@ final class Acl
     const PERMISSION_VIEW_MENU_UKL_UPL_FEASIBILITY_TEST = 'view menu ukl upl feasibility test';
     const PERMISSION_VIEW_MENU_UKL_UPL_FEASIBILITY_TEST_RECOMMENDATION = 'view menu ukl upl feasibility test recommendation';
     const PERMISSION_VIEW_MENU_PKPLH = 'view menu pkplh';
-    
+
     // const PERMISSION_VIEW_MENU_ANNOUNCEMENT = 'view menu announcement';
     // const PERMISSION_VIEW_MENU_CONSULTATION = 'view menu public consultation';
     // const PERMISSION_VIEW_MENU_WORKSPACE = 'view menu digital workspace'; // digital workspace
@@ -135,6 +138,7 @@ final class Acl
     const PERMISSION_MANAGE_PROJECT = 'manage project';
     const PERMISSION_MANAGE_INITIATOR = 'manage initiator';
     const PERMISSION_MANAGE_LPJP = 'manage lpjp';
+    const PERMISSION_MANAGE_LSP = 'manage lsp';
     const PERMISSION_MANAGE_FORMULATOR_EXPERT = 'manage formulator';
     const PERMISSION_MANAGE_FORMULATOR_TEAM = 'manage formulator team';
     const PERMISSION_MANAGE_LUK = 'manage luk';
@@ -156,10 +160,10 @@ final class Acl
     const PERMISSION_MANAGE_TUK_PROFILE = 'manage tuk profile';
     const PERMISSION_MANAGE_TUK_PROJECT = 'manage tuk project';
     const PERMISSION_MANAGE_CONSULTATION = 'manage consultation';
-    
+
     // const PERMISSION_MANAGE_CONSULTATION = 'manage consultation';
     // const PERMISSION_MANAGE_TECHNICAL_REGULATIONS = 'manage technical regulations';
-    
+
     // const PERMISSION_MANAGE_WORKSPACE = 'manage workspace';
     const PERMISSION_DO_ANNOUNCEMENT = 'do announcement';
     const PERMISSION_DO_FORMULATOR_TEAM = 'do formulator team';

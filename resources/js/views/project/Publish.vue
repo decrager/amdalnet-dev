@@ -108,7 +108,7 @@
       <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
-        <el-button v-if="isProjectIdExist" @click="print()">Cetak PDF</el-button>
+        <el-button @click="printOrAlert()">Cetak PDF</el-button>
       </div>
       <div>
         <img id="gambar" src="">
@@ -273,6 +273,15 @@ export default {
 
       return '';
     },
+    printOrAlert(){
+      if (this.isProjectIdExist){
+        return this.print();
+      } else {
+        return this.$alert('Cetak penapisan hanya bisa digunakan setelah Penapisan di simpan.', 'Informasi', {
+          confirmButtonText: 'OK',
+        });
+      }
+    },
     setAddressDataTables(){
       this.addressTableData.push({
         no: '1',
@@ -283,22 +292,28 @@ export default {
     },
     setDataTables(){
       const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
+        var rmDecimalMain = ~~e.scale;
+        var	reverse = rmDecimalMain.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+        projectScale = projectScale.join('.').split('').reverse().join('');
         return {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.biz_name,
-          skala: e.scale + ' ' + (e.scale_unit || ''),
+          skala: projectScale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
       const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
+        var rmDecimalSupp = ~~e.scale;
+        var	reverse = rmDecimalSupp.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+        projectScale = projectScale.join('.').split('').reverse().join('');
         return {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.biz_name,
-          skala: e.scale + ' ' + (e.scale_unit || ''),
+          skala: projectScale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
@@ -656,6 +671,7 @@ export default {
             this.$router.push('/project');
           }).catch(error => {
             console.log(error);
+            this.fullLoading = false;
           });
         } else {
           projectResource
@@ -688,6 +704,9 @@ export default {
         });
     },
     async updateList() {
+      var rmDecimal = ~~this.project.scale;
+      var	reverse = rmDecimal.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
+      projectScale = projectScale.join('.').split('').reverse().join('');
       this.list = [
         {
           param: 'Nama Kegiatan',
@@ -699,7 +718,8 @@ export default {
         },
         {
           param: 'Skala/Besaran',
-          value: this.project.scale + ' ' + this.project.scale_unit,
+          // value: this.project.scale + ' ' + this.project.scale_unit,
+          value: projectScale + ' ' + this.project.scale_unit,
         },
         {
           param: 'Alamat',
@@ -719,7 +739,7 @@ export default {
         },
         {
           param: 'No. Telp Pemrakarsa',
-          value: this.project.initiatorData.phone,
+          value: '0' + this.project.initiatorData.phone,
         },
         {
           param: 'Email Pemrakarsa',

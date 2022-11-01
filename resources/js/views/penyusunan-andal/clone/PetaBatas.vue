@@ -614,8 +614,13 @@ export default {
             });
           }
 
-          this.geomEcologyGeojson = data.features[0].geometry;
-          this.geomEcologyProperties = data.features[0].properties;
+          this.geomEcologyGeojson = [];
+          this.geomEcologyProperties = [];
+
+          data.features.map((value, index) => {
+            this.geomEcologyGeojson.push(value.geometry);
+            this.geomEcologyProperties.push(value.properties);
+          });
 
           var propFields = Object.entries(this.geomEcologyProperties).reduce(function(a, _a) {
             var key = _a[0], value = _a[1];
