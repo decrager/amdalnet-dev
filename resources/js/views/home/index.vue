@@ -18,6 +18,7 @@
     <amdal-digital v-if="toggleAD" />
     <LPJP v-if="toggleLPJP" />
     <Tentang v-if="toggleTentang" />
+    <TUK v-if="toggleTUK" />
     <footer-home />
     <div class="footer__rights">
       <p class="footer__copy">
@@ -45,6 +46,7 @@ import ProposalCounter from './section/ProposalCounter.vue';
 import AnnouncementHome from './section/Announce.vue';
 import AmdalDigital from './amdal-digital/index.vue';
 import LPJP from './lpjp/index.vue';
+import TUK from './tuk/index.vue';
 import Tentang from './section/Tentang.vue';
 import FooterHome from './section/Footer.vue';
 import Disclaimer from './components/Disclaimer.vue';
@@ -71,7 +73,9 @@ export default {
     AmdalDigital,
     Disclaimer,
     LPJP,
+    TUK,
     Tentang,
+
   },
   data() {
     return {
@@ -87,6 +91,7 @@ export default {
       toggleAD: false,
       toggleLPJP: false,
       toggleTentang: false,
+      toggleTUK: false,
     };
   },
   created() {
@@ -103,6 +108,7 @@ export default {
         this.toggleMenuMateri = false;
         this.toggleMenuKebijakan = false;
         this.toggleLPJP = false;
+        this.toggleTUK = false;
       } else {
         this.setAllState(e);
       }
@@ -118,6 +124,7 @@ export default {
       const cluster = (e === 'CLUSTER') ? 'true' : 'false';
       const ad = (e === 'AMDALDigital') ? 'true' : 'false';
       const lpjp = (e === 'LPJP') ? 'true' : 'false';
+      const tuk = (e === 'TUK') ? 'true' : 'false';
       const tentang = (e === 'TENTANG') ? 'true' : 'false';
       this.toggleMenuMateri = JSON.parse(materi);
       this.toggleMenuKebijakan = JSON.parse(kebijakan);
@@ -131,6 +138,7 @@ export default {
       this.toggleAD = JSON.parse(ad);
       this.toggleLPJP = JSON.parse(lpjp);
       this.toggleTentang = JSON.parse(tentang);
+      this.toggleTUK = JSON.parse(tuk);
     },
     isFirstVisit() {
       const recurring = Cookies.get('recurring');

@@ -70,6 +70,9 @@
               <li>
                 <a href="#" @click="handleSetMenu('LPJP')">Daftar LPJP</a>
               </li>
+              <li>
+                <a href="#" @click="handleSetMenu('TUK')">Daftar TUK</a>
+              </li>
             </ul>
           </li>
           <li class="nav__item">
