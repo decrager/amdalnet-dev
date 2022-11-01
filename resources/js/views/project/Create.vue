@@ -1369,7 +1369,7 @@ export default {
 
       if (this.currentProject.pre_agreement_file){
         this.filePreAgreementName = this.currentProject.pre_agreement_file.substring(
-          this.currentProject.pre_agreement_file.indexOf('preAgreement/') + 13,
+          this.currentProject.pre_agreement_file.indexOf('project/') + 8,
           this.currentProject.pre_agreement_file.lastIndexOf('?X')
         );
         this.filePreAgreementNameOld = this.filePreAgreementName;
@@ -1576,7 +1576,7 @@ export default {
               i.result_risk = this.getResultRiskByResult(oldPar.result);
               i.used = true;
               i.scaleNumber = parseFloat(oldPar.scale);
-              i.scale = oldPar.scale.replace('.', ',');
+              i.scale = i.scaleNumber.toString().replace('.', ',');
               i.id = oldPar.id;
             }
           }
@@ -1602,7 +1602,8 @@ export default {
               i.result_risk = this.getResultRiskByResult(oldPar.result);
               i.used = true;
               i.scaleNumber = parseFloat(oldPar.scale);
-              i.scale = oldPar.scale.replace('.', ',');
+              console.log(oldPar);
+              i.scale = i.scaleNumber.toString().replace('.', ',');
               i.id = oldPar.id;
             }
           }
@@ -2116,7 +2117,8 @@ export default {
             // do this only when params id is exists;
             for (const subPro of this.listSubProject) {
               for (const param of subPro.listSubProjectParams) {
-                param.scale = param.scale.replace(',', '.');
+                param.scale = param.scale ? param.scale.replace(',', '.') : param.scale;
+                console.log(param);
               }
             }
           }
