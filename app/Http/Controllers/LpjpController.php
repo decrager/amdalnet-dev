@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Entity\Formulator;
+use App\Entity\Formulator;  
 use App\Entity\Lpjp;
 use App\Entity\Project;
 use App\Http\Resources\LpjpResource;
