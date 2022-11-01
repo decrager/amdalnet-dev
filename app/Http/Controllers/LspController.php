@@ -25,6 +25,10 @@ class LspController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->options){
+            return LspResource::collection(Lsp::all());
+        }
+
         if($request->byUserId) {
             $lsp = Lsp::where('email', $request->email)->first();
             return $lsp;
