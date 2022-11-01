@@ -1320,20 +1320,20 @@ export default {
 
       console.log('adad', { petaPdf, petaZip });
       this.filePdfName = petaPdf.stored_filename.substring(
-        petaPdf.stored_filename.indexOf('public/') + 7,
-        petaPdf.stored_filename.lastIndexOf('?X')
+        petaPdf.map_file_url.indexOf('map/') + 4,
+        petaPdf.map_file_url.lastIndexOf('?X')
       );
-      this.filePdf = await this.getFileFromUrl(petaPdf.stored_filename, this.filePdfName, 'application/pdf');
+      this.filePdf = await this.getFileFromUrl(petaPdf.map_file_url, this.filePdfName, 'application/pdf');
 
       this.fileMapName = petaZip.stored_filename.substring(
-        petaZip.stored_filename.indexOf('public/') + 7,
-        petaZip.stored_filename.lastIndexOf('?X')
+        petaZip.map_file_url.indexOf('map/') + 4,
+        petaZip.map_file_url.lastIndexOf('?X')
       );
-      this.fileMap = await this.getFileFromUrl(petaZip.stored_filename, this.fileMapName, 'application/zip');
+      this.fileMap = await this.getFileFromUrl(petaZip.map_file_url, this.fileMapName, 'application/zip');
 
       if (this.currentProject.ppib_file){
         this.filepippibName = this.currentProject.ppib_file.substring(
-          this.currentProject.ppib_file.indexOf('/k') + 1,
+          this.currentProject.ppib_file.indexOf('pippib/') + 7,
           this.currentProject.ppib_file.lastIndexOf('?X')
         );
         this.filepippibNameOld = this.filepippibName;
@@ -1369,34 +1369,76 @@ export default {
 
       if (this.currentProject.pre_agreement_file){
         this.filePreAgreementName = this.currentProject.pre_agreement_file.substring(
-          this.currentProject.pre_agreement_file.indexOf('project/') + 8,
+          this.currentProject.pre_agreement_file.indexOf('preAgreement/') + 13,
           this.currentProject.pre_agreement_file.lastIndexOf('?X')
         );
         this.filePreAgreementNameOld = this.filePreAgreementName;
         this.filePreAgreement = await this.getFileFromUrl(this.currentProject.pre_agreement_file, this.filePreAgreementName, 'application/pdf');
       }
 
-      this.currentProject.b3 = this.currentProject.project_filter[0].b3;
-      this.currentProject.chimney = this.currentProject.project_filter[0].chimney;
-      this.currentProject.collect_b3 = this.currentProject.project_filter[0].collect_b3;
-      this.currentProject.disposal_wastewater = this.currentProject.project_filter[0].disposal_wastewater;
-      this.currentProject.dumping_b3 = this.currentProject.project_filter[0].dumping_b3;
-      this.currentProject.emission = this.currentProject.project_filter[0].emission;
-      this.currentProject.genset = this.currentProject.project_filter[0].genset;
-      this.currentProject.high_emission = this.currentProject.project_filter[0].high_emission;
-      this.currentProject.high_pollution = this.currentProject.project_filter[0].high_pollution;
-      this.currentProject.high_traffic = this.currentProject.project_filter[0].high_traffic;
-      this.currentProject.hoard_b3 = this.currentProject.project_filter[0].hoard_b3;
-      this.currentProject.low_traffic = this.currentProject.project_filter[0].low_traffic;
-      this.currentProject.mid_traffic = this.currentProject.project_filter[0].mid_traffic;
-      this.currentProject.nothing = this.currentProject.project_filter[0].nothing;
-      this.currentProject.process_b3 = this.currentProject.project_filter[0].process_b3;
-      this.currentProject.tps = this.currentProject.project_filter[0].tps;
-      this.currentProject.traffic = this.currentProject.project_filter[0].traffic;
-      this.currentProject.transport_b3 = this.currentProject.project_filter[0].transport_b3;
-      this.currentProject.utilization_b3 = this.currentProject.project_filter[0].utilization_b3;
-      this.currentProject.utilization_wastewater = this.currentProject.project_filter[0].utilization_wastewater;
-      this.currentProject.wastewater = this.currentProject.project_filter[0].wastewater;
+      if (this.currentProject.project_filter[0].b3) {
+        this.currentProject.b3 = this.currentProject.project_filter[0].b3;
+      }
+      if (this.currentProject.project_filter[0].chimney) {
+        this.currentProject.chimney = this.currentProject.project_filter[0].chimney;
+      }
+      if (this.currentProject.project_filter[0].collect_b3) {
+        this.currentProject.collect_b3 = this.currentProject.project_filter[0].collect_b3;
+      }
+      if (this.currentProject.project_filter[0].disposal_wastewater) {
+        this.currentProject.disposal_wastewater = this.currentProject.project_filter[0].disposal_wastewater;
+      }
+      if (this.currentProject.project_filter[0].dumping_b3) {
+        this.currentProject.dumping_b3 = this.currentProject.project_filter[0].dumping_b3;
+      }
+      if (this.currentProject.project_filter[0].emission) {
+        this.currentProject.emission = this.currentProject.project_filter[0].emission;
+      }
+      if (this.currentProject.project_filter[0].genset) {
+        this.currentProject.genset = this.currentProject.project_filter[0].genset;
+      }
+      if (this.currentProject.project_filter[0].high_emission) {
+        this.currentProject.high_emission = this.currentProject.project_filter[0].high_emission;
+      }
+      if (this.currentProject.project_filter[0].high_pollution) {
+        this.currentProject.high_pollution = this.currentProject.project_filter[0].high_pollution;
+      }
+      if (this.currentProject.project_filter[0].high_traffic) {
+        this.currentProject.high_traffic = this.currentProject.project_filter[0].high_traffic;
+      }
+      if (this.currentProject.project_filter[0].hoard_b3) {
+        this.currentProject.hoard_b3 = this.currentProject.project_filter[0].hoard_b3;
+      }
+      if (this.currentProject.project_filter[0].low_traffic) {
+        this.currentProject.low_traffic = this.currentProject.project_filter[0].low_traffic;
+      }
+      if (this.currentProject.project_filter[0].mid_traffic) {
+        this.currentProject.mid_traffic = this.currentProject.project_filter[0].mid_traffic;
+      }
+      if (this.currentProject.project_filter[0].nothing) {
+        this.currentProject.nothing = this.currentProject.project_filter[0].nothing;
+      }
+      if (this.currentProject.project_filter[0].process_b3) {
+        this.currentProject.process_b3 = this.currentProject.project_filter[0].process_b3;
+      }
+      if (this.currentProject.project_filter[0].tps) {
+        this.currentProject.tps = this.currentProject.project_filter[0].tps;
+      }
+      if (this.currentProject.project_filter[0].traffic) {
+        this.currentProject.traffic = this.currentProject.project_filter[0].traffic;
+      }
+      if (this.currentProject.project_filter[0].transport_b3) {
+        this.currentProject.transport_b3 = this.currentProject.project_filter[0].transport_b3;
+      }
+      if (this.currentProject.project_filter[0].utilization_b3) {
+        this.currentProject.utilization_b3 = this.currentProject.project_filter[0].utilization_b3;
+      }
+      if (this.currentProject.project_filter[0].utilization_wastewater) {
+        this.currentProject.utilization_wastewater = this.currentProject.project_filter[0].utilization_wastewater;
+      }
+      if (this.currentProject.project_filter[0].wastewater) {
+        this.currentProject.wastewater = this.currentProject.project_filter[0].wastewater;
+      }
       console.log(this.currentProject);
       console.log(this.listSubProject);
     }
@@ -2070,6 +2112,14 @@ export default {
     handleStudyAccord(){
       this.$refs.pendekatanStudi.validate(async(valid) => {
         if (valid) {
+          if (this.$route.params.id){
+            // do this only when params id is exists;
+            for (const subPro of this.listSubProject) {
+              for (const param of subPro.listSubProjectParams) {
+                param.scale = param.scale.replace(',', '.');
+              }
+            }
+          }
           await this.addAuthoritiesBasedOnAddress(this.currentProject.address.filter(e => e.isUsed));
           this.calculateListSubProjectResult();
           this.calculateChoosenProject();
