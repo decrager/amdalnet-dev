@@ -71,7 +71,14 @@
                 <a href="#" @click="handleSetMenu('LPJP')">Daftar LPJP</a>
               </li>
               <li>
+                <a href="https://amdal.menlhk.go.id/info_persuratan" target="_blank">Informasi Persuratan</a>
+              </li>
+              <li>
+<<<<<<< resources/js/views/home/section/Header.vue
                 <a href="#" @click="handleSetMenu('Penyusun')">Daftar Penyusun</a>
+=======
+                <a href="https://amdal.menlhk.go.id/info_persuratan" target="_blank">Informasi Persuratan</a>
+>>>>>>> resources/js/views/home/section/Header.vue
               </li>
             </ul>
           </li>

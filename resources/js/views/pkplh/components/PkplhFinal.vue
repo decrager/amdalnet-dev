@@ -9,14 +9,14 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="Nomor Persetujuan Lingkungan" prop="number">
-            <el-input v-model="postForm.number" :disabled="disableEdit" />
+            <el-input v-model="postForm.number" :disabled="disableEdit || pkplhFinalNumber != null " />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item label="Judul/Perihal Persetujuan Lingkungan" prop="title">
-            <el-input v-model="postForm.title" :disabled="disableEdit" />
+            <el-input v-model="postForm.title" :disabled="disableEdit || pkplhFinalTitle != null " />
           </el-form-item>
         </el-col>
       </el-row>
@@ -29,7 +29,7 @@
               format="dd/MM/yyyy"
               value-format="yyyy-MM-dd"
               placeholder="dd/mm/yyyy"
-              :disabled="disableEdit"
+              :disabled="disableEdit || pkplhFinalDate != null "
             />
           </el-form-item>
         </el-col>
@@ -46,7 +46,7 @@
               :file-list="fileList"
               style="display: inline;"
             >
-              <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
+              <el-button :loading="loadingUpload" :disabled="pkplhFinalFile != null" type="warning" size="mini">Upload</el-button>
             </el-upload>
             <div v-if="disableEdit" style="color: red;">
               <i>*Hanya penguji yang dapat mengunggah dokumen</i>
@@ -78,7 +78,7 @@
       </el-row>
     </el-form>
     <div v-if="!disableEdit" slot="footer" class="dialog-footer">
-      <el-button :loading="loadingSubmit" type="primary" @click="handleSubmit()"> Submit </el-button>
+      <el-button :loading="loadingSubmit" :disabled="isPkplhFinals.length > 0" type="primary" @click="handleSubmit()"> Submit </el-button>
     </div>
     <!-- <el-row v-if="!isPemerintah" style="margin-top: 20px;">
       <el-col :span="24">
@@ -115,6 +115,11 @@ export default {
       fileUrl: null,
       fileList: [],
       filePkplhFinal: null,
+      pkplhFinalNumber: null,
+      pkplhFinalFile: null,
+      pkplhFinalTitle: null,
+      pkplhFinalDate: null,
+      isPkplhFinals: null,
       userKey: null,
       idProject: this.$route.params.id,
       postForm: {
@@ -150,6 +155,7 @@ export default {
       this.isPemerintah = true;
     }
     this.getData();
+    this.isPkplh();
     // await this.$store.dispatch('getInitiator', this.userInfo.email);
     // if (this.$store.getters.isPemerintah){
     //   this.isPemerintah = true;
@@ -172,7 +178,6 @@ export default {
         id_project: this.idProject,
       });
       this.loading = false;
-
       if (pkplhFinals.length > 0) {
         const pkplhFinal = pkplhFinals[0];
         this.postForm = pkplhFinal;
@@ -185,6 +190,17 @@ export default {
           });
         }
       }
+    },
+    async isPkplh() {
+      const pkplhFinals = await pkplhFinalResource.list({
+        id_project: this.idProject,
+      });
+
+      this.isPkplhFinals = pkplhFinals;
+      this.pkplhFinalNumber = pkplhFinals[0].number;
+      this.pkplhFinalFile = pkplhFinals[0].file;
+      this.pkplhFinalTitle = pkplhFinals[0].title;
+      this.pkplhFinalDate = pkplhFinals[0].date_published;
     },
     async handleDownload() {
       if (this.fileUrl !== null) {

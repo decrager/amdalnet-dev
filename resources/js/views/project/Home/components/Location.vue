@@ -117,9 +117,9 @@ export default {
     },
   },
   mounted() {
+    this.loadAttachment();
     const splice = (this.data.ktr).split('/');
     this.file_ktr = splice[splice.length - 1];
-    this.loadAttachment();
   },
   methods: {
     showFileAlert() {

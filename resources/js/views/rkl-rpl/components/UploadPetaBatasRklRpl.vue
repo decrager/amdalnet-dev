@@ -665,9 +665,14 @@ export default {
             return;
           }
 
-          this.geomAreaKelolaGeojson = data.features[0].geometry;
-          this.geomAreaKelolaProperties = data.features[0].properties;
+          this.geomAreaKelolaGeojson = [];
+          this.geomAreaKelolaProperties = [];
           this.geomAreaKelolaStyles = 6;
+
+          data.features.map((value, index) => {
+            this.geomAreaKelolaGeojson.push(value.geometry);
+            this.geomAreaKelolaProperties.push(value.properties);
+          });
 
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
@@ -794,9 +799,14 @@ export default {
             return;
           }
 
-          this.geomAreaPantauGeojson = data.features[0].geometry;
-          this.geomAreaPantauProperties = data.features[0].properties;
+          this.geomAreaPantauGeojson = [];
+          this.geomAreaPantauProperties = [];
           this.geomAreaPantauStyles = 5;
+
+          data.features.map((value, index) => {
+            this.geomAreaPantauGeojson.push(value.geometry);
+            this.geomAreaPantauProperties.push(value.properties);
+          });
 
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
