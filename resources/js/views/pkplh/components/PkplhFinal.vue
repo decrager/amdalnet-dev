@@ -238,6 +238,7 @@ export default {
     },
     async handleSubmit() {
       this.loadingSubmit = true;
+      this.loading = true;
       const formData = new FormData();
       formData.append('id_project', this.idProject);
       formData.append('number', this.postForm.number);
@@ -248,6 +249,7 @@ export default {
         .store(formData)
         .then((response) => {
           this.loadingSubmit = false;
+          this.loading = false;
           if (response.code === 200) {
             this.$message({
               message: 'PKPLH Final Berhasil Disimpan',
@@ -264,6 +266,7 @@ export default {
         })
         .catch((error) => {
           this.loadingSubmit = false;
+          this.loading = false;
           this.$message({
             message: 'Gagal menyimpan PKPLH Final',
             type: 'error',
