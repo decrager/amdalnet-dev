@@ -1319,16 +1319,10 @@ export default {
       const petaZip = this.currentProject.map_files.filter(e => e.attachment_type === 'tapak' && e.file_type === 'SHP')[0];
 
       console.log('adad', { petaPdf, petaZip });
-      this.filePdfName = petaPdf.stored_filename.substring(
-        petaPdf.map_file_url.indexOf('map/') + 4,
-        petaPdf.map_file_url.lastIndexOf('?X')
-      );
+      this.filePdfName = petaPdf.stored_filename;
       this.filePdf = await this.getFileFromUrl(petaPdf.map_file_url, this.filePdfName, 'application/pdf');
 
-      this.fileMapName = petaZip.stored_filename.substring(
-        petaZip.map_file_url.indexOf('map/') + 4,
-        petaZip.map_file_url.lastIndexOf('?X')
-      );
+      this.fileMapName = petaZip.stored_filename;
       this.fileMap = await this.getFileFromUrl(petaZip.map_file_url, this.fileMapName, 'application/zip');
 
       if (this.currentProject.ppib_file){
@@ -1504,6 +1498,10 @@ export default {
       this.provinces = result.data.data;
     });
     this.initMap();
+
+    if (this.$route.params.id){
+      this.handleFileTapakEdit();
+    }
   },
   methods: {
     async getFieldBySector(sproject) {
@@ -2265,6 +2263,266 @@ export default {
         this.filePdf = e.target.files[0];
         this.filePdfName = e.target.files[0].name;
       }
+    },
+    handleFileTapakEdit(){
+      esriConfig.request.proxyUrl = 'https://sigap.menlhk.go.id/proxy/proxy.php';
+      const penutupanLahan2020 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
+      });
+
+      const kawasanHutanB = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
+      });
+
+      const pippib2022Periode1 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_1/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
+      });
+
+      const sigapLayer = new GroupLayer({
+        title: 'Peta Tematik Status',
+        visible: true,
+        layers: [penutupanLahan2020, kawasanHutanB, pippib2022Periode1],
+        opacity: 0.90,
+      });
+
+      this.map.add(sigapLayer);
+      const that = this;
+      const fr = new FileReader();
+      fr.onload = (event) => {
+        const base = event.target.result;
+        const zip = new JSZip();
+
+        zip.loadAsync(base).then(function(zip) {
+          let count = 0;
+          zip.forEach((item) => {
+            if (item.includes('.shp')) {
+              count++;
+            }
+          });
+
+          if (count > 1) {
+            document.getElementById('fileMap').value = '';
+            that.fileMapName = 'No File Selected';
+            that.fileMap = null;
+            that.isMapUploaded = false;
+            return that.$alert('File SHP yang di upload lebih dari 1', {
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
+          }
+
+          shp(base).then((datas) => {
+            const mapSampleProperties = [
+              'PEMRAKARSA',
+              'KEGIATAN',
+              'TAHUN',
+              'PROVINSI',
+              'KETERANGAN',
+              'LAYER',
+            ];
+
+            const mapUploadProperties = Object.keys(datas.features[0].properties);
+            var getPropFields = datas.features[0].properties;
+
+            var propFields = Object.entries(getPropFields).reduce(function(a, _a) {
+              var key = _a[0], value = _a[1];
+              a[key.toUpperCase()] = value;
+              return a;
+            }, {});
+
+            var centroids = centroid(datas.features[0]);
+            var getCoordinates = centroids.geometry.coordinates;
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
+              .then(response => response.json())
+              .then(data => {
+                that.full_address = data.display_name;
+              });
+
+            if (datas.features[0].geometry.type !== 'Polygon') {
+              document.getElementById('fileMap').value = '';
+              that.fileMapName = 'No File Selected';
+              that.fileMap = null;
+              that.isMapUploaded = false;
+              return that.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
+                confirmButtonText: 'Download Sample',
+                callback: action => {
+                  that.$notify({
+                    type: 'warning',
+                    title: 'Perhatian!',
+                    message: 'Download Sample Peta Yang Telah Disediakan!!',
+                    duration: 5000,
+                  });
+                  window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+                },
+              });
+            }
+
+            const checker = (arr, target) => target.every(v => arr.includes(v));
+            const validDataSet = mapSampleProperties.map(element => element.toLowerCase());
+            const uploadDataSet = mapUploadProperties.map(element => element.toLowerCase());
+            const checkShapefile = checker(uploadDataSet, validDataSet);
+
+            if (!checkShapefile) {
+              document.getElementById('fileMap').value = '';
+              that.fileMapName = 'No File Selected';
+              that.fileMap = null;
+              that.isMapUploaded = false;
+              return that.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+                confirmButtonText: 'Download Sample',
+                callback: action => {
+                  that.$notify({
+                    type: 'warning',
+                    title: 'Perhatian!',
+                    message: 'Download Sample Peta Yang Telah Disediakan!!',
+                    duration: 5000,
+                  });
+                  window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+                },
+              });
+            }
+
+            const blob = new Blob([JSON.stringify(datas)], {
+              type: 'application/json',
+            });
+
+            const renderer = {
+              type: 'simple',
+              field: '*',
+              symbol: {
+                type: 'simple-fill',
+                color: [200, 0, 0, 1],
+                outline: {
+                  color: [200, 0, 0, 1],
+                },
+              },
+            };
+            const url = URL.createObjectURL(blob);
+
+            const geojsonLayer = new GeoJSONLayer({
+              url: url,
+              visible: true,
+              outFields: ['*'],
+              opacity: 0.75,
+              title: 'Peta Tapak Proyek',
+              renderer: renderer,
+              popupTemplate: popupTemplate(propFields),
+            });
+
+            that.map.add(geojsonLayer);
+            that.currentTapakProyekLayer = geojsonLayer;
+            mapView.on('layerview-create', async(event) => {
+              await mapView.goTo({
+                target: geojsonLayer.fullExtent,
+              });
+            });
+          }).catch((result) => {
+            document.getElementById('fileMap').value = '';
+            that.fileMapName = 'No File Selected';
+            that.fileMap = null;
+            that.isMapUploaded = false;
+            return that.$alert('File yang anda upload tidak terdapat file .shp', 'Format Salah', {
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                that.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
+          });
+        });
+      };
+      fr.readAsArrayBuffer(this.fileMap);
+
+      const mapView = new MapView({
+        container: 'mapView',
+        map: this.map,
+        center: [115.287, -1.588],
+        zoom: 5,
+      });
+      this.$parent.mapView = mapView;
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+
+      const legendListExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap', // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+        expandTooltip: 'Layer Legend', // optional, defaults to "Expand" for English locale
+        view: mapView,
+        content: legend,
+      });
+
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layers', // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+        expandTooltip: 'Daftar Layer', // optional, defaults to "Expand" for English locale
+        view: mapView,
+        content: layerList,
+      });
+
+      const print = new Print({
+        view: mapView,
+        printServiceUrl:
+                  'https://amdalgis.menlhk.go.id/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task',
+      });
+
+      const printExpand = new Expand({
+        view: mapView,
+        content: print,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          }).catch(function(error) {
+            console.error(error);
+          });
+        }
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendListExpand, 'top-right');
+      mapView.ui.add(printExpand, 'top-left');
+      this.isMapUploaded = true;
     },
     handleFileTapakProyekMapUpload(e){
       if (!e.target){
