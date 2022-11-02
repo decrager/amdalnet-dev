@@ -292,7 +292,7 @@ export default {
     },
     setDataTables(){
       const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
-        var rmDecimalMain = ~~e.scale;
+        var rmDecimalMain = e.scale;
         var	reverse = rmDecimalMain.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
         projectScale = projectScale.join('.').split('').reverse().join('');
         return {
@@ -333,6 +333,7 @@ export default {
       }
 
       this.tableData = [...mainArr, ...suppArr];
+      console.log({ gune: this.tableData });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.scale) {
@@ -704,7 +705,7 @@ export default {
         });
     },
     async updateList() {
-      var rmDecimal = ~~this.project.scale;
+      var rmDecimal = this.project.scale;
       var	reverse = rmDecimal.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
       projectScale = projectScale.join('.').split('').reverse().join('');
       this.list = [
@@ -750,6 +751,7 @@ export default {
           value: this.project.address[0].district,
         },
       ];
+      console.log({ gunk: this.project });
     },
   },
 };
