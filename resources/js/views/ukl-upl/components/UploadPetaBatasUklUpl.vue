@@ -273,10 +273,42 @@ export default {
         basemap: 'satellite',
       });
 
-      axios.get(`api/map-geojson?id=${this.idProject}&type=tapak&step=ka&limit=1`)
+      // axios.get(`api/map-geojson?id=${this.idProject}&type=tapak&step=ka&limit=1`)
+      //   .then((response) => {
+      //     response.data.forEach((item) => {
+      //       console.log({ guns: item });
+      //       const getType = JSON.parse(item.feature_layer);
+      //       const propType = getType.features[0].properties.type;
+      //       const propFields = getType.features[0].properties.field;
+      //       const propStyles = getType.features[0].properties.styles;
+      //       const step = getType.features[0].properties.step;
+
+      //       // Tapak
+      //       if (propType === 'tapak' && step === 'ka') {
+      //         const geojsonLayerArray = new GeoJSONLayer({
+      //           url: urlBlob(item.feature_layer),
+      //           outFields: ['*'],
+      //           visible: true,
+      //           title: 'Layer Tapak Proyek',
+      //           renderer: propStyles,
+      //           popupTemplate: popupTemplate(propFields),
+      //         });
+
+      //         mapView.on('layerview-create', async(event) => {
+      //           await mapView.goTo({
+      //             target: geojsonLayerArray.fullExtent,
+      //           });
+      //         });
+
+      //         this.mapGeojsonArrayProject.push(geojsonLayerArray);
+      //         map.addMany(this.mapGeojsonArrayProject);
+      //       }
+      //     });
+      //   });
+
+      axios.get(`api/map-geojson?id=${this.idProject}`)
         .then((response) => {
           response.data.forEach((item) => {
-            console.log({ guns: item });
             const getType = JSON.parse(item.feature_layer);
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
@@ -301,19 +333,7 @@ export default {
               });
 
               this.mapGeojsonArrayProject.push(geojsonLayerArray);
-              map.addMany(this.mapGeojsonArrayProject);
-              console.log({ gunk: this.mapGeojsonArrayProject });
             }
-          });
-        });
-
-      axios.get(`api/map-geojson?id=${this.idProject}&step=ukl-upl`)
-        .then((response) => {
-          response.data.forEach((item) => {
-            const getType = JSON.parse(item.feature_layer);
-            const propType = getType.features[0].properties.type;
-            const propFields = getType.features[0].properties.field;
-            const propStyles = getType.features[0].properties.styles;
 
             // Pemantauan
             if (propType === 'pemantauan') {
