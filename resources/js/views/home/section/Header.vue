@@ -76,6 +76,9 @@
               <li>
                 <a href="#" @click="handleSetMenu('Penyusun')">Daftar Penyusun</a>
               </li>
+              <li>
+                <a href="#" @click="handleSetMenu('TUK')">Daftar TUK</a>
+              </li>
             </ul>
           </li>
           <li class="nav__item">
