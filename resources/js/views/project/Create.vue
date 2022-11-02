@@ -2594,7 +2594,8 @@ export default {
         zip.loadAsync(base).then(function(zip) {
           let count = 0;
           zip.forEach((item) => {
-            if (item.includes('.shp')) {
+            const extensions = item.slice(-4);
+            if (extensions === '.shp') {
               count++;
             }
           });
