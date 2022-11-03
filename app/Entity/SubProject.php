@@ -37,4 +37,9 @@ class SubProject extends Model
     {
         return $this->hasMany(SubProjectRonaAwal::class, 'id_sub_project', 'id');
     }
+
+    public function listSubProjectParams()
+    {
+        return $this->hasMany(SubProjectParam::class, 'id_sub_project', 'id');
+    }
 }

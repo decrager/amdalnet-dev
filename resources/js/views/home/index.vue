@@ -19,6 +19,8 @@
     <LPJP v-if="toggleLPJP" />
     <Tentang v-if="toggleTentang" />
     <Pemerintah v-if="togglePemerintah" />
+    <TUK v-if="toggleTUK" />
+    <Penyusun v-if="togglePenyusun" />
     <footer-home />
     <div class="footer__rights">
       <p class="footer__copy">
@@ -47,7 +49,9 @@ import AnnouncementHome from './section/Announce.vue';
 import AmdalDigital from './amdal-digital/index.vue';
 import LPJP from './lpjp/index.vue';
 import Pemerintah from './govermentinatitution/index.vue';
+import TUK from './tuk/index.vue';
 import Tentang from './section/Tentang.vue';
+import Penyusun from './penyusun/index.vue';
 import FooterHome from './section/Footer.vue';
 import Disclaimer from './components/Disclaimer.vue';
 import Cookies from 'js-cookie';
@@ -74,7 +78,10 @@ export default {
     Disclaimer,
     LPJP,
     Pemerintah,
+    TUK,
+    Penyusun,
     Tentang,
+
   },
   data() {
     return {
@@ -90,7 +97,9 @@ export default {
       toggleAD: false,
       toggleLPJP: false,
       togglePemerintah: false,
+      togglePenyusun: false,
       toggleTentang: false,
+      toggleTUK: false,
     };
   },
   created() {
@@ -108,6 +117,8 @@ export default {
         this.toggleMenuKebijakan = false;
         this.toggleLPJP = false;
         this.togglePemerintah = false;
+        this.toggleTUK = false;
+        this.togglePenyusun = false;
       } else {
         this.setAllState(e);
       }
@@ -124,6 +135,8 @@ export default {
       const ad = (e === 'AMDALDigital') ? 'true' : 'false';
       const lpjp = (e === 'LPJP') ? 'true' : 'false';
       const pemerintah = (e === 'Pemerintah') ? 'true' : 'false';
+      const tuk = (e === 'TUK') ? 'true' : 'false';
+      const penyusun = (e === 'Penyusun') ? 'true' : 'false';
       const tentang = (e === 'TENTANG') ? 'true' : 'false';
       this.toggleMenuMateri = JSON.parse(materi);
       this.toggleMenuKebijakan = JSON.parse(kebijakan);
@@ -137,7 +150,9 @@ export default {
       this.toggleAD = JSON.parse(ad);
       this.toggleLPJP = JSON.parse(lpjp);
       this.togglePemerintah = JSON.parse(pemerintah);
+      this.togglePenyusun = JSON.parse(penyusun);
       this.toggleTentang = JSON.parse(tentang);
+      this.toggleTUK = JSON.parse(tuk);
     },
     isFirstVisit() {
       const recurring = Cookies.get('recurring');

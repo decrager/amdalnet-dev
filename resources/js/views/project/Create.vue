@@ -94,7 +94,9 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="fileMap">
                     <div slot="label">
-                      <span>* Upload SHP Peta Tapak Proyek (File-File SHP yang sudah di-zip,max 10 MB)</span>
+                      <span>* Upload SHP Peta Tapak Proyek (File-File SHP yang sudah di-zip,max 10 MB) <el-tooltip class="item" effect="dark" content="File SHP yang diupload dalam Zip hanya terbatas 1 layer saja yang bisa dibaca sistem. Jika terdapat beberapa polygon tapak proyek, silakan masukkan dalam 1 layer SHP Peta Tapak Proyek" placement="top">
+                        <i class="el-alert__icon el-icon-warning" />
+                      </el-tooltip></span>
                       <div>
                         <a href="/sample_map/template_shp_tapak_proyek_amdalnet.zip" class="download__sample" title="Download Sample SHP" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
                         <a href="/JUKNIS-DATA-SPASIAL-AMDALNET-PEMRAKARSA-TAPAK-PROYEK.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
@@ -827,6 +829,11 @@ const SupportDocResource = new Resource('support-docs');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const authorityResource = new Resource('authorities');
+const projectResource = new Resource('projects');
+// const projectMapResource = new Resource('project-map');
+
+const kbliEnvParamResource = new Resource('kbli-env-params');
+const kbliResource = new Resource('business');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import esriConfig from '@arcgis/core/config.js';
@@ -845,6 +852,8 @@ import centroid from '@turf/centroid';
 import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
 import Print from '@arcgis/core/widgets/Print';
 import editor from '@/components/Tinymce';
+// import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
 
 export default {
   name: 'CreateProject',
@@ -1278,6 +1287,155 @@ export default {
     if (this.$store.getters.isPemerintah){
       this.currentProject.isPemerintah = 'true';
     }
+
+    if (this.$route.params.id){
+      this.currentProject = await projectResource.list({ id: this.$route.params.id });
+      if (this.currentProject.published){
+        this.$router.push('/project');
+      }
+      this.currentProject.address = this.currentProject.address.map(e => {
+        e.isUsed = true;
+        return e;
+      });
+      for (const sproj of this.currentProject.list_sub_project) {
+        await this.getBusinessByField(sproj);
+        this.refresh++;
+      }
+      this.listSubProject = this.currentProject.list_sub_project.map(e => {
+        e.isUsed = true;
+        e.biz_type = parseInt(e.biz_type, 10);
+        e.sector = parseInt(e.sector, 10);
+        return e;
+      });
+      this.currentProject.pippib = this.currentProject.ppib;
+      this.fileKtrName = this.currentProject.ktr.substring(
+        this.currentProject.ktr.indexOf('/k') + 1,
+        this.currentProject.ktr.lastIndexOf('?X')
+      );
+      this.fileKtrNameOld = this.fileKtrName;
+      this.currentProject.fileKtr = await this.getFileFromUrl(this.currentProject.ktr, this.fileKtrName, 'application/pdf');
+
+      const petaPdf = this.currentProject.map_files.filter(e => e.attachment_type === 'tapak' && e.file_type === 'PDF')[0];
+      const petaZip = this.currentProject.map_files.filter(e => e.attachment_type === 'tapak' && e.file_type === 'SHP')[0];
+
+      console.log('adad', { petaPdf, petaZip });
+      this.filePdfName = petaPdf.stored_filename;
+      this.filePdf = await this.getFileFromUrl(petaPdf.map_file_url, this.filePdfName, 'application/pdf');
+
+      this.fileMapName = petaZip.stored_filename;
+      this.fileMap = await this.getFileFromUrl(petaZip.map_file_url, this.fileMapName, 'application/zip');
+
+      if (this.currentProject.ppib_file){
+        this.filepippibName = this.currentProject.ppib_file.substring(
+          this.currentProject.ppib_file.indexOf('pippib/') + 7,
+          this.currentProject.ppib_file.lastIndexOf('?X')
+        );
+        this.filepippibNameOld = this.filepippibName;
+        this.filepippib = await this.getFileFromUrl(this.currentProject.ppib_file, this.filepippibName, 'application/pdf');
+      }
+
+      if (this.currentProject.kawasan_lindung_file){
+        this.fileKawasanLindungName = this.currentProject.kawasan_lindung_file.substring(
+          this.currentProject.kawasan_lindung_file.indexOf('/k') + 1,
+          this.currentProject.kawasan_lindung_file.lastIndexOf('?X')
+        );
+        this.fileKawasanLindungNameOld = this.fileKawasanLindungName;
+        this.fileKawasanLindung = await this.getFileFromUrl(this.currentProject.kawasan_lindung_file, this.fileKawasanLindungName, 'application/pdf');
+      }
+
+      if (this.currentProject.oss_required_doc){
+        this.fileOssReqDocName = this.currentProject.oss_required_doc.substring(
+          this.currentProject.oss_required_doc.indexOf('ossReqDoc/') + 10,
+          this.currentProject.oss_required_doc.lastIndexOf('?X')
+        );
+        this.fileOssReqDocNameOld = this.fileOssReqDocName;
+        this.fileOssReqDoc = await this.getFileFromUrl(this.currentProject.oss_required_doc, this.fileOssReqDocName, 'application/pdf');
+      }
+
+      if (this.currentProject.oss_sppl_doc){
+        this.fileOssSpplDocName = this.currentProject.oss_sppl_doc.substring(
+          this.currentProject.oss_sppl_doc.indexOf('ossSpplDoc/') + 11,
+          this.currentProject.oss_sppl_doc.lastIndexOf('?X')
+        );
+        this.fileOssSpplDocNameOld = this.fileOssSpplDocName;
+        this.fileOssSppl = await this.getFileFromUrl(this.currentProject.oss_sppl_doc, this.fileOssSpplDocName, 'application/pdf');
+      }
+
+      if (this.currentProject.pre_agreement_file){
+        this.filePreAgreementName = this.currentProject.pre_agreement_file.substring(
+          this.currentProject.pre_agreement_file.indexOf('project/') + 8,
+          this.currentProject.pre_agreement_file.lastIndexOf('?X')
+        );
+        this.filePreAgreementNameOld = this.filePreAgreementName;
+        this.filePreAgreement = await this.getFileFromUrl(this.currentProject.pre_agreement_file, this.filePreAgreementName, 'application/pdf');
+      }
+
+      if (this.currentProject.project_filter[0].b3) {
+        this.currentProject.b3 = this.currentProject.project_filter[0].b3;
+      }
+      if (this.currentProject.project_filter[0].chimney) {
+        this.currentProject.chimney = this.currentProject.project_filter[0].chimney;
+      }
+      if (this.currentProject.project_filter[0].collect_b3) {
+        this.currentProject.collect_b3 = this.currentProject.project_filter[0].collect_b3;
+      }
+      if (this.currentProject.project_filter[0].disposal_wastewater) {
+        this.currentProject.disposal_wastewater = this.currentProject.project_filter[0].disposal_wastewater;
+      }
+      if (this.currentProject.project_filter[0].dumping_b3) {
+        this.currentProject.dumping_b3 = this.currentProject.project_filter[0].dumping_b3;
+      }
+      if (this.currentProject.project_filter[0].emission) {
+        this.currentProject.emission = this.currentProject.project_filter[0].emission;
+      }
+      if (this.currentProject.project_filter[0].genset) {
+        this.currentProject.genset = this.currentProject.project_filter[0].genset;
+      }
+      if (this.currentProject.project_filter[0].high_emission) {
+        this.currentProject.high_emission = this.currentProject.project_filter[0].high_emission;
+      }
+      if (this.currentProject.project_filter[0].high_pollution) {
+        this.currentProject.high_pollution = this.currentProject.project_filter[0].high_pollution;
+      }
+      if (this.currentProject.project_filter[0].high_traffic) {
+        this.currentProject.high_traffic = this.currentProject.project_filter[0].high_traffic;
+      }
+      if (this.currentProject.project_filter[0].hoard_b3) {
+        this.currentProject.hoard_b3 = this.currentProject.project_filter[0].hoard_b3;
+      }
+      if (this.currentProject.project_filter[0].low_traffic) {
+        this.currentProject.low_traffic = this.currentProject.project_filter[0].low_traffic;
+      }
+      if (this.currentProject.project_filter[0].mid_traffic) {
+        this.currentProject.mid_traffic = this.currentProject.project_filter[0].mid_traffic;
+      }
+      if (this.currentProject.project_filter[0].nothing) {
+        this.currentProject.nothing = this.currentProject.project_filter[0].nothing;
+      }
+      if (this.currentProject.project_filter[0].process_b3) {
+        this.currentProject.process_b3 = this.currentProject.project_filter[0].process_b3;
+      }
+      if (this.currentProject.project_filter[0].tps) {
+        this.currentProject.tps = this.currentProject.project_filter[0].tps;
+      }
+      if (this.currentProject.project_filter[0].traffic) {
+        this.currentProject.traffic = this.currentProject.project_filter[0].traffic;
+      }
+      if (this.currentProject.project_filter[0].transport_b3) {
+        this.currentProject.transport_b3 = this.currentProject.project_filter[0].transport_b3;
+      }
+      if (this.currentProject.project_filter[0].utilization_b3) {
+        this.currentProject.utilization_b3 = this.currentProject.project_filter[0].utilization_b3;
+      }
+      if (this.currentProject.project_filter[0].utilization_wastewater) {
+        this.currentProject.utilization_wastewater = this.currentProject.project_filter[0].utilization_wastewater;
+      }
+      if (this.currentProject.project_filter[0].wastewater) {
+        this.currentProject.wastewater = this.currentProject.project_filter[0].wastewater;
+      }
+      console.log(this.currentProject);
+      console.log(this.listSubProject);
+    }
     // console.log(this.currentProject);
     // load info user and initiator
     // const { email } = await this.$store.dispatch('user/getInfo');
@@ -1340,8 +1498,124 @@ export default {
       this.provinces = result.data.data;
     });
     this.initMap();
+
+    if (this.$route.params.id){
+      this.handleFileTapakEdit();
+    }
   },
   methods: {
+    async getFieldBySector(sproject) {
+      if (this.currentProject.isPemerintah === 'true'){
+        // const { value } = await kbliResource.get(sproject.sector);
+
+        const { data } = await kbliResource.list({
+          fieldBySectorName: sproject.sector,
+        });
+
+        sproject.sector_name = sproject.sector;
+
+        sproject.listField = data.map((i) => {
+          return { value: i.value, label: i.value };
+        });
+      } else {
+        const { data } = await kbliResource.list({
+          fieldBySector: sproject.sector,
+        });
+        sproject.listField = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      }
+    },
+    async getSectorByKbli(sproject) {
+      if (sproject.kbli === 'non kbli') {
+        const { data } = await kbliResource.list({
+          sectorsByKbli: 'Non KBLI',
+        });
+        sproject.listSector = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      } else if (sproject.kbli) {
+        const { data } = await kbliResource.list({
+          sectorsByKbli: sproject.kbli,
+        });
+        sproject.listSector = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      }
+
+      console.log(sproject.listSector);
+    },
+    getResultRiskByResult(result){
+      if (result === 'AMDAL'){
+        return 'Tinggi';
+      } else if (result === 'UKL-UPL'){
+        return 'Menengah Rendah';
+      } else {
+        return 'Rendah';
+      }
+    },
+    async getBusinessByField(sproject) {
+      console.log(sproject);
+
+      if (this.currentProject.isPemerintah === 'true'){
+        // const { value } = await kbliResource.get(sproject.sector);
+
+        sproject.biz_name = sproject.biz_type;
+
+        const { data } = await kbliEnvParamResource.list({
+          businessTypePem: sproject.biz_name,
+          sectorName: sproject.sector,
+        });
+
+        sproject.listSubProjectParams = data.map((i) => {
+          for (const oldPar of sproject.list_sub_project_params) {
+            if (oldPar.param === i.param && oldPar.scale_unit === i.unit){
+              i.result = oldPar.result;
+              i.result_risk = this.getResultRiskByResult(oldPar.result);
+              i.used = true;
+              i.scaleNumber = parseFloat(oldPar.scale);
+              i.scale = i.scaleNumber.toString().replace('.', ',');
+              i.id = oldPar.id;
+            }
+          }
+          return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit, result: i.result, used: i.used, scale: i.scale, scaleNumber: i.scaleNumber, result_risk: i.result_risk, id: i.id };
+        });
+      } else {
+        // get all sector by its kbli
+        await this.getSectorByKbli(sproject);
+
+        const { value } = await kbliResource.get(sproject.biz_type);
+        sproject.biz_name = value;
+        const { data } = await kbliEnvParamResource.list({
+          fieldId: sproject.biz_type,
+          businessType: true,
+        });
+        sproject.listSubProjectParams = data.map((i) => {
+          for (const oldPar of sproject.list_sub_project_params) {
+            // console.log({ old: oldPar.param, new: i.param });
+            // console.log({ old: oldPar.scale_unit, new: i.scale_unit });
+            // console.log(oldPar.param === i.param && oldPar.scale_unit === i.unit);
+            if (oldPar.param === i.param && oldPar.scale_unit === i.unit){
+              i.result = oldPar.result;
+              i.result_risk = this.getResultRiskByResult(oldPar.result);
+              i.used = true;
+              i.scaleNumber = parseFloat(oldPar.scale);
+              console.log(oldPar);
+              i.scale = i.scaleNumber.toString().replace('.', ',');
+              i.id = oldPar.id;
+            }
+          }
+          return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit, result: i.result, used: i.used, scale: i.scale, scaleNumber: i.scaleNumber, result_risk: i.result_risk, id: i.id };
+        });
+      }
+    },
+    async getFileFromUrl(url, name, defaultType = 'image/jpeg'){
+      const response = await fetch(url);
+      const data = await response.blob();
+      return new File([data], name, {
+        type: data.type || defaultType,
+      });
+    },
     initMap() {
       // init map
       this.map = new Map({
@@ -1837,10 +2111,20 @@ export default {
     handleStudyAccord(){
       this.$refs.pendekatanStudi.validate(async(valid) => {
         if (valid) {
+          if (this.$route.params.id){
+            // do this only when params id is exists;
+            for (const subPro of this.listSubProject) {
+              for (const param of subPro.listSubProjectParams) {
+                param.scale = param.scale ? param.scale.replace(',', '.') : param.scale;
+                console.log(param);
+              }
+            }
+          }
           await this.addAuthoritiesBasedOnAddress(this.currentProject.address.filter(e => e.isUsed));
           this.calculateListSubProjectResult();
           this.calculateChoosenProject();
           this.goToStatusKegiatan();
+          console.log(this.currentProject);
         } else {
           console.log('error submit!!');
           return false;
@@ -1980,6 +2264,266 @@ export default {
         this.filePdfName = e.target.files[0].name;
       }
     },
+    handleFileTapakEdit(){
+      esriConfig.request.proxyUrl = 'https://sigap.menlhk.go.id/proxy/proxy.php';
+      const penutupanLahan2020 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
+      });
+
+      const kawasanHutanB = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
+      });
+
+      const pippib2022Periode1 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_1/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
+      });
+
+      const sigapLayer = new GroupLayer({
+        title: 'Peta Tematik Status',
+        visible: true,
+        layers: [penutupanLahan2020, kawasanHutanB, pippib2022Periode1],
+        opacity: 0.90,
+      });
+
+      this.map.add(sigapLayer);
+      const that = this;
+      const fr = new FileReader();
+      fr.onload = (event) => {
+        const base = event.target.result;
+        const zip = new JSZip();
+
+        zip.loadAsync(base).then(function(zip) {
+          let count = 0;
+          zip.forEach((item) => {
+            if (item.includes('.shp')) {
+              count++;
+            }
+          });
+
+          if (count > 1) {
+            document.getElementById('fileMap').value = '';
+            that.fileMapName = 'No File Selected';
+            that.fileMap = null;
+            that.isMapUploaded = false;
+            return that.$alert('File SHP yang di upload lebih dari 1', {
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
+          }
+
+          shp(base).then((datas) => {
+            const mapSampleProperties = [
+              'PEMRAKARSA',
+              'KEGIATAN',
+              'TAHUN',
+              'PROVINSI',
+              'KETERANGAN',
+              'LAYER',
+            ];
+
+            const mapUploadProperties = Object.keys(datas.features[0].properties);
+            var getPropFields = datas.features[0].properties;
+
+            var propFields = Object.entries(getPropFields).reduce(function(a, _a) {
+              var key = _a[0], value = _a[1];
+              a[key.toUpperCase()] = value;
+              return a;
+            }, {});
+
+            var centroids = centroid(datas.features[0]);
+            var getCoordinates = centroids.geometry.coordinates;
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
+              .then(response => response.json())
+              .then(data => {
+                that.full_address = data.display_name;
+              });
+
+            if (datas.features[0].geometry.type !== 'Polygon') {
+              document.getElementById('fileMap').value = '';
+              that.fileMapName = 'No File Selected';
+              that.fileMap = null;
+              that.isMapUploaded = false;
+              return that.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
+                confirmButtonText: 'Download Sample',
+                callback: action => {
+                  that.$notify({
+                    type: 'warning',
+                    title: 'Perhatian!',
+                    message: 'Download Sample Peta Yang Telah Disediakan!!',
+                    duration: 5000,
+                  });
+                  window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+                },
+              });
+            }
+
+            const checker = (arr, target) => target.every(v => arr.includes(v));
+            const validDataSet = mapSampleProperties.map(element => element.toLowerCase());
+            const uploadDataSet = mapUploadProperties.map(element => element.toLowerCase());
+            const checkShapefile = checker(uploadDataSet, validDataSet);
+
+            if (!checkShapefile) {
+              document.getElementById('fileMap').value = '';
+              that.fileMapName = 'No File Selected';
+              that.fileMap = null;
+              that.isMapUploaded = false;
+              return that.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+                confirmButtonText: 'Download Sample',
+                callback: action => {
+                  that.$notify({
+                    type: 'warning',
+                    title: 'Perhatian!',
+                    message: 'Download Sample Peta Yang Telah Disediakan!!',
+                    duration: 5000,
+                  });
+                  window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+                },
+              });
+            }
+
+            const blob = new Blob([JSON.stringify(datas)], {
+              type: 'application/json',
+            });
+
+            const renderer = {
+              type: 'simple',
+              field: '*',
+              symbol: {
+                type: 'simple-fill',
+                color: [200, 0, 0, 1],
+                outline: {
+                  color: [200, 0, 0, 1],
+                },
+              },
+            };
+            const url = URL.createObjectURL(blob);
+
+            const geojsonLayer = new GeoJSONLayer({
+              url: url,
+              visible: true,
+              outFields: ['*'],
+              opacity: 0.75,
+              title: 'Peta Tapak Proyek',
+              renderer: renderer,
+              popupTemplate: popupTemplate(propFields),
+            });
+
+            that.map.add(geojsonLayer);
+            that.currentTapakProyekLayer = geojsonLayer;
+            mapView.on('layerview-create', async(event) => {
+              await mapView.goTo({
+                target: geojsonLayer.fullExtent,
+              });
+            });
+          }).catch((result) => {
+            document.getElementById('fileMap').value = '';
+            that.fileMapName = 'No File Selected';
+            that.fileMap = null;
+            that.isMapUploaded = false;
+            return that.$alert('File yang anda upload tidak terdapat file .shp', 'Format Salah', {
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                that.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
+          });
+        });
+      };
+      fr.readAsArrayBuffer(this.fileMap);
+
+      const mapView = new MapView({
+        container: 'mapView',
+        map: this.map,
+        center: [115.287, -1.588],
+        zoom: 5,
+      });
+      this.$parent.mapView = mapView;
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+
+      const legendListExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap', // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+        expandTooltip: 'Layer Legend', // optional, defaults to "Expand" for English locale
+        view: mapView,
+        content: legend,
+      });
+
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layers', // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+        expandTooltip: 'Daftar Layer', // optional, defaults to "Expand" for English locale
+        view: mapView,
+        content: layerList,
+      });
+
+      const print = new Print({
+        view: mapView,
+        printServiceUrl:
+                  'https://amdalgis.menlhk.go.id/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task',
+      });
+
+      const printExpand = new Expand({
+        view: mapView,
+        content: print,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          }).catch(function(error) {
+            console.error(error);
+          });
+        }
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendListExpand, 'top-right');
+      mapView.ui.add(printExpand, 'top-left');
+      this.isMapUploaded = true;
+    },
     handleFileTapakProyekMapUpload(e){
       if (!e.target){
         return;
@@ -2041,56 +2585,28 @@ export default {
       });
 
       this.map.add(sigapLayer);
-
+      const that = this;
       const fr = new FileReader();
       fr.onload = (event) => {
         const base = event.target.result;
-        shp(base).then((datas) => {
-          const mapSampleProperties = [
-            'PEMRAKARSA',
-            'KEGIATAN',
-            'TAHUN',
-            'PROVINSI',
-            'KETERANGAN',
-            'LAYER',
-          ];
+        const zip = new JSZip();
 
-          const mapUploadProperties = Object.keys(datas.features[0].properties);
-          var getPropFields = datas.features[0].properties;
+        zip.loadAsync(base).then(function(zip) {
+          let count = 0;
+          zip.forEach((item) => {
+            const extensions = item.slice(-4);
+            if (extensions === '.shp') {
+              count++;
+            }
+          });
 
-          var propFields = Object.entries(getPropFields).reduce(function(a, _a) {
-            var key = _a[0], value = _a[1];
-            a[key.toUpperCase()] = value;
-            return a;
-          }, {});
-
-          var centroids = centroid(datas.features[0]);
-          var getCoordinates = centroids.geometry.coordinates;
-
-          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
-            .then(response => response.json())
-            .then(data => {
-              this.full_address = data.display_name;
-            });
-
-          if (datas.features[0].geometry.type !== 'Polygon') {
+          if (count > 1) {
             document.getElementById('fileMap').value = '';
-            this.fileMapName = 'No File Selected';
-            return this.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
-              confirmButtonText: 'Confirm',
-            });
-          }
-
-          const checker = (arr, target) => target.every(v => arr.includes(v));
-          const validDataSet = mapSampleProperties.map(element => element.toLowerCase());
-          const uploadDataSet = mapUploadProperties.map(element => element.toLowerCase());
-          const checkShapefile = checker(uploadDataSet, validDataSet);
-
-          if (!checkShapefile) {
-            document.getElementById('fileMap').value = '';
-            this.fileMapName = 'No File Selected';
-            return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
-              confirmButtonText: 'Confirm',
+            that.fileMapName = 'No File Selected';
+            that.fileMap = null;
+            that.isMapUploaded = false;
+            return that.$alert('File SHP yang di upload lebih dari 1', {
+              confirmButtonText: 'Download Sample',
               callback: action => {
                 this.$notify({
                   type: 'warning',
@@ -2103,38 +2619,127 @@ export default {
             });
           }
 
-          const blob = new Blob([JSON.stringify(datas)], {
-            type: 'application/json',
-          });
+          shp(base).then((datas) => {
+            const mapSampleProperties = [
+              'PEMRAKARSA',
+              'KEGIATAN',
+              'TAHUN',
+              'PROVINSI',
+              'KETERANGAN',
+              'LAYER',
+            ];
 
-          const renderer = {
-            type: 'simple',
-            field: '*',
-            symbol: {
-              type: 'simple-fill',
-              color: [200, 0, 0, 1],
-              outline: {
+            const mapUploadProperties = Object.keys(datas.features[0].properties);
+            var getPropFields = datas.features[0].properties;
+
+            var propFields = Object.entries(getPropFields).reduce(function(a, _a) {
+              var key = _a[0], value = _a[1];
+              a[key.toUpperCase()] = value;
+              return a;
+            }, {});
+
+            var centroids = centroid(datas.features[0]);
+            var getCoordinates = centroids.geometry.coordinates;
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
+              .then(response => response.json())
+              .then(data => {
+                that.full_address = data.display_name;
+              });
+
+            if (datas.features[0].geometry.type !== 'Polygon') {
+              document.getElementById('fileMap').value = '';
+              that.fileMapName = 'No File Selected';
+              that.fileMap = null;
+              that.isMapUploaded = false;
+              return that.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
+                confirmButtonText: 'Download Sample',
+                callback: action => {
+                  that.$notify({
+                    type: 'warning',
+                    title: 'Perhatian!',
+                    message: 'Download Sample Peta Yang Telah Disediakan!!',
+                    duration: 5000,
+                  });
+                  window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+                },
+              });
+            }
+
+            const checker = (arr, target) => target.every(v => arr.includes(v));
+            const validDataSet = mapSampleProperties.map(element => element.toLowerCase());
+            const uploadDataSet = mapUploadProperties.map(element => element.toLowerCase());
+            const checkShapefile = checker(uploadDataSet, validDataSet);
+
+            if (!checkShapefile) {
+              document.getElementById('fileMap').value = '';
+              that.fileMapName = 'No File Selected';
+              that.fileMap = null;
+              that.isMapUploaded = false;
+              return that.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+                confirmButtonText: 'Download Sample',
+                callback: action => {
+                  that.$notify({
+                    type: 'warning',
+                    title: 'Perhatian!',
+                    message: 'Download Sample Peta Yang Telah Disediakan!!',
+                    duration: 5000,
+                  });
+                  window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+                },
+              });
+            }
+
+            const blob = new Blob([JSON.stringify(datas)], {
+              type: 'application/json',
+            });
+
+            const renderer = {
+              type: 'simple',
+              field: '*',
+              symbol: {
+                type: 'simple-fill',
                 color: [200, 0, 0, 1],
+                outline: {
+                  color: [200, 0, 0, 1],
+                },
               },
-            },
-          };
-          const url = URL.createObjectURL(blob);
+            };
+            const url = URL.createObjectURL(blob);
 
-          const geojsonLayer = new GeoJSONLayer({
-            url: url,
-            visible: true,
-            outFields: ['*'],
-            opacity: 0.75,
-            title: 'Peta Tapak Proyek',
-            renderer: renderer,
-            popupTemplate: popupTemplate(propFields),
-          });
+            const geojsonLayer = new GeoJSONLayer({
+              url: url,
+              visible: true,
+              outFields: ['*'],
+              opacity: 0.75,
+              title: 'Peta Tapak Proyek',
+              renderer: renderer,
+              popupTemplate: popupTemplate(propFields),
+            });
 
-          this.map.add(geojsonLayer);
-          this.currentTapakProyekLayer = geojsonLayer;
-          mapView.on('layerview-create', async(event) => {
-            await mapView.goTo({
-              target: geojsonLayer.fullExtent,
+            that.map.add(geojsonLayer);
+            that.currentTapakProyekLayer = geojsonLayer;
+            mapView.on('layerview-create', async(event) => {
+              await mapView.goTo({
+                target: geojsonLayer.fullExtent,
+              });
+            });
+          }).catch((result) => {
+            document.getElementById('fileMap').value = '';
+            that.fileMapName = 'No File Selected';
+            that.fileMap = null;
+            that.isMapUploaded = false;
+            return that.$alert('File yang anda upload tidak terdapat file .shp', 'Format Salah', {
+              confirmButtonText: 'Download Sample',
+              callback: action => {
+                that.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
             });
           });
         });

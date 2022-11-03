@@ -42,6 +42,7 @@ import MapView from '@arcgis/core/views/MapView';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
+import Expand from '@arcgis/core/widgets/Expand';
 
 export default {
   name: 'SKKL',
@@ -75,6 +76,10 @@ export default {
         let socialAdded = false;
         let studyAdded = false;
         let ecologyAdded = false;
+        let titikPemantuanAdded = false;
+        let titikPengelolaanAdded = false;
+        let areaPemantuanAdded = false;
+        let areaPengelolaanAdded = false;
         for (let i = 0; i < projects.length; i++) {
           let layerTitle = '';
           let layerOutlineColor = '';
@@ -94,6 +99,22 @@ export default {
             layerTitle = 'Layer Batas Sosial';
             layerOutlineColor = 'blue';
             socialAdded = true;
+          } else if (projects[i].attachment_type === 'pengelolaan' && !titikPengelolaanAdded) {
+            layerTitle = 'Layer Batas Titik Pengelolaan';
+            layerOutlineColor = 'purple';
+            titikPengelolaanAdded = true;
+          } else if (projects[i].attachment_type === 'pemantauan' && !titikPemantuanAdded) {
+            layerTitle = 'Layer Batas Titik Pemantuan';
+            layerOutlineColor = 'yellow';
+            titikPemantuanAdded = true;
+          } else if (projects[i].attachment_type === 'area-pengelolaan' && !areaPengelolaanAdded) {
+            layerTitle = 'Layer Batas Area Pengelolaan';
+            layerOutlineColor = 'black';
+            areaPengelolaanAdded = true;
+          } else if (projects[i].attachment_type === 'area-pemantauan' && !areaPemantuanAdded) {
+            layerTitle = 'Layer Batas Area Pemantuan';
+            layerOutlineColor = 'brown';
+            areaPemantuanAdded = true;
           }
           if (layerTitle !== '') {
             axios({
@@ -168,9 +189,36 @@ export default {
           container: document.createElement('div'),
         });
 
-        mapView.ui.add(layerList, 'top-right');
-        mapView.ui.add(legend, 'bottom-left');
+        const layerListExpand = new Expand({
+          expandIconClass: 'esri-icon-layer-list',
+          expandTooltip: 'Layer List',
+          view: mapView,
+          content: layerList,
+        });
+
+        const legendExpand = new Expand({
+          expandIconClass: 'esri-icon-basemap',
+          expandTooltip: 'Legend Layer',
+          view: mapView,
+          content: legend,
+        });
+
+        mapView.ui.add(layerListExpand, 'top-right');
+        mapView.ui.add(legendExpand, 'bottom-left');
       });
+    },
+    defineActions(event) {
+      const item = event.item;
+
+      item.actionsSections = [
+        [
+          {
+            title: 'Go to full extent',
+            className: 'esri-icon-zoom-in-magnifying-glass',
+            id: 'full-extent',
+          },
+        ],
+      ];
     },
   },
 };

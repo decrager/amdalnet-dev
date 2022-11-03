@@ -108,7 +108,7 @@
       <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
-        <el-button v-if="isProjectIdExist" @click="print()">Cetak PDF</el-button>
+        <el-button @click="printOrAlert()">Cetak PDF</el-button>
       </div>
       <div>
         <img id="gambar" src="">
@@ -273,6 +273,15 @@ export default {
 
       return '';
     },
+    printOrAlert(){
+      if (this.isProjectIdExist){
+        return this.print();
+      } else {
+        return this.$alert('Cetak penapisan hanya bisa digunakan setelah Penapisan di simpan.', 'Informasi', {
+          confirmButtonText: 'OK',
+        });
+      }
+    },
     setAddressDataTables(){
       this.addressTableData.push({
         no: '1',
@@ -283,7 +292,7 @@ export default {
     },
     setDataTables(){
       const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
-        var rmDecimalMain = ~~e.scale;
+        var rmDecimalMain = e.scale;
         var	reverse = rmDecimalMain.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
         projectScale = projectScale.join('.').split('').reverse().join('');
         return {
@@ -324,6 +333,7 @@ export default {
       }
 
       this.tableData = [...mainArr, ...suppArr];
+      console.log({ gune: this.tableData });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.scale) {
@@ -662,6 +672,7 @@ export default {
             this.$router.push('/project');
           }).catch(error => {
             console.log(error);
+            this.fullLoading = false;
           });
         } else {
           projectResource
@@ -694,7 +705,7 @@ export default {
         });
     },
     async updateList() {
-      var rmDecimal = ~~this.project.scale;
+      var rmDecimal = this.project.scale;
       var	reverse = rmDecimal.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
       projectScale = projectScale.join('.').split('').reverse().join('');
       this.list = [
@@ -740,6 +751,7 @@ export default {
           value: this.project.address[0].district,
         },
       ];
+      console.log({ gunk: this.project });
     },
   },
 };
