@@ -42,12 +42,42 @@
             </el-button>
           </el-form-item>
           <el-row type="flex" class="row-bg" justify="space-between">
-            <!-- <el-button type="text" style="background-color: transparent; color: blue;">Lupa Kata Sandi?</el-button> -->
+            <!-- <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenResetPassword">Lupa Kata Sandi?</el-button> -->
+            <p style="background-color: transparent; color: blue;">
+              <router-link to="/oss/lupa-katasandi">Lupa Kata Sandi?</router-link>
+            </p>
             <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak Memiliki Akun? <span style="color: red">Buat Akun Baru</span> </el-button>
           </el-row>
         </el-form>
       </div>
     </div>
+    <!-- <div v-else-if="form === 'resetpassword'" class="login-container">
+      <div class="login-content">
+        <el-form ref="resetForm" :model="resetForm" :rules="resetRules" class="reset-form" auto-complete="on" label-position="left">
+          <div class="title-wrap">
+            <h3> class="title">
+              {{ $t('login.resetPassword') }}
+            </h3>
+          </div>
+          <el-form-item prop="email">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input v-model="resetForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
+          </el-form-item>
+          <el-form-item>
+            <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
+              {{ $t('login.lanjutReset') }}
+            </el-button>
+          </el-form-item>
+          <el-row type="flex" justify="space-between">
+            <el-col :span="10">
+              <el-button type="text" style="background-color: transparent; color: blue;" @click="handleCancelReset">Kembali ke Halaman Login</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div> -->
     <div v-else class="registration-container">
       <el-card shadow="always">
         <el-row type="flex" justify="center">
@@ -935,11 +965,17 @@ export default {
         return acc;
       }, {});
     },
+    handleOpenRegister(){
+      this.form = 'register';
+    },
     handleCancelReg(){
       this.form = 'login';
     },
-    handleOpenRegister(){
-      this.form = 'register';
+    handleOpenResetPassword(){
+      this.form = 'resetpassword';
+    },
+    handleCancelReset(){
+      this.form = 'login';
     },
     async changeProvince(value) {
       // change all district by province
