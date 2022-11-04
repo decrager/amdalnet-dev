@@ -10,17 +10,21 @@
       <template slot-scope="scope">
         <div class="expand-container">
           <div>
-            <p>
+            <!-- <p>
               <b>Provinsi : </b>
               {{ scope.row.data_province ? scope.row.data_province.name : '' }}
-            </p>
-            <p>
+            </p> -->
+            <!-- <p>
               <b>Kota : </b>
               {{ scope.row.data_district ? scope.row.data_district.name : '' }}
+            </p> -->
+            <p>
+              <b>Nomor Telepon : </b>
+              {{ scope.row.phone_no ? scope.row.phone_no : '' }}
             </p>
-            <p><b>Email : </b>{{ scope.row.email }}</p>
-            <p><b>Tanggal Ditetapkan : </b>{{ formatDate(scope.row.date_lsp_start) }}</p>
-            <p><b>Tanggal Terakhir Berlaku : </b>{{ formatDate(scope.row.date_lsp_end) }}</p>
+            <p><b>Email : </b>{{ scope.row.email ? scope.row.email : '' }}</p>
+            <!-- <p><b>Tanggal Ditetapkan : </b>{{ formatDate(scope.row.date_lsp_start) }}</p> -->
+            <!-- <p><b>Tanggal Terakhir Berlaku : </b>{{ formatDate(scope.row.date_lsp_end) }}</p> -->
           </div>
           <div
             v-if="checkPermission(['manage lsp']) || checkRole(['admin'])"
@@ -56,12 +60,12 @@
         <span>{{ scope.$index + 1 + page * limit - limit }}</span>
       </template>
     </el-table-column>
-    <el-table-column
+    <!-- <el-table-column
       align="center"
       label="Nomor Lisensi"
       sortable
       prop="license_no"
-    />
+    /> -->
     <el-table-column
       align="center"
       label="Nama LSP"
@@ -70,7 +74,7 @@
     />
     <el-table-column align="center" label="Alamat" sortable prop="address" />
 
-    <el-table-column align="center" label="Bukti Penetapan">
+    <!-- <el-table-column align="center" label="Bukti Penetapan">
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -81,14 +85,10 @@
         >
           Bukti Penetapan
         </el-button>
-        <!-- <div>
-          <i class="el-icon-download" />
-          <span>{{ 'Sertifikat' }}</span>
-        </div> -->
       </template>
-    </el-table-column>
+    </el-table-column> -->
 
-    <el-table-column align="center" label="Status">
+    <!-- <el-table-column align="center" label="Status">
       <template slot-scope="scope">
         <el-tag
           :type="
@@ -98,11 +98,8 @@
         >
           {{ calculateStatus(scope.row.date_lsp_start, scope.row.date_lsp_end) }}
         </el-tag>
-        <!-- <span>{{
-          calculateStatus(scope.row.tgl_awal, scope.row.tgl_akhir)
-        }}</span> -->
       </template>
-    </el-table-column>
+    </el-table-column> -->
   </el-table>
 </template>
 
