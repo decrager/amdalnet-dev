@@ -117,6 +117,13 @@ export const constantRoutes = [
     name: 'OssRegister',
   },
   {
+    path: '/oss/lupa-katasandi',
+    component: () => import('@/views/reset-password/index'),
+    props: true,
+    hidden: true,
+    name: 'OssResetPassword',
+  },
+  {
     path: '/auth-redirect',
     component: () => import('@/views/login/AuthRedirect'),
     hidden: true,

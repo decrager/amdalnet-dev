@@ -121,6 +121,7 @@ export default {
     title: 'Masuk ke Dasbor Anda',
     logIn: 'Masuk',
     register: 'Daftar',
+    resetPassword: 'Lupa Password',
     username: 'Nama pengguna',
     password: 'Password',
     confirmPassword: 'Konfirmasi Password',

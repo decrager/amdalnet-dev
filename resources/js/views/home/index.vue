@@ -18,6 +18,7 @@
     <amdal-digital v-if="toggleAD" />
     <LPJP v-if="toggleLPJP" />
     <Tentang v-if="toggleTentang" />
+    <Pemerintah v-if="togglePemerintah" />
     <TUK v-if="toggleTUK" />
     <Penyusun v-if="togglePenyusun" />
     <footer-home />
@@ -47,6 +48,7 @@ import ProposalCounter from './section/ProposalCounter.vue';
 import AnnouncementHome from './section/Announce.vue';
 import AmdalDigital from './amdal-digital/index.vue';
 import LPJP from './lpjp/index.vue';
+import Pemerintah from './govermentinatitution/index.vue';
 import TUK from './tuk/index.vue';
 import Tentang from './section/Tentang.vue';
 import Penyusun from './penyusun/index.vue';
@@ -75,6 +77,7 @@ export default {
     AmdalDigital,
     Disclaimer,
     LPJP,
+    Pemerintah,
     TUK,
     Penyusun,
     Tentang,
@@ -93,6 +96,7 @@ export default {
       toggleCluster: false,
       toggleAD: false,
       toggleLPJP: false,
+      togglePemerintah: false,
       togglePenyusun: false,
       toggleTentang: false,
       toggleTUK: false,
@@ -112,6 +116,7 @@ export default {
         this.toggleMenuMateri = false;
         this.toggleMenuKebijakan = false;
         this.toggleLPJP = false;
+        this.togglePemerintah = false;
         this.toggleTUK = false;
         this.togglePenyusun = false;
       } else {
@@ -129,6 +134,7 @@ export default {
       const cluster = (e === 'CLUSTER') ? 'true' : 'false';
       const ad = (e === 'AMDALDigital') ? 'true' : 'false';
       const lpjp = (e === 'LPJP') ? 'true' : 'false';
+      const pemerintah = (e === 'Pemerintah') ? 'true' : 'false';
       const tuk = (e === 'TUK') ? 'true' : 'false';
       const penyusun = (e === 'Penyusun') ? 'true' : 'false';
       const tentang = (e === 'TENTANG') ? 'true' : 'false';
@@ -143,6 +149,7 @@ export default {
       this.toggleCluster = JSON.parse(cluster);
       this.toggleAD = JSON.parse(ad);
       this.toggleLPJP = JSON.parse(lpjp);
+      this.togglePemerintah = JSON.parse(pemerintah);
       this.togglePenyusun = JSON.parse(penyusun);
       this.toggleTentang = JSON.parse(tentang);
       this.toggleTUK = JSON.parse(tuk);
