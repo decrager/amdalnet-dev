@@ -12,7 +12,6 @@
       align="center"
       label="No. Registrasi"
       prop="reg_no"
-      sortable
     />
     <el-table-column
       align="center"
@@ -20,12 +19,24 @@
       prop="cert_no"
       sortable
     />
-    <el-table-column
-      align="center"
-      label="Sertifikasi"
-      prop="membership_status"
-      sortable
-    />
+    <el-table-column align="center" prop="membership_status" column-key="membership_status">
+      <template slot="header">
+        <el-select
+          v-model="membershipStatusFilter "
+          class="filter-header"
+          clearable
+          placeholder="Sertifikasi"
+          @change="onMembershipStatusFilter"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </template>
+    </el-table-column>
 
     <el-table-column align="center" label="Status" prop="status" sortable>
       <template slot-scope="scope">
@@ -113,8 +124,27 @@ export default {
       type: Array,
       default: () => [],
     },
+    options: {
+      type: Array,
+      default: () => [
+        {
+          value: 'ATPA',
+          label: 'ATPA',
+        },
+        {
+          value: 'KTPA',
+          label: 'KTPA',
+        },
+      ],
+    },
     loading: Boolean,
     certificate: Boolean,
+  },
+  data() {
+    return {
+      listQuery: [],
+      membershipStatusFilter: '',
+    };
   },
   methods: {
     checkPermission,
@@ -131,6 +161,10 @@ export default {
     handleCertificate(id) {
       // eslint-disable-next-line object-curly-spacing
       this.$router.push({ name: 'certificateFormulator', params: { id } });
+    },
+    onMembershipStatusFilter(val) {
+      // console.log('membershipStatus: ', val);
+      this.$emit('membershipStatusFilter', val);
     },
   },
 };

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Comment;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeamMember;
+use App\Entity\Lsp;
 use App\Http\Resources\FormulatorResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
@@ -76,6 +77,14 @@ class FormulatorController extends Controller
                         $q->whereRaw("LOWER(membership_status) LIKE '%" . strtolower($request->search) . "%'");
                     });
                 }
+            })
+            ->where(function ($query) use ($request) {
+                $findIdLsp = Lsp::where('email',$request->email)->first();
+                return $findIdLsp ? $query->where('id_lsp', $findIdLsp->id) : '';
+            })
+            ->where(function ($query) use ($request) {
+                $findStatus = $request->membershipStatus;
+                return $findStatus ? $query->where('membership_status', $findStatus) : '';
             })
             ->orderBy('created_at', 'DESC')->paginate($request->limit)
             ->appends(['active' => $request->active])
@@ -150,7 +159,7 @@ class FormulatorController extends Controller
             $formulator->province = $this->checkStringNull($request->province);
             $formulator->district = $this->checkStringNull($request->district);
             $formulator->phone = $this->checkStringNull($request->phone);
-            
+
             if($this->checkStringNull($request->email)) {
                 $formulator->email = strtolower($request->email);
             }
@@ -217,7 +226,7 @@ class FormulatorController extends Controller
 
             if($this->checkStringNull($request->email)) {
                 $found = User::where('email', $email)->first();
-    
+
                 if($found) {
                     return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
                 }
@@ -520,7 +529,7 @@ class FormulatorController extends Controller
                 // 2. delete user
                 User::destroy($user->id);
             }
-    
+
             // Delete formulator data
             // 1. delete formulator as team member
             FormulatorTeamMember::where('id_formulator', $formulator->id)->delete();
@@ -641,7 +650,7 @@ class FormulatorController extends Controller
             $user = User::where([['email', $email_formulator],['active', 1]])->first();
             if($user) {
                 return response()->json(['error' => 'Penyusun dengan nomor registrasi ' . $no_reg . ' sudah terdaftar']);
-            } 
+            }
         }
 
         $user = User::where('email', strtolower($email_user))->first();

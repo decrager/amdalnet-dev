@@ -9,6 +9,7 @@ const masterRoutes = {
     icon: 'cube',
     permissions: [
       'view menu lpjp',
+      'view menu lsp',
       'view menu rona awal',
       'view menu formulator',
       'view menu components',
