@@ -519,12 +519,11 @@
             </el-row>
             <el-row v-if="registrationForm.isCertified" :gutter="24">
               <el-col :span="12">
-                <el-form-item prop="id_lsp" :label="$t('login.lspName')">
+                <el-form-item prop="id_lsp" label="Nama LSP">
                   <el-select
                     v-model="registrationForm.id_lsp"
                     filterable
                     name="lsp"
-                    :placeholder="$t('login.lspName')"
                     style="width: 100%"
                   >
                     <el-option
