@@ -200,7 +200,7 @@ class AnnouncementController extends Controller
             if($request->project_result != "UKL-UPL"){
                 $required['fileProof'] = 'required';
             }
-            
+
         }
 
         // return $announcement->rawProof();
@@ -275,15 +275,34 @@ class AnnouncementController extends Controller
             if($params['publish'] && ($params['publish'] === 'true')){
 
                 $project = Project::find($params['project_id']);
+                $projectUkl = Project::find($params['project_id'])->required_doc;
                 $project->published = true;
                 $project->save();
+
                 switch ($project->marking){
                     case 'announcement-drafting':
                         $project->workflow_apply('announce');
+                        if($projectUkl === 'UKL-UPL') {
+                            $project->workflow_apply('complete-announcement');
+                        }
                         $project->save();
                         break;
                     case 'formulator-assignment':
-                        $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement');
+                        if($projectUkl === 'AMDAL') {
+                            $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement');
+                        }
+                        if($projectUkl === 'UKL-UPL') {
+                            $project->applyWorkFlowTransition('complete-announcement', 'announcement', 'announcement-completed');
+                        }
+                        break;
+                    case 'screening-completed':
+                        $project->applyWorkFlowTransition('assign-formulator', 'screening-completed', 'formulator-assignment');
+                        if($projectUkl === 'AMDAL') {
+                            $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement');
+                        }
+                        if($projectUkl === 'UKL-UPL') {
+                            $project->applyWorkFlowTransition('complete-announcement', 'announcement', 'announcement-completed');
+                        }
                         break;
                     default:
                 }
