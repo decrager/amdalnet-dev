@@ -217,6 +217,23 @@
               />
             </el-form-item>
           </el-col>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="Nama LSP" porp="id_lsp">
+              <el-select
+                v-model="formulator.id_lsp"
+                name="id_lsp"
+                placeholder="Pilih"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in lspOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
         </el-row>
         <div style="text-align: right">
           <el-button
@@ -238,6 +255,7 @@ import Resource from '@/api/resource';
 const formulatorResource = new Resource('formulators');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
+const lspResource = new Resource('lsp');
 
 export default {
   name: 'FormulatorCertificate',
@@ -294,6 +312,7 @@ export default {
       selectedExpertise: null,
       provinces: [],
       districts: [],
+      lspOptions: [],
       membershipStatusOptions: [
         {
           value: 'KTPA',
@@ -406,9 +425,18 @@ export default {
   },
   created() {
     this.getData();
+    this.getLsp();
     this.getProvinces();
   },
   methods: {
+    async getLsp() {
+      const { data } = await lspResource.list({
+        options: 'true',
+      });
+      this.lspOptions = data.map((i) => {
+        return { value: i.id, label: i.lsp_name };
+      });
+    },
     async getData() {
       this.loading = true;
       this.formulator = await formulatorResource.get(this.$route.params.id);
@@ -417,6 +445,12 @@ export default {
         const provinceInt = parseInt(this.formulator.province);
         if (!isNaN(provinceInt)) {
           this.formulator.province = provinceInt;
+        }
+      }
+      if (this.formulator.id_lsp) {
+        const lspInt = parseInt(this.formulator.id_lsp);
+        if (!isNaN(lspInt)) {
+          this.formulator.id_lsp = lspInt;
         }
       }
 
@@ -491,6 +525,7 @@ export default {
       formData.append('district', this.formulator.district);
       formData.append('phone', this.formulator.phone);
       formData.append('email', this.formulator.email);
+      formData.append('id_lsp', this.formulator.id_lsp);
       formData.append('reg_no', this.formulator.reg_no);
       formData.append('cert_no', this.formulator.cert_no);
       formData.append('membership_status', this.formulator.membership_status);

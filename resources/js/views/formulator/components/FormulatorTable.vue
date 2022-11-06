@@ -37,7 +37,24 @@
         </el-select>
       </template>
     </el-table-column>
-
+    <el-table-column align="center" prop="data_lsp.lsp_name" column-key="data_lsp.lsp_name">
+      <template slot="header">
+        <el-select
+          v-model="lspFilter "
+          class="filter-header"
+          clearable
+          placeholder="LSP"
+          @change="onLspFilter"
+        >
+          <el-option
+            v-for="item in lspOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </template>
+    </el-table-column>
     <el-table-column align="center" label="Status" prop="status" sortable>
       <template slot-scope="scope">
         <el-tag :type="scope.row.status | statusFilter">
@@ -107,6 +124,8 @@
 <script>
 import checkPermission from '@/utils/permission';
 import checkRole from '@/utils/role';
+import Resource from '@/api/resource';
+const lspResource = new Resource('lsp');
 
 export default {
   name: 'FormulatorTable',
@@ -143,12 +162,25 @@ export default {
   data() {
     return {
       listQuery: [],
+      lspOptions: [],
       membershipStatusFilter: '',
+      lspFilter: '',
     };
+  },
+  mounted() {
+    this.getLsp();
   },
   methods: {
     checkPermission,
     checkRole,
+    async getLsp() {
+      const { data } = await lspResource.list({
+        options: 'true',
+      });
+      this.lspOptions = data.map((i) => {
+        return { value: i.id, label: i.lsp_name };
+      });
+    },
     download(url) {
       window.open(url, '_blank').focus();
     },
@@ -165,6 +197,10 @@ export default {
     onMembershipStatusFilter(val) {
       // console.log('membershipStatus: ', val);
       this.$emit('membershipStatusFilter', val);
+    },
+    onLspFilter(val) {
+      // console.log('membershipStatus: ', val);
+      this.$emit('lspFilter', val);
     },
   },
 };
