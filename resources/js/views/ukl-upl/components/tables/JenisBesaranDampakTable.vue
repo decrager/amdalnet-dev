@@ -107,6 +107,8 @@ export default {
         'uklupl-mr.pkplh-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
     },
 

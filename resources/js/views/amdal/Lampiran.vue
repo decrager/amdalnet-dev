@@ -165,6 +165,8 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
     },
   },

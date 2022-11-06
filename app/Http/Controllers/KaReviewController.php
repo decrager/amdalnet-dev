@@ -148,7 +148,7 @@ class KaReviewController extends Controller
                     $project->save();
                 }*/
             } else if($document_type == 'ANDAL RKL RPL') {
-                if($project->marking == 'amdal.form-rklrpl-drafting') {
+                if($project->marking == 'amdal.rklrpl-drafting') {
                     $project->workflow_apply('submit-amdal');
                     // $project->workflow_apply('review-amdal-adm');
                     $project->save();
@@ -224,7 +224,7 @@ class KaReviewController extends Controller
                         $project->save();
                     }*/
                 } else if($document_type == 'ANDAL RKL RPL') {
-                    if($project->marking == 'amdal.form-rklrpl-drafting') {
+                    if($project->marking == 'amdal.rklrpl-drafting') {
                         $project->workflow_apply('submit-amdal');
                         $project->workflow_apply('review-amdal-adm');
                         $project->save();
@@ -319,8 +319,7 @@ class KaReviewController extends Controller
                     }*/
 
                 } else if($document_type == 'ANDAL RKL RPL') {
-                    if($project->marking == 'amdal.form-rklrpl-drafting') {
-                        $project->workflow_apply('submit-amdal');
+                    if($project->marking == 'amdal.submitted') {
                         $project->workflow_apply('review-amdal-adm');
                         $project->save();
                     }
