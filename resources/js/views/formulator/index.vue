@@ -70,6 +70,7 @@
           <formulator-table
             :loading="loading"
             :list="list"
+            @lspFilter="onLspFilter"
             @membershipStatusFilter="onMembershipStatusFilter"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
@@ -79,6 +80,7 @@
           <formulator-table
             :loading="loading"
             :list="list"
+            @lspFilter="onLspFilter"
             @membershipStatusFilter="onMembershipStatusFilter"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
@@ -91,6 +93,7 @@
           <formulator-table
             :loading="loading"
             :list="list"
+            @lspFilter="onLspFilter"
             @membershipStatusFilter="onMembershipStatusFilter"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
@@ -102,6 +105,7 @@
         :loading="loading"
         :list="list"
         :certificate="true"
+        @lspFilter="onLspFilter"
         @membershipStatusFilter="onMembershipStatusFilter"
         @handleEditForm="handleEditForm($event)"
         @handleDelete="handleDelete($event)"
@@ -300,6 +304,11 @@ export default {
     onMembershipStatusFilter(val) {
       // console.log('membershipStatusIndex: ', val);
       this.listQuery.membershipStatus = val;
+      this.handleFilter();
+    },
+    onLspFilter(val) {
+      // console.log('membershipStatusIndex: ', val);
+      this.listQuery.lspFilter = val;
       this.handleFilter();
     },
   },

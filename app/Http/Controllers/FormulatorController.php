@@ -86,6 +86,13 @@ class FormulatorController extends Controller
                 $findStatus = $request->membershipStatus;
                 return $findStatus ? $query->where('membership_status', $findStatus) : '';
             })
+            ->where(function ($query) use ($request) {
+                $findLsp = $request->lspFilter;
+                return $findLsp ? $query->where('id_lsp', $findLsp) : '';
+            })
+            ->with(['dataLsp' => function ($query){
+                return $query->select(['id', 'lsp_name']);
+            }])
             ->orderBy('created_at', 'DESC')->paginate($request->limit)
             ->appends(['active' => $request->active])
         );
@@ -165,6 +172,7 @@ class FormulatorController extends Controller
             }
 
             $formulator->reg_no = $request->reg_no;
+            $formulator->id_lsp = $request->id_lsp;
             $formulator->cert_no = $request->cert_no;
             $formulator->membership_status = $request->membership_status;
             $formulator->date_start = $request->date_start;
