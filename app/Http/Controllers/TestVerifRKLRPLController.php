@@ -134,7 +134,7 @@ class TestVerifRKLRPLController extends Controller
 
             // === WORKFLOW === //
             // if($document_type == 'ukl-upl') {
-            //     if($project->marking == 'uklupl-mt.submitted') {
+            //     if($project->marking == 'uklupl-mt.sent') {
             //         $project->workflow_apply('review-uklupl-adm');
             //         $project->save();
             //     }
