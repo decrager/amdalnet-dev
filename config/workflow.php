@@ -12,7 +12,7 @@ return [
         ],
         // optional top-level metadata
         'metadata' => [
-            // any data 
+            // any data
         ],
         'supports' => ['App\Entity\BlogPost'], // objects this workflow supports
         // Specifies events to dispatch (only in 'workflow', not 'state_machine')
@@ -130,7 +130,7 @@ return [
         ],
         // optional top-level metadata
         'metadata' => [
-            // any data 
+            // any data
         ],
         'supports' => ['App\Entity\Project'], // objects this workflow supports
         'events_to_dispatch' => [
@@ -144,13 +144,13 @@ return [
         ],
         'places' => ['init', 'info-filling', 'in-screening', 'screening-completed','formulator-assignment',
         'announcement-drafting','announcement', 'announcement-completed', 'uklupl-mr.pkplh-published',
-        'uklupl-mt.form', 'uklupl-mt.matrix-ukl', 'uklupl-mt.matrix-upl','uklupl-mt.submitted',
-        'uklupl-mt.adm-review', 'uklupl-mt.adm-returned', 'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.form', 'uklupl-mt.matrix-ukl', 'uklupl-mt.matrix-upl','uklupl-mt.sent',
+        'uklupl-mt.adm-review', 'uklupl-mt.returned', 'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination', 'uklupl-mt.examination-meeting', 'uklupl-mt.returned', 'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed', 'uklupl-mt.recommendation-drafting', 'uklupl-mt.recommendation-signed', 'uklupl-mt.pkplh-published',
         'amdal.form-ka-drafting', 'amdal.form-ka-submitted', 'amdal.form-ka-adm-review','amdal.form-ka-adm-returned',
-        'amdal.form-ka-adm-approved', 'amdal.form-ka-examination-invitation-drafting', 'amdal.form-ka-examination-invitation-sent', 
+        'amdal.form-ka-adm-approved', 'amdal.form-ka-examination-invitation-drafting', 'amdal.form-ka-examination-invitation-sent',
         'amdal.form-ka-examination','amdal.form-ka-examination-meeting', 'amdal.form-ka-returned', 'amdal.form-ka-approved',
         'amdal.form-ka-ba-drafting', 'amdal.form-ka-ba-signed', 'amdal.andal-drafting','amdal.rklrpl-drafting',
         'amdal.submitted', 'amdal.adm-review', 'amdal.adm-returned', 'amdal.adm-approved', 'amdal.examination',
@@ -183,7 +183,7 @@ return [
                 'from' => 'announcement-drafting',
                 'to' => 'announcement',
             ],
-            'complete-announcement' => [ 
+            'complete-announcement' => [
                 'from' => 'announcement',
                 'to' => 'announcement-completed',
             ],
@@ -195,39 +195,39 @@ return [
                   'from' => 'announcement-completed',
                   'to' => 'uklupl-mt.form',
               ],
-                'fill-uklupl-matrix-ukl' => [ 
+                'fill-uklupl-matrix-ukl' => [
                     'from' => 'uklupl-mt.form',
                     'to' => 'uklupl-mt.matrix-ukl',
                 ],
-                'fill-uklupl-matrix-upl' => [ 
+                'fill-uklupl-matrix-upl' => [
                     'from' => 'uklupl-mt.matrix-ukl',
                     'to' => 'uklupl-mt.matrix-upl',
                 ],
-                'submit-uklupl' => [ 
+                'submit-uklupl' => [
                     'from' => 'uklupl-mt.matrix-upl',
-                    'to' => 'uklupl-mt.submitted',
+                    'to' => 'uklupl-mt.sent',
                 ],
-                'review-uklupl-adm' => [ 
-                    'from' => 'uklupl-mt.submitted',
+                'review-uklupl-adm' => [
+                    'from' => 'uklupl-mt.sent',
                     'to' => 'uklupl-mt.adm-review',
                 ],
                   'return-uklupl-adm' => [                      // Adm returned
                       'from' => 'uklupl-mt.adm-review',
-                      'to' => 'uklupl-mt.adm-returned',
+                      'to' => 'uklupl-mt.returned',
                   ],
                   'draft-uklupl-examination-invitation' => [    // Continue
                       'from' => 'uklupl-mt.adm-review',
                       'to' => 'uklupl-mt.examination-invitation-drafting',
                   ],
-                    'send-uklupl-examination-invitation' => [    
+                    'send-uklupl-examination-invitation' => [
                         'from' => 'uklupl-mt.examination-invitation-drafting',
                         'to' => 'uklupl-mt.examination-invitation-sent',
                     ],
-                    'examine-uklupl' => [  
+                    'examine-uklupl' => [
                         'from' => 'uklupl-mt.examination-invitation-sent',
                         'to' => 'uklupl-mt.examination',
                     ],
-                    'held-uklupl-examination-meeting' => [  
+                    'held-uklupl-examination-meeting' => [
                         'from' => 'uklupl-mt.examination',
                         'to' => 'uklupl-mt.examination-meeting',
                     ],
@@ -239,19 +239,19 @@ return [
                           'from' => 'uklupl-mt.examination-meeting',
                           'to' => 'uklupl-mt.ba-drafting',
                       ],
-                        'sign-uklupl-ba' => [  
+                        'sign-uklupl-ba' => [
                             'from' => 'uklupl-mt.ba-drafting',
                             'to' => 'uklupl-mt.ba-signed',
                         ],
-                        'draft-uklupl-recommendation' => [  
+                        'draft-uklupl-recommendation' => [
                             'from' => 'uklupl-mt.ba-signed',
                             'to' => 'uklupl-mt.recommendation-drafting',
                         ],
-                        'sign-uklupl-recommendation' => [  
+                        'sign-uklupl-recommendation' => [
                             'from' => 'uklupl-mt.recommendation-drafting',
                             'to' => 'uklupl-mt.recommendation-signed',
                         ],
-                        'publish-uklupl-pkplh' => [  
+                        'publish-uklupl-pkplh' => [
                             'from' => 'uklupl-mt.recommendation-signed',
                             'to' => 'uklupl-mt.pkplh-published',
                         ],

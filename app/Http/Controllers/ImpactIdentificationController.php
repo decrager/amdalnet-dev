@@ -712,7 +712,6 @@ class ImpactIdentificationController extends Controller
 
             return response(200);
         }*/
-        dd("sasa")''
         if (isset($params['checked']) && isset($params['id_project'])){
             return $this->saveMatriks($params);
         } else if (isset($params['study_data'])) {

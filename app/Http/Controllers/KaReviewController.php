@@ -158,9 +158,9 @@ class KaReviewController extends Controller
                     $project->workflow_apply('submit-uklupl');
                     // $project->workflow_apply('review-uklupl-adm');
                     $project->save();
-                } else if($project->marking == 'uklupl-mt.submitted') {
-                    // $project->workflow_apply('review-uklupl-adm');
-                    // $project->save();
+                } else if($project->marking == 'uklupl-mt.returned') {
+                    $project->applyWorkFlowTransition('submit-uklupl', 'uklupl-mt.returned', 'uklupl-mt.sent');
+                    $project->save();
                 }
             }
 
@@ -235,7 +235,7 @@ class KaReviewController extends Controller
                         $project->workflow_apply('review-uklupl-adm');
                         $project->workflow_apply('return-uklupl-adm');
                         $project->save();
-                    } else if($project->marking == 'uklupl-mt.submitted') {
+                    } else if($project->marking == 'uklupl-mt.sent') {
                         $project->workflow_apply('review-uklupl-adm');
                         $project->workflow_apply('return-uklupl-adm');
                         $project->save();
@@ -328,7 +328,7 @@ class KaReviewController extends Controller
                         $project->workflow_apply('submit-uklupl');
                         $project->workflow_apply('review-uklupl-adm');
                         $project->save();
-                    } else if($project->marking == 'uklupl-mt.submitted') {
+                    } else if($project->marking == 'uklupl-mt.sent') {
                         $project->workflow_apply('review-uklupl-adm');
                         $project->save();
                     }
