@@ -268,8 +268,9 @@ class OssController extends Controller
                 DB::commit();
                 $saved = true;
             } catch (Exception $e) {
+                DB::rollBack();
                 $errorMessage = $e->getMessage();
-            }          
+            }
         } else {
             // insert
             try {
@@ -306,7 +307,7 @@ class OssController extends Controller
                 ]
             ], 200);
         }
-        
+
         Log::error('Gagal menyimpan data NIB. Error msg: ' . $errorMessage);
         return response()->json([
             'responreceiveNIB' => [
