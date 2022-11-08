@@ -149,12 +149,12 @@ class ProjectMapAttachmentController extends Controller
                         $clone->save();
                     }
                 }
-                // Add workflow
-                $project = Project::findOrFail($request->id_project);
-                if ($project->marking == 'uklupl-mt.matrix-upl') {
-                    $project->workflow_apply('submit-uklupl');
-                    $project->save();
-                }
+                // // Add workflow
+                // $project = Project::findOrFail($request->id_project);
+                // if ($project->marking == 'uklupl-mt.matrix-upl') {
+                //     $project->workflow_apply('submit-uklupl');
+                //     $project->save();
+                // }
             }
         }
     }
