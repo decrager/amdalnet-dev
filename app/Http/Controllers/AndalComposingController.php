@@ -2861,43 +2861,11 @@ class AndalComposingController extends Controller
         if($data) {
             $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data, $selected_font));
         }
-        $content = $this->stripInvalidXml($content);
         Html::addHtml($cell, $content);
         return [
             'name' => '${' . $name . '_' . $stage_id . '_' . $impact_id . '}',
             'content' => $table
         ];
-    }
-
-    private function stripInvalidXml($value)
-    {
-        $ret = "";
-        $current = null;
-        if (empty($value))
-        {
-            return $ret;
-        }
-
-        $length = strlen($value);
-        for ($i=0; $i < $length; $i++)
-        {
-            // For >PHP7.3 use ord($value[$i])
-            $current = ord($value[$i]);
-            if (($current == 0x9) ||
-                ($current == 0xA) ||
-                ($current == 0xD) ||
-                (($current >= 0x20) && ($current <= 0xD7FF)) ||
-                (($current >= 0xE000) && ($current <= 0xFFFD)) ||
-                (($current >= 0x10000) && ($current <= 0x10FFFF)))
-            {
-                $ret .= chr($current);
-            }
-            else
-            {
-                $ret .= " ";
-            }
-        }
-        return $ret;
     }
 
     private function renderHtmlTable($data, $width = null, $font = null, $font_size = null)

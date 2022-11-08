@@ -79,6 +79,7 @@ class Html
         }
         $dom = new \DOMDocument();
         $dom->preserveWhiteSpace = $preserveWhiteSpace;
+        $html = self::stripInvalidXml($html);
         $dom->loadXML($html);
         self::$xpath = new \DOMXPath($dom);
         $node = $dom->getElementsByTagName('body');
@@ -89,6 +90,36 @@ class Html
         }
     }
 
+    private static function stripInvalidXml($value)
+    {
+        $ret = "";
+        $current = null;
+        if (empty($value))
+        {
+            return $ret;
+        }
+
+        $length = strlen($value);
+        for ($i=0; $i < $length; $i++)
+        {
+            // For >PHP7.3 use ord($value[$i])
+            $current = ord($value[$i]);
+            if (($current == 0x9) ||
+                ($current == 0xA) ||
+                ($current == 0xD) ||
+                (($current >= 0x20) && ($current <= 0xD7FF)) ||
+                (($current >= 0xE000) && ($current <= 0xFFFD)) ||
+                (($current >= 0x10000) && ($current <= 0x10FFFF)))
+            {
+                $ret .= chr($current);
+            }
+            else
+            {
+                $ret .= " ";
+            }
+        }
+        return $ret;
+    }
     /**
      * parse Inline style of a node
      *
