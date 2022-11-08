@@ -55,7 +55,7 @@ class Project extends Model implements Auditable
 
     protected $guarded = [];
 
-    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document'];
+    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document', 'form_ka_doc'];
 
     public function team()
     {
@@ -166,6 +166,16 @@ class Project extends Model implements Auditable
     {
         Carbon::setLocale('id');
         return Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->isoFormat('D MMMM Y');
+    }
+
+    public function getFormKaDocAttribute()
+    {
+        $formKa = DocumentAttachment::where('id_project', $this->id)->first();
+        if($formKa != null) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getSubmissionDeadlineAttribute()
