@@ -12,7 +12,6 @@
       align="center"
       label="No. Registrasi"
       prop="reg_no"
-      sortable
     />
     <el-table-column
       align="center"
@@ -20,13 +19,42 @@
       prop="cert_no"
       sortable
     />
-    <el-table-column
-      align="center"
-      label="Sertifikasi"
-      prop="membership_status"
-      sortable
-    />
-
+    <el-table-column align="center" prop="membership_status" column-key="membership_status">
+      <template slot="header">
+        <el-select
+          v-model="membershipStatusFilter "
+          class="filter-header"
+          clearable
+          placeholder="Sertifikasi"
+          @change="onMembershipStatusFilter"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </template>
+    </el-table-column>
+    <el-table-column align="center" prop="data_lsp.lsp_name" column-key="data_lsp.lsp_name">
+      <template slot="header">
+        <el-select
+          v-model="lspFilter "
+          class="filter-header"
+          clearable
+          placeholder="LSP"
+          @change="onLspFilter"
+        >
+          <el-option
+            v-for="item in lspOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </template>
+    </el-table-column>
     <el-table-column align="center" label="Status" prop="status" sortable>
       <template slot-scope="scope">
         <el-tag :type="scope.row.status | statusFilter">
@@ -96,6 +124,8 @@
 <script>
 import checkPermission from '@/utils/permission';
 import checkRole from '@/utils/role';
+import Resource from '@/api/resource';
+const lspResource = new Resource('lsp');
 
 export default {
   name: 'FormulatorTable',
@@ -113,12 +143,44 @@ export default {
       type: Array,
       default: () => [],
     },
+    options: {
+      type: Array,
+      default: () => [
+        {
+          value: 'ATPA',
+          label: 'ATPA',
+        },
+        {
+          value: 'KTPA',
+          label: 'KTPA',
+        },
+      ],
+    },
     loading: Boolean,
     certificate: Boolean,
+  },
+  data() {
+    return {
+      listQuery: [],
+      lspOptions: [],
+      membershipStatusFilter: '',
+      lspFilter: '',
+    };
+  },
+  mounted() {
+    this.getLsp();
   },
   methods: {
     checkPermission,
     checkRole,
+    async getLsp() {
+      const { data } = await lspResource.list({
+        options: 'true',
+      });
+      this.lspOptions = data.map((i) => {
+        return { value: i.id, label: i.lsp_name };
+      });
+    },
     download(url) {
       window.open(url, '_blank').focus();
     },
@@ -131,6 +193,14 @@ export default {
     handleCertificate(id) {
       // eslint-disable-next-line object-curly-spacing
       this.$router.push({ name: 'certificateFormulator', params: { id } });
+    },
+    onMembershipStatusFilter(val) {
+      // console.log('membershipStatus: ', val);
+      this.$emit('membershipStatusFilter', val);
+    },
+    onLspFilter(val) {
+      // console.log('membershipStatus: ', val);
+      this.$emit('lspFilter', val);
     },
   },
 };

@@ -157,6 +157,23 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="Nama LSP" prop="id_lsp">
+              <el-select
+                v-model="currentFormulator.id_lsp"
+                name="id_lsp"
+                placeholder="Pilih"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in lspOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
       <div style="text-align: right">
@@ -177,6 +194,7 @@
 import { validEmail } from '@/utils/validate';
 import Resource from '@/api/resource';
 const formulatorResource = new Resource('formulators');
+const lspResource = new Resource('lsp');
 
 export default {
   name: 'CreatePenyusun',
@@ -250,6 +268,7 @@ export default {
         isCertified: false,
       },
       sertifikatFileUpload: null,
+      lspOptions: [],
       sertifikatFileName: null,
       cvFileUpload: null,
       cvFileName: null,
@@ -374,12 +393,23 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.getLsp();
+  },
   created() {
     if (this.$route.name === 'editFormulator') {
       this.getFormulator();
     }
   },
   methods: {
+    async getLsp() {
+      const { data } = await lspResource.list({
+        options: 'true',
+      });
+      this.lspOptions = data.map((i) => {
+        return { value: i.id, label: i.lsp_name };
+      });
+    },
     async getFormulator() {
       this.loading = true;
       this.currentFormulator = await formulatorResource.get(

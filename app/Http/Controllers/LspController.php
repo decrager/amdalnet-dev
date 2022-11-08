@@ -75,34 +75,36 @@ class LspController extends Controller
         }
 
         return LspResource::collection(Lsp::where(function ($query) use ($request) {
-            if ($request->active == '1' || $request->status === '1') {
-                $query->where([['date_lsp_start', '<=', date('Y-m-d H:i:s')], ['date_lsp_end', '>=', date('Y-m-d H:i:s')]])
-                    ->orWhere([['date_lsp_start', null], ['date_lsp_end', '>=', date('Y-m-d H:i:s')]]);
-            } else if($request->status === '0') {
-                $query->where('date_lsp_end', '<', date('Y-m-d H:i:s'));
-            }
+            // if ($request->active == '1' || $request->status === '1') {
+            //     $query->where([['date_lsp_start', '<=', date('Y-m-d H:i:s')], ['date_lsp_end', '>=', date('Y-m-d H:i:s')]])
+            //         ->orWhere([['date_lsp_start', null], ['date_lsp_end', '>=', date('Y-m-d H:i:s')]]);
+            // } else if($request->status === '0') {
+            //     $query->where('date_lsp_end', '<', date('Y-m-d H:i:s'));
+            // }
         })->where(function($query) use($request) {
             if($request->search) {
                 $search = trim(str_replace('provinsi', '', strtolower($request->search)));
                 $query->where(function($q) use($search) {
-                    $q->whereRaw("LOWER(license_no) LIKE '%" . strtolower($search) . "%'");
+                    // $q->whereRaw("LOWER(license_no) LIKE '%" . strtolower($search) . "%'");
                 })->orWhere(function($q) use($search) {
                     $q->whereRaw("LOWER(lsp_name) LIKE '%" . strtolower($search) . "%'");
                 })->orWhere(function($q) use($search) {
                     $q->whereRaw("LOWER(address) LIKE '%" . strtolower($search) . "%'");
                 })->orWhere(function($q) use($search) {
-                    $q->whereHas('dataProvince', function($que) use($search) {
-                        $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
-                    })->orWhereHas('dataDistrict', function($que) use($search) {
-                        $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
-                    });
+                    // $q->whereHas('dataProvince', function($que) use($search) {
+                        // $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                    // })->orWhereHas('dataDistrict', function($que) use($search) {
+                        // $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                    // });
                 });
             }
-        })->with(['dataProvince' => function ($query) {
-            return $query->select(['id', 'name']);
-        }, 'dataDistrict' => function ($query) {
-            return $query->select(['id', 'name']);
-        }])->orderBy('id', 'desc')->paginate($request->limit));
+        })
+        // ->with(['dataProvince' => function ($query) {
+        //     return $query->select(['id', 'name']);
+        // }, 'dataDistrict' => function ($query) {
+        //     return $query->select(['id', 'name']);
+        // }])
+        ->orderBy('id', 'desc')->paginate($request->limit));
     }
 
     /**
@@ -143,16 +145,16 @@ class LspController extends Controller
             $request->all(),
             [
                 'lsp_name'          => 'required',
-                'license_no'        => 'required',
-                'sk_no'             => 'required',
-                'province'          => 'required',
-                'city'              => 'required',
+                // 'license_no'        => 'required',
+                // 'sk_no'             => 'required',
+                // 'province'          => 'required',
+                // 'city'              => 'required',
                 'address'           => 'required',
                 'phone_no'          => 'required',
-                'file'              => 'required',
+                // 'file'              => 'required',
                 'email'             => 'required',
-                'date_lsp_start'    => 'required',
-                'date_lsp_end'      => 'required',
+                // 'date_lsp_start'    => 'required',
+                // 'date_lsp_end'      => 'required',
             ]
         );
         if ($validator->fails()) {
@@ -163,9 +165,9 @@ class LspController extends Controller
             DB::beginTransaction();
 
             //create file
-            $file = $request->file('file');
-            $name = 'lsp/' . uniqid() . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
+            // $file = $request->file('file');
+            // $name = 'lsp/' . uniqid() . '.' . $file->extension();
+            // $file->storePubliclyAs('public', $name);
 
             $email = $request->get('email') ? strtolower($request->get('email')) : $request->get('email');
             $found = User::where('email', $email)->first();
@@ -191,16 +193,16 @@ class LspController extends Controller
             //create lsp
             $lsp = Lsp::create([
                 'lsp_name' => $params['lsp_name'],
-                'license_no' => $params['license_no'],
-                'sk_no' => $params['sk_no'],
-                'province' => $params['province'],
-                'city' => $params['city'],
+                // 'license_no' => $params['license_no'],
+                // 'sk_no' => $params['sk_no'],
+                // 'province' => $params['province'],
+                // 'city' => $params['city'],
                 'address' => $params['address'],
                 'phone_no' => $params['phone_no'],
-                'lsp_file' => $name,
+                // 'lsp_file' => $name,
                 'email' => $params['email'] ? strtolower($params['email']) : $params['email'],
-                'date_lsp_start' => $params['date_lsp_start'],
-                'date_lsp_end' => $params['date_lsp_end'],
+                // 'date_lsp_start' => $params['date_lsp_start'],
+                // 'date_lsp_end' => $params['date_lsp_end'],
             ]);
 
             if (!$lsp) {
@@ -252,15 +254,15 @@ class LspController extends Controller
             $request->all(),
             [
                 'lsp_name'          => 'required',
-                'license_no'        => 'required',
-                'sk_no'             => 'required',
-                'province'          => 'required',
-                'city'              => 'required',
+                // 'license_no'        => 'required',
+                // 'sk_no'             => 'required',
+                // 'province'          => 'required',
+                // 'city'              => 'required',
                 'address'           => 'required',
                 'phone_no'          => 'required',
                 'email'             => 'required',
-                'date_lsp_start'    => 'required',
-                'date_lsp_end'      => 'required',
+                // 'date_lsp_start'    => 'required',
+                // 'date_lsp_end'      => 'required',
             ]
         );
 
@@ -323,24 +325,24 @@ class LspController extends Controller
                 }
             }
 
-            if ($request->file('file') !== null) {
-                //create file
-                $file = $request->file('file');
-                $name = 'lsp/' . uniqid() . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
-                $lsp->lsp_file = $name;
-            }
+            // if ($request->file('file') !== null) {
+            //     //create file
+            //     $file = $request->file('file');
+            //     $name = 'lsp/' . uniqid() . '.' . $file->extension();
+            //     $file->storePubliclyAs('public', $name);
+            //     $lsp->lsp_file = $name;
+            // }
 
             $lsp->lsp_name = $params['lsp_name'];
-            $lsp->license_no = $params['license_no'];
-            $lsp->sk_no = $params['sk_no'];
-            $lsp->province = $params['province'];
-            $lsp->city = $params['city'];
+            // $lsp->license_no = $params['license_no'];
+            // $lsp->sk_no = $params['sk_no'];
+            // $lsp->province = $params['province'];
+            // $lsp->city = $params['city'];
             $lsp->address = $params['address'];
             $lsp->phone_no = $params['phone_no'];
             $lsp->email = $params['email'] ? strtolower($params['email']) : $params['email'];
-            $lsp->date_lsp_start = $params['date_lsp_start'];
-            $lsp->date_lsp_end = $params['date_lsp_end'];
+            // $lsp->date_lsp_start = $params['date_lsp_start'];
+            // $lsp->date_lsp_end = $params['date_lsp_end'];
             $lsp->save();
 
             if($email_changed_notif) {

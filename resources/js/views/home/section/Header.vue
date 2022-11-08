@@ -71,6 +71,9 @@
                 <a href="#" @click="handleSetMenu('LPJP')">Daftar LPJP</a>
               </li>
               <li>
+                <a href="#" @click="handleSetMenu('Pemerintah')">Daftar Instansi Pemerintah</a>
+              </li>
+              <li>
                 <a href="#" @click="handleSetMenu('Penyusun')">Daftar Penyusun</a>
               </li>
               <li>

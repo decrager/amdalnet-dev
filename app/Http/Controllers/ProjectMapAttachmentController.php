@@ -94,7 +94,7 @@ class ProjectMapAttachmentController extends Controller
 
     private function addMapAttachmentDetail($request, $temp, $file, $properties, $geometry, $idStyle)
     {
-        $properties = json_decode($properties);
+        $properties = json_decode($properties, true);
         foreach (json_decode($geometry) as $key => $kelolaGeom) {
             $encode = json_encode($kelolaGeom);
             $map = ProjectMapAttachment::firstOrNew([
@@ -103,7 +103,7 @@ class ProjectMapAttachmentController extends Controller
                 'file_type' => $temp->file_type,
                 'step' => $request->step,
                 'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$encode'), 4326)"),
-                'properties' => json_encode($properties[$key]),
+                'properties' => json_encode($properties[$key], true),
             ]);
 
             if ($map->id) {
@@ -149,12 +149,12 @@ class ProjectMapAttachmentController extends Controller
                         $clone->save();
                     }
                 }
-                // Add workflow
-                $project = Project::findOrFail($request->id_project);
-                if ($project->marking == 'uklupl-mt.matrix-upl') {
-                    $project->workflow_apply('submit-uklupl');
-                    $project->save();
-                }
+                // // Add workflow
+                // $project = Project::findOrFail($request->id_project);
+                // if ($project->marking == 'uklupl-mt.matrix-upl') {
+                //     $project->workflow_apply('submit-uklupl');
+                //     $project->save();
+                // }
             }
         }
     }

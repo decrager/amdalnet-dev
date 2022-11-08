@@ -93,4 +93,9 @@ class Formulator extends Model
     {
         return $this->hasOne(User::class, 'email', 'email');
     }
+
+    public function dataLsp()
+    {
+        return $this->belongsTo(Lsp::class, 'id_lsp', 'id');
+    }
 }

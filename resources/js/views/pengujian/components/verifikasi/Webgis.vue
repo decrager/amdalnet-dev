@@ -89,7 +89,9 @@ export default {
         let studyAdded = false;
         let ecologyAdded = false;
         let pemantuanAdded = false;
+        let areaPemantuanAdded = false;
         let pengelolaanAdded = false;
+        let areaPengelolaanAdded = false;
         for (let i = 0; i < projects.length; i++) {
           let layerTitle = '';
           let layerOutlineColor = '';
@@ -117,7 +119,16 @@ export default {
             layerTitle = 'Layer Batas Pemantuan';
             layerOutlineColor = 'yellow';
             pemantuanAdded = true;
+          } else if (projects[i].attachment_type === 'area-pengelolaan' && !areaPengelolaanAdded && this.urlKa !== 'ujiBerkasAdministrasiKA') {
+            layerTitle = 'Layer Batas Area Pengelolaan';
+            layerOutlineColor = 'black';
+            areaPengelolaanAdded = true;
+          } else if (projects[i].attachment_type === 'area-pemantauan' && !areaPemantuanAdded && this.urlKa !== 'ujiBerkasAdministrasiKA') {
+            layerTitle = 'Layer Batas Area Pemantuan';
+            layerOutlineColor = 'brown';
+            areaPemantuanAdded = true;
           }
+
           if (layerTitle !== '') {
             axios({
               url: 'api/download-map-by-name?filename=' + projects[i].stored_filename,

@@ -362,8 +362,6 @@ export default {
 
     isReadOnly() {
       const data = [
-        'amdal.andal-drafting', // sementara
-        'amdal.rklrpl-drafting', // sementara
         'amdal.submitted',
         'amdal.adm-review',
         'amdal.adm-returned',
@@ -381,6 +379,8 @@ export default {
         'amdal.skkl-published',
       ];
       console.log({ gun: this.markingStatus });
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
     },
 

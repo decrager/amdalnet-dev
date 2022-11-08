@@ -70,6 +70,8 @@
           <formulator-table
             :loading="loading"
             :list="list"
+            @lspFilter="onLspFilter"
+            @membershipStatusFilter="onMembershipStatusFilter"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
           />
@@ -78,6 +80,8 @@
           <formulator-table
             :loading="loading"
             :list="list"
+            @lspFilter="onLspFilter"
+            @membershipStatusFilter="onMembershipStatusFilter"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
           />
@@ -89,6 +93,8 @@
           <formulator-table
             :loading="loading"
             :list="list"
+            @lspFilter="onLspFilter"
+            @membershipStatusFilter="onMembershipStatusFilter"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
           />
@@ -99,6 +105,8 @@
         :loading="loading"
         :list="list"
         :certificate="true"
+        @lspFilter="onLspFilter"
+        @membershipStatusFilter="onMembershipStatusFilter"
         @handleEditForm="handleEditForm($event)"
         @handleDelete="handleDelete($event)"
       />
@@ -142,6 +150,7 @@ export default {
         limit: 10,
         active: 'true',
         search: null,
+        email: this.$store.getters.user.email,
       },
       total: 0,
       timeoutId: null,
@@ -173,6 +182,7 @@ export default {
       this.getList();
     },
     async getList() {
+      // console.log({ ok: this.$store.getters.user.email });
       this.loading = true;
       const { data, meta } = await formulatorResource.list(this.listQuery);
       this.list = data.map((x) => {
@@ -290,6 +300,16 @@ export default {
       } else {
         return no;
       }
+    },
+    onMembershipStatusFilter(val) {
+      // console.log('membershipStatusIndex: ', val);
+      this.listQuery.membershipStatus = val;
+      this.handleFilter();
+    },
+    onLspFilter(val) {
+      // console.log('membershipStatusIndex: ', val);
+      this.listQuery.lspFilter = val;
+      this.handleFilter();
     },
   },
 };

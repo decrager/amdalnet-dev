@@ -28,7 +28,20 @@
           </el-col>
         </el-row>
       </div>
-      <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
+      <lsp-table
+        :loading="loading"
+        :list="list"
+        @handleEditForm="handleEditForm($event)"
+        @handleDelete="handleDelete($event)"
+      />
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="handleFilter"
+      />
+      <!-- <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
         <el-tab-pane label="LSP" name="lsp">
           <lsp-table
             v-if="activeName === 'lsp'"
@@ -62,7 +75,7 @@
             @pagination="handleFilter"
           />
         </el-tab-pane>
-      </el-tabs>
+      </el-tabs> -->
     </el-card>
   </div>
 </template>
