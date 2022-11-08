@@ -293,6 +293,7 @@ export default {
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
       ];
 
       console.log({ workflow: this.markingStatus });
