@@ -148,6 +148,7 @@ export default {
     nik: 'NIK',
     registrationNumber: 'No. Registrasi',
     certificateUpload: 'Unggah Sertifikat',
+    lspName: 'Nama LSP',
   },
   documentation: {
     documentation: 'Dokumentasi',
@@ -453,6 +454,7 @@ export default {
       'formulator-member': 'Anggota Penyusun',
       'formulator-expert': 'Tim Ahli',
       lpjp: 'LPJP',
+      lsp: 'Admin LSP',
       pustanling: 'Pustanling',
       luk: 'LUK',
       'examiner-chief': 'Ketua Ahli',

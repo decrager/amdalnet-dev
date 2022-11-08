@@ -4,6 +4,8 @@
     <admin-dashboard v-if="isAdmin || isExaminerSecretary || isExaminer" />
     <user-dashboard v-else-if="isFormulator || isInitiator || isLPJP" />
     <pustanling-dashboard v-else-if="isPustanling" />
+    <lsp-dashboard v-else-if="isLSP" />
+    <!-- <lsp-dashboard v-else-if="isLSP" /> -->
     <!--
     <examiner-dashboard v-if="isExaminer" />
       -->
@@ -15,13 +17,14 @@ import { mapGetters } from 'vuex';
 // import adminDashboard from './admin';
 // import editorDashboard from './editor';
 import UserDashboard from './user';
+import LspDashboard from './lsp';
 import AdminDashboard from './admin';
 import PustanlingDashboard from './pustanling';
 
 export default {
   name: 'Dashboard',
   // components: { adminDashboard, editorDashboard },
-  components: { UserDashboard, AdminDashboard, PustanlingDashboard },
+  components: { UserDashboard, AdminDashboard, PustanlingDashboard, LspDashboard },
   data() {
     return {
       currentRole: 'adminDashboard',
@@ -34,6 +37,9 @@ export default {
     },
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
+    },
+    isLSP() {
+      return this.$store.getters.roles.includes('lsp');
     },
     isInitiator() {
       return this.$store.getters.roles.includes('initiator');
