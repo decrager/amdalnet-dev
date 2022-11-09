@@ -150,7 +150,7 @@ export default {
     nik: 'NIK',
     registrationNumber: 'No. Registrasi',
     certificateUpload: 'Unggah Sertifikat',
-    lspName: 'Nama Lsp',
+    lspName: 'Nama LSP',
   },
   documentation: {
     documentation: 'Dokumentasi',

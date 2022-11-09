@@ -27,6 +27,30 @@ class DashboardController extends Controller
 
     }
 
+    public function lspCount(Request $request){
+        $non_active = DB::table('formulators')
+        ->select('membership_status', DB::raw('count(*) as total'))
+        ->where('id_lsp', $request->lspId)
+        ->Where('date_end', '<', date('Y-m-d H:i:s'))
+        ->groupBy('membership_status')->get();
+
+        $active = DB::table('formulators')
+        ->select('membership_status', DB::raw('count(*) as total'))
+        ->where('id_lsp', $request->lspId)
+        ->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+        ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]])
+        ->groupBy('membership_status')->get();
+
+        $query = DB::table('formulators')
+        ->select('membership_status', DB::raw('count(*) as total'))
+        ->where('id_lsp', $request->lspId);
+        return response()->json([
+            'data_status' => $query->groupBy('membership_status')->get(),
+            'data_active' => $active,
+            'data_non_active' => $non_active,
+        ]);
+    }
+
     public function proposalCount(Request $request){
         // pemrakarsa
         $q = DB::table('projects')
@@ -40,7 +64,6 @@ class DashboardController extends Controller
             // ->whereRaw(DB::raw('projects.deleted_at is null'))
             ->groupBy('projects.required_doc')->get());
         }
-
         if($request->formulatorId){
             $proposals = $q
             ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
@@ -541,6 +564,20 @@ class DashboardController extends Controller
         return FormulatorResource::collection(Formulator::select('*')
             ->selectRaw('case when date_start::date <= now()::date and date_end::date >= now()::date then 1 else 0 end as is_active')
             ->where('id_lpjp', $request->lpjpId)
+            ->orderBy('name', 'asc')
+            ->get()
+        );
+
+    }
+
+    public function getLspFormulators(Request $request)
+    {
+        if(!$request->lspId){
+            return response('LSP tidak ditemukan', 416);
+        }
+        return FormulatorResource::collection(Formulator::select('*')
+            ->selectRaw('case when date_start::date <= now()::date and date_end::date >= now()::date then 1 else 0 end as is_active')
+            ->where('id_lsp', $request->lspId)
             ->orderBy('name', 'asc')
             ->get()
         );
