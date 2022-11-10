@@ -335,7 +335,7 @@ export default {
           });
         });
 
-      axios.get(`api/map-geojson?id=${this.idProject}&step=ka`)
+      axios.get(`api/map-geojson?id=${this.idProject}`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
@@ -604,9 +604,14 @@ export default {
             return;
           }
 
-          this.geomKelolaGeojson = data.features[0].geometry;
-          this.geomKelolaProperties = data.features[0].properties;
+          this.geomKelolaGeojson = [];
+          this.geomKelolaProperties = [];
           this.geomKelolaStyles = 6;
+
+          data.features.map((value, index) => {
+            this.geomKelolaGeojson.push(value.geometry);
+            this.geomKelolaProperties.push(value.properties);
+          });
 
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
@@ -732,9 +737,14 @@ export default {
             return;
           }
 
-          this.geomPantauGeojson = data.features[0].geometry;
-          this.geomPantauProperties = data.features[0].properties;
+          this.geomPantauGeojson = [];
+          this.geomPantauProperties = [];
           this.geomPantauStyles = 5;
+
+          data.features.map((value, index) => {
+            this.geomPantauGeojson.push(value.geometry);
+            this.geomPantauProperties.push(value.properties);
+          });
 
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
