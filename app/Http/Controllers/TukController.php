@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\LukMember;
-use App\Entity\FixShowLandingTuk;
+use App\Entity\Fix2ShowLandingTuk;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
@@ -23,7 +23,7 @@ class TukController extends Controller
     public function index(Request $request)
     {
         if($request->type == 'list') {
-            $landingtuk = fixshowlandingtuk::where(function($q) use($request) {
+            $landingtuk = fix2showlandingtuk::where(function($q) use($request) {
                 $search = $request->search;
                 if($search) {
                     
