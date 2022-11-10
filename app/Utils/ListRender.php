@@ -17,7 +17,7 @@ class ListRender
         $tag_close = $type == 'ol' ? '</ol>' : '</ul>';
         $arr_number = str_replace($tag_close, $tag_open, $text);
         if ($type == "ol") {
-            $arr_number = preg_split("/<ol(.*?)>/", $text, -1, PREG_SPLIT_NO_EMPTY);
+            $arr_number = preg_split("/<ol(.*?)>/", $arr_number, -1, PREG_SPLIT_NO_EMPTY);
         } else {
             $arr_number = explode($tag_open, $arr_number);
         }
