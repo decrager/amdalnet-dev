@@ -125,9 +125,7 @@
     <el-row v-if="isFormulator" style="text-align:right;">
       <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
     </el-row>
-
   </el-form>
-
 </template>
 <style scoped>
  legend {line-height: 1.5em; margin: .5em 0 2em;}
@@ -171,6 +169,10 @@ export default {
       petaPemantauanSHP: '',
       petaPemantauanPDF: '',
       petaPengelolaanSHP: '',
+      petaAreaPengelolaanPDF: '',
+      petaAreaPemantauanSHP: '',
+      petaAreaPemantauanPDF: '',
+      petaAreaPengelolaanSHP: '',
       files: [],
       idPengelolaanSHP: 0,
       idPengelolaanPDF: 0,
@@ -837,26 +839,27 @@ export default {
         proxyUrl: 'proxy/proxy.php',
         urlPrefix: 'https://amdalgis.menlhk.go.id/',
       });
-
+      console.log({ gunx: this.files });
       this.files.forEach((e, i) => {
         formData.append('files[]', e[0]);
         formData.append('params[]', JSON.stringify(this.param[i]));
+        if (this.param[i].file_type === 'SHP') {
+          // titik
+          formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
+          formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
+          formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
+          formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
+          formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
+          formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
 
-        // titik
-        formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
-        formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
-        formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
-        formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
-        formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
-        formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
-
-        // Area
-        formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
-        formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
-        formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
-        formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
-        formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
-        formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
+          // Area
+          formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
+          formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
+          formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
+          formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
+          formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
+          formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
+        }
 
         var projectTitle = '';
 
@@ -905,6 +908,7 @@ export default {
             this.$emit('handleEnableSimpanLanjutkan');
           }
         });
+      this.loading = false;
     },
     async doSubmit(load){
       return request(load);
@@ -947,7 +951,6 @@ export default {
               });
               return;
             } else {
-              this.$refs.refPengelolaanPDF.value = null;
               this.files[index] = this.$refs.refPengelolaanPDF.files;
               this.param[index] = {
                 attachment_type: 'pengelolaan',
