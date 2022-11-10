@@ -373,4 +373,21 @@ class LspController extends Controller
         }
         return response()->json(null, 204);
     }
+
+    public function showByEmail(Request $request)
+    {
+        if ($request->email) {
+            $lsp = Lsp::where('lsp.email', $request->email)
+              ->select('lsp.*')
+              ->addSelect('users.avatar as avatar')
+              ->leftJoin('users', 'users.email', '=', 'lsp.email')
+              ->first();
+
+            if ($lsp) {
+                return $lsp;
+            } else {
+                return response()->json(null, 200);
+            }
+        }
+    }
 }

@@ -192,6 +192,7 @@ Route::apiResource('app-params', 'AppParamController');
 Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');
 Route::get('formulatorsByEmail', 'FormulatorController@showByEmail');
 Route::get('lpjpsByEmail', 'LpjpController@showByEmail');
+Route::get('lspsByEmail', 'LspController@showByEmail');
 Route::get('expertByEmail', 'ExpertBankController@showByEmail');
 Route::apiResource('impact-identifications', 'ImpactIdentificationController');
 Route::apiResource('params', 'ParamController');
@@ -324,6 +325,7 @@ Route::get('impacts', [ImpactIdentificationController::class, 'getImpacts']);
 Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
 // dashboard
 Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
+Route::get('lsp-count', [DashboardController::class, 'lspCount']);
 Route::get('latest-activities', [DashboardController::class, 'latestActivities']);
 Route::group(['prefix' => 'dashboard'], function ($r) {
     $r->get('permit-authority', [DashboardController::class, 'permitAuthority']);
@@ -331,6 +333,7 @@ Route::group(['prefix' => 'dashboard'], function ($r) {
     $r->get('initiator', [DashboardController::class, 'initiator']);
     $r->get('chart', [DashboardController::class, 'chart']);
     $r->get('lpjp-formulators', [DashboardController::class, 'getLpjpFormulators']);
+    $r->get('lsp-formulators', [DashboardController::class, 'getLspFormulators']);
     $r->get('lpjp-count', [DashboardController::class, 'getLpjpCount']);
     $r->get('lpjp-amount', [DashboardController::class, 'getLpjpAmount']);
     $r->get('formulator-amount', [DashboardController::class, 'getFormulatorAmount']);

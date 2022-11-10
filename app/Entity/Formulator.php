@@ -46,6 +46,11 @@ class Formulator extends Model
         return $this->belongsTo(Lpjp::class, 'id_lpjp', 'id');
     }
 
+    public function lsp()
+    {
+        return $this->belongsTo(Lsp::class, 'id_lsp', 'id');
+    }
+
     public function getCertFileAttribute()
     {
         if($this->attributes['cert_file']) {

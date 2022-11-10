@@ -463,57 +463,63 @@ export default {
       });
     },
     handleSubmit(){
-      const formData = new FormData();
-      formData.append('id_project', this.idProject);
-      formData.append('step', 'ka');
-
-      this.files.forEach((e, i) => {
-        formData.append('files[]', e[0]);
-        formData.append('params[]', JSON.stringify(this.param[i]));
-        formData.append('geomEcologyGeojson', JSON.stringify(this.geomEcologyGeojson));
-        formData.append('geomSocialGeojson', JSON.stringify(this.geomSocialGeojson));
-        formData.append('geomStudyGeojson', JSON.stringify(this.geomStudyGeojson));
-        formData.append('geomEcologyProperties', JSON.stringify(this.geomEcologyProperties));
-        formData.append('geomSocialProperties', JSON.stringify(this.geomSocialProperties));
-        formData.append('geomStudyProperties', JSON.stringify(this.geomStudyProperties));
-        formData.append('geomEcologyStyles', JSON.stringify(this.geomEcologyStyles));
-        formData.append('geomSocialStyles', JSON.stringify(this.geomSocialStyles));
-        formData.append('geomStudyStyles', JSON.stringify(this.geomStudyStyles));
-      });
-
-      const notify =
-            this.$notify({
-              type: 'success',
-              title: 'Berhasil!',
-              message: 'Berhasil Publish Peta!!',
-              duration: 2000,
-            });
-
-      if (this.files[0]) {
-        addItem(this.token, this.projectTitle, this.files[0][0], this.mapItemId, notify);
-      }
-
-      if (this.files[2]) {
-        addItem(this.token, this.projectTitle, this.files[2][0], this.mapItemId, notify);
-      }
-
-      if (this.files[4]) {
-        addItem(this.token, this.projectTitle, this.files[4][0], this.mapItemId, notify);
-      }
-
-      axios.post('api/upload-maps', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }})
-        .then((response) => {
-          if (response) {
-            this.$message({
-              message: 'Berhasil menyimpan peta', //  + this.files[0].name,
-              type: 'success',
-            });
-            this.$emit('handleReloadVsaList', 'metode-studi');
-          }
+      if (this.$refs.peSHP.files[0] === undefined || this.$refs.psSHP.files[0] === undefined || this.$refs.pwSHP.files[0] === undefined) {
+        this.$alert('Semua File SHP Wajib di Unggah', 'Informasi', {
+          center: true,
         });
+      } else {
+        const formData = new FormData();
+        formData.append('id_project', this.idProject);
+        formData.append('step', 'ka');
+
+        this.files.forEach((e, i) => {
+          formData.append('files[]', e[0]);
+          formData.append('params[]', JSON.stringify(this.param[i]));
+          formData.append('geomEcologyGeojson', JSON.stringify(this.geomEcologyGeojson));
+          formData.append('geomSocialGeojson', JSON.stringify(this.geomSocialGeojson));
+          formData.append('geomStudyGeojson', JSON.stringify(this.geomStudyGeojson));
+          formData.append('geomEcologyProperties', JSON.stringify(this.geomEcologyProperties));
+          formData.append('geomSocialProperties', JSON.stringify(this.geomSocialProperties));
+          formData.append('geomStudyProperties', JSON.stringify(this.geomStudyProperties));
+          formData.append('geomEcologyStyles', JSON.stringify(this.geomEcologyStyles));
+          formData.append('geomSocialStyles', JSON.stringify(this.geomSocialStyles));
+          formData.append('geomStudyStyles', JSON.stringify(this.geomStudyStyles));
+        });
+
+        const notify =
+        this.$notify({
+          type: 'success',
+          title: 'Berhasil!',
+          message: 'Berhasil Publish Peta!!',
+          duration: 2000,
+        });
+
+        if (this.files[0]) {
+          addItem(this.token, this.projectTitle, this.files[0][0], this.mapItemId, notify);
+        }
+
+        if (this.files[2]) {
+          addItem(this.token, this.projectTitle, this.files[2][0], this.mapItemId, notify);
+        }
+
+        if (this.files[4]) {
+          addItem(this.token, this.projectTitle, this.files[4][0], this.mapItemId, notify);
+        }
+
+        axios.post('api/upload-maps', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }})
+          .then((response) => {
+            if (response) {
+              this.$message({
+                message: 'Berhasil menyimpan peta', //  + this.files[0].name,
+                type: 'success',
+              });
+              this.$emit('handleReloadVsaList', 'metode-studi');
+            }
+          });
+      }
     },
     async doSubmit(load){
       return request(load);
