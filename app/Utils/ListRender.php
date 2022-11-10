@@ -16,11 +16,11 @@ class ListRender
         $tag_open = $type == 'ol' ? '<ol>' : '<ul>';
         $tag_close = $type == 'ol' ? '</ol>' : '</ul>';
         $arr_number = str_replace($tag_close, $tag_open, $text);
-        if ($type == "ol") {
-            $arr_number = preg_split("/<ol(.*?)>/", $arr_number, -1, PREG_SPLIT_NO_EMPTY);
-        } else {
+        // if ($type == "ol") {
+        //     $arr_number = preg_split("/<ol(.*?)>/", $arr_number, -1, PREG_SPLIT_NO_EMPTY);
+        // } else {
             $arr_number = explode($tag_open, $arr_number);
-        }
+        // }
         for($i = 0; $i < count($arr_number); $i++) {
             if(strlen($arr_number[$i]) >= 4) {
                 $check_li = substr(trim($arr_number[$i]),0,4);
