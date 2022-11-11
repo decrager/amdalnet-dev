@@ -18,7 +18,7 @@
               </div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="peSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(1)">
+              <input ref="peSHP" type="file" class="form-control-file" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(1)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -30,7 +30,7 @@
               <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(2)">
+              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(2)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -45,7 +45,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="psSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(3)">
+              <input ref="psSHP" type="file" class="form-control-file" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(3)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -59,7 +59,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(4)">
+              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(4)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -74,7 +74,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pwSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(5)">
+              <input ref="pwSHP" type="file" class="form-control-file" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(5)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -87,7 +87,7 @@
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(6)">
+              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(6)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -98,7 +98,7 @@
       <div id="mapView" class="map-wrapper" />
 
       <el-row v-if="isFormulator" style="text-align:right;">
-        <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
+        <el-button size="medium" type="primary" :disabled="isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSubmit()">Unggah Peta</el-button>
       </el-row>
 
     </el-form>
@@ -256,6 +256,26 @@ export default {
       console.log({ workflow: this.markingStatus });
 
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
 
     isFormulator() {
