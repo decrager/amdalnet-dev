@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\LukMember;
-use App\Entity\ShowLandingTuk;
+use App\Entity\Fix2ShowLandingTuk;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
@@ -19,19 +19,27 @@ use Illuminate\Support\Str;
 
 class TukController extends Controller
 {
-    public $authority=[];
-    public function index()
+    public $authority=[], $tukName=[];
+    public function index(Request $request)
     {
-        $landingTuk = showlandingtuk::get();
-        foreach ($landingTuk as $x){
-            $this->authority[] = array(
-                'count' => $x->count,
-                'authority' => "Tim Uji Kelayakan ".$x->authority,
-               );
-        }
-        return collect([
-                'response' => 'success',
-                'data' => $this->authority,
-        ]);
+        if($request->type == 'list') {
+            $landingtuk = fix2showlandingtuk::where(function($q) use($request) {
+                $search = $request->search;
+                if($search) {
+                    
+                    $search = str_replace('tim', '', strtolower($search));
+                    $search = str_replace('uji', '', $search);
+                    $search = str_replace('kelayakan', '', $search);
+                    $search = str_replace('provins  i', '', $search);
+                    $search = trim($search);
+
+                    $q->where(function($qu) use($search) {
+                        $qu->whereRaw("LOWER(authority) LIKE '%" . strtolower($search) . "%'");                         
+                    });
+                }
+            })            
+            ->orderBy('authority', 'desc')->paginate($request->limit);
+            return $landingtuk;
+        }		
     }
 }

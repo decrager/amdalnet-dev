@@ -14,7 +14,7 @@
           {{ 'Tambah Anggota TUK' }}
         </el-button>
         <el-row :gutter="32">
-          <el-col :sm="24" :md="10">
+          <el-col :sm="24" :md="12">
             <el-input
               v-model="listQuery.search"
               suffix-icon="el-icon search"
