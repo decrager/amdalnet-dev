@@ -1018,7 +1018,6 @@ export default {
               });
               return;
             } else {
-              this.$refs.refPengelolaanPDF.value = null;
               this.files[index] = this.$refs.refPengelolaanPDF.files;
               this.param[index] = {
                 attachment_type: 'pengelolaan',
