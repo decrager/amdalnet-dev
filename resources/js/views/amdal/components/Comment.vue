@@ -58,7 +58,7 @@
               output-format="html"
               :menubar="''"
               :image="false"
-              :toolbar="['bold italic underline bullist numlist fullscreen']"
+              :toolbar="['bold italic underline bullist numlist fullscreen edit']"
               :height="50"
             />
             <small v-if="isCommentError" style="color: #f56c6c">
