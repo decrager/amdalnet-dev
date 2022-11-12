@@ -261,7 +261,7 @@
               style="color: blue"
               @click.prevent="download(meetings.file)"
             >
-              {{ baFileName }}
+              Unduh Validasi Hasil Pemeriksaan Berkas Administrasi
             </el-button>
           </div>
         </div>

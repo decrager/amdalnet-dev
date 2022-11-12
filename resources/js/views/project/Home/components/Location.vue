@@ -2,7 +2,7 @@
   <div style="padding: 2em;">
     <div v-if="isFormulator">
       <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-        <div v-if="peta_tapak_shp_name != ''" class="current">tersimpan: <a style="color: green" :href="url_peta_tapak_shp"><strong>{{ peta_tapak_shp_name }}<i class="el-icon-circle-check" /></strong></a>
+        <div v-if="peta_tapak_shp_name != null" class="current">tersimpan: <a style="color: green" :href="url_peta_tapak_shp"><strong>{{ peta_tapak_shp_name }}<i class="el-icon-circle-check" /></strong></a>
           <!-- &nbsp;<i class="el-icon-delete"></i>-->
         </div>
       </legend>
@@ -12,7 +12,7 @@
     <div style="padding-top: 2em; padding-bottom: 2em;">
       <div v-if="isFormulator">
         <legend style="margin:0 2em;">Versi PDF
-          <div v-if="peta_tapak_pdf_name != ''" class="current">tersimpan: <a style="color: green" :href="url_peta_tapak_pdf" target="_blank"><strong>{{ peta_tapak_pdf_name }}<i class="el-icon-circle-check" /></strong></a>
+          <div v-if="peta_tapak_pdf_name != null" class="current">tersimpan: <a style="color: green" :href="url_peta_tapak_pdf" target="_blank"><strong>{{ peta_tapak_pdf_name }}<i class="el-icon-circle-check" /></strong></a>
             <!-- &nbsp;<i class="el-icon-delete"></i>-->
           </div>
         </legend>
@@ -118,6 +118,7 @@ export default {
   },
   mounted() {
     this.loadAttachment();
+    console.log({ guns: this.url_peta_tapak_shp });
     const splice = (this.data.ktr).split('/');
     this.file_ktr = splice[splice.length - 1];
   },
