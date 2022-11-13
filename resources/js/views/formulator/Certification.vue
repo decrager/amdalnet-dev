@@ -217,7 +217,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :sm="24" :md="12">
+          <el-col v-if="checkRole(['admin'])" :sm="24" :md="12">
             <el-form-item label="Nama LSP" porp="id_lsp">
               <el-select
                 v-model="formulator.id_lsp"
@@ -252,6 +252,7 @@
 <script>
 import { validEmail } from '@/utils/validate';
 import Resource from '@/api/resource';
+import checkRole from '@/utils/role';
 const formulatorResource = new Resource('formulators');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -429,6 +430,7 @@ export default {
     this.getProvinces();
   },
   methods: {
+    checkRole,
     async getLsp() {
       const { data } = await lspResource.list({
         options: 'true',
