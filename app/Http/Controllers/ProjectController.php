@@ -1019,7 +1019,7 @@ class ProjectController extends Controller
                 $filter->high_traffic = isset($request['high_traffic']) ? $request['high_traffic'] : false;
                 $filter->save();
             }
-            
+
             //create project address
             foreach ($params['address'] as $add) {
                 // return response($add->id, 404);
@@ -1059,7 +1059,7 @@ class ProjectController extends Controller
                             'authority' => isset($kew->authority) ? $kew->authority : null,
                         ]);
                     }
-                    
+
                 }
             }
 
@@ -1105,7 +1105,7 @@ class ProjectController extends Controller
                         'id_proyek' => isset($subPro->id_proyek) ? $subPro->id_proyek : null,
                     ]);
                 }
-                
+
 
                 foreach ($subPro->listSubProjectParams as $subProParam) {
                     // return response($subProParam->id, 404);
@@ -1327,7 +1327,7 @@ class ProjectController extends Controller
         $document->setValue('jabatan', $dataProject->initiator->pic_role ?? '-');
         $document->setValue('email_pemrakarsa', $dataProject->initiator->email ?? '-');
         $document->setValue('jenis_dokumen', $dataProject->required_doc ?? '-');
-        $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->risk_level : '-');
+        $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->oss_risk : '-');
         $document->setValue('kewenangan', $dataProject->authority ?? '-');
         $document->setValue('tipe_pemrakarsa', $dataProject->initiator->user_type === 'Pemrakarsa' ? 'Pemrakarsa Pelaku Usaha' : 'Pemrakarsa Pemerintah');
         $document->setValue('deskripsi_kegiatan', trim(html_entity_decode($dataProject->description ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));

@@ -9,7 +9,7 @@
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-            <div v-if="petaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanSHP)"><strong>{{ petaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
+            <div v-if="url_peta_pengelolaan_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_pengelolaan_shp"><strong>{{ peta_pengelolaan_shp_name }}<i class="el-icon-circle-check" /></strong></a>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
           </legend>
@@ -23,7 +23,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanPDF)"><strong>{{ petaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_pengelolaan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_pengelolaan_pdf" target="_blank"><strong>{{ peta_pengelolaan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="refPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(2)">
@@ -38,7 +38,7 @@
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-            <div v-if="petaAreaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPengelolaanSHP)"><strong>{{ petaAreaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
+            <div v-if="url_peta_area_pengelolaan_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pengelolaan_shp"><strong>{{ peta_area_pengelolaan_shp_name }}<i class="el-icon-circle-check" /></strong></a>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
           </legend>
@@ -52,7 +52,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaAreaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPengelolaanPDF)"><strong>{{ petaAreaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_area_pengelolaan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pengelolaan_pdf" target="_blank"><strong>{{ peta_area_pengelolaan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="refAreaPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(6)">
@@ -66,7 +66,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-            <div v-if="petaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanSHP)"><strong>{{ petaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_pemantauan_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_pemantauan_shp"><strong>{{ peta_pemantauan_shp_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
@@ -80,7 +80,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaPemantauanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanPDF)"><strong>{{ petaPemantauanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_pemantauan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_pemantauan_pdf" target="_blank"><strong>{{ peta_pemantauan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
@@ -95,7 +95,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-            <div v-if="petaAreaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPemantauanSHP)"><strong>{{ petaAreaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_area_pemantauan_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pemantauan_shp"><strong>{{ peta_area_pemantauan_shp_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
@@ -109,7 +109,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaAreaPemantauanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPemantauanPDF)"><strong>{{ petaAreaPemantauanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_area_pemantauan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pemantauan_pdf" target="_blank"><strong>{{ peta_area_pemantauan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
@@ -125,9 +125,7 @@
     <el-row v-if="isFormulator" style="text-align:right;">
       <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
     </el-row>
-
   </el-form>
-
 </template>
 <style scoped>
  legend {line-height: 1.5em; margin: .5em 0 2em;}
@@ -171,6 +169,26 @@ export default {
       petaPemantauanSHP: '',
       petaPemantauanPDF: '',
       petaPengelolaanSHP: '',
+      petaAreaPengelolaanPDF: '',
+      petaAreaPemantauanSHP: '',
+      petaAreaPemantauanPDF: '',
+      petaAreaPengelolaanSHP: '',
+      peta_pengelolaan_pdf_name: null,
+      url_peta_pengelolaan_pdf: null,
+      peta_pengelolaan_shp_name: null,
+      url_peta_pengelolaan_shp: null,
+      peta_area_pengelolaan_pdf_name: null,
+      url_peta_area_pengelolaan_pdf: null,
+      peta_area_pengelolaan_shp_name: null,
+      url_peta_area_pengelolaan_shp: null,
+      peta_pemantauan_pdf_name: null,
+      url_peta_pemantauan_pdf: null,
+      peta_pemantauan_shp_name: null,
+      url_peta_pemantauan_shp: null,
+      peta_area_pemantauan_pdf_name: null,
+      url_peta_area_pemantauan_pdf: null,
+      peta_area_pemantauan_shp_name: null,
+      url_peta_area_pemantauan_shp: null,
       files: [],
       idPengelolaanSHP: 0,
       idPengelolaanPDF: 0,
@@ -446,7 +464,39 @@ export default {
         id_project: this.idProject,
       });
       this.data = files.data;
+      this.loadAttachment();
       this.process(files.data);
+      console.log({ guns: this.url_peta_pengelolaan_pdf });
+    },
+    loadAttachment() {
+      const data = this.data;
+      data.forEach((map) => {
+        if (map.file_type === 'SHP' && map.attachment_type === 'pengelolaan') {
+          this.url_peta_pengelolaan_shp = map.map_file_url;
+          this.peta_pengelolaan_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'pengelolaan') {
+          this.url_peta_pengelolaan_pdf = map.map_file_url;
+          this.peta_pengelolaan_pdf_name = map.original_filename;
+        } else if (map.file_type === 'SHP' && map.attachment_type === 'area-pengelolaan') {
+          this.url_peta_area_pengelolaan_shp = map.map_file_url;
+          this.peta_area_pengelolaan_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'area-pengelolaan') {
+          this.url_peta_area_pengelolaan_pdf = map.map_file_url;
+          this.peta_area_pengelolaan_pdf_name = map.original_filename;
+        } else if (map.file_type === 'SHP' && map.attachment_type === 'pemantauan') {
+          this.url_peta_pemantauan_shp = map.map_file_url;
+          this.peta_pemantauan_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'pemantauan') {
+          this.url_peta_pemantauan_pdf = map.map_file_url;
+          this.peta_pemantauan_pdf_name = map.original_filename;
+        } else if (map.file_type === 'SHP' && map.attachment_type === 'area-pemantauan') {
+          this.url_peta_area_pemantauan_shp = map.map_file_url;
+          this.peta_area_pemantauan_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'area-pemantauan') {
+          this.url_peta_area_pemantauan_pdf = map.map_file_url;
+          this.peta_area_pemantauan_pdf_name = map.original_filename;
+        }
+      });
     },
     process(files){
       files.forEach((e) => {
@@ -837,26 +887,27 @@ export default {
         proxyUrl: 'proxy/proxy.php',
         urlPrefix: 'https://amdalgis.menlhk.go.id/',
       });
-
+      console.log({ gunx: this.files });
       this.files.forEach((e, i) => {
         formData.append('files[]', e[0]);
         formData.append('params[]', JSON.stringify(this.param[i]));
+        if (this.param[i].file_type === 'SHP') {
+          // titik
+          formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
+          formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
+          formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
+          formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
+          formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
+          formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
 
-        // titik
-        formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
-        formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
-        formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
-        formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
-        formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
-        formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
-
-        // Area
-        formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
-        formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
-        formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
-        formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
-        formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
-        formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
+          // Area
+          formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
+          formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
+          formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
+          formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
+          formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
+          formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
+        }
 
         var projectTitle = '';
 
@@ -905,6 +956,7 @@ export default {
             this.$emit('handleEnableSimpanLanjutkan');
           }
         });
+      this.loading = false;
     },
     async doSubmit(load){
       return request(load);
@@ -947,7 +999,6 @@ export default {
               });
               return;
             } else {
-              this.$refs.refPengelolaanPDF.value = null;
               this.files[index] = this.$refs.refPengelolaanPDF.files;
               this.param[index] = {
                 attachment_type: 'pengelolaan',

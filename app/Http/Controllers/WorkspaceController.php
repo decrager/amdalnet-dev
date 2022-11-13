@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -24,7 +25,7 @@ class WorkspaceController extends Controller
         $currentUser = Auth::user();
         if ($currentUser) {
             $client = new \GuzzleHttp\Client();
-            $etherpadUrl = env('EHTERPAD_URL'); 
+            $etherpadUrl = env('EHTERPAD_URL');
             $etherpadKey = env('ETHERPAD_APIKEY');
 
             // author
@@ -33,7 +34,7 @@ class WorkspaceController extends Controller
                 'name' => $currentUser->name,
                 'authorMapper' => $currentUser->id,
             ]]);
-            
+
             $author = json_decode((string) $reqauthor->getBody(), true);
             // var_dump($author['data']['authorID']);
 
@@ -93,7 +94,24 @@ class WorkspaceController extends Controller
      */
     public function getConfig(Request $request, String $id) {
         $currentUser = Auth::user();
-        // $officeUrl = env('MIX_OFFICE_URL'); 
+        $idProject = (int) $id;
+        $projectMarking = Project::where('id', $idProject)->first()->marking;
+
+        $dataMarking = [
+            'uklupl-mt.sent',
+            'uklupl-mt.adm-review',
+            'uklupl-mt.examination-invitation-drafting',
+            'uklupl-mt.examination-invitation-sent',
+            'uklupl-mt.examination',
+            'uklupl-mt.examination-meeting',
+            'uklupl-mt.ba-drafting',
+            'uklupl-mt.ba-signed',
+            'uklupl-mt.recommendation-drafting',
+            'uklupl-mt.recommendation-signed',
+            'uklupl-mr.pkplh-published',
+            'uklupl-mt.pkplh-published',
+        ];
+        // $officeUrl = env('MIX_OFFICE_URL');
         $officeSecret = env('OFFICE_SECRET');
 
         $appUrl = env('APP_URL');
@@ -105,13 +123,12 @@ class WorkspaceController extends Controller
         } catch (\Aws\S3\Exception\S3Exception $e) {
             $dirs = [];
         }
-        
         $dockey = md5($filename.$id.strval(count($dirs)));
 
         // check comment only
-        $arroles = [ 
-            Acl::ROLE_EXAMINER, 
-            Acl::ROLE_EXAMINER_CHIEF, 
+        $arroles = [
+            Acl::ROLE_EXAMINER,
+            Acl::ROLE_EXAMINER_CHIEF,
             Acl::ROLE_EXAMINER_SECRETARY,
             Acl::ROLE_EXAMINER_ADMINISTRATION,
             Acl::ROLE_EXAMINER_SUBSTANCE,
@@ -119,7 +136,6 @@ class WorkspaceController extends Controller
         ];
 
         $commentOnly = $currentUser->hasRole($arroles);
-        
         $config = [
             'width' => '100%',
             'height' => '100%',
@@ -134,7 +150,7 @@ class WorkspaceController extends Controller
                 'url' => Storage::disk('public')->temporaryUrl('workspace/'.$filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                 'permissions' => [
                     // 'fillForms' => true,
-                    'edit' => ($commentOnly)? false : true,
+                    'edit' => ($commentOnly || in_array($projectMarking, $dataMarking))? false : true,
                     'modifyContentControl' => true,
                     'copy' => false,
                     'print' => false,
@@ -248,7 +264,7 @@ class WorkspaceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function upload(Request $request)
-    {   
+    {
     }
 
     /**
@@ -271,7 +287,7 @@ class WorkspaceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function convert(Request $request)
-    {   
+    {
     }
 
     /**
@@ -295,7 +311,7 @@ class WorkspaceController extends Controller
      */
     public function files(Request $request)
     {
-        
+
     }
 
     /**
@@ -307,7 +323,7 @@ class WorkspaceController extends Controller
      */
     public function assets(Request $request)
     {
-        
+
     }
 
     /**

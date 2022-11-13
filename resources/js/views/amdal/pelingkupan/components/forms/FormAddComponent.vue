@@ -53,7 +53,7 @@
           v-if="selected !== null"
           label="Deskripsi"
         >
-          <div v-if="isReadOnly">
+          <div v-if="isReadOnly && !isUrlAndal">
             <span v-html="component.description" />
           </div>
           <div v-else>
@@ -74,7 +74,7 @@
           <el-input
             v-model="component.measurement"
             type="textarea"
-            :disabled="isReadOnly"
+            :disabled="isReadOnly && !isUrlAndal"
             :autosize="{ minRows: 3, maxRows: 5}"
           />
         </el-form-item>
@@ -83,7 +83,7 @@
     </div>
     <span slot="footer" class="dialog-footer">
       <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
-      <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly" @click="!isReadOnly && submitComponent()">Simpan</el-button>
+      <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, submitComponent()">Simpan</el-button>
     </span>
   </el-dialog>
 </template>
@@ -191,6 +191,26 @@ export default {
       console.log({ workflow: this.markingStatus });
 
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   mounted(){

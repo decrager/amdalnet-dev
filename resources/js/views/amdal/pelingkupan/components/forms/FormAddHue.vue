@@ -58,7 +58,7 @@
             {{ 'Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
           </div>
           <el-form-item v-if="selected !== null" style="margin: 1em 0;">
-            <div v-if="isReadOnly">
+            <div v-if="isReadOnly && !isUrlAndal">
               <span v-html="hue.description" />
             </div>
             <div v-else>
@@ -79,7 +79,7 @@
             <el-input
               v-model="hue.measurement"
               type="textarea"
-              :disabled="isReadOnly"
+              :disabled="isReadOnly && !isUrlAndal"
               :autosize="{ minRows: 3, maxRows: 5}"
             />
 
@@ -88,7 +88,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -199,6 +199,26 @@ export default {
       console.log({ workflow: this.markingStatus });
 
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   mounted(){

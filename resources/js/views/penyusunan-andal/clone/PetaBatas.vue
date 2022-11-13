@@ -13,12 +13,12 @@
 
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
             <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
-              <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPES)"><strong>{{ petaEkologisSHP }}<i class="el-icon-circle-check" /></strong></span>
+              <div v-if="url_peta_ecology_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_ecology_shp"><strong>{{ peta_ecology_shp_name }}<i class="el-icon-circle-check" /></strong></a>
                 <!-- &nbsp;<i class="el-icon-delete"></i>-->
               </div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="peSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(1)">
+              <input ref="peSHP" type="file" class="form-control-file" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(1)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -27,10 +27,10 @@
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
             <legend style="margin:0 2em;">Versi PDF <small style="color: red;">(Maks. 10 MB)</small>
-              <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+              <div v-if="url_peta_ecology_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_ecology_pdf" target="_blank"><strong>{{ peta_ecology_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(2)">
+              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(2)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -41,11 +41,11 @@
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
             <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
-              <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSS)"><strong>{{ petaSosialSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+              <div v-if="url_peta_social_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_social_shp"><strong>{{ peta_social_shp_name }}<i class="el-icon-circle-check" /></strong></a></div>
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="psSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(3)">
+              <input ref="psSHP" type="file" class="form-control-file" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(3)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -55,11 +55,11 @@
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
             <legend style="margin:0 2em;">Versi PDF <small style="color: red;">(Maks. 10 MB)</small>
-              <div v-if="petaSosialPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSP)"><strong>{{ petaSosialPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+              <div v-if="url_peta_social_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_social_pdf" target="_blank"><strong>{{ peta_social_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(4)">
+              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(4)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -70,11 +70,11 @@
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
             <legend style="margin:0 2em;">File-File SHP yang sudah di-zip <small style="color: red;">(Maks. 10 MB)</small>
-              <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuS)"><strong>{{ petaStudiSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+              <div v-if="url_peta_study_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_study_shp"><strong>{{ peta_study_shp_name }}<i class="el-icon-circle-check" /></strong></a></div>
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pwSHP" type="file" class="form-control-file" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(5)">
+              <input ref="pwSHP" type="file" class="form-control-file" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(5)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -83,11 +83,11 @@
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
             <legend style="margin:0 2em;">Versi PDF <small style="color: red;">(Maks. 10 MB)</small>
-              <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuP)"><strong>{{ petaStudiPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+              <div v-if="url_peta_study_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_study_pdf" target="_blank"><strong>{{ peta_study_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
             </legend>
 
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
-              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(6)">
+              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly && !isUrlAndal" @change="!isReadOnly && isUrlAndal, onChangeFiles(6)">
               <!-- <button type="submit">Unggah</button> -->
             </form>
           </fieldset>
@@ -98,7 +98,7 @@
       <div id="mapView" class="map-wrapper" />
 
       <el-row v-if="isFormulator" style="text-align:right;">
-        <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
+        <el-button size="medium" type="primary" :disabled="isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSubmit()">Unggah Peta</el-button>
       </el-row>
 
     </el-form>
@@ -161,6 +161,18 @@ export default {
       petaEkologisSHP: '',
       petaSosialSHP: '',
       petaStudiSHP: '',
+      url_peta_study_pdf: null,
+      peta_study_shp_name: null,
+      peta_study_pdf_name: null,
+      url_peta_study_shp: null,
+      peta_social_pdf_name: null,
+      url_peta_social_pdf: null,
+      peta_social_shp_name: null,
+      url_peta_social_shp: null,
+      peta_ecology_pdf_name: null,
+      url_peta_ecology_pdf: null,
+      peta_ecology_shp_name: null,
+      url_peta_ecology_shp: null,
       files: [],
       idPES: 0,
       idPEP: 0,
@@ -256,6 +268,26 @@ export default {
       console.log({ workflow: this.markingStatus });
 
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
 
     isFormulator() {
@@ -412,7 +444,32 @@ export default {
         step: 'ka',
       });
       this.data = files.data;
+      this.loadAttachment();
       this.process(files.data);
+    },
+    loadAttachment() {
+      const data = this.data;
+      data.forEach((map) => {
+        if (map.file_type === 'SHP' && map.attachment_type === 'study') {
+          this.url_peta_study_shp = map.map_file_url;
+          this.peta_study_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'study') {
+          this.url_peta_study_pdf = map.map_file_url;
+          this.peta_study_pdf_name = map.original_filename;
+        } else if (map.file_type === 'SHP' && map.attachment_type === 'social') {
+          this.url_peta_social_shp = map.map_file_url;
+          this.peta_social_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'social') {
+          this.url_peta_social_pdf = map.map_file_url;
+          this.peta_social_pdf_name = map.original_filename;
+        } else if (map.file_type === 'SHP' && map.attachment_type === 'ecology') {
+          this.url_peta_ecology_shp = map.map_file_url;
+          this.peta_ecology_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'ecology') {
+          this.url_peta_ecology_pdf = map.map_file_url;
+          this.peta_ecology_pdf_name = map.original_filename;
+        }
+      });
     },
     process(files){
       // console.log(files);
