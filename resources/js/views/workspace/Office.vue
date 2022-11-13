@@ -1,34 +1,12 @@
 <template>
   <div class="app-container">
     <div id="placeholder" />
-    <div class="uji-collabse">
-      <el-collapse v-model="activeNames" accordion>
-        <el-collapse-item name="5" title="Bab 1">
-          <template slot="title">
-            <el-input v-model="input" placeholder="Please input" />
-          </template>
-          <div>
-            <strong>
-              Consistent with real life: in line with the process and logic of real
-              life, and comply with languages and habits that the users are used to;
-            </strong>
-          </div>
-        </el-collapse-item>
-        <el-collapse-item name="7" title="Bab 2">
-          <div>
-            <strong>
-              Consistent with real life: in line with the process and logic of real
-              life, and comply with languages and habits that the users are used to;
-            </strong>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
-    </div>
   </div>
 </template>
 
 <script>
 import WorkspaceResource from '@/api/workspace';
+
 const workspaceResource = new WorkspaceResource();
 
 export default {
@@ -46,8 +24,6 @@ export default {
   },
   data() {
     return {
-      input: '',
-      activeNames: '',
       officeUrl: '',
       selectedTreeId: 1,
       sessionID: null,
@@ -62,12 +38,6 @@ export default {
         return process.env.MIX_OFFICE_URL + '/auth_session?sessionID=' + this.sessionID + '&padName=' + this.selectedTreeId;
       }
       return '';
-    },
-  },
-  watch: {
-    activeNames: function(val) {
-      console.log({ activeName: val });
-      this.activeName = val[1];
     },
   },
   async mounted() {
@@ -185,7 +155,7 @@ export default {
     height: calc(100vh - 94px);
   }
   .app-container {
-    height: 40vh;
+    height: 100vh;
   }
 
   .left-container {
