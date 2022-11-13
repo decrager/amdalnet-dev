@@ -272,7 +272,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isFormKaComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ka')) || testInvited(scope.row, 'ka')) && !isScreening && !isScoping && !isLpjp"
+                  v-if="isAmdal(scope.row) && isDocumentReviewed(scope.row, 'ka') && (tukAccess(scope.row, 'valsub') || testInvited(scope.row, 'ka')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -679,7 +679,6 @@ export default {
     },
     isDocumentReviewed(project, document) {
       if (this.isDocumentSubmitted(project, document)) {
-        console.log({ gunz: 'submit berhasil' });
         const reviews = project.ka_reviews.filter(x => {
           if (document === 'ka' || document === 'ukl-upl') {
             return x.document_type === document || x.document_type === null;
@@ -747,12 +746,6 @@ export default {
         }
       }
 
-      return false;
-    },
-    isFormKaComplete(project) {
-      if (project.form_ka_doc === true) {
-        return true;
-      }
       return false;
     },
     isRklRplFormComplete(project) {
@@ -961,7 +954,7 @@ export default {
           this.filtered = mapped;
           this.total = total;
           this.loading = false;
-          console.log({ gunp: this.filtered });
+          // console.log(data, this.filtered);
         }).finally(() => {
           this.loading = false;
         });

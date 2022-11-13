@@ -36,7 +36,7 @@
     <el-row :gutter="30">
       <el-col :sm="24" :md="14">
         <p class="header">Deskripsi Kegiatan</p>
-        <div v-if="isReadOnly">
+        <div v-if="isReadOnly && !isUrlAndal">
           <Tinymce
             v-model="data.description"
             output-format="html"
@@ -195,6 +195,26 @@ export default {
       console.log({ workflow: this.markingStatus });
 
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   mounted() {
