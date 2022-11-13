@@ -157,7 +157,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :sm="24" :md="12">
+          <el-col v-if="checkRole(['admin'])" :sm="24" :md="12">
             <el-form-item label="Nama LSP" prop="id_lsp">
               <el-select
                 v-model="currentFormulator.id_lsp"
@@ -193,6 +193,7 @@
 <script>
 import { validEmail } from '@/utils/validate';
 import Resource from '@/api/resource';
+import checkRole from '@/utils/role';
 const formulatorResource = new Resource('formulators');
 const lspResource = new Resource('lsp');
 
@@ -395,6 +396,7 @@ export default {
   },
   mounted() {
     this.getLsp();
+    this.getIdLsp();
   },
   created() {
     if (this.$route.name === 'editFormulator') {
@@ -402,6 +404,14 @@ export default {
     }
   },
   methods: {
+    checkRole,
+    async getIdLsp() {
+      const { data } = await lspResource.list({
+        email: this.$store.getters.roles[0] === 'lsp' ? this.$store.getters.user.email : null,
+        byUserEmail: 'true',
+      });
+      this.id_lsp = data[0].id;
+    },
     async getLsp() {
       const { data } = await lspResource.list({
         options: 'true',
