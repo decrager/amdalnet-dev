@@ -37,7 +37,7 @@
         </el-select>
       </template>
     </el-table-column>
-    <el-table-column align="center" prop="data_lsp.lsp_name" column-key="data_lsp.lsp_name">
+    <el-table-column v-if="checkRole(['admin'])" align="center" prop="data_lsp.lsp_name" column-key="data_lsp.lsp_name">
       <template slot="header">
         <el-select
           v-model="lspFilter "
