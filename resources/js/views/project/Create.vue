@@ -2647,7 +2647,7 @@ export default {
                 that.full_address = data.display_name;
               });
 
-            if (datas.features[0].geometry.type !== 'Polygon') {
+            if (!['Polygon', 'MultiPolygon'].includes(datas.features[0].geometry.type)) {
               document.getElementById('fileMap').value = '';
               that.fileMapName = 'No File Selected';
               that.fileMap = null;
