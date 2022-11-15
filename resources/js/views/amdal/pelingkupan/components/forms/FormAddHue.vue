@@ -88,7 +88,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
