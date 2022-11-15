@@ -463,7 +463,6 @@ export default {
             }
 
             map.addMany(this.mapGeojsonArrayProject);
-            console.log({ guns: this.mapGeojsonArrayProject });
           });
         });
       const layerList = new LayerList({
@@ -959,80 +958,118 @@ export default {
       this.isMapUploaded = true;
     },
     handleSubmit(){
-      const formData = new FormData();
-      formData.append('id_project', this.idProject);
-      formData.append('step', 'rkl-rpl');
-
-      urlUtils.addProxyRule({
-        proxyUrl: 'proxy/proxy.php',
-        urlPrefix: 'https://amdalgis.menlhk.go.id/',
-      });
-
-      this.files.forEach((e, i) => {
-        formData.append('files[]', e[0]);
-        formData.append('params[]', JSON.stringify(this.param[i]));
-        // Titik
-        formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
-        formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
-        formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
-        formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
-        formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
-        formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
-        // Area
-        formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
-        formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
-        formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
-        formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
-        formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
-        formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
-
-        var projectTitle = '';
-
-        axios.get(`api/projects/${this.idProject}`)
-          .then(response => {
-            projectTitle = response.data.project_title;
-            console.log(response.data);
-            console.log(response.data.project_title);
-          });
-
-        console.log(projectTitle);
-
-        var myHeaders = new Headers();
-        myHeaders.append('Authorization', 'Bearer ' + this.token);
-
-        var formdatas = new FormData();
-        formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
-        formdatas.append('type', 'Feature Service');
-        formdatas.append('title', projectTitle + this.idProject);
-        formdatas.append('file', e[0]);
-
-        var requestOptions = {
-          method: 'POST',
-          headers: myHeaders,
-          body: formdatas,
-          redirect: 'follow',
-        };
-
-        esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
-          .then(response => response.text())
-          .then(result => console.log(result))
-          .catch(error => console.log('error', error));
-      });
-
-      axios.post('api/upload-maps', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }})
-        .then((response) => {
-          if (response) {
-            this.$message({
-              message: 'Berhasil menyimpan file ', //  + this.files[0].name,
-              type: 'success',
-            });
-            this.$emit('handlePetaBatasUploaded');
-            this.$emit('handleEnableSimpanLanjutkan');
-          }
+      if (this.$refs.refPengelolaanSHP.files[0] !== undefined && this.$refs.refPengelolaanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Titik Pengelolaan PDF', 'Perhatian', {
+          center: true,
         });
+      } else if (this.$refs.refPengelolaanSHP.files[0] === undefined && this.$refs.refPengelolaanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Titik Pengelolaan SHP', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refAreaPengelolaanSHP.files[0] !== undefined && this.$refs.refAreaPengelolaanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Lokasi Pengelolaan PDF', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refAreaPengelolaanSHP.files[0] === undefined && this.$refs.refAreaPengelolaanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Lokasi Pengelolaan SHP', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refPemantauanSHP.files[0] !== undefined && this.$refs.refPemantauanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Titik Pemantauan PDF', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refPemantauanSHP.files[0] === undefined && this.$refs.refPemantauanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Titik Pemantauan SHP', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refAreaPemantauanSHP.files[0] !== undefined && this.$refs.refAreaPemantauanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Lokasi Pemantauan PDF', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refAreaPemantauanSHP.files[0] === undefined && this.$refs.refAreaPemantauanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Lokasi Pemantauan SHP', 'Perhatian', {
+          center: true,
+        });
+      } else {
+        const formData = new FormData();
+        formData.append('id_project', this.idProject);
+        formData.append('step', 'rkl-rpl');
+
+        urlUtils.addProxyRule({
+          proxyUrl: 'proxy/proxy.php',
+          urlPrefix: 'https://amdalgis.menlhk.go.id/',
+        });
+        console.log({ gunx: this.files });
+        this.files.forEach((e, i) => {
+          formData.append('files[]', e[0]);
+          formData.append('params[]', JSON.stringify(this.param[i]));
+          if (this.param[i].file_type === 'SHP') {
+            // titik
+            formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
+            formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
+            formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
+            formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
+            formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
+            formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
+
+            // Area
+            formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
+            formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
+            formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
+            formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
+            formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
+            formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
+          }
+
+          var projectTitle = '';
+
+          axios.get(`api/projects/${this.idProject}`)
+            .then(response => {
+              projectTitle = response.data.project_title;
+              console.log(response.data);
+              console.log(response.data.project_title);
+            });
+
+          console.log(projectTitle);
+
+          var myHeaders = new Headers();
+          myHeaders.append('Authorization', 'Bearer ' + this.token);
+
+          var formdatas = new FormData();
+          formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
+          formdatas.append('type', 'Feature Service');
+          formdatas.append('title', projectTitle + this.idProject);
+          formdatas.append('file', e[0]);
+
+          var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: formdatas,
+            redirect: 'follow',
+          };
+
+          esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+        });
+
+        axios.post('api/upload-maps', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }})
+          .then((response) => {
+            if (response) {
+              this.$message({
+                message: 'Berhasil menyimpan file ', //  + this.files[0].name,
+                type: 'success',
+              });
+              this.$emit('handlePetaBatasUploaded');
+              this.$emit('handleEnableSimpanLanjutkan');
+            }
+          });
+        this.loading = false;
+      }
     },
     async doSubmit(load){
       return request(load);
