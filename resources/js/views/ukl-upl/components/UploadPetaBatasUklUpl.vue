@@ -618,7 +618,9 @@ export default {
           map.add(layerPengelolaan);
         });
       };
-      readerPengelolaan.readAsArrayBuffer(mapPengelolaan);
+      if (mapPengelolaan !== undefined) {
+        readerPengelolaan.readAsArrayBuffer(mapPengelolaan);
+      }
 
       //  Map Area Pengelolaan
       const mapAreaPengelolaan = this.$refs.refAreaPengelolaanSHP.files[0];
@@ -684,7 +686,9 @@ export default {
           map.add(layerAreaPengelolaan);
         });
       };
-      readerAreaPengelolaan.readAsArrayBuffer(mapAreaPengelolaan);
+      if (mapAreaPengelolaan !== undefined) {
+        readerAreaPengelolaan.readAsArrayBuffer(mapAreaPengelolaan);
+      }
 
       //  Map Pemantauan
       const mapPemantauan = this.$refs.refPemantauanSHP.files[0];
@@ -749,14 +753,17 @@ export default {
           });
 
           map.add(layerPemantauan);
-          mapView.on('layerview-create', async(event) => {
-            await mapView.goTo({
-              target: layerPemantauan.fullExtent,
-            });
-          });
+          // mapView.on('layerview-create', async(event) => {
+          //   await mapView.goTo({
+          //     target: layerPemantauan.fullExtent,
+          //   });
+          // });
         });
       };
-      readerPemantauan.readAsArrayBuffer(mapPemantauan);
+      if (mapPemantauan !== undefined) {
+        console.log(mapPemantauan);
+        readerPemantauan.readAsArrayBuffer(mapPemantauan);
+      }
 
       //  Map Area Pemantauan
       const mapAreaPemantauan = this.$refs.refAreaPemantauanSHP.files[0];
@@ -828,7 +835,9 @@ export default {
           });
         });
       };
-      readerAreaPemantauan.readAsArrayBuffer(mapAreaPemantauan);
+      if (mapAreaPemantauan !== undefined) {
+        readerAreaPemantauan.readAsArrayBuffer(mapAreaPemantauan);
+      }
 
       const mapView = new MapView({
         container: 'mapView',
