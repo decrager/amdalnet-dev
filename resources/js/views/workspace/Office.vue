@@ -1,209 +1,80 @@
 <template>
-  <div class="app-container">
-    <div id="etherpad-wrapper" style="height: 80%;">
+  <div class="app-container" style="position: relative;">
+    <div id="etherpad-wrapper" style="height: 90%; width: 100%;">
       <div id="placeholder" />
     </div>
-    <div class="uji-collab" style="margin-bottom: 10vh;">
-      <div style="width: 100%; margin: 1vh;">
-        <h2>Saran & Masukan</h2>
+    <div class="uji-collab" style="border-radius: 1rem; bottom: 1rem; right: 0rem; left: 0rem; margin-bottom: 10vh; position: absolute; width: 100%;">
+      <div style="align-content: center; justify-content: center; display: flex;">
+        <el-button v-if="!showForm" @click="showHide">Tampilkan</el-button>
+        <el-button v-if="showForm" @click="showHide">Sembunyikan</el-button>
       </div>
-      <div style="display: flex; flex-direction: row; margin-bottom: 1vh; justify-content: space-between;">
-        <el-select
-          v-model="idCat"
-          placeholder="Pilih Kategori"
-        >
-          <el-option
-            v-for="item in categories"
-            :key="item.id"
-            :label="item.title"
-            :value="item.id"
-          />
-        </el-select>
-        <el-button>Simpan</el-button>
-      </div>
-      <div style="display: flex;">
-        <el-collapse v-model="activeNames" accordion style="width: 100%;">
-          <el-collapse-item :title="this.$store.getters.user.name">
-            <el-button v-if="rekaps.length === 0" @click="addNewRekap">Tambah</el-button>
-            <div
-              v-for="(rekap, index) in rekaps"
-              :key="rekap.id"
-              style="display: flex;"
-            >
-              <div>
-                <span>Saran/ Pendapat/ Tanggapan</span>
-                <TextEditor
-                  v-model="rekaps[index].saran_pendapat_tanggapan"
-                  output-format="html"
-                  :menubar="''"
-                  :image="false"
-                  :toolbar="['bold italic underline bullist numlist fullscreen']"
-                  :height="50"
-                />
-              </div>
-              <div>
-                <span>Halaman</span>
-                <el-input v-model="rekaps[index].halaman_tuk" />
-              </div>
-              <div>
-                <span>Perbaikan/ Tanggapan Pemrakarsa</span>
-                <TextEditor
-                  v-model="rekaps[index].perbaikan"
-                  output-format="html"
-                  :menubar="''"
-                  :image="false"
-                  :toolbar="['bold italic underline bullist numlist fullscreen']"
-                  :height="50"
-                />
-              </div>
-              <div>
-                <span>Halaman</span>
-                <el-input v-model="rekaps[index].halaman_perbaikan" />
-              </div>
-              <div style="display: flex; flex-direction: column-reverse;">
-                <el-button @click="addNewRekap">Tambah</el-button>
-                <el-button @click="rekaps.splice(index, 1)">Hapus</el-button>
-              </div>
-              <!-- <el-button
-                @click="rekaps.splice(index, 1)"
-              >
-                IKI endi tombol e
-              </el-button> -->
-            </div>
-          </el-collapse-item>
-        </el-collapse>
-        <!-- <el-button @click="addNewRekap">Tambah</el-button> -->
-      </div>
-      <!-- <div>
-        <div style="display: flex;">
-          <el-collapse v-model="activeNames" accordion style="width: 90%;">
-            <el-collapse-item name="5" title="">
-              <template slot="title">
-                <el-input v-model="input" class="test" placeholder="Please input" style="width: 50%;" />
-              </template>
-              <div style="display: flex;">
-                <div>
-                  <span>Saran/ Pendapat/ Tanggapan</span>
-                  <TextEditor
-                    v-model="comment"
-                    output-format="html"
-                    :menubar="''"
-                    :image="false"
-                    :toolbar="['bold italic underline bullist numlist fullscreen']"
-                    :height="50"
-                  />
-                </div>
-                <div>
-                  <span>Halaman</span>
-                  <el-input />
-                </div>
-                <div>
-                  <span>Perbaikan/ Tanggapan Pemrakarsa</span>
-                  <TextEditor
-                    v-model="comment"
-                    output-format="html"
-                    :menubar="''"
-                    :image="false"
-                    :toolbar="['bold italic underline bullist numlist fullscreen']"
-                    :height="50"
-                  />
-                </div>
-                <div>
-                  <span>Halaman</span>
-                  <el-input />
-                </div>
-                <el-button>Tambah</el-button>
-              </div>
-              <div style="display: flex;">
-                <div>
-                  <span>Saran/ Pendapat/ Tanggapan</span>
-                  <TextEditor
-                    v-model="comment"
-                    output-format="html"
-                    :menubar="''"
-                    :image="false"
-                    :toolbar="['bold italic underline bullist numlist fullscreen']"
-                    :height="50"
-                  />
-                </div>
-                <div>
-                  <span>Halaman</span>
-                  <el-input />
-                </div>
-                <div>
-                  <span>Perbaikan/ Tanggapan Pemrakarsa</span>
-                  <TextEditor
-                    v-model="comment"
-                    output-format="html"
-                    :menubar="''"
-                    :image="false"
-                    :toolbar="['bold italic underline bullist numlist fullscreen']"
-                    :height="50"
-                  />
-                </div>
-                <div>
-                  <span>Halaman</span>
-                  <el-input />
-                </div>
-              </div>
-              <div style="display: flex;">
-                <div>
-                  <span>Saran/ Pendapat/ Tanggapan</span>
-                  <TextEditor
-                    v-model="comment"
-                    output-format="html"
-                    :menubar="''"
-                    :image="false"
-                    :toolbar="['bold italic underline bullist numlist fullscreen']"
-                    :height="50"
-                  />
-                </div>
-                <div>
-                  <span>Halaman</span>
-                  <el-input />
-                </div>
-                <div>
-                  <span>Perbaikan/ Tanggapan Pemrakarsa</span>
-                  <TextEditor
-                    v-model="comment"
-                    output-format="html"
-                    :menubar="''"
-                    :image="false"
-                    :toolbar="['bold italic underline bullist numlist fullscreen']"
-                    :height="50"
-                  />
-                </div>
-                <div>
-                  <span>Halaman</span>
-                  <el-input />
-                </div>
-              </div>
-            </el-collapse-item>
-          </el-collapse>
-          <el-button>Tambah</el-button>
+      <div v-if="showForm" style="background-color: #eeeee5; padding-top: 0.5rem; padding-right: 1rem; padding-left: 1rem;">
+        <div style="display: flex; flex-direction: row; margin-bottom: 1vh; justify-content: space-between;">
+          <el-select
+            v-if="isTUK"
+            v-model="idCat"
+            placeholder="Pilih Kategori"
+          >
+            <el-option
+              v-for="item in categories"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id"
+            />
+          </el-select>
+          <el-button>Simpan</el-button>
         </div>
-        <el-collapse v-model="activeNames" accordion style="width: 80%;">
-          <el-collapse-item name="3" title="">
-            <template slot="title">
-              <el-input v-model="input" class="test" placeholder="Please input" style="width: 50%;" />
-            </template>
-            <div>
-              <strong>
-                Consistent with real life: in line with the process and logic of real
-                life, and comply with languages and habits that the users are used to;
-              </strong>
-            </div>
-          </el-collapse-item>
-          <el-collapse-item name="7" title="Bab 2">
-            <div>
-              <strong>
-                Consistent with real life: in line with the process and logic of real
-                life, and comply with languages and habits that the users are used to;
-              </strong>
-            </div>
-          </el-collapse-item>
-        </el-collapse>
-      </div> -->
+        <div style="max-height: 25rem; overflow: auto;">
+          <div style="display: flex;">
+            <el-collapse v-model="activeNames" accordion style="width: 100%;">
+              <el-collapse-item :title="(!isTUK ? 'TODO Pakar/Instansi/Pusat/Daerah ' : '') + this.$store.getters.user.name">
+                <el-button v-if="rekaps.length === 0" @click="addNewRekap">Tambah</el-button>
+                <div
+                  v-for="(rekap, index) in rekaps"
+                  :key="rekap.id"
+                >
+                  <div style="border: 1px solid; border-radius: 1rem; padding: 1em 1.5em 2.5em; display: flex; justify-content: space-around;">
+                    <div>
+                      <span>Saran/ Pendapat/ Tanggapan</span>
+                      <TextEditor
+                        v-model="rekaps[index].saran_pendapat_tanggapan"
+                        output-format="html"
+                        :menubar="''"
+                        :image="false"
+                        :toolbar="['bold italic underline bullist numlist fullscreen']"
+                        :height="50"
+                      />
+                    </div>
+                    <div>
+                      <span>Halaman</span>
+                      <el-input v-model="rekaps[index].halaman_tuk" />
+                    </div>
+                    <div v-if="!isTUK">
+                      <span>Perbaikan/ Tanggapan Pemrakarsa</span>
+                      <TextEditor
+                        v-model="rekaps[index].perbaikan"
+                        output-format="html"
+                        :menubar="''"
+                        :image="false"
+                        :toolbar="['bold italic underline bullist numlist fullscreen']"
+                        :height="50"
+                      />
+                    </div>
+                    <div v-if="!isTUK">
+                      <span>Halaman</span>
+                      <el-input v-model="rekaps[index].halaman_perbaikan" />
+                    </div>
+                  </div>
+                  <div v-if="isTUK" style="display: flex; align-content: center; justify-content: flex-end; padding: 0.5rem;">
+                    <el-button type="danger" icon="el-icon-delete" @click="rekaps.splice(index, 1)">Hapus</el-button>
+                    <el-button type="success" icon="el-icon-edit" @click="addNewRekap">Tambah</el-button>
+                  </div>
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -260,11 +131,12 @@ export default {
           halaman_perbaikan: 7,
         },
       ],
+      isTUK: false,
+      showForm: false,
     };
   },
   computed: {
     padSrc() {
-      console.log('src:', process.env.MIX_OFFICE_URL, this.selectedTreeId);
       if (this.sessionID) {
         return process.env.MIX_OFFICE_URL + '/auth_session?sessionID=' + this.sessionID + '&padName=' + this.selectedTreeId;
       }
@@ -279,12 +151,17 @@ export default {
     },
   },
   async mounted() {
+    this.checkTUK();
     console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
     // console.log(process.env.MIX_OFFICE_URL);
     this.officeUrl = process.env.MIX_OFFICE_URL;
     this.addOfficeScript();
   },
   methods: {
+    checkTUK() {
+      // TODO: beresin gun
+      this.isTUK = true;
+    },
     addNewRekap: function() {
       this.rekaps.push({
         saran_pendapat_tanggapan: null,
@@ -296,7 +173,9 @@ export default {
     resize() {
       console.log('resize');
     },
-
+    showHide() {
+      this.showForm = !this.showForm;
+    },
     handleTemplateUploadChange(file, fileList) {
       // add file to multipart
       this.loading = true;
@@ -405,7 +284,7 @@ export default {
   }
   .app-container {
     height: 100vh;
-    overflow: scroll;
+    width: 100%;
   }
 
   .left-container {
