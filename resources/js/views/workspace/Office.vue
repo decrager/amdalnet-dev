@@ -22,7 +22,7 @@
               :value="item.id"
             />
           </el-select>
-          <el-button>Simpan</el-button>
+          <el-button @click="simpanRekap">Simpan</el-button>
         </div>
         <div style="max-height: 25rem; overflow: auto;">
           <div style="display: flex;">
@@ -34,35 +34,53 @@
                   :key="rekap.id"
                 >
                   <div style="border: 1px solid; border-radius: 1rem; padding: 1em 1.5em 2.5em; display: flex; justify-content: space-around;">
-                    <div>
-                      <span>Saran/ Pendapat/ Tanggapan</span>
-                      <TextEditor
-                        v-model="rekaps[index].saran_pendapat_tanggapan"
-                        output-format="html"
-                        :menubar="''"
-                        :image="false"
-                        :toolbar="['bold italic underline bullist numlist fullscreen']"
-                        :height="50"
-                      />
+                    <div style="background-color: #f5f5f5;">
+                      <div style="padding: 5px; background-color: #39773b; color: #ffffff; font-weight: bold; text-align: center;">
+                        <span>Saran/ Pendapat/ Tanggapan</span>
+                      </div>
+                      <div style="padding: 5px;">
+                        <TextEditor
+                          v-model="rekaps[index].saran_pendapat_tanggapan"
+                          output-format="html"
+                          :menubar="''"
+                          :image="false"
+                          :toolbar="['bold italic underline bullist numlist fullscreen']"
+                          :height="50"
+                          :readonly="isTUK ? 0 : 1"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <span>Halaman</span>
-                      <el-input v-model="rekaps[index].halaman_tuk" />
+                    <div style="background-color: #f5f5f5;">
+                      <div style="padding: 5px; background-color: #39773b; color: #ffffff; font-weight: bold; text-align: center;">
+                        <span>Halaman</span>
+                      </div>
+                      <div>
+                        <el-input v-model="rekaps[index].halaman_tuk" :disabled="isTUK ? false : true" />
+                      </div>
                     </div>
-                    <div v-if="!isTUK">
-                      <span>Perbaikan/ Tanggapan Pemrakarsa</span>
-                      <TextEditor
-                        v-model="rekaps[index].perbaikan"
-                        output-format="html"
-                        :menubar="''"
-                        :image="false"
-                        :toolbar="['bold italic underline bullist numlist fullscreen']"
-                        :height="50"
-                      />
+                    <div style="background-color: #f5f5f5;">
+                      <div style="padding: 5px; background-color: #39773b; color: #ffffff; font-weight: bold; text-align: center;">
+                        <span>Perbaikan/ Tanggapan Pemrakarsa</span>
+                      </div>
+                      <div style="padding: 5px;">
+                        <TextEditor
+                          v-model="rekaps[index].perbaikan"
+                          output-format="html"
+                          :menubar="''"
+                          :image="false"
+                          :toolbar="['bold italic underline bullist numlist fullscreen']"
+                          :height="50"
+                          :readonly="isTUK ? 1 : 0"
+                        />
+                      </div>
                     </div>
-                    <div v-if="!isTUK">
-                      <span>Halaman</span>
-                      <el-input v-model="rekaps[index].halaman_perbaikan" />
+                    <div style="background-color: #f5f5f5;">
+                      <div style="padding: 5px; background-color: #39773b; color: #ffffff; font-weight: bold; text-align: center;">
+                        <span>Halaman</span>
+                      </div>
+                      <div>
+                        <el-input v-model="rekaps[index].halaman_perbaikan" :disabled="isTUK ? true : false" />
+                      </div>
                     </div>
                   </div>
                   <div v-if="isTUK" style="display: flex; align-content: center; justify-content: flex-end; padding: 0.5rem;">
@@ -82,6 +100,7 @@
 <script>
 import WorkspaceResource from '@/api/workspace';
 import TextEditor from '@/components/Tinymce';
+import { mapGetters } from 'vuex';
 const workspaceResource = new WorkspaceResource();
 
 export default {
@@ -131,11 +150,23 @@ export default {
           halaman_perbaikan: 7,
         },
       ],
-      isTUK: false,
       showForm: false,
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+    isPenyusun() {
+      return this.userInfo.roles.includes('formulator');
+    },
+    isPemrakarsa() {
+      return this.userInfo.roles.includes('initiator');
+    },
+    isTUK() {
+      return this.userInfo.roles.includes('examiner-substance');
+    },
     padSrc() {
       if (this.sessionID) {
         return process.env.MIX_OFFICE_URL + '/auth_session?sessionID=' + this.sessionID + '&padName=' + this.selectedTreeId;
@@ -151,23 +182,28 @@ export default {
     },
   },
   async mounted() {
-    this.checkTUK();
     console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
     // console.log(process.env.MIX_OFFICE_URL);
     this.officeUrl = process.env.MIX_OFFICE_URL;
     this.addOfficeScript();
   },
   methods: {
-    checkTUK() {
-      // TODO: beresin gun
-      this.isTUK = true;
-    },
+    // checkTUK() {
+    //   // TODO: beresin gun
+    //   this.isTUK = true;
+    // },
     addNewRekap: function() {
       this.rekaps.push({
         saran_pendapat_tanggapan: null,
         halaman_tuk: null,
         perbaikan: null,
         halaman_perbaikan: null,
+      });
+    },
+    simpanRekap(){
+      console.log({
+        send: this.rekaps,
+        email: this.$store.getters.user.email,
       });
     },
     resize() {
