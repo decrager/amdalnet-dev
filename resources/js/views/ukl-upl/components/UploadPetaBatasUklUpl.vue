@@ -49,17 +49,17 @@
         </fieldset>
 
       </el-col>
-      <el-col :span="11" style="margin-right:1em;">
+      <!-- <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
             <div v-if="url_peta_area_pengelolaan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pengelolaan_pdf" target="_blank"><strong>{{ peta_area_pengelolaan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="refAreaPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(6)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
+            <button type="submit">Unggah</button> -->
+      <!-- </form>
         </fieldset>
-      </el-col>
+      </el-col> -->
     </el-form-item>
 
     <el-form-item label="Peta Titik Pemantauan" :required="required">
@@ -106,18 +106,18 @@
 
       </el-col>
 
-      <el-col :span="11" style="margin-right:1em;">
+      <!-- <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
             <div v-if="url_peta_area_pemantauan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pemantauan_pdf" target="_blank"><strong>{{ peta_area_pemantauan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refAreaPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(8)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
+            <input ref="refAreaPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(8)"> -->
+      <!-- <button type="submit">Unggah</button> -->
+      <!-- </form>
         </fieldset>
-      </el-col>
+      </el-col> -->
     </el-form-item>
 
     <div id="mapView" class="map-wrapper" />
@@ -644,6 +644,11 @@ export default {
           const checker = (arr, target) => target.every(v => arr.includes(v));
           const checkShapefile = checker(uploaded, valid);
 
+          if (!['Polygon', 'MultiPolygon'].includes(data.features[0].geometry.type)) {
+            alert('SHP yang dimasukkan harus Polygon atau MultiPolygon!.');
+            return;
+          }
+
           if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
             return;
@@ -665,11 +670,18 @@ export default {
           const renderer = {
             type: 'simple',
             field: '*',
+            // symbol: {
+            //   type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+            //   url: '/titik_kelola.png',
+            //   width: '24px',
+            //   height: '24px',
+            // },
             symbol: {
-              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-              url: '/titik_kelola.png',
-              width: '24px',
-              height: '24px',
+              type: 'simple-fill',
+              color: [200, 0, 0, 1],
+              outline: {
+                color: [200, 0, 0, 1],
+              },
             },
           };
           const url = URL.createObjectURL(blob);
@@ -788,6 +800,11 @@ export default {
           const checker = (arr, target) => target.every(v => arr.includes(v));
           const checkShapefile = checker(uploaded, valid);
 
+          if (!['Polygon', 'MultiPolygon'].includes(data.features[0].geometry.type)) {
+            alert('SHP yang dimasukkan harus Polygon atau MultiPolygon!.');
+            return;
+          }
+
           if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
             return;
@@ -809,11 +826,18 @@ export default {
           const renderer = {
             type: 'simple',
             field: '*',
+            // symbol: {
+            //   type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+            //   url: '/titik_pantau.png',
+            //   width: '24px',
+            //   height: '24px',
+            // },
             symbol: {
-              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-              url: '/titik_pantau.png',
-              width: '24px',
-              height: '24px',
+              type: 'simple-fill',
+              color: [200, 0, 0, 1],
+              outline: {
+                color: [200, 0, 0, 1],
+              },
             },
           };
           const url = URL.createObjectURL(blob);
@@ -888,36 +912,20 @@ export default {
       this.isMapUploaded = true;
     },
     handleSubmit(){
-      if (this.$refs.refPengelolaanSHP.files[0] !== undefined && this.$refs.refPengelolaanPDF.files[0] === undefined) {
-        this.$alert('Silahkan Unggah Peta Titik Pengelolaan PDF', 'Perhatian', {
+      if (((this.$refs.refPengelolaanSHP.files[0] !== undefined || this.$refs.refAreaPengelolaanSHP.files[0] !== undefined) || (this.$refs.refPengelolaanSHP.files[0] !== undefined && this.$refs.refAreaPengelolaanSHP.files[0] !== undefined)) && this.$refs.refPengelolaanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Pengelolaan PDF', 'Perhatian', {
           center: true,
         });
-      } else if (this.$refs.refPengelolaanSHP.files[0] === undefined && this.$refs.refPengelolaanPDF.files[0] !== undefined) {
-        this.$alert('Silahkan Unggah Peta Titik Pengelolaan SHP', 'Perhatian', {
+      } else if (((this.$refs.refPengelolaanSHP.files[0] === undefined || this.$refs.refAreaPengelolaanSHP.files[0] === undefined) || (this.$refs.refPengelolaanSHP.files[0] === undefined && this.$refs.refAreaPengelolaanSHP.files[0] === undefined)) && this.$refs.refPengelolaanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Pengelolaan PDF', 'Perhatian', {
           center: true,
         });
-      } else if (this.$refs.refAreaPengelolaanSHP.files[0] !== undefined && this.$refs.refAreaPengelolaanPDF.files[0] === undefined) {
-        this.$alert('Silahkan Unggah Peta Lokasi Pengelolaan PDF', 'Perhatian', {
+      } else if (((this.$refs.refPemantauanSHP.files[0] !== undefined || this.$refs.refAreaPemantauanSHP.files[0] !== undefined) || (this.$refs.refPemantauanSHP.files[0] !== undefined && this.$refs.refAreaPemantauanSHP.files[0] !== undefined)) && this.$refs.refPemantauanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Pemantauan PDF', 'Perhatian', {
           center: true,
         });
-      } else if (this.$refs.refAreaPengelolaanSHP.files[0] === undefined && this.$refs.refAreaPengelolaanPDF.files[0] !== undefined) {
-        this.$alert('Silahkan Unggah Peta Lokasi Pengelolaan SHP', 'Perhatian', {
-          center: true,
-        });
-      } else if (this.$refs.refPemantauanSHP.files[0] !== undefined && this.$refs.refPemantauanPDF.files[0] === undefined) {
-        this.$alert('Silahkan Unggah Peta Titik Pemantauan PDF', 'Perhatian', {
-          center: true,
-        });
-      } else if (this.$refs.refPemantauanSHP.files[0] === undefined && this.$refs.refPemantauanPDF.files[0] !== undefined) {
-        this.$alert('Silahkan Unggah Peta Titik Pemantauan SHP', 'Perhatian', {
-          center: true,
-        });
-      } else if (this.$refs.refAreaPemantauanSHP.files[0] !== undefined && this.$refs.refAreaPemantauanPDF.files[0] === undefined) {
-        this.$alert('Silahkan Unggah Peta Lokasi Pemantauan PDF', 'Perhatian', {
-          center: true,
-        });
-      } else if (this.$refs.refAreaPemantauanSHP.files[0] === undefined && this.$refs.refAreaPemantauanPDF.files[0] !== undefined) {
-        this.$alert('Silahkan Unggah Peta Lokasi Pemantauan SHP', 'Perhatian', {
+      } else if (((this.$refs.refPemantauanSHP.files[0] === undefined || this.$refs.refAreaPemantauanSHP.files[0] === undefined) || (this.$refs.refPemantauanSHP.files[0] === undefined && this.$refs.refAreaPemantauanSHP.files[0] === undefined)) && this.$refs.refPemantauanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Pemantauan PDF', 'Perhatian', {
           center: true,
         });
       } else {

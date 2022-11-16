@@ -3104,6 +3104,19 @@ export default {
         this.preeAgreementLabel = temp + 'Persetujuan Investasi';
       }
     },
+    defineActions(event) {
+      const item = event.item;
+
+      item.actionsSections = [
+        [
+          {
+            title: 'Go to full extent',
+            className: 'esri-icon-zoom-in-magnifying-glass',
+            id: 'full-extent',
+          },
+        ],
+      ];
+    },
     async changeProject(value) {
       this.currentProject.project_title = value.nama_kegiatan;
       this.currentProject.id_project = value.id_proyek;
