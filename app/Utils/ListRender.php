@@ -7,6 +7,7 @@ class ListRender
     {
         $replaced_text = self::replaceHtmlDefaultList('ol', $text, $font_style, $font_size);
         $replaced_text = self::replaceHtmlDefaultList('ul', $replaced_text, $font_style, $font_size);
+        $replaced_text = self::stripSymbolExceptHtmlTags($replaced_text);
         return $replaced_text;
     }
 
@@ -53,5 +54,11 @@ class ListRender
         }
 
         return $result;
+    }
+
+    private static function stripSymbolExceptHtmlTags($text)
+    {
+        $result = preg_replace('/<(?=[^>]*(?:<|$))/', '&lt;', $text);
+        return preg_replace('/((?:^|>)[^<]*?)>/', '\1&gt;', $result);
     }
 }
