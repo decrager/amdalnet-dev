@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title=" title[formMode] + ' Komponen Lingkungan'"
+    :title=" title[formMode] + ' Komponen Kegiatan'"
     :visible.sync="show"
     width="50%"
     :before-close="handleClose"
