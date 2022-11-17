@@ -14,6 +14,7 @@
 
         <el-form-item
           v-if="formMode === 0"
+          :required="true"
           label="Kategori Komponen Lingkungan"
         >
 
@@ -39,6 +40,7 @@
         </div>
         <el-form-item
           v-if="formMode === 0"
+          :required="true"
           label="Rona Lingkungan"
         >
           <el-select
@@ -80,7 +82,7 @@
             placeholder="Nama Rona Lingkungan..."
           />
         </el-form-item>
-        <el-form-item label="Deskripsi">
+        <el-form-item v-if="isUklUpl" label="Deskripsi (Optional)">
           <div v-if="isReadOnly && !isUrlAndal">
             <span v-html="data.description" />
           </div>
@@ -97,7 +99,24 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="Besaran">
+        <el-form-item v-else :required="true" label="Deskripsi">
+          <div v-if="isReadOnly && !isUrlAndal">
+            <span v-html="data.description" />
+          </div>
+          <div v-else>
+            <huedesceditor
+              v-model="data.description"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :height="100"
+              :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+              style="width:100%"
+            />
+          </div>
+        </el-form-item>
+
+        <el-form-item label="Besaran/Skala Rona Lingkungan (Optional)">
           <el-input
             v-model="data.measurement"
             type="textarea"
@@ -129,7 +148,7 @@
           <el-button :disabled="isReadOnly && !isUrlAndal" type="warning"> Upload PDF </el-button>
         </el-upload>
         <el-button type="danger" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm()">Simpan</el-button>
+        <el-button type="primary" :disabled="optional() || disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -364,13 +383,25 @@ export default {
           this.loading = false;
         });
     },
+    isUklUpl(){
+      if (this.$route.name === 'FormulirUklUpl') {
+        return;
+      }
+    },
     handleSelect(val){
-      const item = this.master.find(i => i.name === val);
-      this.data.id = item.id;
-      this.data.name = item.name;
-      this.data.value = item.name;
-      this.data.is_master = item.is_master;
-      console.log(this.data);
+      if (val === ''){
+        console.log("it's empty!");
+        this.data.id = null;
+        this.data.name = '';
+        this.data.is_master = false;
+        this.data.value = '';
+      } else {
+        const item = this.master.find(i => i.name === val);
+        this.data.id = item.id;
+        this.data.name = item.name;
+        this.data.value = item.name;
+        this.data.is_master = item.is_master;
+      }
     },
     handleClose(){
       this.initData();
@@ -405,9 +436,25 @@ export default {
         ((this.data.measurement).trim() === '');
 
       if (this.noMaster){
+        if (this.$route.name === 'FormulirUklUpl') {
+          if (this.noMaster && this.data.name.trim() !== '') {
+            return;
+          }
+        }
         return ((this.data.name).trim() === '') || (this.data.id_component_type === null) || emptyTexts;
       }
-      return (this.data.id === null) || (this.data.id_component_type === null) || (this.data.id <= 0) || emptyTexts;
+
+      if (this.$route.name === 'FormulirUklUpl') {
+        console.log({ guns: this.data });
+        return (this.data.name === '') || (this.data.component_type_name === '');
+      } else {
+        return (this.data.id === null) || (this.data.id_component_type === null) || (this.data.id <= 0) || emptyTexts;
+      }
+    },
+    optional(){
+      if (this.$route.name === 'FormulirUklUpl') {
+        return (this.data.id_component_type === null);
+      }
     },
     handleUploadPDF(file, filelist) {
       this.pdfError = null;
