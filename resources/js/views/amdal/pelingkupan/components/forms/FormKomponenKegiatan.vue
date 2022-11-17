@@ -16,6 +16,7 @@
           <el-form-item
             v-if="formMode === 0"
             label="Tahap"
+            required="true"
           >
             <el-select
               v-model="data.id_project_stage"
@@ -41,6 +42,7 @@
 
           <el-form-item
             v-if="formMode === 0"
+            required="true"
             label="Komponen Kegiatan"
             :loading="loading"
           >
@@ -88,7 +90,7 @@
 
           <!-- -->
 
-          <el-form-item label="Deskripsi">
+          <el-form-item required="true" label="Deskripsi">
             <div v-if="isReadOnly && !isUrlAndal">
               <span v-html="data.description" />
             </div>
@@ -105,7 +107,7 @@
             </div>
           </el-form-item>
 
-          <el-form-item label="Besaran">
+          <el-form-item required="true" label="Besaran/Skala Usaha/Kegiatan">
             <el-input
               v-model="data.measurement"
               type="textarea"
@@ -384,6 +386,7 @@ export default {
       if (this.noMaster){
         return ((this.data.name).trim() === '') || emptyTexts;
       }
+      console.log({ guns: this.data });
       return (this.data.id === null) || (this.data.id <= 0) || emptyTexts;
     },
   },

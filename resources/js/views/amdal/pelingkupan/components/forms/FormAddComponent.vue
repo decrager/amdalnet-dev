@@ -21,7 +21,7 @@
 
         <el-form-item
           label="Komponen Kegiatan"
-          prop="name"
+          required="true"
           style="padding: 0.5em 0.8em; border: 1px solid #cccccc; border-radius: 0.5em; margin-top: 1em;"
         >
 
@@ -51,7 +51,7 @@
         </el-form-item>
         <el-form-item
           v-if="selected !== null"
-          label="Deskripsi"
+          label="Deskripsi (Optional)"
         >
           <div v-if="isReadOnly && !isUrlAndal">
             <span v-html="component.description" />
@@ -70,7 +70,7 @@
             />
           </div>
         </el-form-item>
-        <el-form-item v-if="selected !== null" label="Besaran">
+        <el-form-item v-if="selected !== null" label="Besaran/Skala Komponen Kegiatan Utama/Pendukung (Optional)">
           <el-input
             v-model="component.measurement"
             type="textarea"
@@ -249,7 +249,12 @@ export default {
       console.log(this.component);
     },
     handleSelectComponent(val){
-      this.selected = this.masterComponents.find(e => e.id === val);
+      if (val === '') {
+        console.log("it's empty!");
+        this.component.id_component = null;
+      } else {
+        this.selected = this.masterComponents.find(e => e.id === val);
+      }
       // this.component.name = this.selected.name;
     },
     async submitComponent() {
@@ -308,8 +313,12 @@ export default {
         ((this.component.description).trim() === '') ||
         (this.component.measurement === null) ||
         ((this.component.measurement).trim() === '');
-
-      return (this.component.id_component === null) || (this.component.id_component <= 0) || emptyTexts;
+      if (this.component.id_component !== null) {
+        console.log(this.name);
+        return false;
+      } else {
+        return (this.component.id_component === null) || (this.component.id_component <= 0) || emptyTexts;
+      }
     },
   },
 

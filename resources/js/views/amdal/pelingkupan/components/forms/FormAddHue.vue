@@ -34,7 +34,7 @@
             </div>
           </div>
 
-          <el-form-item label="Rona Lingkungan" style="line-height: 140%; margin-top:1.5em; padding:1em; border:1px solid #cccccc; border-radius: 0.5em;">
+          <el-form-item required="true" label="Rona Lingkungan" style="line-height: 140%; margin-top:1.5em; padding:1em; border:1px solid #cccccc; border-radius: 0.5em;">
             <el-select
               v-if="master === null"
               v-model="hue.id"
@@ -55,7 +55,7 @@
             </div>
           </el-form-item>
           <div v-if="selected !== null" style="margin: 2em 0 1em; font-weight:bold;">
-            {{ 'Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
+            {{ '* Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
           </div>
           <el-form-item v-if="selected !== null" style="margin: 1em 0;">
             <div v-if="isReadOnly && !isUrlAndal">
@@ -74,7 +74,7 @@
               />
             </div>
           </el-form-item>
-          <el-form-item v-if="selected !== null " label="Besaran">
+          <el-form-item v-if="selected !== null " required="true" label="Besaran/Skala Dampak">
 
             <el-input
               v-model="hue.measurement"
