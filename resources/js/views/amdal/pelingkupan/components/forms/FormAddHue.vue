@@ -34,7 +34,7 @@
             </div>
           </div>
 
-          <el-form-item label="Rona Lingkungan" style="line-height: 140%; margin-top:1.5em; padding:1em; border:1px solid #cccccc; border-radius: 0.5em;">
+          <el-form-item required="true" label="Rona Lingkungan" style="line-height: 140%; margin-top:1.5em; padding:1em; border:1px solid #cccccc; border-radius: 0.5em;">
             <el-select
               v-if="master === null"
               v-model="hue.id"
@@ -55,10 +55,10 @@
             </div>
           </el-form-item>
           <div v-if="selected !== null" style="margin: 2em 0 1em; font-weight:bold;">
-            {{ 'Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
+            {{ '* Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
           </div>
           <el-form-item v-if="selected !== null" style="margin: 1em 0;">
-            <div v-if="isReadOnly">
+            <div v-if="isReadOnly && !isUrlAndal">
               <span v-html="hue.description" />
             </div>
             <div v-else>
@@ -74,12 +74,12 @@
               />
             </div>
           </el-form-item>
-          <el-form-item v-if="selected !== null " label="Besaran">
+          <el-form-item v-if="selected !== null " required="true" label="Besaran/Skala Dampak">
 
             <el-input
               v-model="hue.measurement"
               type="textarea"
-              :disabled="isReadOnly"
+              :disabled="isReadOnly && !isUrlAndal"
               :autosize="{ minRows: 3, maxRows: 5}"
             />
 
@@ -88,7 +88,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -155,17 +155,16 @@ export default {
       const data = [
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
-        'uklupl-mt.returned',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
-        'uklupl-mt.returned',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
         'amdal.form-ka-submitted',
         'amdal.form-ka-adm-review',
         'amdal.form-ka-adm-returned',
@@ -197,7 +196,29 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   mounted(){

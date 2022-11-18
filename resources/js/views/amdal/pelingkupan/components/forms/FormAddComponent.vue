@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title=" title[formMode] + ' Komponen Lingkungan'"
+    :title=" title[formMode] + ' Komponen Kegiatan'"
     :visible.sync="show"
     width="50%"
     :before-close="handleClose"
@@ -21,7 +21,7 @@
 
         <el-form-item
           label="Komponen Kegiatan"
-          prop="name"
+          required="true"
           style="padding: 0.5em 0.8em; border: 1px solid #cccccc; border-radius: 0.5em; margin-top: 1em;"
         >
 
@@ -51,9 +51,9 @@
         </el-form-item>
         <el-form-item
           v-if="selected !== null"
-          label="Deskripsi"
+          label="Deskripsi (Optional)"
         >
-          <div v-if="isReadOnly">
+          <div v-if="isReadOnly && !isUrlAndal">
             <span v-html="component.description" />
           </div>
           <div v-else>
@@ -70,11 +70,11 @@
             />
           </div>
         </el-form-item>
-        <el-form-item v-if="selected !== null" label="Besaran">
+        <el-form-item v-if="selected !== null" label="Besaran/Skala Komponen Kegiatan Utama/Pendukung (Optional)">
           <el-input
             v-model="component.measurement"
             type="textarea"
-            :disabled="isReadOnly"
+            :disabled="isReadOnly && !isUrlAndal"
             :autosize="{ minRows: 3, maxRows: 5}"
           />
         </el-form-item>
@@ -83,7 +83,7 @@
     </div>
     <span slot="footer" class="dialog-footer">
       <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
-      <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly" @click="!isReadOnly && submitComponent()">Simpan</el-button>
+      <el-button type="primary" :disabled="isSaving || disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, submitComponent()">Simpan</el-button>
     </span>
   </el-dialog>
 </template>
@@ -147,17 +147,16 @@ export default {
       const data = [
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
-        'uklupl-mt.returned',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
-        'uklupl-mt.returned',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
         'amdal.form-ka-submitted',
         'amdal.form-ka-adm-review',
         'amdal.form-ka-adm-returned',
@@ -189,7 +188,29 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   mounted(){
@@ -228,7 +249,12 @@ export default {
       console.log(this.component);
     },
     handleSelectComponent(val){
-      this.selected = this.masterComponents.find(e => e.id === val);
+      if (val === '') {
+        console.log("it's empty!");
+        this.component.id_component = null;
+      } else {
+        this.selected = this.masterComponents.find(e => e.id === val);
+      }
       // this.component.name = this.selected.name;
     },
     async submitComponent() {
@@ -287,8 +313,12 @@ export default {
         ((this.component.description).trim() === '') ||
         (this.component.measurement === null) ||
         ((this.component.measurement).trim() === '');
-
-      return (this.component.id_component === null) || (this.component.id_component <= 0) || emptyTexts;
+      if (this.component.id_component !== null) {
+        console.log(this.name);
+        return false;
+      } else {
+        return (this.component.id_component === null) || (this.component.id_component <= 0) || emptyTexts;
+      }
     },
   },
 

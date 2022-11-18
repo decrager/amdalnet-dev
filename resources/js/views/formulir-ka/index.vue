@@ -302,8 +302,8 @@
               <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
-                  <div v-if="isReadOnly">
-                    <el-upload :disabled="isReadonly">
+                  <div v-if="isReadOnly && !isUrlAndal">
+                    <el-upload :disabled="isReadonly && !isUrlAndal">
                       <el-button size="small" type="info">browse</el-button>
                     </el-upload>
                   </div>
@@ -322,7 +322,7 @@
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button :disabled="isReadOnly" size="small" type="info">browse</el-button>
+                    <el-button :disabled="isReadOnly && !isUrlAndal" size="small" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -334,7 +334,7 @@
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" :disabled="isReadOnly" type="info">browse</el-button>
+                    <el-button size="small" :disabled="isReadOnly && !isUrlAndal" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -345,7 +345,7 @@
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" :disabled="isReadOnly" type="info">browse</el-button>
+                    <el-button size="small" :disabled="isReadOnly && !isUrlAndal" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -358,7 +358,7 @@
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" :disabled="isReadOnly" type="info">browse</el-button>
+                    <el-button size="small" :disabled="isReadOnly && !isUrlAndal" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -369,7 +369,7 @@
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
                 <el-col :span="4" style="margin-left:1em;">
                   <el-upload>
-                    <el-button size="small" :disabled="isReadOnly" type="info">browse</el-button>
+                    <el-button size="small" :disabled="isReadOnly && !isUrlAndal" type="info">browse</el-button>
                   </el-upload>
                 </el-col>
               </el-row>
@@ -378,7 +378,7 @@
 
           <el-row style="margin: 1em 0;">
             <el-col :span="12">
-              <el-button size="medium" :disabled="isReadOnly" type="warning">Unggah Peta</el-button>
+              <el-button size="medium" :disabled="isReadOnly && !isUrlAndal" type="warning">Unggah Peta</el-button>
             </el-col>
             <el-col :span="12" style="text-align: right;">
               <el-button size="medium" type="danger">Batal</el-button>
@@ -813,7 +813,73 @@ export default {
     }),
 
     isReadOnly() {
-      return this.markingStatus === 'amdal.form-ka-submitted' || this.markingStatus === 'announcement' || this.markingStatus === 'amdal.rklrpl-drafting';
+      const data = [
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
+        'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+        'amdal.adm-review',
+        'amdal.adm-returned',
+        'amdal.adm-approved',
+        'amdal.examination',
+        'amdal.feasibility-invitation-drafting',
+        'amdal.feasibility-invitation-sent',
+        'amdal.feasibility-review',
+        'amdal.feasibility-review-meeting',
+        'amdal.feasibility-returned',
+        'amdal.feasibility-ba-drafting',
+        'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting',
+        'amdal.recommendation-signed',
+        'amdal.skkl-published',
+      ];
+
+      console.log({ workflow: this.markingStatus });
+
+      return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   methods: {

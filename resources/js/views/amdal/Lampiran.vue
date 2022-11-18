@@ -14,7 +14,7 @@
             Silahkan Lengkapi Formulir Kerangka Acuan dengan Lampiran Data
             Pendukung Deskripsi Kegiatan (Opsional)
           </label>
-          <el-button type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleAdd()"> Tambah </el-button>
+          <el-button type="primary" :disabled="isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleAdd()"> Tambah </el-button>
         </div>
         <el-table
           :data="attachment"
@@ -74,8 +74,8 @@
                 type="text"
                 href="#"
                 icon="el-icon-delete"
-                :disabled="isReadOnly"
-                @click="!isReadOnly && handleDelete(scope.row.id, scope.$index)"
+                :disabled="isReadOnly && !isUrlAndal"
+                @click="!isReadOnly && isUrlAndal, handleDelete(scope.row.id, scope.$index)"
               >
                 Hapus
               </el-button>
@@ -88,8 +88,8 @@
           :loading="loadingSubmit"
           type="primary"
           style="margin-top: 10px"
-          :disabled="isReadOnly"
-          @click="!isReadOnly && handleSubmit()"
+          :disabled="isReadOnly && !isUrlAndal"
+          @click="!isReadOnly && isUrlAndal, handleSubmit()"
         >
           Simpan
         </el-button>
@@ -123,17 +123,16 @@ export default {
       const data = [
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
-        'uklupl-mt.returned',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
-        'uklupl-mt.returned',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
         'amdal.form-ka-submitted',
         'amdal.form-ka-adm-review',
         'amdal.form-ka-adm-returned',
@@ -165,7 +164,29 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   created() {

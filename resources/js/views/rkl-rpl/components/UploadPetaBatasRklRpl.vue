@@ -9,7 +9,7 @@
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-            <div v-if="petaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanSHP)"><strong>{{ petaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
+            <div v-if="url_peta_pengelolaan_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_pengelolaan_shp"><strong>{{ peta_pengelolaan_shp_name }}<i class="el-icon-circle-check" /></strong></a>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
           </legend>
@@ -23,7 +23,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanPDF)"><strong>{{ petaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_pengelolaan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_pengelolaan_pdf" target="_blank"><strong>{{ peta_pengelolaan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="refPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(2)">
@@ -38,7 +38,7 @@
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-            <div v-if="petaAreaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPengelolaanSHP)"><strong>{{ petaAreaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
+            <div v-if="url_peta_area_pengelolaan_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pengelolaan_shp"><strong>{{ peta_area_pengelolaan_shp_name }}<i class="el-icon-circle-check" /></strong></a>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
           </legend>
@@ -49,24 +49,24 @@
         </fieldset>
 
       </el-col>
-      <el-col :span="11" style="margin-right:1em;">
+      <!-- <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaAreaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPengelolaanPDF)"><strong>{{ petaAreaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_area_pengelolaan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pengelolaan_pdf" target="_blank"><strong>{{ peta_area_pengelolaan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="refAreaPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(6)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
+            <button type="submit">Unggah</button> -->
+      <!-- </form>
         </fieldset>
-      </el-col>
+      </el-col> -->
     </el-form-item>
 
     <el-form-item label="Peta Titik Pemantauan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-            <div v-if="petaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanSHP)"><strong>{{ petaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_pemantauan_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_pemantauan_shp"><strong>{{ peta_pemantauan_shp_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
@@ -80,7 +80,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaPemantauanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanPDF)"><strong>{{ petaPemantauanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_pemantauan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_pemantauan_pdf" target="_blank"><strong>{{ peta_pemantauan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
@@ -95,7 +95,7 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">File-File SHP yang sudah di-zip
-            <div v-if="petaAreaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPemantauanSHP)"><strong>{{ petaAreaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_area_pemantauan_shp != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pemantauan_shp"><strong>{{ peta_area_pemantauan_shp_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
@@ -106,18 +106,18 @@
 
       </el-col>
 
-      <el-col :span="11" style="margin-right:1em;">
+      <!-- <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaAreaPemantauanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idAreaPemantauanPDF)"><strong>{{ petaAreaPemantauanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="url_peta_area_pemantauan_pdf != null" class="current">tersimpan: <a style="color: green" :href="url_peta_area_pemantauan_pdf" target="_blank"><strong>{{ peta_area_pemantauan_pdf_name }}<i class="el-icon-circle-check" /></strong></a></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="refAreaPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(8)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
+            <input ref="refAreaPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" :disabled="isReadOnly" @change="!isReadOnly && onChangeFiles(8)"> -->
+      <!-- <button type="submit">Unggah</button> -->
+      <!-- </form>
         </fieldset>
-      </el-col>
+      </el-col> -->
     </el-form-item>
 
     <div id="mapView" class="map-wrapper" />
@@ -125,9 +125,7 @@
     <el-row v-if="isFormulator" style="text-align:right;">
       <el-button size="medium" type="primary" :disabled="isReadOnly" @click="!isReadOnly && handleSubmit()">Unggah Peta</el-button>
     </el-row>
-
   </el-form>
-
 </template>
 <style scoped>
  legend {line-height: 1.5em; margin: .5em 0 2em;}
@@ -183,6 +181,22 @@ export default {
       petaSosialSHP: '',
       petaStudiPDF: '',
       petaStudiSHP: '',
+      url_peta_pengelolaan_pdf: null,
+      peta_pengelolaan_shp_name: null,
+      peta_pengelolaan_pdf_name: null,
+      url_peta_pengelolaan_shp: null,
+      peta_area_pengelolaan_pdf_name: null,
+      url_peta_area_pengelolaan_pdf: null,
+      peta_area_pengelolaan_shp_name: null,
+      url_peta_area_pengelolaan_shp: null,
+      peta_pemantauan_pdf_name: null,
+      url_peta_pemantauan_pdf: null,
+      peta_pemantauan_shp_name: null,
+      url_peta_pemantauan_shp: null,
+      peta_area_pemantauan_pdf_name: null,
+      url_peta_area_pemantauan_pdf: null,
+      peta_area_pemantauan_shp_name: null,
+      url_peta_area_pemantauan_shp: null,
       files: [],
       idPengelolaanSHP: 0,
       idPengelolaanPDF: 0,
@@ -231,8 +245,6 @@ export default {
 
     isReadOnly() {
       const data = [
-        'amdal.andal-drafting', // sementara
-        'amdal.rklrpl-drafting', // sementara
         'amdal.submitted',
         'amdal.adm-review',
         'amdal.adm-returned',
@@ -250,6 +262,8 @@ export default {
         'amdal.skkl-published',
       ];
       console.log({ gun: this.markingStatus });
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
     },
     isFormulator() {
@@ -335,7 +349,7 @@ export default {
           });
         });
 
-      axios.get(`api/map-geojson?id=${this.idProject}&step=ka`)
+      axios.get(`api/map-geojson?id=${this.idProject}`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
@@ -492,7 +506,38 @@ export default {
         id_project: this.idProject,
       });
       this.data = files.data;
+      this.loadAttachment();
       this.process(files.data);
+    },
+    loadAttachment() {
+      const data = this.data;
+      data.forEach((map) => {
+        if (map.file_type === 'SHP' && map.attachment_type === 'pengelolaan') {
+          this.url_peta_pengelolaan_shp = map.map_file_url;
+          this.peta_pengelolaan_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'pengelolaan') {
+          this.url_peta_pengelolaan_pdf = map.map_file_url;
+          this.peta_pengelolaan_pdf_name = map.original_filename;
+        } else if (map.file_type === 'SHP' && map.attachment_type === 'area-pengelolaan') {
+          this.url_peta_area_pengelolaan_shp = map.map_file_url;
+          this.peta_area_pengelolaan_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'area-pengelolaan') {
+          this.url_peta_area_pengelolaan_pdf = map.map_file_url;
+          this.peta_area_pengelolaan_pdf_name = map.original_filename;
+        } else if (map.file_type === 'SHP' && map.attachment_type === 'pemantauan') {
+          this.url_peta_pemantauan_shp = map.map_file_url;
+          this.peta_pemantauan_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'pemantauan') {
+          this.url_peta_pemantauan_pdf = map.map_file_url;
+          this.peta_pemantauan_pdf_name = map.original_filename;
+        } else if (map.file_type === 'SHP' && map.attachment_type === 'area-pemantauan') {
+          this.url_peta_area_pemantauan_shp = map.map_file_url;
+          this.peta_area_pemantauan_shp_name = map.original_filename;
+        } else if (map.file_type === 'PDF' && map.attachment_type === 'area-pemantauan') {
+          this.url_peta_area_pemantauan_pdf = map.map_file_url;
+          this.peta_area_pemantauan_pdf_name = map.original_filename;
+        }
+      });
     },
     process(files){
       files.forEach((e) => {
@@ -604,9 +649,14 @@ export default {
             return;
           }
 
-          this.geomKelolaGeojson = data.features[0].geometry;
-          this.geomKelolaProperties = data.features[0].properties;
+          this.geomKelolaGeojson = [];
+          this.geomKelolaProperties = [];
           this.geomKelolaStyles = 6;
+
+          data.features.map((value, index) => {
+            this.geomKelolaGeojson.push(value.geometry);
+            this.geomKelolaProperties.push(value.properties);
+          });
 
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
@@ -636,7 +686,9 @@ export default {
           map.add(layerPengelolaan);
         });
       };
-      readerPengelolaan.readAsArrayBuffer(mapPengelolaan);
+      if (mapPengelolaan !== undefined) {
+        readerPengelolaan.readAsArrayBuffer(mapPengelolaan);
+      }
 
       //  Map Area Pengelolaan
       const mapAreaPengelolaan = this.$refs.refAreaPengelolaanSHP.files[0];
@@ -660,6 +712,11 @@ export default {
           const checker = (arr, target) => target.every(v => arr.includes(v));
           const checkShapefile = checker(uploaded, valid);
 
+          if (!['Polygon', 'MultiPolygon'].includes(data.features[0].geometry.type)) {
+            alert('SHP yang dimasukkan harus Polygon atau MultiPolygon!.');
+            return;
+          }
+
           if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
             return;
@@ -681,11 +738,18 @@ export default {
           const renderer = {
             type: 'simple',
             field: '*',
+            // symbol: {
+            //   type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+            //   url: '/titik_pantau.png',
+            //   width: '24px',
+            //   height: '24px',
+            // },
             symbol: {
-              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-              url: '/titik_kelola.png',
-              width: '24px',
-              height: '24px',
+              type: 'simple-fill',
+              color: [200, 0, 0, 1],
+              outline: {
+                color: [200, 0, 0, 1],
+              },
             },
           };
           const url = URL.createObjectURL(blob);
@@ -702,7 +766,9 @@ export default {
           map.add(layerAreaPengelolaan);
         });
       };
-      readerAreaPengelolaan.readAsArrayBuffer(mapAreaPengelolaan);
+      if (mapAreaPengelolaan !== undefined) {
+        readerAreaPengelolaan.readAsArrayBuffer(mapAreaPengelolaan);
+      }
 
       //  Map Pemantauan
       const mapPemantauan = this.$refs.refPemantauanSHP.files[0];
@@ -732,9 +798,14 @@ export default {
             return;
           }
 
-          this.geomPantauGeojson = data.features[0].geometry;
-          this.geomPantauProperties = data.features[0].properties;
+          this.geomPantauGeojson = [];
+          this.geomPantauProperties = [];
           this.geomPantauStyles = 5;
+
+          data.features.map((value, index) => {
+            this.geomPantauGeojson.push(value.geometry);
+            this.geomPantauProperties.push(value.properties);
+          });
 
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
@@ -769,7 +840,10 @@ export default {
           // });
         });
       };
-      readerPemantauan.readAsArrayBuffer(mapPemantauan);
+      if (mapPemantauan !== undefined) {
+        console.log(mapPemantauan);
+        readerPemantauan.readAsArrayBuffer(mapPemantauan);
+      }
 
       //  Map Area Pemantauan
       const mapAreaPemantauan = this.$refs.refAreaPemantauanSHP.files[0];
@@ -794,6 +868,11 @@ export default {
           const checker = (arr, target) => target.every(v => arr.includes(v));
           const checkShapefile = checker(uploaded, valid);
 
+          if (!['Polygon', 'MultiPolygon'].includes(data.features[0].geometry.type)) {
+            alert('SHP yang dimasukkan harus Polygon atau MultiPolygon!.');
+            return;
+          }
+
           if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
             return;
@@ -815,11 +894,18 @@ export default {
           const renderer = {
             type: 'simple',
             field: '*',
+            // symbol: {
+            //   type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+            //   url: '/titik_pantau.png',
+            //   width: '24px',
+            //   height: '24px',
+            // },
             symbol: {
-              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-              url: '/titik_pantau.png',
-              width: '24px',
-              height: '24px',
+              type: 'simple-fill',
+              color: [200, 0, 0, 1],
+              outline: {
+                color: [200, 0, 0, 1],
+              },
             },
           };
           const url = URL.createObjectURL(blob);
@@ -841,7 +927,9 @@ export default {
           });
         });
       };
-      readerAreaPemantauan.readAsArrayBuffer(mapAreaPemantauan);
+      if (mapAreaPemantauan !== undefined) {
+        readerAreaPemantauan.readAsArrayBuffer(mapAreaPemantauan);
+      }
 
       const mapView = new MapView({
         container: 'mapView',
@@ -892,80 +980,118 @@ export default {
       this.isMapUploaded = true;
     },
     handleSubmit(){
-      const formData = new FormData();
-      formData.append('id_project', this.idProject);
-      formData.append('step', 'rkl-rpl');
-
-      urlUtils.addProxyRule({
-        proxyUrl: 'proxy/proxy.php',
-        urlPrefix: 'https://amdalgis.menlhk.go.id/',
-      });
-
-      this.files.forEach((e, i) => {
-        formData.append('files[]', e[0]);
-        formData.append('params[]', JSON.stringify(this.param[i]));
-        // Titik
-        formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
-        formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
-        formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
-        formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
-        formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
-        formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
-        // Area
-        formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
-        formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
-        formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
-        formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
-        formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
-        formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
-
-        var projectTitle = '';
-
-        axios.get(`api/projects/${this.idProject}`)
-          .then(response => {
-            projectTitle = response.data.project_title;
-            console.log(response.data);
-            console.log(response.data.project_title);
-          });
-
-        console.log(projectTitle);
-
-        var myHeaders = new Headers();
-        myHeaders.append('Authorization', 'Bearer ' + this.token);
-
-        var formdatas = new FormData();
-        formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
-        formdatas.append('type', 'Feature Service');
-        formdatas.append('title', projectTitle + this.idProject);
-        formdatas.append('file', e[0]);
-
-        var requestOptions = {
-          method: 'POST',
-          headers: myHeaders,
-          body: formdatas,
-          redirect: 'follow',
-        };
-
-        esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
-          .then(response => response.text())
-          .then(result => console.log(result))
-          .catch(error => console.log('error', error));
-      });
-
-      axios.post('api/upload-maps', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }})
-        .then((response) => {
-          if (response) {
-            this.$message({
-              message: 'Berhasil menyimpan file ', //  + this.files[0].name,
-              type: 'success',
-            });
-            this.$emit('handlePetaBatasUploaded');
-            this.$emit('handleEnableSimpanLanjutkan');
-          }
+      if (this.$refs.refPengelolaanSHP.files[0] !== undefined && this.$refs.refPengelolaanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Titik Pengelolaan PDF', 'Perhatian', {
+          center: true,
         });
+      } else if (this.$refs.refPengelolaanSHP.files[0] === undefined && this.$refs.refPengelolaanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Titik Pengelolaan SHP', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refAreaPengelolaanSHP.files[0] !== undefined && this.$refs.refAreaPengelolaanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Lokasi Pengelolaan PDF', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refAreaPengelolaanSHP.files[0] === undefined && this.$refs.refAreaPengelolaanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Lokasi Pengelolaan SHP', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refPemantauanSHP.files[0] !== undefined && this.$refs.refPemantauanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Titik Pemantauan PDF', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refPemantauanSHP.files[0] === undefined && this.$refs.refPemantauanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Titik Pemantauan SHP', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refAreaPemantauanSHP.files[0] !== undefined && this.$refs.refAreaPemantauanPDF.files[0] === undefined) {
+        this.$alert('Silahkan Unggah Peta Lokasi Pemantauan PDF', 'Perhatian', {
+          center: true,
+        });
+      } else if (this.$refs.refAreaPemantauanSHP.files[0] === undefined && this.$refs.refAreaPemantauanPDF.files[0] !== undefined) {
+        this.$alert('Silahkan Unggah Peta Lokasi Pemantauan SHP', 'Perhatian', {
+          center: true,
+        });
+      } else {
+        const formData = new FormData();
+        formData.append('id_project', this.idProject);
+        formData.append('step', 'rkl-rpl');
+
+        urlUtils.addProxyRule({
+          proxyUrl: 'proxy/proxy.php',
+          urlPrefix: 'https://amdalgis.menlhk.go.id/',
+        });
+        console.log({ gunx: this.files });
+        this.files.forEach((e, i) => {
+          formData.append('files[]', e[0]);
+          formData.append('params[]', JSON.stringify(this.param[i]));
+          if (this.param[i].file_type === 'SHP') {
+            // titik
+            formData.append('geomKelolaGeojson', JSON.stringify(this.geomKelolaGeojson));
+            formData.append('geomPantauGeojson', JSON.stringify(this.geomPantauGeojson));
+            formData.append('geomKelolaProperties', JSON.stringify(this.geomKelolaProperties));
+            formData.append('geomPantauProperties', JSON.stringify(this.geomPantauProperties));
+            formData.append('geomKelolaStyles', JSON.stringify(this.geomKelolaStyles));
+            formData.append('geomPantauStyles', JSON.stringify(this.geomPantauStyles));
+
+            // Area
+            formData.append('geomAreaKelolaGeojson', JSON.stringify(this.geomAreaKelolaGeojson));
+            formData.append('geomAreaPantauGeojson', JSON.stringify(this.geomAreaPantauGeojson));
+            formData.append('geomAreaKelolaProperties', JSON.stringify(this.geomAreaKelolaProperties));
+            formData.append('geomAreaPantauProperties', JSON.stringify(this.geomAreaPantauProperties));
+            formData.append('geomAreaKelolaStyles', JSON.stringify(this.geomAreaKelolaStyles));
+            formData.append('geomAreaPantauStyles', JSON.stringify(this.geomAreaPantauStyles));
+          }
+
+          var projectTitle = '';
+
+          axios.get(`api/projects/${this.idProject}`)
+            .then(response => {
+              projectTitle = response.data.project_title;
+              console.log(response.data);
+              console.log(response.data.project_title);
+            });
+
+          console.log(projectTitle);
+
+          var myHeaders = new Headers();
+          myHeaders.append('Authorization', 'Bearer ' + this.token);
+
+          var formdatas = new FormData();
+          formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
+          formdatas.append('type', 'Feature Service');
+          formdatas.append('title', projectTitle + this.idProject);
+          formdatas.append('file', e[0]);
+
+          var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: formdatas,
+            redirect: 'follow',
+          };
+
+          esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+        });
+
+        axios.post('api/upload-maps', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }})
+          .then((response) => {
+            if (response) {
+              this.$message({
+                message: 'Berhasil menyimpan file ', //  + this.files[0].name,
+                type: 'success',
+              });
+              this.$emit('handlePetaBatasUploaded');
+              this.$emit('handleEnableSimpanLanjutkan');
+            }
+          });
+        this.loading = false;
+      }
     },
     async doSubmit(load){
       return request(load);
@@ -1008,7 +1134,6 @@ export default {
               });
               return;
             } else {
-              this.$refs.refPengelolaanPDF.value = null;
               this.files[index] = this.$refs.refPengelolaanPDF.files;
               this.param[index] = {
                 attachment_type: 'pengelolaan',

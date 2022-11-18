@@ -6,6 +6,7 @@ use App\Entity\Business;
 use App\Entity\BusinessEnvParam;
 use App\Entity\OssNib;
 use App\Entity\Project;
+use App\Exceptions\OssException;
 use App\Services\OssService;
 use Error;
 use Exception;
@@ -248,31 +249,31 @@ class OssController extends Controller
         //         // 'submitted_json' => json_decode($request->getContent()),
         //     ], 401);
         // }
-        $existing = OssNib::where('nib', $nib)->first();
-        $saved = false;
-        $errorMessage = '-';
         DB::beginTransaction();
-        if ($existing) {
-            // update
-            $existing->nib_submit_date = $data['tgl_pengajuan_nib'];
-            $existing->nib_published_date = $data['tgl_terbit_nib'];
-            $existing->nib_updated_date = $data['tgl_perubahan_nib'];
-            $existing->oss_id = $data['oss_id'];
-            $existing->id_izin = $data['id_izin'];
-            $existing->kd_izin = $data['kd_izin'];
-            $existing->company_name = $data['nama_perseroan'];
-            $existing->company_email = $data['email_perusahaan'];
-            $existing->json_content = $data;
-            try {
-                $existing->save();
-                DB::commit();
-                $saved = true;
-            } catch (Exception $e) {
-                $errorMessage = $e->getMessage();
-            }          
-        } else {
-            // insert
-            try {
+        try {
+            $existing = OssNib::where('nib', $nib)->first();
+            $saved = false;
+            $errorMessage = '-';
+            if ($existing) {
+                // update
+                $existing->nib_submit_date = $data['tgl_pengajuan_nib'];
+                $existing->nib_published_date = $data['tgl_terbit_nib'];
+                $existing->nib_updated_date = $data['tgl_perubahan_nib'];
+                $existing->oss_id = $data['oss_id'];
+                $existing->id_izin = $data['id_izin'];
+                $existing->kd_izin = $data['kd_izin'];
+                $existing->company_name = $data['nama_perseroan'];
+                $existing->company_email = $data['email_perusahaan'];
+                $existing->json_content = $data;
+                $existingSave = $existing->save();
+                if ($existingSave) {
+                    $saved = true;
+                    DB::commit();
+                } else {
+                    throw new OssException('Error Save OssNib');
+                }
+            } else {
+                // insert
                 $created = OssNib::create([
                     'nib' => $data['nib'],
                     'nib_submit_date' => $data['tgl_pengajuan_nib'],
@@ -286,14 +287,16 @@ class OssController extends Controller
                     'json_content' => $data,
                 ]);
                 if ($created) {
-                    DB::commit();
                     $saved = true;
+                    DB::commit();
                 } else {
-                    DB::rollBack();
+                    throw new OssException('Error Create OssNib');
                 }
-            } catch (Exception $e) {
-                $errorMessage = $e->getMessage();
             }
+        } catch (OssException $e) {
+            DB::rollBack();
+            report($e);
+            return false;
         }
         Log::debug('Received data NIB ' . $data['nib'] . '. Updated at: ' . $data['tgl_perubahan_nib']);
         Log::debug('oss_id = ' . $data['oss_id'] . ', id_izin = ' . $data['id_izin'] . ', kd_izin = ' . $data['kd_izin']);
@@ -306,7 +309,7 @@ class OssController extends Controller
                 ]
             ], 200);
         }
-        
+
         Log::error('Gagal menyimpan data NIB. Error msg: ' . $errorMessage);
         return response()->json([
             'responreceiveNIB' => [

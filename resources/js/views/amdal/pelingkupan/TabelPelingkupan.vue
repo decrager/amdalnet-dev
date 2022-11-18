@@ -42,7 +42,7 @@
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Pendukung</span>
               </div>
-              <div v-if="isReadOnly">
+              <div v-if="isReadOnly && !isUrlAndal">
                 <components-list
                   :id="'supporting_'+stage.id"
                   :components="subProjects.filter(s => s.type === 'pendukung')"
@@ -51,8 +51,8 @@
                   :active-component="activeScoping.sub_projects"
                   :class-name="'scoping'"
                   :selectable="true"
-                  :disabled="isReadOnly"
-                  :de-select-all="!isReadOnly && deSelectAllSPPendukung"
+                  :disabled="isReadOnly && !isUrlAndal"
+                  :de-select-all="!isReadOnly && isUrlAndal && deSelectAllSPPendukung"
                 />
               </div>
               <div v-else>
@@ -99,8 +99,8 @@
                 circle
                 type="primary"
                 plain
-                :disabled="isReadOnly"
-                @click="!isReadOnly && addComponent()"
+                :disabled="isReadOnly && !isUrlAndal"
+                @click="!isReadOnly && isUrlAndal, addComponent()"
               />
             </el-card>
           </el-col>
@@ -146,8 +146,8 @@
                       circle
                       type="primary"
                       plain
-                      :disabled="isReadOnly"
-                      @click="!isReadOnly && addHue(ct.id)"
+                      :disabled="isReadOnly && !isUrlAndal"
+                      @click="!isReadOnly && isUrlAndal, addHue(ct.id)"
                     />
                   </td>
                 </tr>
@@ -286,17 +286,16 @@ export default {
       const data = [
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
-        'uklupl-mt.returned',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
-        'uklupl-mt.returned',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
         'amdal.form-ka-submitted',
         'amdal.form-ka-adm-review',
         'amdal.form-ka-adm-returned',
@@ -328,7 +327,29 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
 
     isAndal() {

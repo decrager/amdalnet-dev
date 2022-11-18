@@ -3,10 +3,11 @@ namespace App\Utils;
 
 class ListRender
 {
-    public static function parsingList($text, $font_style = '', $font_size = '') 
+    public static function parsingList($text, $font_style = '', $font_size = '')
     {
         $replaced_text = self::replaceHtmlDefaultList('ol', $text, $font_style, $font_size);
         $replaced_text = self::replaceHtmlDefaultList('ul', $replaced_text, $font_style, $font_size);
+        $replaced_text = self::stripSymbolExceptHtmlTags($replaced_text);
         return $replaced_text;
     }
 
@@ -16,7 +17,11 @@ class ListRender
         $tag_open = $type == 'ol' ? '<ol>' : '<ul>';
         $tag_close = $type == 'ol' ? '</ol>' : '</ul>';
         $arr_number = str_replace($tag_close, $tag_open, $text);
-        $arr_number = explode($tag_open, $arr_number);
+        if ($type == "ol") {
+            $arr_number = preg_split("/<ol(.*?)>/", $arr_number, -1, PREG_SPLIT_NO_EMPTY);
+        } else {
+            $arr_number = explode($tag_open, $arr_number);
+        }
         for($i = 0; $i < count($arr_number); $i++) {
             if(strlen($arr_number[$i]) >= 4) {
                 $check_li = substr(trim($arr_number[$i]),0,4);
@@ -30,7 +35,7 @@ class ListRender
                                 $new_string .= '<span style="display:inline-block; font-family: ' . $font_style .'; font-size: ' . $font_size . '; padding: 0; margin: 0;">' . $total . '. ' . $arr_string[$a];
                                 $total++;
                             }
-                        } 
+                        }
                     } else {
                         $new_string .= str_replace('<li>', '<span style="display:inline-block; font-family: ' . $font_style .'; font-size: ' . $font_size . '; padding: 0; margin: 0;">&bull; ', $arr_string);
                     }
@@ -49,5 +54,11 @@ class ListRender
         }
 
         return $result;
+    }
+
+    private static function stripSymbolExceptHtmlTags($text)
+    {
+        $result = preg_replace('/<(?=[^>]*(?:<|$))/', '&lt;', $text);
+        return preg_replace('/((?:^|>)[^<]*?)>/', '\1&gt;', $result);
     }
 }

@@ -32,7 +32,7 @@
     >
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <div v-if="isReadOnly">
+          <div v-if="isReadOnly && !isUrlAndal">
             <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
           </div>
           <div v-else>
@@ -58,7 +58,7 @@
     >
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <div v-if="isReadOnly">
+          <div v-if="isReadOnly && !isUrlAndal">
             <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
           </div>
           <div v-else>
@@ -81,7 +81,7 @@
     <el-table-column label="Metode Analisis Data untuk Prakiraan" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <div v-if="isReadOnly">
+          <div v-if="isReadOnly && !isUrlAndal">
             <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
           </div>
           <div v-else>
@@ -104,7 +104,7 @@
     <el-table-column label="Metode Prakiraan Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <div v-if="isReadOnly">
+          <div v-if="isReadOnly && !isUrlAndal">
             <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
           </div>
           <div v-else>
@@ -127,7 +127,7 @@
     <el-table-column label="Metode Evaluasi Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <div v-if="isReadOnly">
+          <div v-if="isReadOnly && !isUrlAndal">
             <span style="font-weight: 600;" v-html="scope.row.impact_study.forecast_method" />
           </div>
           <div v-else>
@@ -206,17 +206,16 @@ export default {
       const data = [
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
-        'uklupl-mt.returned',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
-        'uklupl-mt.returned',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
         'amdal.form-ka-submitted',
         'amdal.form-ka-adm-review',
         'amdal.form-ka-adm-returned',
@@ -248,7 +247,29 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
 
     isAndal() {

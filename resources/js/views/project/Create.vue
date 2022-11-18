@@ -2647,7 +2647,7 @@ export default {
                 that.full_address = data.display_name;
               });
 
-            if (datas.features[0].geometry.type !== 'Polygon') {
+            if (!['Polygon', 'MultiPolygon'].includes(datas.features[0].geometry.type)) {
               document.getElementById('fileMap').value = '';
               that.fileMapName = 'No File Selected';
               that.fileMap = null;
@@ -3103,6 +3103,19 @@ export default {
       } else {
         this.preeAgreementLabel = temp + 'Persetujuan Investasi';
       }
+    },
+    defineActions(event) {
+      const item = event.item;
+
+      item.actionsSections = [
+        [
+          {
+            title: 'Go to full extent',
+            className: 'esri-icon-zoom-in-magnifying-glass',
+            id: 'full-extent',
+          },
+        ],
+      ];
     },
     async changeProject(value) {
       this.currentProject.project_title = value.nama_kegiatan;

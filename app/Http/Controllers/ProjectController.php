@@ -996,7 +996,7 @@ class ProjectController extends Controller
             //update project filters
             $filter = ProjectFilter::where('id_project', $project->id)->first();
 
-            if($filter){
+            if ($filter) {
                 $filter->wastewater = isset($request['wastewater']) ? $request['wastewater'] : false;
                 $filter->disposal_wastewater = isset($request['disposal_wastewater']) ? $request['disposal_wastewater'] : false;
                 $filter->utilization_wastewater = isset($request['utilization_wastewater']) ? $request['utilization_wastewater'] : false;
@@ -1019,13 +1019,13 @@ class ProjectController extends Controller
                 $filter->high_traffic = isset($request['high_traffic']) ? $request['high_traffic'] : false;
                 $filter->save();
             }
-            
+
             //create project address
             foreach ($params['address'] as $add) {
                 // return response($add->id, 404);
-                if(isset($add->id)){
+                if (isset($add->id)) {
                     $oldadd = ProjectAddress::find($add->id);
-                    if($oldadd){
+                    if ($oldadd) {
                         $oldadd->prov = isset($add->prov) ? $add->prov : null;
                         $oldadd->district = isset($add->district) ? $add->district : null;
                         $oldadd->address = isset($add->address) ? $add->address : null;
@@ -1041,11 +1041,11 @@ class ProjectController extends Controller
                 }
             }
 
-            if(isset($params['listKewenangan'])){
+            if (isset($params['listKewenangan'])) {
                 foreach ($params['listKewenangan'] as $kew) {
-                    if(isset($kew->id)){
+                    if (isset($kew->id)) {
                         $oldkew = ProjectAuthority::find($kew->id);
-                        if($oldkew){
+                        if ($oldkew) {
                             $oldkew->sector = isset($kew->sector) ? $kew->sector : null;
                             $oldkew->project = isset($kew->project) ? $kew->project : null;
                             $oldkew->authority = isset($kew->authority) ? $kew->authority : null;
@@ -1059,20 +1059,19 @@ class ProjectController extends Controller
                             'authority' => isset($kew->authority) ? $kew->authority : null,
                         ]);
                     }
-                    
                 }
             }
 
             //create sub project
             foreach ($params['listSubProject'] as $subPro) {
-                if(gettype($subPro->biz_type) !== 'string'){
+                if (gettype($subPro->biz_type) !== 'string') {
                     $business = Business::find($subPro->biz_type);
                 }
-                if(gettype($subPro->sector) !== 'string'){
+                if (gettype($subPro->sector) !== 'string') {
                     $sector = Business::find($subPro->sector);
                 }
 
-                if(isset($subPro->id)){
+                if (isset($subPro->id)) {
                     $oldSubPro = SubProject::find($subPro->id);
 
                     $oldSubPro->kbli = isset($subPro->kbli) ? $subPro->kbli : 'Non KBLI';
@@ -1081,7 +1080,7 @@ class ProjectController extends Controller
                     $oldSubPro->type = $subPro->type;
                     $oldSubPro->biz_type = gettype($subPro->biz_type) !== 'string' ? $subPro->biz_type : 0;
                     $oldSubPro->id_project = $project->id;
-                    $oldSubPro->sector = gettype($subPro->sector) !== 'string'? $subPro->sector : 0;
+                    $oldSubPro->sector = gettype($subPro->sector) !== 'string' ? $subPro->sector : 0;
                     $oldSubPro->scale = floatval(str_replace(',', '.', str_replace('.', '', $subPro->scale)));
                     $oldSubPro->scale_unit = isset($subPro->scale_unit) ? $subPro->scale_unit : '';
                     $oldSubPro->biz_name = isset($business) ? $business->value : $subPro->biz_name;
@@ -1097,7 +1096,7 @@ class ProjectController extends Controller
                         'type' => $subPro->type,
                         'biz_type' => gettype($subPro->biz_type) !== 'string' ? $subPro->biz_type : 0,
                         'id_project' => $project->id,
-                        'sector' => gettype($subPro->sector) !== 'string'? $subPro->sector : 0,
+                        'sector' => gettype($subPro->sector) !== 'string' ? $subPro->sector : 0,
                         'scale' => floatval(str_replace(',', '.', str_replace('.', '', $subPro->scale))),
                         'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
                         'biz_name' => isset($business) ? $business->value : $subPro->biz_name,
@@ -1105,11 +1104,11 @@ class ProjectController extends Controller
                         'id_proyek' => isset($subPro->id_proyek) ? $subPro->id_proyek : null,
                     ]);
                 }
-                
+
 
                 foreach ($subPro->listSubProjectParams as $subProParam) {
                     // return response($subProParam->id, 404);
-                    if(isset($subProParam->id)){
+                    if (isset($subProParam->id)) {
                         $oldSubPro = SubProjectParam::find($subProParam->id);
                         $oldSubPro->param = $subProParam->param;
                         $oldSubPro->scale = floatval(str_replace(',', '.', str_replace('.', '', $subProParam->scale)));
@@ -1327,7 +1326,7 @@ class ProjectController extends Controller
         $document->setValue('jabatan', $dataProject->initiator->pic_role ?? '-');
         $document->setValue('email_pemrakarsa', $dataProject->initiator->email ?? '-');
         $document->setValue('jenis_dokumen', $dataProject->required_doc ?? '-');
-        $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->risk_level : '-');
+        $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->oss_risk : '-');
         $document->setValue('kewenangan', $dataProject->authority ?? '-');
         $document->setValue('tipe_pemrakarsa', $dataProject->initiator->user_type === 'Pemrakarsa' ? 'Pemrakarsa Pelaku Usaha' : 'Pemrakarsa Pemerintah');
         $document->setValue('deskripsi_kegiatan', trim(html_entity_decode($dataProject->description ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
@@ -1345,7 +1344,7 @@ class ProjectController extends Controller
         $listSubProject = array_values($dataProject->listSubProject->sortByDesc('type')->toArray());
         foreach ($listSubProject as $key => $subProject) {
             $dataDaftarKegiatan[$key]['no'] = $numberSubProject++;
-            $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['biz_name'] ?? '-');
+            $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['biz_name'] ?? '-') . ' ' . $dataProject->kbli . ' - Sektor ' . $dataProject->sector;
             $dataDaftarKegiatan[$key]['jenis_keg'] = ucwords($subProject['type'] ?? '-');
             $dataDaftarKegiatan[$key]['nama_kegiatan'] = $subProject['name'] ?? '-';
             $dataDaftarKegiatan[$key]['skala_besaran'] = ($subProject['scale'] ?? '0') . ' ' . str_replace('(menengah tinggi)', '', $subProject['scale_unit']);

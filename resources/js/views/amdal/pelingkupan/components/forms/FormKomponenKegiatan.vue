@@ -16,6 +16,7 @@
           <el-form-item
             v-if="formMode === 0"
             label="Tahap"
+            required="true"
           >
             <el-select
               v-model="data.id_project_stage"
@@ -41,6 +42,7 @@
 
           <el-form-item
             v-if="formMode === 0"
+            required="true"
             label="Komponen Kegiatan"
             :loading="loading"
           >
@@ -88,8 +90,8 @@
 
           <!-- -->
 
-          <el-form-item label="Deskripsi">
-            <div v-if="isReadOnly">
+          <el-form-item required="true" label="Deskripsi">
+            <div v-if="isReadOnly && !isUrlAndal">
               <span v-html="data.description" />
             </div>
             <div v-else>
@@ -105,11 +107,11 @@
             </div>
           </el-form-item>
 
-          <el-form-item label="Besaran">
+          <el-form-item required="true" label="Besaran/Skala Usaha/Kegiatan">
             <el-input
               v-model="data.measurement"
               type="textarea"
-              :disabled="isReadOnly"
+              :disabled="isReadOnly && !isUrlAndal"
               :autosize="{ minRows: 3, maxRows: 5}"
             />
           </el-form-item>
@@ -117,7 +119,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="disableSave() || isReadOnly" @click="!isReadOnly && handleSaveForm()">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -181,17 +183,16 @@ export default {
       const data = [
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
-        'uklupl-mt.returned',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
-        'uklupl-mt.returned',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
         'amdal.form-ka-submitted',
         'amdal.form-ka-adm-review',
         'amdal.form-ka-adm-returned',
@@ -223,7 +224,29 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   /* watch: {
@@ -363,6 +386,7 @@ export default {
       if (this.noMaster){
         return ((this.data.name).trim() === '') || emptyTexts;
       }
+      console.log({ guns: this.data });
       return (this.data.id === null) || (this.data.id <= 0) || emptyTexts;
     },
   },

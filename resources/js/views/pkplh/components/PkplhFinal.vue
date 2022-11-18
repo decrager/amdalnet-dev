@@ -78,7 +78,7 @@
       </el-row>
     </el-form>
     <div v-if="!disableEdit" slot="footer" class="dialog-footer">
-      <el-button :loading="loadingSubmit" :disabled="isPkplhFinals.length > 0" type="primary" @click="handleSubmit()"> Submit </el-button>
+      <el-button :disabled="isPkplhFinals.length > 0" type="primary" @click="handleSubmit()"> Submit </el-button>
     </div>
     <!-- <el-row v-if="!isPemerintah" style="margin-top: 20px;">
       <el-col :span="24">
@@ -138,6 +138,10 @@ export default {
       'userId': 'userId',
     }),
   },
+  mounted() {
+    this.getData();
+    this.isPkplh();
+  },
   async created() {
     if (this.$store.getters.roles[0].split('-')[0] === 'examiner'){
       this.isExaminer = true;
@@ -154,8 +158,6 @@ export default {
     if (initiators.data.length === 0) {
       this.isPemerintah = true;
     }
-    this.getData();
-    this.isPkplh();
     // await this.$store.dispatch('getInitiator', this.userInfo.email);
     // if (this.$store.getters.isPemerintah){
     //   this.isPemerintah = true;
@@ -177,7 +179,6 @@ export default {
       const pkplhFinals = await pkplhFinalResource.list({
         id_project: this.idProject,
       });
-      this.loading = false;
       if (pkplhFinals.length > 0) {
         const pkplhFinal = pkplhFinals[0];
         this.postForm = pkplhFinal;
@@ -190,17 +191,7 @@ export default {
           });
         }
       }
-    },
-    async isPkplh() {
-      const pkplhFinals = await pkplhFinalResource.list({
-        id_project: this.idProject,
-      });
-
-      this.isPkplhFinals = pkplhFinals;
-      this.pkplhFinalNumber = pkplhFinals[0].number;
-      this.pkplhFinalFile = pkplhFinals[0].file;
-      this.pkplhFinalTitle = pkplhFinals[0].title;
-      this.pkplhFinalDate = pkplhFinals[0].date_published;
+      this.loading = false;
     },
     async handleDownload() {
       if (this.fileUrl !== null) {
@@ -248,8 +239,7 @@ export default {
       pkplhFinalResource
         .store(formData)
         .then((response) => {
-          this.loadingSubmit = false;
-          this.loading = false;
+          this.isPkplh();
           if (response.code === 200) {
             this.$message({
               message: 'PKPLH Final Berhasil Disimpan',
@@ -274,6 +264,17 @@ export default {
           });
           console.log(error);
         });
+    },
+    async isPkplh() {
+      const pkplhFinals = await pkplhFinalResource.list({
+        id_project: this.idProject,
+      });
+      this.isPkplhFinals = pkplhFinals;
+      this.pkplhFinalNumber = pkplhFinals[0].number;
+      this.pkplhFinalFile = pkplhFinals[0].file;
+      this.pkplhFinalTitle = pkplhFinals[0].title;
+      this.pkplhFinalDate = pkplhFinals[0].date_published;
+      this.loading = false;
     },
   },
 };

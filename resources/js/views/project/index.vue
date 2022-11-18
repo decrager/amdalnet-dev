@@ -464,7 +464,12 @@
         </el-table-column>
         <el-table-column label="Tahap" class-name="status-col">
           <template slot-scope="scope">
-            {{ scope.row.marking_label | projectStep }}
+            <div v-if="scope.row.marking === 'uklupl-mt.pkplh-published'">
+              <span>
+                Penerbitan PKPLH
+              </span>
+            </div>
+            {{ scope.row.marking_label || projectStep }}
           </template>
         </el-table-column>
       </el-table>

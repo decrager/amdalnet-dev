@@ -23,7 +23,7 @@
       > Refresh data
       </el-button>
     </div>
-    <div v-if="isReadOnly">
+    <div v-if="isReadOnly && !isUrlAndal">
       <dampak-hipotetik-master-table
         :impacts="impacts"
         :id-project="id_project"
@@ -36,9 +36,9 @@
         :total-changes="totalChanges"
         :loading="isLoading"
         :mode="mode"
-        :disabled="isReadOnly"
-        @dataSelected="!isReadOnly && onDataSelected"
-        @saveChanges="!isReadOnly && saveChanges"
+        :disabled="isReadOnly & !isUrlAndal"
+        @dataSelected="!isReadOnly && isUrlAndal, onDataSelected"
+        @saveChanges="!isReadOnly && isUrlAndal, saveChanges"
       />
     </div>
     <div v-else>
@@ -58,16 +58,16 @@
         @saveChanges="saveChanges"
       />
     </div>
-    <div v-if="isReadOnly">
+    <div v-if="isReadOnly & !isUrlAndal">
       <dampak-hipotetik-detail-form
         :data="selectedData"
         :change-types="changeTypes"
         :pie-params="pieParams"
         :master="activities"
         :mode="mode"
-        :disabled="isReadOnly"
-        @hasChanges="!isReadOnly && hasChanges"
-        @saveData="!isReadOnly && onSaveData"
+        :disabled="isReadOnly & !isUrlAndal"
+        @hasChanges="!isReadOnly && isUrlAndal, hasChanges"
+        @saveData="!isReadOnly && isUrlAndal, onSaveData"
       />
     </div>
     <div v-else>
@@ -131,17 +131,16 @@ export default {
       const data = [
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
-        'uklupl-mt.returned',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
-        'uklupl-mt.returned',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
         'amdal.form-ka-submitted',
         'amdal.form-ka-adm-review',
         'amdal.form-ka-adm-returned',
@@ -173,7 +172,29 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   mounted(){

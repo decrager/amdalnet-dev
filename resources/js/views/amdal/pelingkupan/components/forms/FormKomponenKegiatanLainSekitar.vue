@@ -104,7 +104,7 @@
             </el-form-item>
           </div>
           <el-form-item label="Deskripsi" prop="description">
-            <div v-if="isReadOnly">
+            <div v-if="isReadOnly && !isUrlAndal">
               <span v-html="master_kegiatan_lain_scoping_113" />
             </div>
             <div v-else>
@@ -124,7 +124,7 @@
             <el-input
               v-model="data.measurement"
               type="textarea"
-              :disabled="isReadOnly"
+              :disabled="isReadOnly && !isUrlAndal"
               :autosize="{ minRows: 3, maxRows: 5}"
             />
           </el-form-item>
@@ -132,7 +132,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="disableSave() || isReadOnly" @click="!isReadOnly && handleSaveForm()">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm()">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -190,17 +190,16 @@ export default {
       const data = [
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
-        'uklupl-mt.returned',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
-        'uklupl-mt.returned',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
         'uklupl-mr.pkplh-published',
+        'uklupl-mt.pkplh-published',
         'amdal.form-ka-submitted',
         'amdal.form-ka-adm-review',
         'amdal.form-ka-adm-returned',
@@ -232,7 +231,29 @@ export default {
         'amdal.skkl-published',
       ];
 
+      console.log({ workflow: this.markingStatus });
+
       return data.includes(this.markingStatus);
+    },
+    isUrlAndal() {
+      const data = [
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
+        'amdal.andal-drafting',
+        'amdal.rklrpl-drafting',
+        'amdal.submitted',
+      ];
+      return this.$route.name === 'penyusunanAndal' && data.includes(this.markingStatus);
     },
   },
   mounted(){

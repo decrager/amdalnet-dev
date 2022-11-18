@@ -148,7 +148,7 @@ class KaReviewController extends Controller
                     $project->save();
                 }*/
             } else if($document_type == 'ANDAL RKL RPL') {
-                if($project->marking == 'amdal.form-rklrpl-drafting') {
+                if($project->marking == 'amdal.rklrpl-drafting') {
                     $project->workflow_apply('submit-amdal');
                     // $project->workflow_apply('review-amdal-adm');
                     $project->save();
@@ -158,9 +158,9 @@ class KaReviewController extends Controller
                     $project->workflow_apply('submit-uklupl');
                     // $project->workflow_apply('review-uklupl-adm');
                     $project->save();
-                } else if($project->marking == 'uklupl-mt.submitted') {
-                    // $project->workflow_apply('review-uklupl-adm');
-                    // $project->save();
+                } else if($project->marking == 'uklupl-mt.returned') {
+                    $project->applyWorkFlowTransition('submit-uklupl', 'uklupl-mt.returned', 'uklupl-mt.sent');
+                    $project->save();
                 }
             }
 
@@ -224,7 +224,7 @@ class KaReviewController extends Controller
                         $project->save();
                     }*/
                 } else if($document_type == 'ANDAL RKL RPL') {
-                    if($project->marking == 'amdal.form-rklrpl-drafting') {
+                    if($project->marking == 'amdal.rklrpl-drafting') {
                         $project->workflow_apply('submit-amdal');
                         $project->workflow_apply('review-amdal-adm');
                         $project->save();
@@ -235,7 +235,7 @@ class KaReviewController extends Controller
                         $project->workflow_apply('review-uklupl-adm');
                         $project->workflow_apply('return-uklupl-adm');
                         $project->save();
-                    } else if($project->marking == 'uklupl-mt.submitted') {
+                    } else if($project->marking == 'uklupl-mt.sent') {
                         $project->workflow_apply('review-uklupl-adm');
                         $project->workflow_apply('return-uklupl-adm');
                         $project->save();
@@ -319,8 +319,7 @@ class KaReviewController extends Controller
                     }*/
 
                 } else if($document_type == 'ANDAL RKL RPL') {
-                    if($project->marking == 'amdal.form-rklrpl-drafting') {
-                        $project->workflow_apply('submit-amdal');
+                    if($project->marking == 'amdal.submitted') {
                         $project->workflow_apply('review-amdal-adm');
                         $project->save();
                     }
@@ -329,7 +328,7 @@ class KaReviewController extends Controller
                         $project->workflow_apply('submit-uklupl');
                         $project->workflow_apply('review-uklupl-adm');
                         $project->save();
-                    } else if($project->marking == 'uklupl-mt.submitted') {
+                    } else if($project->marking == 'uklupl-mt.sent') {
                         $project->workflow_apply('review-uklupl-adm');
                         $project->save();
                     }

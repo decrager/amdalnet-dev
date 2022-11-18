@@ -80,6 +80,27 @@ class ProjectMapAttachmentController extends Controller
                     if ($temp->attachment_type === 'area-pemantauan' && $temp->file_type === 'SHP') {
                         $this->addMapAttachmentDetail($request, $temp, $file, $request->geomAreaPantauProperties, $request->geomAreaPantauGeojson, $request->geomAreaPantauStyles);
                     }
+                    if ($temp->attachment_type === 'ecology' && $temp->file_type === 'PDF') {
+                        $this->addMapAttachmentDetail($request, $temp, $file, $request->geomEcologyProperties, $request->geomEcologyGeojson, $request->geomEcologyStyles);
+                    }
+                    if ($temp->attachment_type === 'social' && $temp->file_type === 'PDF') {
+                        $this->addMapAttachmentDetail($request, $temp, $file, $request->geomSocialProperties, $request->geomSocialGeojson, $request->geomSocialStyles);
+                    }
+                    if ($temp->attachment_type === 'study' && $temp->file_type === 'PDF') {
+                        $this->addMapAttachmentDetail($request, $temp, $file, $request->geomStudyProperties, $request->geomStudyGeojson, $request->geomStudyStyles);
+                    }
+                    if ($temp->attachment_type === 'pengelolaan' && $temp->file_type === 'PDF') {
+                        $this->addMapAttachmentDetail($request, $temp, $file, $request->geomKelolaProperties, $request->geomKelolaGeojson, $request->geomKelolaStyles);
+                    }
+                    if ($temp->attachment_type === 'pemantauan' && $temp->file_type === 'PDF') {
+                        $this->addMapAttachmentDetail($request, $temp, $file, $request->geomPantauProperties, $request->geomPantauGeojson, $request->geomPantauStyles);
+                    }
+                    if ($temp->attachment_type === 'area-pengelolaan' && $temp->file_type === 'PDF') {
+                        $this->addMapAttachmentDetail($request, $temp, $file, $request->geomAreaKelolaProperties, $request->geomAreaKelolaGeojson, $request->geomAreaKelolaStyles);
+                    }
+                    if ($temp->attachment_type === 'area-pemantauan' && $temp->file_type === 'PDF') {
+                        $this->addMapAttachmentDetail($request, $temp, $file, $request->geomAreaPantauProperties, $request->geomAreaPantauGeojson, $request->geomAreaPantauStyles);
+                    }
                 }
                 DB::commit();
                 return request('success', 200);
@@ -94,17 +115,28 @@ class ProjectMapAttachmentController extends Controller
 
     private function addMapAttachmentDetail($request, $temp, $file, $properties, $geometry, $idStyle)
     {
-        $properties = json_decode($properties);
+        $properties = json_decode($properties, true);
         foreach (json_decode($geometry) as $key => $kelolaGeom) {
             $encode = json_encode($kelolaGeom);
-            $map = ProjectMapAttachment::firstOrNew([
-                'id_project' => $request->id_project,
-                'attachment_type' => $temp->attachment_type,
-                'file_type' => $temp->file_type,
-                'step' => $request->step,
-                'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$encode'), 4326)"),
-                'properties' => json_encode($properties[$key]),
-            ]);
+            if($temp->file_type === 'SHP') {
+                $map = ProjectMapAttachment::firstOrNew([
+                    'id_project' => $request->id_project,
+                    'attachment_type' => $temp->attachment_type,
+                    'file_type' => $temp->file_type,
+                    'step' => $request->step,
+                    'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$encode'), 4326)"),
+                    'properties' => json_encode($properties[$key], true),
+                ]);
+            } else {
+                $map = ProjectMapAttachment::firstOrNew([
+                    'id_project' => $request->id_project,
+                    'attachment_type' => $temp->attachment_type,
+                    'file_type' => $temp->file_type,
+                    'step' => $request->step,
+                    'geom' => null,
+                    'properties' => null,
+                ]);
+            }
 
             if ($map->id) {
                 if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
@@ -114,7 +146,9 @@ class ProjectMapAttachmentController extends Controller
 
             $map->original_filename = $file->getClientOriginalName();
             $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
-            $map->id_styles = $idStyle;
+            if($temp->file_type === 'SHP') {
+                $map->id_styles = $idStyle;
+            }
 
             $enableCloneAndal = false;
 
@@ -149,12 +183,12 @@ class ProjectMapAttachmentController extends Controller
                         $clone->save();
                     }
                 }
-                // Add workflow
-                $project = Project::findOrFail($request->id_project);
-                if ($project->marking == 'uklupl-mt.matrix-upl') {
-                    $project->workflow_apply('submit-uklupl');
-                    $project->save();
-                }
+                // // Add workflow
+                // $project = Project::findOrFail($request->id_project);
+                // if ($project->marking == 'uklupl-mt.matrix-upl') {
+                //     $project->workflow_apply('submit-uklupl');
+                //     $project->save();
+                // }
             }
         }
     }

@@ -20,17 +20,6 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Nomor Lisensi LSP" prop="license_no">
-              <el-input
-                v-model="currentLsp.license_no"
-                name="license_no"
-                placeholder="Nomor Lisensi LSP"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="32">
-          <el-col :span="12">
             <el-form-item label="Alamat LSP" prop="address">
               <el-input
                 v-model="currentLsp.address"
@@ -39,7 +28,27 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <!-- <el-col :span="12">
+            <el-form-item label="Nomor Lisensi LSP" prop="license_no">
+              <el-input
+                v-model="currentLsp.license_no"
+                name="license_no"
+                placeholder="Nomor Lisensi LSP"
+              />
+            </el-form-item>
+          </el-col> -->
+        </el-row>
+        <el-row :gutter="32">
+          <!-- <el-col :span="12">
+            <el-form-item label="Alamat LSP" prop="address">
+              <el-input
+                v-model="currentLsp.address"
+                name="address"
+                placeholder="Alamat LSP"
+              />
+            </el-form-item>
+          </el-col> -->
+          <!-- <el-col :span="12">
             <el-form-item label="Nomor SK" prop="sk_no">
               <el-input
                 v-model="currentLsp.sk_no"
@@ -47,9 +56,9 @@
                 placeholder="Nomor SK"
               />
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
-        <el-row :gutter="32">
+        <!-- <el-row :gutter="32">
           <el-col :span="12">
             <el-form-item label="Provinsi" prop="province">
               <el-select
@@ -91,7 +100,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
+        </el-row> -->
         <el-row :gutter="32">
           <el-col :span="12">
             <el-form-item label="Nomor Telepon" prop="phone_no">
@@ -112,7 +121,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="32">
+        <!-- <el-row :gutter="32">
           <el-col :span="12">
             <el-form-item label="Unggah Bukti Penetapan LSP" prop="lsp_file">
               <div class="upload-form-item" style="display: flex">
@@ -145,8 +154,8 @@
               </div>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="32">
+        </el-row> -->
+        <!-- <el-row :gutter="32">
           <el-col :span="12">
             <el-row :gutter="8">
               <el-col :span="12">
@@ -175,7 +184,7 @@
               </el-col>
             </el-row>
           </el-col>
-        </el-row>
+        </el-row> -->
       </el-form>
       <div class="dialog-footer" style="text-align: right">
         <el-button @click="handleCancel"> Batal </el-button>
@@ -189,8 +198,8 @@
 import { validEmail } from '@/utils/validate';
 import Resource from '@/api/resource';
 const lspResource = new Resource('lsp');
-const provinceResource = new Resource('provinces');
-const districtResource = new Resource('districts');
+// const provinceResource = new Resource('provinces');
+// const districtResource = new Resource('districts');
 
 export default {
   name: 'CreateLsp',
@@ -215,13 +224,13 @@ export default {
       callback(new Error('Email Wajib Diisi'));
     };
 
-    const validateCertificate = (rule, value, callback) => {
-      if (!this.fileUpload) {
-        callback(new Error('Sertifikat Wajib Diunggah'));
-      } else {
-        callback();
-      }
-    };
+    // const validateCertificate = (rule, value, callback) => {
+    //   if (!this.fileUpload) {
+    //     callback(new Error('Sertifikat Wajib Diunggah'));
+    //   } else {
+    //     callback();
+    //   }
+    // };
 
     return {
       currentLsp: {},
@@ -233,9 +242,9 @@ export default {
         lsp_name: [
           { required: true, trigger: 'blur', message: 'Nama Wajib Diisi' },
         ],
-        license_no: [
-          { required: true, trigger: 'blur', message: 'Lisensi LSP Wajib Diisi' },
-        ],
+        // license_no: [
+        //   { required: true, trigger: 'blur', message: 'Lisensi LSP Wajib Diisi' },
+        // ],
         address: [
           {
             required: true,
@@ -243,27 +252,27 @@ export default {
             message: 'Alamat Wajib Diisi',
           },
         ],
-        sk_no: [
-          {
-            required: true,
-            trigger: 'blur',
-            message: 'Nomor SK Wajib Diisi',
-          },
-        ],
-        province: [
-          {
-            required: true,
-            trigger: 'blur',
-            message: 'Provinsi Wajib Dipilih',
-          },
-        ],
-        city: [
-          {
-            required: true,
-            trigger: 'blur',
-            message: 'Kota/Kabupaten Wajib Dipilih',
-          },
-        ],
+        // sk_no: [
+        //   {
+        //     required: true,
+        //     trigger: 'blur',
+        //     message: 'Nomor SK Wajib Diisi',
+        //   },
+        // ],
+        // province: [
+        //   {
+        //     required: true,
+        //     trigger: 'blur',
+        //     message: 'Provinsi Wajib Dipilih',
+        //   },
+        // ],
+        // city: [
+        //   {
+        //     required: true,
+        //     trigger: 'blur',
+        //     message: 'Kota/Kabupaten Wajib Dipilih',
+        //   },
+        // ],
         phone_no: [
           {
             required: true,
@@ -279,28 +288,28 @@ export default {
             validator: validateEmail,
           },
         ],
-        lsp_file: [
-          {
-            required: this.$route.name === 'createLsp',
-            trigger: 'blur',
-            validator:
-              this.$route.name === 'createLsp' ? validateCertificate : null,
-          },
-        ],
-        date_lsp_start: [
-          {
-            required: true,
-            trigger: 'blur',
-            message: 'Tanggal Ditetapkan Wajib Diisi',
-          },
-        ],
-        date_lsp_end: [
-          {
-            required: true,
-            trigger: 'blur',
-            message: 'Tanggal Terakhir Berlaku Wajib Diisi',
-          },
-        ],
+        // lsp_file: [
+        //   {
+        //     required: this.$route.name === 'createLsp',
+        //     trigger: 'blur',
+        //     validator:
+        //       this.$route.name === 'createLsp' ? validateCertificate : null,
+        //   },
+        // ],
+        // date_lsp_start: [
+        //   {
+        //     required: true,
+        //     trigger: 'blur',
+        //     message: 'Tanggal Ditetapkan Wajib Diisi',
+        //   },
+        // ],
+        // date_lsp_end: [
+        //   {
+        //     required: true,
+        //     trigger: 'blur',
+        //     message: 'Tanggal Terakhir Berlaku Wajib Diisi',
+        //   },
+        // ],
       },
     };
   },
@@ -321,40 +330,39 @@ export default {
     if (this.$route.params.lsp) {
       this.currentLsp = this.$route.params.lsp;
     }
-
-    this.getProvinces();
+    // this.getProvinces();
   },
   methods: {
-    async changeProvince(value) {
-      // change all district by province
-      this.getDistricts(value);
-    },
-    async getProvinces() {
-      const { data } = await provinceResource.list({});
-      this.provinceOptions = data.map((i) => {
-        return { value: i.id, label: i.name };
-      });
-      if (this.currentLsp.province) {
-        this.getDistricts(this.currentLsp.province);
-      }
-    },
-    async getDistricts(idProv) {
-      const { data } = await districtResource.list({ idProv });
-      this.cityOptions = data.map((i) => {
-        return { value: i.id, label: i.name };
-      });
-    },
+    // async changeProvince(value) {
+    //   // change all district by province
+    //   this.getDistricts(value);
+    // },
+    // async getProvinces() {
+    //   const { data } = await provinceResource.list({});
+    //   this.provinceOptions = data.map((i) => {
+    //     return { value: i.id, label: i.name };
+    //   });
+    //   if (this.currentLsp.province) {
+    //     this.getDistricts(this.currentLsp.province);
+    //   }
+    // },
+    // async getDistricts(idProv) {
+    //   const { data } = await districtResource.list({ idProv });
+    //   this.cityOptions = data.map((i) => {
+    //     return { value: i.id, label: i.name };
+    //   });
+    // },
     handleCancel() {
       this.$router.push({ name: 'lsp' });
     },
-    handleUploadChange(file, fileList) {
-      this.fileName = file.name;
-      this.fileUpload = file.raw;
-    },
+    // handleUploadChange(file, fileList) {
+    //   this.fileName = file.name;
+    //   this.fileUpload = file.raw;
+    // },
     handleSubmit() {
       this.$refs.lspForm.validate((valid) => {
         if (valid) {
-          this.currentLsp.file = this.fileUpload;
+          // this.currentLsp.file = this.fileUpload;
 
           // make form data because we got file
           const formData = new FormData();

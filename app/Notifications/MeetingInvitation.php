@@ -85,8 +85,7 @@ class MeetingInvitation extends Notification
         } else if($this->meeting->document_type == 'rkl-rpl') {
             $document = 'Dokumen Andal dan RKL RPL';
         }
-
-        if($notifiable->roles->first()->name != 'formulator') {
+        if(!$notifiable->roles->contains('name', 'formulator')) {
             $message = 'Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada: ';
             $message .= 'Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . ', ';
             $message .= 'Waktu: ' . $this->meeting->meeting_time . ', ';

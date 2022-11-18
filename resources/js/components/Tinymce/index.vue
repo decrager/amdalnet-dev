@@ -115,6 +115,7 @@ export default {
         imagetools_cors_hosts: ['www.tinymce.com', 'codepen.io'],
         default_link_target: '_blank',
         link_title: false,
+        paste_data_images: true,
         autosave_ask_before_unload: false,
         content_css: 'body: {font-family: Monserrat; color:#303333 !important;}',
         nonbreaking_force_tab: true, // inserting nonbreaking space &nbsp; need Nonbreaking Space Plugin

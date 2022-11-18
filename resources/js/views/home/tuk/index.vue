@@ -3,18 +3,28 @@
   <section id="lpjp-table-section" class="lpjp-table-section section">
     <div class="container">
       <h2 class="section__title announce__title lpjp-table-section__title">
-        Daftar TUK
+        Daftar Instansi LH Yang Telah Teregistrasi Di Amdalnet
       </h2>
+      <div style="margin-bottom:15px">
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="12">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian anggota..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
+      </div>
       <div class="list-of-projects">
-        <div
-          style="
-            margin-bottom: 1em;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <el-table
+        <el-table
             v-loading="loading"
             :data="list"
             fit
@@ -26,17 +36,19 @@
             width="50"
             label="No"
             />
-            <el-table-column align="center" label="TUK" sortable prop="authority" />
+            <el-table-column align="center" label="Instansi LH" sortable prop="authority" />
             <el-table-column align="center" label="Jumlah Validator" sortable prop="count" />
-          </el-table>
-        </div>
-        <pagination
-              v-show="total > 0"
-              :total="total"
-              :page.sync="listQuery.page"
-              :limit.sync="listQuery.limit"
-              @pagination="handleFilter"
+        </el-table>
+        <div class="block" style="text-align: right">
+          <pagination
+            v-if="total > 0"
+            :auto-scroll="false"
+            :total="total"
+            :page.sync="listQuery.page"
+            :limit.sync="listQuery.limit"
+            @pagination="handleFilter"
           />
+      </div>
       </div>
     </div>
   </section>
@@ -50,7 +62,7 @@ import Resource from '@/api/resource';
 const LandingTukResource = new Resource('tuk');
 
 export default {
-  name: 'LandingTuk',
+  name: 'Employee',
   components: {
     Pagination,
   },
@@ -77,11 +89,33 @@ export default {
     handleFilter() {
       this.getData();
     },
+    async getData() {
+      this.loading = true;
+      const { data, total } = await LandingTukResource.list(this.listQuery);
+      // this.list = data.map((x) => {
+      //   let team = '-';
+      //   if (x.authority !== null) {
+      //     team = this.tukName(
+      //       x.authority
+      //     );
+      //     // console.log({ gun: team });
+      //   }
+      //   x.team = team;
+      //   return x;
+      // });
+      this.list = data;
+      this.total = total;
+      this.loading = false;
+    },
     async handleSearch() {
       this.listQuery.page = 1;
       this.listQuery.limit = 10;
       await this.getData();
+      this.listQuery.search = null;
     },
+    // tukName(data) {
+    //   return `Tim Uji Kelayakan ${data}`;
+    // },
     inputSearch(val) {
       if (this.timeoutId) {
         clearTimeout(this.timeoutId);
@@ -92,50 +126,19 @@ export default {
         this.getData();
       }, 500);
     },
-    async getData() {
-      this.loading = true;
-      const { data } = await LandingTukResource.list(this.listQuery);
-      this.list = data;
-      this.tukName(data);
-      this.loading = false;
-    },
-    handleSubmitRoute() {
-      this.$router.push({ name: 'createEmployeeTuk' });
-    },
-    tukName(data) {
-      if (data.authority === 'Pusat') {
-        return 'Tim Uji Kelayakan Pusat';
-      } else {
-        return `Tim Uji Kelayakan ${data}`;
-      }
-    },
-    capitalize(mySentence) {
-      const words = mySentence.split(' ');
-
-      const newWords = words
-        .map((word) => {
-          return (
-            word.toLowerCase()[0].toUpperCase() +
-            word.toLowerCase().substring(1)
-          );
-        })
-        .join(' ');
-      return newWords;
-    },
   },
 };
 </script>
-
-  <style scoped>
-  .expand-container {
-    display: flex;
-    justify-content: space-around;
-  }
-  .expand-container div {
-    width: 50%;
-    padding: 1rem 3rem;
-  }
-  .expand-container__right {
-    text-align: right;
-  }
-  </style>
+<style scoped>
+.expand-container {
+  display: flex;
+  justify-content: space-around;
+}
+.expand-container div {
+  width: 50%;
+  padding: 1rem 3rem;
+}
+.expand-container__right {
+  text-align: right;
+}
+</style>
