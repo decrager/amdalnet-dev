@@ -2,7 +2,7 @@
   <div class="resetpass">
     <div class="resetpass-container">
       <div class="resetpass-content">
-        <el-form ref="loginForm" class="resetpass-form" label-position="left">
+        <el-form class="resetpass-form" label-position="left">
           <div class="title-wrap">
             <h3 class="title">Lupa Kata Sandi</h3>
           </div>
@@ -11,13 +11,21 @@
               <svg-icon icon-class="user" />
             </span>
             <!-- <label for="email">Email</label> -->
-            <el-input name="email" type="text" placeholder="Email" />
+            <el-input
+              v-model="email"
+              name="email"
+              type="text"
+              placeholder="Email"
+            />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" style="width:100%;">
+            <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit">
               Lanjutkan
             </el-button>
           </el-form-item>
+          <p style="background-color: transparent; color: blue; text-align: left;">
+            <router-link to="/login">Kembali ke halaman login</router-link>
+          </p>
         </el-form>
       </div>
     </div>
@@ -25,8 +33,24 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'Forgot',
+  data() {
+    return {
+      email: '',
+    };
+  },
+  methods: {
+    async handleSubmit() {
+      const response = axios.post('forgot', {
+        email: this.email,
+      });
+
+      console.log(response);
+    },
+  },
 };
 </script>
 
@@ -105,6 +129,9 @@ $textColor:#eee;
       position: relative;
       opacity: 1;
       transition: opacity .3s ease-in-out,padding .2s ease-in-out;
+      input:focus {
+      border: none;
+    }
     }
     .svg-container {
       padding: 6px 5px 6px 15px;
