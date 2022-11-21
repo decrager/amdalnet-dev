@@ -607,7 +607,7 @@ class ExportDocument extends Controller
                         $com_pra_konstruksi[] = [
                             'com_pra_konstruksi_name' => $component,
                             'com_pra_konstruksi_desc' => '${pk_desc_' . $imp->id . '}',
-                            'com_pra_konstruksi_unit' => $imp->ronaAwal->measurement
+                            'com_pra_konstruksi_unit' => htmlspecialchars($imp->ronaAwal->measurement)
                         ];
 
                         $html_data[] = [
@@ -624,7 +624,7 @@ class ExportDocument extends Controller
                         $com_konstruksi[] = [
                             'com_konstruksi_name' => $component,
                             'com_konstruksi_desc' => '${k_desc_' . $imp->id . '}',
-                            'com_konstruksi_unit' => $imp->ronaAwal->measurement
+                            'com_konstruksi_unit' => htmlspecialchars($imp->ronaAwal->measurement)
                         ];
 
                         $html_data[] = [
@@ -680,7 +680,7 @@ class ExportDocument extends Controller
 
                 if($s->name == 'Pasca Operasi') {
                     $dl_pasca_operasi[] = [
-                        'dl_pasca_operasi_name' => "$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->ronaAwal->measurement
+                        'dl_pasca_operasi_name' => htmlspecialchars("$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->ronaAwal->measurement)
                     ];
 
                     $po[] = $this->getUklUplData($imp, 'po', $component, $change_type, $ronaAwal);
