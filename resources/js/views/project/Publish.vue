@@ -361,11 +361,10 @@ export default {
     },
     loadMap() {
       // let layerTapak = null;
+      const map = new Map({
+        basemap: 'satellite',
+      });
       if (this.readonly === true) {
-        const map = new Map({
-          basemap: 'satellite',
-        });
-
         axios.get(`api/map-geojson?id=${this.project.id}`)
           .then((response) => {
             response.data.forEach((item) => {
@@ -453,47 +452,7 @@ export default {
               map.addMany(this.mapGeojsonArrayProject);
             });
           });
-
-        const mapView = new MapView({
-          container: 'mapView',
-          map: map,
-          center: [115.287, -1.588],
-          zoom: 6,
-        });
-
-        const legend = new Legend({
-          view: mapView,
-          container: document.createElement('div'),
-        });
-        const layerList = new LayerList({
-          view: mapView,
-          container: document.createElement('div'),
-          listItemCreatedFunction: this.defineActions,
-        });
-
-        layerList.on('trigger-action', (event) => {
-          const id = event.action.id;
-          if (id === 'full-extent') {
-            mapView.goTo({
-              target: event.item.layer.fullExtent,
-            });
-          }
-        });
-
-        const legendExpand = new Expand({
-          view: mapView,
-          content: legend.domNode,
-          expandIconClass: 'esri-icon-collection',
-          expandTooltip: 'Legend',
-        });
-
-        mapView.ui.add(legendExpand, 'bottom-left');
-        mapView.ui.add(layerList, 'top-right');
       } else {
-        const map = new Map({
-          basemap: 'satellite',
-        });
-
         const fr = new FileReader();
         fr.onload = (event) => {
           const base = event.target.result;
@@ -535,23 +494,45 @@ export default {
           });
         };
         fr.readAsArrayBuffer(this.mapUpload);
-
-        this.mapView = new MapView({
-          container: 'mapView',
-          map: map,
-          center: [115.287, -1.588],
-          zoom: 6,
-        });
-        this.$parent.mapView = this.mapView;
-
-        const layerList = new LayerList({
-          view: this.mapView,
-          container: document.createElement('div'),
-          listItemCreatedFunction: this.defineActions,
-        });
-
-        this.mapView.ui.add(layerList, 'top-right');
       }
+
+      const mapView = new MapView({
+        container: 'mapView',
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 6,
+      });
+
+      this.mapView = mapView;
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
+        }
+      });
+
+      const legendExpand = new Expand({
+        view: mapView,
+        content: legend.domNode,
+        expandIconClass: 'esri-icon-collection',
+        expandTooltip: 'Legend',
+      });
+
+      mapView.ui.add(legendExpand, 'bottom-left');
+      mapView.ui.add(layerList, 'top-right');
     },
     handleAddExpertTable(){
       this.listExpertTeam.push({});
