@@ -130,7 +130,8 @@ const formulatorTeamsResource = new Resource('formulator-teams');
 
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import Attribution from '@arcgis/core/widgets/Attribution';
+// import Attribution from '@arcgis/core/widgets/Attribution';
+import urlBlob from '../webgis/scripts/urlBlob';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
@@ -188,6 +189,7 @@ export default {
       geomStyles: 1,
       mapPdf: '',
       mapView: null,
+      mapGeojsonArrayProject: [],
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -364,46 +366,91 @@ export default {
           basemap: 'satellite',
         });
 
-        axios.get(`api/map-geojson?id=${this.project.id}&type=tapak&step=ka&limit=1`)
+        axios.get(`api/map-geojson?id=${this.project.id}`)
           .then((response) => {
             response.data.forEach((item) => {
               const getType = JSON.parse(item.feature_layer);
+              const propType = getType.features[0].properties.type;
               const propFields = getType.features[0].properties.field;
-              const blob = new Blob([item.feature_layer], {
-                type: 'application/json',
-              });
-              const rendererTapak = {
-                type: 'simple',
-                field: '*',
-                symbol: {
-                  type: 'simple-fill',
-                  color: [200, 0, 0, 1],
-                  outline: {
-                    color: [200, 0, 0, 1],
-                    width: 2,
-                  },
-                },
-              };
-              const url = URL.createObjectURL(blob);
-              const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
-                outFields: ['*'],
-                visible: true,
-                title: 'Layer Tapak Proyek',
-                renderer: rendererTapak,
-                opacity: 0.7,
-                popupTemplate: popupTemplate(propFields),
-              });
-              this.mapView.on('layerview-create', (event) => {
-                this.mapView.goTo({
-                  target: geojsonLayerArray.fullExtent,
+              const propStyles = getType.features[0].properties.styles;
+              const step = getType.features[0].properties.step;
+
+              // Tapak
+              if (propType === 'tapak' && step === 'ka') {
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: urlBlob(item.feature_layer),
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Tapak Proyek',
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
                 });
-              });
-              // if (layerTapak !== null) {
-              //   map.layers.remove(layerTapak);
-              // }
-              // layerTapak = geojsonLayerArray;
-              map.add(geojsonLayerArray);
+
+                this.mapView.on('layerview-create', async(event) => {
+                  await this.mapView.goTo({
+                    target: geojsonLayerArray.fullExtent,
+                  });
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+              }
+
+              // Pemantauan
+              if (propType === 'pemantauan') {
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: urlBlob(item.feature_layer),
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Titik Pemantauan',
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+              }
+
+              // Area Pemantauan
+              if (propType === 'area-pemantauan') {
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: urlBlob(item.feature_layer),
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Area Pemantauan',
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+              }
+
+              // Pengelolaan
+              if (propType === 'pengelolaan') {
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: urlBlob(item.feature_layer),
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Titik Pengelolaan',
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+              }
+
+              // Area Pengelolaan
+              if (propType === 'area-pengelolaan') {
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: urlBlob(item.feature_layer),
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Area Pengelolaan',
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+              }
+              map.addMany(this.mapGeojsonArrayProject);
             });
           });
 
@@ -413,12 +460,6 @@ export default {
           center: [115.287, -1.588],
           zoom: 6,
         });
-        this.$parent.mapView = this.mapView;
-
-        const attribution = new Attribution({
-          view: this.mapView,
-        });
-        this.mapView.ui.add(attribution, 'manual');
 
         const legend = new Legend({
           view: this.mapView,

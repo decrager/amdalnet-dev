@@ -27,7 +27,6 @@ export default {
   },
   computed: {
     getStep() {
-      console.log(this.$store.getters.step);
       return this.$store.getters.step;
     },
   },
