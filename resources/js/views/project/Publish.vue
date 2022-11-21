@@ -386,8 +386,8 @@ export default {
                   popupTemplate: popupTemplate(propFields),
                 });
 
-                this.mapView.on('layerview-create', async(event) => {
-                  await this.mapView.goTo({
+                mapView.on('layerview-create', async(event) => {
+                  await mapView.goTo({
                     target: geojsonLayerArray.fullExtent,
                   });
                 });
@@ -454,7 +454,7 @@ export default {
             });
           });
 
-        this.mapView = new MapView({
+        const mapView = new MapView({
           container: 'mapView',
           map: map,
           center: [115.287, -1.588],
@@ -462,11 +462,11 @@ export default {
         });
 
         const legend = new Legend({
-          view: this.mapView,
+          view: mapView,
           container: document.createElement('div'),
         });
         const layerList = new LayerList({
-          view: this.mapView,
+          view: mapView,
           container: document.createElement('div'),
           listItemCreatedFunction: this.defineActions,
         });
@@ -474,21 +474,21 @@ export default {
         layerList.on('trigger-action', (event) => {
           const id = event.action.id;
           if (id === 'full-extent') {
-            this.mapView.goTo({
+            mapView.goTo({
               target: event.item.layer.fullExtent,
             });
           }
         });
 
         const legendExpand = new Expand({
-          view: this.mapView,
+          view: mapView,
           content: legend.domNode,
           expandIconClass: 'esri-icon-collection',
           expandTooltip: 'Legend',
         });
 
-        this.mapView.ui.add(legendExpand, 'bottom-left');
-        this.mapView.ui.add(layerList, 'top-right');
+        mapView.ui.add(legendExpand, 'bottom-left');
+        mapView.ui.add(layerList, 'top-right');
       } else {
         const map = new Map({
           basemap: 'satellite',
