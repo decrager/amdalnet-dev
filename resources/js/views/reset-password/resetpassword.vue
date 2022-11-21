@@ -2,17 +2,30 @@
   <div class="resetpass">
     <div class="resetpass-container">
       <div class="resetpass-content">
-        <el-form class="resetpass-form" label-position="left">
+        <el-form class="resetpass-form" label-position="left" @submit.prevent="reset" @keydown="form.onKeydown($event)">
+          <alert-success :form="form" :message="status" />
+
           <div class="title-wrap">
-            <h3 class="title">Password Baru</h3>
+            <h3 class="title">Reset Password</h3>
           </div>
-          <el-form-item prop="newpassword">
+          <el-form-item prop="email">
+            <span class="svg-container">
+              <svg-icon icon-class="email" />
+            </span>
+            <el-input
+              v-model="form.email"
+              name="email"
+              placeholder="Email"
+              type="email"
+            />
+          </el-form-item>
+          <el-form-item prop="password">
             <span class="svg-container">
               <svg-icon icon-class="password" />
             </span>
             <el-input
-              v-model="password"
-              name="newpassword"
+              v-model="form.password"
+              name="password"
               placeholder="Password Baru"
               :type="pwdType"
             />
@@ -20,19 +33,22 @@
               <svg-icon icon-class="eye" />
             </span>
           </el-form-item>
-          <el-form-item prop="konfirmpassword">
+          <el-form-item prop="password_confirmation">
             <span class="svg-container">
               <svg-icon icon-class="password" />
             </span>
             <el-input
-              v-model="passwordkonfirm"
-              name="konfirmpassword"
+              v-model="form.password_confirmation"
+              name="password_confirmation"
               placeholder="Konfirmasi Password"
               :type="pwdType"
             />
             <span class="show-pwd" @click="showPwd">
               <svg-icon icon-class="eye" />
             </span>
+          </el-form-item>
+          <el-form-item prop="token">
+            <el-input v-model="form.token" name="token" type="hidden" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" style="width:100%;">
@@ -48,20 +64,32 @@
 <script>
 export default {
   name: 'NewPass',
-  data() {
-    return {
+  data: () => ({
+    status: '',
+    pwdType: 'password',
+    form: {
+      token: '',
+      email: '',
       password: '',
-      passwordkonfirm: '',
-      pwdType: 'password',
-    };
+      password_confirmation: '',
+    },
+  }),
+  created(){
+    this.form.email = this.$route.query.email;
+    this.form.token = this.$route.params.token;
   },
   methods: {
-    showPwd() {
+    showPwd(){
       if (this.pwdType === 'password') {
         this.pwdType = '';
       } else {
         this.pwdType = 'password';
       }
+    },
+    async reset(){
+      // const { data } = await this.form.post('/api/password/reset')
+      // this.status = data.status
+      // this.form.reset()
     },
   },
 };
