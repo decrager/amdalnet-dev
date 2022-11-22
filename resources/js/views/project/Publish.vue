@@ -335,7 +335,6 @@ export default {
       }
 
       this.tableData = [...mainArr, ...suppArr];
-      console.log({ gune: this.tableData });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.scale) {
@@ -457,8 +456,13 @@ export default {
         fr.onload = (event) => {
           const base = event.target.result;
           shp(base).then((data) => {
-            this.geomFromGeojson = data.features[0].geometry;
-            this.geomProperties = data.features[0].properties;
+            this.geomFromGeojson = [];
+            this.geomProperties = [];
+
+            data.features.map((value, index) => {
+              this.geomFromGeojson.push(value.geometry);
+              this.geomProperties.push(value.properties);
+            });
 
             const blob = new Blob([JSON.stringify(data)], {
               type: 'application/json',
@@ -773,7 +777,6 @@ export default {
           value: this.project.address[0].district,
         },
       ];
-      console.log({ gunk: this.project });
     },
   },
 };
