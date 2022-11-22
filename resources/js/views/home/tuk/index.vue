@@ -98,7 +98,6 @@ export default {
       //     team = this.tukName(
       //       x.authority
       //     );
-      //     // console.log({ gun: team });
       //   }
       //   x.team = team;
       //   return x;

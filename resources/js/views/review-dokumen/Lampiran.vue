@@ -128,7 +128,6 @@ export default {
       requiredDoc: 'requiredDoc',
     }),
     isRequiredDocUklUpl() {
-      console.log({ gun: this.requiredDoc });
       return this.requiredDoc === 'AMDAL';
     },
   },

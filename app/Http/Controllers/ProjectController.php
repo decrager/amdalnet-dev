@@ -392,7 +392,6 @@ class ProjectController extends Controller
             } catch (\Throwable $th) {
                 //throw $th;
             }
-
             if ($files = $request->file('fileMap')) {
                 // check if fileMap exists in DB
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
@@ -1333,6 +1332,8 @@ class ProjectController extends Controller
         $document->setValue('deskripsi_lokasi', trim(html_entity_decode($dataProject->location_desc ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
         $document->setValue('tanggal', Carbon::parse(now())->translatedFormat('d F Y'));
         $document->setValue('jam', now()->format('H:i:s'));
+        $document->setValue('tanggal_dibuat', $dataProject->created_at->translatedFormat('d F Y'));
+        $document->setValue('jam_dibuat', $dataProject->created_at->toTimeString());
         $document->setImageValue('gambar_map', ['path' => $request->imageUrl, 'width' => 150, 'height' => 150, 'ratio' => true]);
 
         $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 80, 'height' => 80]);
@@ -1344,7 +1345,7 @@ class ProjectController extends Controller
         $listSubProject = array_values($dataProject->listSubProject->sortByDesc('type')->toArray());
         foreach ($listSubProject as $key => $subProject) {
             $dataDaftarKegiatan[$key]['no'] = $numberSubProject++;
-            $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['biz_name'] ?? '-') . ' ' . $dataProject->kbli . ' - Sektor ' . $dataProject->sector;
+            $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['biz_name'] ?? '-') . ' ' . $dataProject->kbli . ' - Sektor ' . $subProject['sector_name'];
             $dataDaftarKegiatan[$key]['jenis_keg'] = ucwords($subProject['type'] ?? '-');
             $dataDaftarKegiatan[$key]['nama_kegiatan'] = $subProject['name'] ?? '-';
             $dataDaftarKegiatan[$key]['skala_besaran'] = ($subProject['scale'] ?? '0') . ' ' . str_replace('(menengah tinggi)', '', $subProject['scale_unit']);
