@@ -33,6 +33,9 @@
         >
           Export to .DOCX
         </a>
+        <el-button type="primary" @click="regenerateDocx">
+          Buat ulang dokumen
+        </el-button>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
@@ -130,6 +133,15 @@ export default {
           filename: this.projectName,
         },
       });
+    },
+    regenerateDocx() {
+      this.loading = true;
+      axios
+        .post(`/api/dokumen-ukl-upl/${this.$route.params.id}?regenerate=true`)
+        .then(() => {
+          this.getData();
+          this.loading = false;
+        });
     },
   },
 };

@@ -491,7 +491,7 @@ class ExportDocument extends Controller
         $project = Project::findOrFail($id_project);
 
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->first();
-        if($document_attachment) {
+        if($document_attachment && !request()->has('regenerate')) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
             return [
                 'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
