@@ -33,7 +33,7 @@
         >
           Export to .DOCX
         </a>
-        <el-button type="primary" @click="regenerateDocx">
+        <el-button :loading="loading" type="primary" @click="regenerateDocx">
           Buat ulang dokumen
         </el-button>
       </div>
@@ -137,7 +137,7 @@ export default {
     regenerateDocx() {
       this.loading = true;
       axios
-        .post(`/api/dokumen-ukl-upl/${this.$route.params.id}?regenerate=true`)
+        .get(`/api/dokumen-ukl-upl/${this.$route.params.id}?regenerate=true`)
         .then(() => {
           this.getData();
           this.loading = false;
