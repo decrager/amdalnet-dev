@@ -54,7 +54,7 @@ class FormulatorController extends Controller
         }
 
         return FormulatorResource::collection(
-            Formulator::where(function ($query) use ($request) {
+           $formulator =  Formulator::with('user')->where(function ($query) use ($request) {
                 if ($request->active && ($request->active == 'true')) {
                     $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
                         ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
