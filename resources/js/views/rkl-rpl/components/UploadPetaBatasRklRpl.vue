@@ -1,7 +1,12 @@
 <template>
   <el-form label-position="top" label-width="100px">
     <div style="margin-bottom: 10px;">
-      <a href="/sample_map/template_shp_titik_kelola_pantau_amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+      <a href="/sample_map/template_shp_titik_kelola_pantau_amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh SHP Titik Kelola/ Pantau</a>
+      <a href="/JUKNIS_DATA_SPASIAL_AMDALNET_TITIK_KELOLA_PANTAU.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta Titik Kelola/ Pantau</a>
+    </div>
+    <div style="margin-bottom: 10px;">
+      <a href="/sample_map/template_shp_area_kelola_pantau_amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh SHP Lokasi Kelola/ Pantau</a>
+      <a href="/JUKNIS_DATA_SPASIAL_AMDALNET_AREA_KELOLA_PANTAU.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta Lokasi Kelola/ Pantau</a>
     </div>
     <!-- ekologis -->
     <el-form-item label="Peta Titik Pengelolaan" :required="required">
@@ -1299,10 +1304,23 @@ export default {
 .download__sample {
   color: white;
   padding: 7px;
-  background-color: orange;
+  background-color: rgb(33, 94, 4);
   border-radius: 4px;
   font-weight: 500;
   font-size: 13px;
+}
+.download__juknis {
+  color: white;
+  padding: 5px;
+  background-color: #dd8705;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.download__juknis:hover {
+  background-color: #af6900;
+  color: white;
 }
 
 .download__sample:hover {
