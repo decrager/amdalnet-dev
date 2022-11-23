@@ -861,7 +861,8 @@ class ExportDocument extends Controller
             if($imp->envManagePlan->forms) {
                 if($imp->envManagePlan->forms->first()) {
                     foreach($imp->envManagePlan->forms as $uk) {
-                        $ukl_bentuk .= "- {$uk->description} </w:t><w:p/><w:t>";
+                        $desc = htmlspecialchars($uk->description);
+                        $ukl_bentuk .= "- {$desc} </w:t><w:p/><w:t>";
                     }
                 }
             }
@@ -869,7 +870,8 @@ class ExportDocument extends Controller
             if($imp->envManagePlan->locations) {
                 if($imp->envManagePlan->locations->first()) {
                     foreach($imp->envManagePlan->locations as $uk)  {
-                        $ukl_lokasi .= "- {$uk->description} </w:t><w:p/><w:t>";
+                        $desc = htmlspecialchars($uk->description);
+                        $ukl_lokasi .= "- {$desc} </w:t><w:p/><w:t>";
                     }
                 }
             }
@@ -879,7 +881,8 @@ class ExportDocument extends Controller
             if($imp->envMonitorPlan->forms) {
                if($imp->envMonitorPlan->forms->first()) {
                    foreach($imp->envMonitorPlan->forms as $up) {
-                       $upl_bentuk .= "- {$up->description} </w:t><w:p/><w:t>";
+                        $desc = htmlspecialchars($up->description);
+                        $upl_bentuk .= "- {$desc} </w:t><w:p/><w:t>";
                    }
                }
             }
@@ -887,7 +890,8 @@ class ExportDocument extends Controller
             if($imp->envMonitorPlan->locations) {
                 if($imp->envMonitorPlan->locations->first()) {
                     foreach($imp->envMonitorPlan->locations as $up) {
-                        $upl_lokasi .= "- {$up->description} </w:t><w:p/><w:t>";
+                        $desc = htmlspecialchars($up->description);
+                        $upl_lokasi .= "- {$desc} </w:t><w:p/><w:t>";
                     }
                 }
             }
