@@ -7,7 +7,7 @@ class ListRender
     {
         $replaced_text = self::replaceHtmlDefaultList('ol', $text, $font_style, $font_size);
         $replaced_text = self::replaceHtmlDefaultList('ul', $replaced_text, $font_style, $font_size);
-        $replaced_text = self::stripSymbolExceptHtmlTags($replaced_text);
+        $replaced_text = self::escapeSymbolExceptHtmlTags($replaced_text);
         return $replaced_text;
     }
 
@@ -56,9 +56,10 @@ class ListRender
         return $result;
     }
 
-    private static function stripSymbolExceptHtmlTags($text)
+    private static function escapeSymbolExceptHtmlTags($text)
     {
-        $result = preg_replace('/<(?=[^>]*(?:<|$))/', '&lt;', $text);
+        $result = str_replace('&amp;', '&amp;amp;', $text);
+        $result = preg_replace('/<(?=[^>]*(?:<|$))/', '&lt;', $result);
         return preg_replace('/((?:^|>)[^<]*?)>/', '\1&gt;', $result);
     }
 }

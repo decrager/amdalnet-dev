@@ -82,6 +82,9 @@
               <li>
                 <a href="https://amdal.menlhk.go.id/info_persuratan" target="_blank">Informasi Persuratan</a>
               </li>
+              <li>
+                <a href="https://amdal.menlhk.go.id/ukl_upl_mr" target="_blank">Data SPPL dan UKL-UPL Menengah Rendah</a>
+              </li>
             </ul>
           </li>
           <li class="nav__item">
