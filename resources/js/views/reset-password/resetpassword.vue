@@ -17,6 +17,7 @@
               name="email"
               placeholder="Email"
               type="email"
+              disabled
             />
           </el-form-item>
           <el-form-item prop="password">
@@ -47,11 +48,9 @@
               <svg-icon icon-class="eye" />
             </span>
           </el-form-item>
-          <el-form-item prop="token">
-            <el-input v-model="form.token" name="token" type="hidden" />
-          </el-form-item>
+          <input v-model="form.token" name="token" type="hidden">
           <el-form-item>
-            <el-button type="primary" style="width:100%;">
+            <el-button type="primary" style="width:100%;" @click="reset">
               Submit
             </el-button>
           </el-form-item>
@@ -62,6 +61,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'NewPass',
   data: () => ({
@@ -76,7 +77,7 @@ export default {
   }),
   created(){
     this.form.email = this.$route.query.email;
-    this.form.token = this.$route.params.token;
+    this.form.token = this.$route.query.token;
   },
   methods: {
     showPwd(){
@@ -87,9 +88,30 @@ export default {
       }
     },
     async reset(){
-      // const { data } = await this.form.post('/api/password/reset')
-      // this.status = data.status
-      // this.form.reset()
+      axios
+        .post(`/api/auth/reset-password`, this.form)
+        .then((response) => {
+          this.status = response.data.message;
+          this.$message({
+            message: this.status,
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          this.$router.push('/login');
+        }).catch((error) => {
+          if (error.response) {
+            const errors = error.response.data.errors;
+            Object.keys(errors).forEach((key) => {
+              errors[key].forEach((message) => {
+                this.$message({
+                  message,
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
+              });
+            });
+          }
+        });
     },
   },
 };

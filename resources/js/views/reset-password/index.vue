@@ -44,11 +44,29 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      const response = axios.post('forgot', {
+      axios.post('/api/auth/forgot-password', {
         email: this.email,
+      }).then((response) => {
+        this.status = response.data.message;
+        this.$message({
+          message: this.status,
+          type: 'success',
+          duration: 5 * 1000,
+        });
+      }).catch((error) => {
+        if (error.response) {
+          const errors = error.response.data.errors;
+          Object.keys(errors).forEach((key) => {
+            errors[key].forEach((message) => {
+              this.$message({
+                message,
+                type: 'error',
+                duration: 5 * 1000,
+              });
+            });
+          });
+        }
       });
-
-      console.log(response);
     },
   },
 };

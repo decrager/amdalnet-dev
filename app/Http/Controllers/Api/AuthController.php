@@ -294,8 +294,13 @@ class AuthController extends BaseController
         );
 
         return $status === Password::RESET_LINK_SENT
-                    ? back()->with(['status' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
+                    ? response()->json([
+                        'status' => 200,
+                        'message' => 'Silahkan cek email anda untuk melanjutkan reset password.',
+                    ], 200) : response()->json([
+                        'status' => 500,
+                        'errors' => ['email' => [__($status)]]
+                    ], 500);
     }
 
     public function resetPassword(Request $request)
@@ -319,8 +324,13 @@ class AuthController extends BaseController
             }
         );
 
-        return $status === Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withErrors(['email' => [__($status)]]);
+        // return json
+        return $status === Password::PASSWORD_RESET ? response()->json([
+            'status' => 200,
+            'message' => 'Password berhasil diubah. Silahkan login.',
+        ], 200) : response()->json([
+            'status' => 500,
+            'errors' => ['email' => [__($status)]]
+        ], 500);
     }
 }
