@@ -268,7 +268,11 @@ export default {
         });
 
         sproject.listSubProjectParams = data.map((i) => {
-          return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit };
+          if (i.unit === 'semua besaran') {
+            return { param: i.param, id_param: i.id_param, id_unit: i.id_unit };
+          } else {
+            return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit };
+          }
         });
       } else {
         const { value } = await kbliResource.get(sproject.biz_type);
@@ -278,7 +282,11 @@ export default {
           businessType: true,
         });
         sproject.listSubProjectParams = data.map((i) => {
-          return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit };
+          if (i.unit === 'semua besaran') {
+            return { param: i.param, id_param: i.id_param, id_unit: i.id_unit };
+          } else {
+            return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit };
+          }
         });
       }
     },

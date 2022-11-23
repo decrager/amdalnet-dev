@@ -44,7 +44,19 @@
 
       <el-table-column label="Satuan">
         <template slot-scope="scope">
-          {{ scope.row.scale_unit }}
+          <div v-if="scope.row.param === 'semua besaran'">
+            <el-input
+              v-model="scope.row.scale_unit"
+              size="mini"
+              type="text"
+              class="edit-input"
+              :disabled="!scope.row.used"
+              @blur="handleBlur(scope.row)"
+            />
+          </div>
+          <div v-else>
+            {{ scope.row.scale_unit }}
+          </div>
         </template>
       </el-table-column>
 
@@ -122,6 +134,7 @@ export default {
     // },
     handleUsedChange(value) {
       delete value.scale;
+      delete value.scale_unit;
       delete value.result;
       delete value.amdal_type;
       // this.handleRefreshDialog();
