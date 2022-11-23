@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\LaravueController;
 use App\Http\Controllers\WebgisController;
@@ -25,3 +26,6 @@ Route::post('upload-map', [WebgisController::class, 'store']);
 Route::group(['middleware' => 'web'], function () {
     Route::get(env('LARAVUE_PATH'), [LaravueController::class, 'index'])->where('any', '.*')->name('laravue');
 });
+
+Route::get('auth/new-password',  [AuthController::class, 'resetPasswordRedirect'])->name('password.reset');
+Route::get('#/oss/new-password',  [AuthController::class, 'resetPasswordRedirect'])->name('password.reset.redirect');

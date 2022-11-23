@@ -64,6 +64,8 @@ Route::namespace('Api')->group(function () {
     Route::post('auth/login', 'AuthController@login');
     // check user by email
     Route::get('auth/is-email-registered', 'AuthController@isEmailRegistered');
+    Route::post('auth/forgot-password', 'AuthController@forgotPassword');
+    Route::post('auth/reset-password', 'AuthController@resetPassword');
     // OSS routes
     Route::get('auth/userinfo-oss', 'AuthController@getUserInfo');
     Route::get('auth/receive-token', 'AuthController@receiveToken');
