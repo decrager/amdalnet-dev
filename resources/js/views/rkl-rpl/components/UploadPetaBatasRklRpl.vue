@@ -979,36 +979,20 @@ export default {
       this.isMapUploaded = true;
     },
     handleSubmit(){
-      if (this.$refs.refPengelolaanSHP.files[0] !== undefined && this.$refs.refPengelolaanPDF.files[0] === undefined) {
-        this.$alert('Silahkan Unggah Peta Titik Pengelolaan PDF', 'Perhatian', {
+      if (this.$refs.refPengelolaanPDF.files[0] === undefined && this.peta_pengelolaan_pdf_name === null) {
+        this.$alert('Silahkan Unggah Peta Pengelolaan PDF', 'Perhatian', {
           center: true,
         });
-      } else if (this.$refs.refPengelolaanSHP.files[0] === undefined && this.$refs.refPengelolaanPDF.files[0] !== undefined) {
-        this.$alert('Silahkan Unggah Peta Titik Pengelolaan SHP', 'Perhatian', {
+      } else if (this.$refs.refPengelolaanSHP.files[0] === undefined && this.$refs.refAreaPengelolaanSHP.files[0] === undefined && this.peta_pengelolaan_shp_name === null && this.peta_area_pengelolaan_shp_name === null) {
+        this.$alert('Silahkan Unggah Peta Pengelolaan dan/ Lokasi Pengelolaan SHP', 'Perhatian', {
           center: true,
         });
-      } else if (this.$refs.refAreaPengelolaanSHP.files[0] !== undefined && this.$refs.refAreaPengelolaanPDF.files[0] === undefined) {
-        this.$alert('Silahkan Unggah Peta Lokasi Pengelolaan PDF', 'Perhatian', {
+      } else if (this.$refs.refPemantauanPDF.files[0] === undefined && this.peta_pemantauan_pdf_name === null) {
+        this.$alert('Silahkan Unggah Peta Pemantauan PDF', 'Perhatian', {
           center: true,
         });
-      } else if (this.$refs.refAreaPengelolaanSHP.files[0] === undefined && this.$refs.refAreaPengelolaanPDF.files[0] !== undefined) {
-        this.$alert('Silahkan Unggah Peta Lokasi Pengelolaan SHP', 'Perhatian', {
-          center: true,
-        });
-      } else if (this.$refs.refPemantauanSHP.files[0] !== undefined && this.$refs.refPemantauanPDF.files[0] === undefined) {
-        this.$alert('Silahkan Unggah Peta Titik Pemantauan PDF', 'Perhatian', {
-          center: true,
-        });
-      } else if (this.$refs.refPemantauanSHP.files[0] === undefined && this.$refs.refPemantauanPDF.files[0] !== undefined) {
-        this.$alert('Silahkan Unggah Peta Titik Pemantauan SHP', 'Perhatian', {
-          center: true,
-        });
-      } else if (this.$refs.refAreaPemantauanSHP.files[0] !== undefined && this.$refs.refAreaPemantauanPDF.files[0] === undefined) {
-        this.$alert('Silahkan Unggah Peta Lokasi Pemantauan PDF', 'Perhatian', {
-          center: true,
-        });
-      } else if (this.$refs.refAreaPemantauanSHP.files[0] === undefined && this.$refs.refAreaPemantauanPDF.files[0] !== undefined) {
-        this.$alert('Silahkan Unggah Peta Lokasi Pemantauan SHP', 'Perhatian', {
+      } else if (this.$refs.refPemantauanSHP.files[0] === undefined && this.$refs.refAreaPemantauanSHP.files[0] === undefined && this.peta_pemantauan_shp_name === null && this.peta_area_pemantauan_shp_name === null) {
+        this.$alert('Silahkan Unggah Peta Pemantauan dan/ Lokasi Pemantauan SHP', 'Perhatian', {
           center: true,
         });
       } else {
@@ -1020,7 +1004,6 @@ export default {
           proxyUrl: 'proxy/proxy.php',
           urlPrefix: 'https://amdalgis.menlhk.go.id/',
         });
-        console.log({ gunx: this.files });
         this.files.forEach((e, i) => {
           formData.append('files[]', e[0]);
           formData.append('params[]', JSON.stringify(this.param[i]));

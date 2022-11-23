@@ -456,13 +456,15 @@ export default {
         fr.onload = (event) => {
           const base = event.target.result;
           shp(base).then((data) => {
-            this.geomFromGeojson = [];
-            this.geomProperties = [];
+            this.geomFromGeojson = data.features[0].geometry;
+            this.geomProperties = data.features[0].properties;
+            // this.geomFromGeojson = [];
+            // this.geomProperties = [];
 
-            data.features.map((value, index) => {
-              this.geomFromGeojson.push(value.geometry);
-              this.geomProperties.push(value.properties);
-            });
+            // data.features.map((value, index) => {
+            //   this.geomFromGeojson.push(value.geometry);
+            //   this.geomProperties.push(value.properties);
+            // });
 
             const blob = new Blob([JSON.stringify(data)], {
               type: 'application/json',
