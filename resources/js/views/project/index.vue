@@ -325,15 +325,15 @@
                 >
                   Unduh SPPL
                 </el-button>
-                <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc === 'UKL-UPL' && scope.row.result_risk === 'Menengah Rendah' && !isPemerintah"
+                <!-- <el-button
+                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc === 'UKL-UPL' && scope.row.result_risk === 'Menengah Rendah' && scope.row.oss_risk === null || scope.row.oss_risk !== 'Tinggi') && !isPemerintah"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleDownloadPKPLHFromOSS(scope.row)"
                 >
                   Unduh PKPLH Otomatis
-                </el-button>
+                </el-button> -->
                 <el-button
                   v-if="isAmdal(scope.row) && isPJM(scope.row) && isMeetReportAccepted(scope.row)"
                   href="#"
@@ -1518,7 +1518,7 @@ export default {
         if (this.initiator.user_type === 'Pemerintah') {
           return true;
         } else {
-          if (project.risk_level !== 'Menengah Rendah') {
+          if (project.oss_risk !== null) {
             return true;
           }
         }
