@@ -81,6 +81,7 @@ export default {
       projectName: '',
       idProject: 0,
       urlPdf: null,
+      createTime: null,
       showDocument: false,
       docxUrl: null,
       downloadDocxPath: '',
@@ -114,6 +115,7 @@ export default {
       );
       this.docxUrl = data.data.docx_url;
       this.urlPdf = data.data.pdf_url;
+      this.createTime = data.data.create_time;
       this.showDocument = true;
       this.projectName = data.data.file_name;
       this.loading = false;
@@ -131,6 +133,7 @@ export default {
         params: {
           id: this.$route.params.id,
           filename: this.projectName,
+          createTime: this.createTime,
         },
       });
     },
