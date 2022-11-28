@@ -94,11 +94,23 @@
       <el-row :gutter="4">
         <el-col :span="12">
           <h2>Hasil Penapisan Rencana Kegiatan</h2>
+          <div role="alert" class="el-alert el-alert--info is-light">
+            <i class="el-alert__icon el-icon-warning is-big" />
+            <div class="el-alert__content"><span class="el-alert__title is-bold">Dokumen yang diupload dapat berupa :</span>
+              <p class="el-alert__description">
+                Persetujuan Kesesuaian Kegiatan Pemanfaatan Ruang (PKKPR) yang diterbitkan OSS atau
+                Rekomendasi Kesesuaian Tata Ruang yang diterbitkan oleh Kementerian ATR/BPN atau
+                Pernyataan Mandiri Kesesuaian Tata Ruang (untuk jenis Usaha Mikro Kecil / UMK). <br>
+                Catatan: Dokumen yang diupload masih bisa diperbarui pada tahap penyusunan Formulir KA, ANDAL atau UKL-UPL
+              </p>
+            </div>
+          </div>
+          <br><br>
           <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
             <el-col :span="12">{{ project.registration_no || "Belum Mempunyai" }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
             <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
-          <el-row v-show="isRiskShow" style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
+          <el-row v-show="isRiskShow" style="padding-bottom: 16px">
             <el-col :span="12">{{ project.oss_risk }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
             <el-col :span="12">{{ project.authority }}</el-col></el-row>
