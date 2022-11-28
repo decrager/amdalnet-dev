@@ -492,14 +492,15 @@ class ExportDocument extends Controller
 
         $listSubProject = array_values($project->listSubProject->toArray());
 
-        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->first();
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->orderBy('created_at', 'desc')->first();
         if($document_attachment && !request()->has('regenerate')) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
             return [
                 'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
                 'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
                 'pdf_url' => $pdf_url,
-                'docx_url' => $document_attachment->attachment
+                'docx_url' => $document_attachment->attachment,
+                'create_time' => $document_attachment->created_at->toTimeString()
             ];
         }
 
@@ -803,7 +804,8 @@ class ExportDocument extends Controller
             'file_name' => $save_file_name,
             'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
             'pdf_url' => $pdf_url,
-            'docx_url' => $document_attachment->attachment
+            'docx_url' => $document_attachment->attachment,
+            'create_time' => $document_attachment->created_at->toTimeString()
         ];
     }
 
