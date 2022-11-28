@@ -134,7 +134,7 @@ export default {
     // },
     handleUsedChange(value) {
       delete value.scale;
-      delete value.scale_unit;
+      // delete value.scale_unit;
       delete value.result;
       delete value.amdal_type;
       // this.handleRefreshDialog();
