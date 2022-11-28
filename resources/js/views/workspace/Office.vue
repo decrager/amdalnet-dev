@@ -1,14 +1,21 @@
 <template>
-  <div class="app-container" style="position: relative;">
-    <div id="etherpad-wrapper" style="height: 90%; width: 100%;">
+  <div class="app-container" style="position: relative; display: flex; flex-direction: row;">
+    <div id="etherpad-wrapper" style="height: 100%; width: 100%;">
       <div id="placeholder" />
     </div>
-    <div class="uji-collab" style="border-radius: 1rem; bottom: 1rem; right: 0rem; left: 0rem; margin-bottom: 10vh; position: absolute; width: 100%;">
-      <div style="align-content: center; justify-content: center; display: flex;">
-        <el-button v-if="!showForm" @click="showHide">Tampilkan</el-button>
-        <el-button v-if="showForm" @click="showHide">Sembunyikan</el-button>
+    <div class="uji-collab" style="margin-bottom: 10vh; max-width: 20%; height: 100%; background-color: #eeeee5;">
+      <div style="align-content: center; justify-content: center; display: flex; position: absolute; right: 1.5rem; top: 1.7rem;">
+        <el-button v-if="!showForm" style="border: 0; color: #363636; background-color: #bababa;" @click="showHide">&lt;</el-button>
+        <el-button v-if="showForm" style="border: 0; color: #363636; background-color: #bababa;" @click="showHide">&gt;</el-button>
       </div>
-      <div v-if="showForm" style="background-color: #eeeee5; padding-top: 0.5rem; padding-right: 1rem; padding-left: 1rem;">
+      <div v-if="showTable">
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-columm prop="no" label="no" width="180" />
+          <el-table-columm prop="no" label="no" width="180" />
+          <el-table-columm prop="no" label="no" width="180" />
+        </el-table>
+      </div>
+      <!-- <div v-if="showForm" style="background-color: #eeeee5; padding-top: 0.5rem; padding-right: 1rem; padding-left: 1rem;">
         <div style="display: flex; flex-direction: row; margin-bottom: 1vh; justify-content: space-between;">
           <el-select
             v-if="isTUK"
@@ -91,6 +98,36 @@
               </el-collapse-item>
             </el-collapse>
           </div>
+        </div>
+      </div> -->
+      <div v-if="showForm" style="background-color: #404040; padding-top: 3rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
+        <div style="background-color: #555555;">
+          <div style="display: flex; align-items: center; padding: 5px; justify-content: space-between;">
+            <div style="max-width: 50%; padding-right: 10px; color: #fff; font-weight: bold;">
+              <span>Halaman</span>
+            </div>
+            <div style="max-width: 50%;">
+              <el-input v-model="rekaps.halaman_tuk" />
+            </div>
+          </div>
+        </div>
+        <div style="background-color: #555555; padding-top: 5px;">
+          <div style="padding: 5px; background-color: #39773b; color: #ffffff; font-weight: bold; text-align: center;">
+            <span>Saran/ Pendapat/ Tanggapan</span>
+          </div>
+          <div style="padding: 5px;">
+            <TextEditor
+              v-model="rekaps.saran_pendapat_tanggapan"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="['bold italic underline bullist numlist fullscreen']"
+              :height="50"
+            />
+          </div>
+        </div>
+        <div style="background-color: #555555; padding-top: 1rem;">
+          <el-button v-if="showForm" style="border: 0; color: #363636; background-color: #bababa; width: 100%;" @click="showHide">Simpan</el-button>
         </div>
       </div>
     </div>
