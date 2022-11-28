@@ -488,7 +488,9 @@ class ExportDocument extends Controller
 
 
         Carbon::setLocale('id');
-        $project = Project::findOrFail($id_project);
+        $project = Project::with('listSubProject')->findOrFail($id_project);
+
+        $listSubProject = array_values($project->listSubProject->toArray());
 
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->first();
         if($document_attachment && !request()->has('regenerate')) {
@@ -511,7 +513,7 @@ class ExportDocument extends Controller
         $pic = $project->initiator->pic;
         $pic_position = $project->initiator->pic_role;
         $district = '';
-        $project_sector = $project->sector;
+        $project_sector = $listSubProject[0]['sector_name'];
         $project_title = $project->project_title;
         $project_kbli = '';
         $project_scale = $project->scale .  ' ' . $project->scale_unit;
