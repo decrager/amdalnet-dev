@@ -393,40 +393,74 @@ class ProjectController extends Controller
                 //throw $th;
             }
             if ($files = $request->file('fileMap')) {
-                // check if fileMap exists in DB
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
                 $files->storePubliclyAs('public/map/', $mapName);
-                ProjectMapAttachment::updateOrCreate(
-                    [
+
+                $properties = json_decode($request->geomProperties, true);
+                foreach (json_decode($request->geomFromGeojson) as $key => $kelolaGeom) {
+                    $encode = json_encode($kelolaGeom);
+                    $map = ProjectMapAttachment::firstOrNew([
                         'id_project' => $project->id,
+                        'file_type' => 'SHP',
                         'attachment_type' => 'tapak',
+                        'original_filename' => 'Peta Tapak',
+                        'stored_filename' => $mapName,
                         'step' => 'ka',
-                    ],
-                    [
-                        'file_type' => 'SHP',
-                        'original_filename' => 'Peta Tapak',
-                        'stored_filename' => $mapName,
-                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
-                        'properties' => $request->geomProperties,
+                        'geom' =>  DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$encode')), 4326)"),
                         'id_styles' => $request->geomStyles,
-                    ]
-                );
-                // clone for Andal
-                ProjectMapAttachment::updateOrCreate(
-                    [
+                        'properties' => json_encode($properties[$key], true),
+                    ]);
+                    $map->save();
+                }
+
+                foreach (json_decode($request->geomFromGeojson) as $key => $kelolaGeom) {
+                    $encode = json_encode($kelolaGeom);
+                    ProjectMapAttachment::firstOrNew([
                         'id_project' => $project->id,
-                        'attachment_type' => 'tapak',
-                        'step' => 'andal',
-                    ],
-                    [
                         'file_type' => 'SHP',
+                        'attachment_type' => 'tapak',
                         'original_filename' => 'Peta Tapak',
                         'stored_filename' => $mapName,
-                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
-                        'properties' => $request->geomProperties,
+                        'step' => 'andal',
+                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$encode')), 4326)"),
                         'id_styles' => $request->geomStyles,
-                    ]
-                );
+                        'properties' => json_encode($properties[$key], true),
+                    ]);
+                    $map->save();
+                }
+
+                // check if fileMap exists in DB
+                // $map = ProjectMapAttachment::updateOrCreate(
+                //     [
+                //         'id_project' => $project->id,
+                //         'attachment_type' => 'tapak',
+                //         'step' => 'ka',
+                //     ],
+                //     [
+                //         'file_type' => 'SHP',
+                //         'original_filename' => 'Peta Tapak',
+                //         'stored_filename' => $mapName,
+                //         'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                //         'properties' => $request->geomProperties,
+                //         'id_styles' => $request->geomStyles,
+                //     ]
+                // );
+                // // clone for Andal
+                // ProjectMapAttachment::updateOrCreate(
+                //     [
+                //         'id_project' => $project->id,
+                //         'attachment_type' => 'tapak',
+                //         'step' => 'andal',
+                //     ],
+                //     [
+                //         'file_type' => 'SHP',
+                //         'original_filename' => 'Peta Tapak',
+                //         'stored_filename' => $mapName,
+                //         'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                //         'properties' => $request->geomProperties,
+                //         'id_styles' => $request->geomStyles,
+                //     ]
+                // );
             }
 
             if ($files = $request->file('filePdf')) {
