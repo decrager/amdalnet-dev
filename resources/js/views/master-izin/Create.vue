@@ -256,8 +256,8 @@ export default {
   },
   methods: {
     handleUploadFile(file, fileList) {
-      if (file.raw.size > 10485760) {
-        this.$alert('File Yang Diupload Melebihi 10 MB', {
+      if (file.raw.size > 52428800) {
+        this.$alert('File Yang Diupload Melebihi 50 MB', {
           confirmButtonText: 'OK',
         });
         return;
