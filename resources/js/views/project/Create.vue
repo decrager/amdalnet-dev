@@ -351,7 +351,7 @@
                 <el-form-item
                   label="Tingkat Risiko Dari OSS"
                   prop="oss_risk"
-                >
+                ><br>
                   <el-select
                     v-model="currentProject.oss_risk"
                     placeholder="Pilih"
@@ -372,6 +372,10 @@
                   label="Hasil Kewenangan sesuai dengan Perizinan Berusaha"
                   prop="oss_authority"
                 >
+                  <div>
+                    <a href="/Panduan Penapisan.pdf" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Panduan Penapisan</a>
+                    <a href="/kewenangan Persetujuan Lingkungan Pertambangan.pdf" class="download__juknis" title="kewenangan Persetujuan Lingkungan Pertambangan" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> kewenangan Persetujuan Lingkungan Pertambangan</a>
+                  </div>
                   <el-select
                     v-model="currentProject.oss_authority"
                     placeholder="Pilih"
