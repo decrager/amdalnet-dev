@@ -119,14 +119,25 @@ class ProjectMapAttachmentController extends Controller
         foreach (json_decode($geometry) as $key => $kelolaGeom) {
             $encode = json_encode($kelolaGeom);
             if($temp->file_type === 'SHP') {
-                $map = ProjectMapAttachment::firstOrNew([
-                    'id_project' => $request->id_project,
-                    'attachment_type' => $temp->attachment_type,
-                    'file_type' => $temp->file_type,
-                    'step' => $request->step,
-                    'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$encode'), 4326)"),
-                    'properties' => json_encode($properties[$key], true),
-                ]);
+                if($temp->attachment_type === 'area-pemantauan' || $temp->attachment_type === 'area-pengelolaan') {
+                    $map = ProjectMapAttachment::firstOrNew([
+                        'id_project' => $request->id_project,
+                        'attachment_type' => $temp->attachment_type,
+                        'file_type' => $temp->file_type,
+                        'step' => $request->step,
+                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$encode')), 4326)"),
+                        'properties' => json_encode($properties[$key], true),
+                    ]);
+                } else {
+                    $map = ProjectMapAttachment::firstOrNew([
+                        'id_project' => $request->id_project,
+                        'attachment_type' => $temp->attachment_type,
+                        'file_type' => $temp->file_type,
+                        'step' => $request->step,
+                        'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$encode'), 4326)"),
+                        'properties' => json_encode($properties[$key], true),
+                    ]);
+                }
             } else {
                 $map = ProjectMapAttachment::firstOrNew([
                     'id_project' => $request->id_project,
