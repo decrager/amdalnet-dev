@@ -82,7 +82,7 @@
             placeholder="Nama Rona Lingkungan..."
           />
         </el-form-item>
-        <el-form-item v-if="isUklUpl" label="Deskripsi (Optional)">
+        <el-form-item v-if="(isUklUpl() === true)" label="Deskripsi (Optional)">
           <div v-if="isReadOnly && !isUrlAndal">
             <span v-html="data.description" />
           </div>
@@ -116,7 +116,17 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="Besaran/Skala Rona Lingkungan (Optional)">
+        <el-form-item v-if="(isUklUpl() === true)" label="Besaran/Skala Rona Lingkungan (Optional)">
+          <el-input
+            v-model="data.measurement"
+            type="textarea"
+            :disabled="isReadOnly && !isUrlAndal"
+            :autosize="{ minRows: 3, maxRows: 5}"
+            placeholder="Besaran Rona Lingkungan..."
+          />
+        </el-form-item>
+
+        <el-form-item v-else label="Besaran/Skala Rona Lingkungan">
           <el-input
             v-model="data.measurement"
             type="textarea"
@@ -291,6 +301,7 @@ export default {
     this.project_id = parseInt(this.$route.params && this.$route.params.id);
     this.options = [];
     this.initData();
+    this.isUklUpl();
   },
   methods: {
     initData(){
@@ -385,7 +396,8 @@ export default {
     },
     isUklUpl(){
       if (this.$route.name === 'FormulirUklUpl') {
-        return;
+        console.log({ gun: 'aihihihihi' });
+        return true;
       }
     },
     handleSelect(val){
