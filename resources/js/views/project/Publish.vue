@@ -110,7 +110,7 @@
             <el-col :span="12">{{ project.registration_no || "Belum Mempunyai" }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
             <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
-          <el-row v-show="isRiskShow" style="padding-bottom: 16px">
+          <el-row v-show="isRiskShow" style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
             <el-col :span="12">{{ project.oss_risk }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
             <el-col :span="12">{{ project.authority }}</el-col></el-row>
