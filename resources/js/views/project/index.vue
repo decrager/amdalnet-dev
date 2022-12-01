@@ -381,21 +381,6 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="created_at"
-          align="center"
-          label="Tanggal"
-          sortable="custom"
-          width="150px"
-        >
-          <template slot-scope="scope">
-            <div style="line-height: 1.1em;">
-              <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}</span>
-              <!-- <br>
-              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span> -->
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
           prop="project_title"
           align="left"
           label="Nama Kegiatan"
@@ -470,6 +455,21 @@
               </span>
             </div>
             {{ scope.row.marking_label || projectStep }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="updated_at"
+          align="center"
+          label="Tanggal"
+          sortable="custom"
+          width="150px"
+        >
+          <template slot-scope="scope">
+            <div style="line-height: 1.1em;">
+              <span>{{ scope.row.updated_at | parseTime('{y}-{m}-{d}') }}</span>
+              <!-- <br>
+              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span> -->
+            </div>
           </template>
         </el-table-column>
       </el-table>
