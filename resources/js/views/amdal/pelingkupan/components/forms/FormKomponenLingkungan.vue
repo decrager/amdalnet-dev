@@ -396,7 +396,6 @@ export default {
     },
     isUklUpl(){
       if (this.$route.name === 'FormulirUklUpl') {
-        console.log({ gun: 'aihihihihi' });
         return true;
       }
     },

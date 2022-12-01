@@ -480,7 +480,6 @@ export default {
             }
             return x;
           });
-          console.log({ gun: this.data });
           this.loading = false;
         });
     },

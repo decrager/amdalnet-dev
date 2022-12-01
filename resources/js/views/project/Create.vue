@@ -2540,7 +2540,7 @@ export default {
         return;
       }
 
-      if (e.target.files[0].type !== 'application/x-zip-compressed'){
+      if (!e.target.files[0].type.includes('zip')){
         this.$alert('File yang diterima hanya .zip', 'Format Salah');
         return;
       }
