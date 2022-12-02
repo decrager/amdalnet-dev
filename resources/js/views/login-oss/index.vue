@@ -75,17 +75,6 @@ export default {
       },
     };
   },
-  watch: {
-    $route: {
-      handler: function(route) {
-        const query = route.query;
-        if (query) {
-          this.otherQuery = this.getOtherQuery(query);
-        }
-      },
-      immediate: true,
-    },
-  },
   methods: {
     showPwd() {
       if (this.pwdType === 'password') {
