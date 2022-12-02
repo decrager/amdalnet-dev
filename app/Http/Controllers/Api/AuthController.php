@@ -126,6 +126,30 @@ class AuthController extends BaseController
             ], 404);
         }
     }
+
+    public function loginSso(Request $request)
+    {
+        $validated = $request->only('email', 'password');
+        $resp = $this->validateLogin($validated);
+        $resp_json = $resp->json();
+        if ($resp_json['status'] == 200) {
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => [
+                    'access_token' => $resp_json['access_token'],
+                    'refresh_token' => $resp_json['refresh_token'],
+                ],
+            ]);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'code' => 404,
+                'message' => 'User not found',
+            ], 404);
+        }
+    }
+
     public function registerOss(Request $request)
     {
         $validated = $request->only('email', 'username', 'name',
@@ -185,8 +209,8 @@ class AuthController extends BaseController
             [
                 'access-token' => 'required',
                 'refresh_token' => 'required',
-                'kd_izin' => 'required',
-                'id_izin' => 'required',
+                'kd_izin' => 'nullable',
+                'id_izin' => 'nullable',
             ]
         );
         if ($validator->fails()) {
@@ -332,5 +356,17 @@ class AuthController extends BaseController
             'status' => 500,
             'errors' => ['email' => [__($status)]]
         ], 500);
+    }
+
+    private function validateLogin(array $validated)
+    {
+        $params = [
+            'username' => $validated['email'],
+            'password' => $validated['password']
+        ];
+        return Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+        ])->withBasicAuth(env('OSS_REQUEST_USERNAME'), env('OSS_REQUEST_PASSWORD'))
+            ->post(env('OSS_ENDPOINT_SSO') . '/users/login', $params);
     }
 }

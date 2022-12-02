@@ -124,6 +124,7 @@ export default {
     register: 'Daftar',
     resetPassword: 'Lupa Password',
     username: 'Nama pengguna',
+    usernameOSS: 'Isi sesuai dengan Username akun OSS RBA',
     password: 'Password',
     confirmPassword: 'Konfirmasi Password',
     any: 'apa saja',

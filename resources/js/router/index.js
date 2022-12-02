@@ -104,6 +104,11 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/oss/login',
+    component: () => import('@/views/login-oss/index'),
+    hidden: true,
+  },
+  {
     path: '/oss/receive-token',
     component: () => import('@/views/oss-auth/index'),
     hidden: true,
