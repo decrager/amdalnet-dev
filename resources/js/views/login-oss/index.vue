@@ -115,17 +115,6 @@ export default {
         }
       });
     },
-    async ossLogin() {
-      this.isTokenValid = false;
-      await axios.post('api/auth/validate-token', {
-        token: this.token,
-      })
-        .then(response => {
-          if (parseInt(response.data.status) === 200) {
-            this.isTokenValid = true;
-          }
-        });
-    },
   },
 };
 </script>
