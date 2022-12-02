@@ -60,7 +60,6 @@
 
 <script>
 import { csrf } from '@/api/auth';
-import axios from 'axios';
 
 export default {
   name: 'Login',
@@ -75,6 +74,18 @@ export default {
       },
     };
   },
+  watch: {
+    $route: {
+      handler: function(route) {
+        const query = route.query;
+        if (query) {
+          this.redirect = query.redirect;
+          this.otherQuery = this.getOtherQuery(query);
+        }
+      },
+      immediate: true,
+    },
+  },
   methods: {
     showPwd() {
       if (this.pwdType === 'password') {
@@ -88,26 +99,21 @@ export default {
         if (valid) {
           this.loading = true;
           csrf().then(() => {
-            const { email, password } = this.loginForm;
-            new Promise((resolve, reject) => {
-              axios.post('/api/auth/sso/login', { email: email.trim(), password: password })
-                .then(response => {
-                  console.log(this.otherQuery);
-                  this.$router.push({ path: '/oss/receive-token', query: response.data }, onAbort => {});
-                  this.loading = false;
-                  resolve(true);
-                  window.location.reload();
-                })
-                .catch((error) => {
-                  this.$message({
-                    message: 'Maaf Email atau Password yang anda masukkan kurang tepat',
-                    type: 'error',
-                    duration: 5 * 1000,
-                  });
-                  this.loading = false;
-                  reject(error);
+            this.$store.dispatch('user/loginOss', this.loginForm)
+              .then((response) => {
+                this.$router.push({ path: '/oss/receive-token', query: response.data }, onAbort => {});
+                this.loading = false;
+                // window.location.reload();
+              })
+              .catch((error) => {
+                console.log(error);
+                this.$message({
+                  message: 'Maaf Email atau Password yang anda masukkan kurang tepat',
+                  type: 'error',
+                  duration: 5 * 1000,
                 });
-            });
+                this.loading = false;
+              });
           });
         } else {
           console.log('error submit!!');

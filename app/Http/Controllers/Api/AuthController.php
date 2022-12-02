@@ -129,7 +129,7 @@ class AuthController extends BaseController
 
     public function loginSso(Request $request)
     {
-        $validated = $request->only('email', 'password');
+        $validated = $request->only('username', 'password');
         $resp = $this->validateLogin($validated);
         $resp_json = $resp->json();
         if ($resp_json['status'] == 200) {
@@ -137,8 +137,8 @@ class AuthController extends BaseController
                 'status' => 200,
                 'code' => 200,
                 'data' => [
-                    'access_token' => $resp_json['access_token'],
-                    'refresh_token' => $resp_json['refresh_token'],
+                    'access-token' => $resp_json['data']['access_token'],
+                    'refresh_token' => $resp_json['data']['refresh_token'],
                 ],
             ]);
         } else {
@@ -254,8 +254,8 @@ class AuthController extends BaseController
         $created = OssLicense::create([
             'id_initiator' => $id_initiator,
             'email' => $user_info['email'],
-            'id_izin' => $validated['id_izin'],
-            'kd_izin' => $validated['kd_izin'],
+            'id_izin' => $validated['id_izin'] ?? null,
+            'kd_izin' => $validated['kd_izin'] ?? null,
         ]);
         if ($created) {
             Log::debug('Token berhasil diterima.');
@@ -361,12 +361,12 @@ class AuthController extends BaseController
     private function validateLogin(array $validated)
     {
         $params = [
-            'username' => $validated['email'],
+            'username' => $validated['username'],
             'password' => $validated['password']
         ];
         return Http::withHeaders([
             'user_key' => env('OSS_USER_KEY'),
-        ])->withBasicAuth(env('OSS_REQUEST_USERNAME'), env('OSS_REQUEST_PASSWORD'))
+        ])->withBasicAuth(env('OSS_REQUEST_USERNAME'), env('OSS_CLIENT_SECRET'))
             ->post(env('OSS_ENDPOINT_SSO') . '/users/login', $params);
     }
 }
