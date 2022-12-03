@@ -1,5 +1,5 @@
 <template>
-  <el-form label-position="top" label-width="100px">
+  <el-form v-loading="petaLoading" label-position="top" label-width="100px">
     <div style="margin-bottom: 10px;">
       <a href="/sample_map/template_shp_titik_kelola_pantau_amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh SHP Titik Kelola/ Pantau</a>
       <a href="/JUKNIS_DATA_SPASIAL_AMDALNET_TITIK_KELOLA_PANTAU.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta Titik Kelola/ Pantau</a>
@@ -170,6 +170,7 @@ export default {
       data: [],
       idProject: 0,
       currentMaps: [],
+      petaLoading: false,
       petaPengelolaanPDF: '',
       petaPemantauanSHP: '',
       petaPemantauanPDF: '',
@@ -293,6 +294,7 @@ export default {
   },
   methods: {
     getMap() {
+      this.petaLoading = true;
       const map = new Map({
         basemap: 'satellite',
       });
@@ -328,7 +330,6 @@ export default {
       //       }
       //     });
       //   });
-
       axios.get(`api/map-geojson?id=${this.idProject}`)
         .then((response) => {
           response.data.forEach((item) => {
@@ -415,6 +416,7 @@ export default {
             }
             map.addMany(this.mapGeojsonArrayProject);
           });
+          this.petaLoading = false;
         });
 
       const mapView = new MapView({
@@ -932,6 +934,7 @@ export default {
           center: true,
         });
       } else {
+        this.petaLoading = true;
         const formData = new FormData();
         formData.append('id_project', this.idProject);
         formData.append('step', 'ukl-upl');
@@ -1000,6 +1003,7 @@ export default {
           }})
           .then((response) => {
             if (response) {
+              this.petaLoading = false;
               this.$message({
                 message: 'Berhasil menyimpan file ', //  + this.files[0].name,
                 type: 'success',
@@ -1008,7 +1012,6 @@ export default {
               this.$emit('handleEnableSimpanLanjutkan');
             }
           });
-        this.loading = false;
       }
     },
     async doSubmit(load){
