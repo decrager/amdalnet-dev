@@ -351,7 +351,7 @@
                 <el-form-item
                   label="Tingkat Risiko Dari OSS"
                   prop="oss_risk"
-                >
+                ><br>
                   <el-select
                     v-model="currentProject.oss_risk"
                     placeholder="Pilih"
@@ -372,6 +372,10 @@
                   label="Hasil Kewenangan sesuai dengan Perizinan Berusaha"
                   prop="oss_authority"
                 >
+                  <div>
+                    <a href="/Panduan Penapisan.pdf" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Panduan Penapisan</a>
+                    <a href="/kewenangan Persetujuan Lingkungan Pertambangan.pdf" class="download__juknis" title="kewenangan Persetujuan Lingkungan Pertambangan" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> kewenangan Persetujuan Lingkungan Pertambangan</a>
+                  </div>
                   <el-select
                     v-model="currentProject.oss_authority"
                     placeholder="Pilih"
@@ -2536,7 +2540,7 @@ export default {
         return;
       }
 
-      if (e.target.files[0].type !== 'application/x-zip-compressed'){
+      if (!e.target.files[0].type.includes('zip')){
         this.$alert('File yang diterima hanya .zip', 'Format Salah');
         return;
       }
@@ -2647,7 +2651,7 @@ export default {
                 that.full_address = data.display_name;
               });
 
-            if (datas.features[0].geometry.type !== 'Polygon') {
+            if (!['Polygon', 'MultiPolygon'].includes(datas.features[0].geometry.type)) {
               document.getElementById('fileMap').value = '';
               that.fileMapName = 'No File Selected';
               that.fileMap = null;
@@ -3103,6 +3107,19 @@ export default {
       } else {
         this.preeAgreementLabel = temp + 'Persetujuan Investasi';
       }
+    },
+    defineActions(event) {
+      const item = event.item;
+
+      item.actionsSections = [
+        [
+          {
+            title: 'Go to full extent',
+            className: 'esri-icon-zoom-in-magnifying-glass',
+            id: 'full-extent',
+          },
+        ],
+      ];
     },
     async changeProject(value) {
       this.currentProject.project_title = value.nama_kegiatan;

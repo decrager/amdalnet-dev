@@ -124,6 +124,13 @@ export const constantRoutes = [
     name: 'OssResetPassword',
   },
   {
+    path: '/oss/new-password',
+    component: () => import('@/views/reset-password/resetpassword'),
+    props: true,
+    hidden: true,
+    name: 'newpassword',
+  },
+  {
     path: '/auth-redirect',
     component: () => import('@/views/login/AuthRedirect'),
     hidden: true,

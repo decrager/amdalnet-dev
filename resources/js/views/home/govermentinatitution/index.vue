@@ -5,6 +5,19 @@
         Daftar Instansi Pemerintah
       </h2>
       <div class="list-of-projects">
+        <el-input
+          v-model="listQuery.search"
+          suffix-icon="el-icon search"
+          placeholder="Pencarian institusi pemerintah..."
+          style="width:30%; margin-bottom:20px;"
+          @input="inputSearch"
+        >
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="handleSearch"
+          />
+        </el-input>
         <div
           style="
                 margin-bottom: 1em;

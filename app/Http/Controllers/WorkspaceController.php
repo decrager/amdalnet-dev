@@ -117,13 +117,14 @@ class WorkspaceController extends Controller
         $appUrl = env('APP_URL');
         $callUrl = env('OFFICE_CALLBACK_URL');
         $filename = $request->query('filename', 'sample.docx');
+        $createTime = $request->query('createTime', '00:00:00');
         $dirs = [];
         try {
             $dirs = Storage::disk('public')->directories('workspace/'.$filename.'-hist');
         } catch (\Aws\S3\Exception\S3Exception $e) {
             $dirs = [];
         }
-        $dockey = md5($filename.$id.strval(count($dirs)));
+        $dockey = md5($filename.$id.$createTime.strval(count($dirs)));
 
         // check comment only
         $arroles = [

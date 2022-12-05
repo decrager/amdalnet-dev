@@ -382,7 +382,6 @@ export default {
         'amdal.recommendation-signed',
         'amdal.skkl-published',
       ];
-      console.log({ gun: this.markingStatus });
       console.log({ workflow: this.markingStatus });
 
       return data.includes(this.markingStatus);

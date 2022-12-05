@@ -33,6 +33,9 @@
         >
           Export to .DOCX
         </a>
+        <el-button :loading="loading" type="primary" @click="regenerateDocx">
+          Buat ulang dokumen
+        </el-button>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
@@ -78,6 +81,7 @@ export default {
       projectName: '',
       idProject: 0,
       urlPdf: null,
+      createTime: null,
       showDocument: false,
       docxUrl: null,
       downloadDocxPath: '',
@@ -111,6 +115,7 @@ export default {
       );
       this.docxUrl = data.data.docx_url;
       this.urlPdf = data.data.pdf_url;
+      this.createTime = data.data.create_time;
       this.showDocument = true;
       this.projectName = data.data.file_name;
       this.loading = false;
@@ -128,8 +133,18 @@ export default {
         params: {
           id: this.$route.params.id,
           filename: this.projectName,
+          createTime: this.createTime,
         },
       });
+    },
+    regenerateDocx() {
+      this.loading = true;
+      axios
+        .get(`/api/dokumen-ukl-upl/${this.$route.params.id}?regenerate=true`)
+        .then(() => {
+          this.getData();
+          this.loading = false;
+        });
     },
   },
 };
