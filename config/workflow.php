@@ -145,9 +145,9 @@ return [
         'places' => ['init', 'info-filling', 'in-screening', 'screening-completed','formulator-assignment',
         'announcement-drafting','announcement', 'announcement-completed', 'uklupl-mr.pkplh-published',
         'uklupl-mt.form', 'uklupl-mt.matrix-ukl', 'uklupl-mt.matrix-upl','uklupl-mt.sent',
-        'uklupl-mt.adm-review', 'uklupl-mt.returned', 'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.adm-review', 'uklupl-mt.returned-adm', 'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
-        'uklupl-mt.examination', 'uklupl-mt.examination-meeting', 'uklupl-mt.returned', 'uklupl-mt.ba-drafting',
+        'uklupl-mt.examination', 'uklupl-mt.examination-meeting', 'uklupl-mt.returned-examination', 'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed', 'uklupl-mt.recommendation-drafting', 'uklupl-mt.recommendation-signed', 'uklupl-mt.pkplh-published',
         'amdal.form-ka-drafting', 'amdal.form-ka-submitted', 'amdal.form-ka-adm-review','amdal.form-ka-adm-returned',
         'amdal.form-ka-adm-approved', 'amdal.form-ka-examination-invitation-drafting', 'amdal.form-ka-examination-invitation-sent',
@@ -213,7 +213,7 @@ return [
                 ],
                   'return-uklupl-adm' => [                      // Adm returned
                       'from' => 'uklupl-mt.adm-review',
-                      'to' => 'uklupl-mt.returned',
+                      'to' => 'uklupl-mt.returned-adm',
                   ],
                   'draft-uklupl-examination-invitation' => [    // Continue
                       'from' => 'uklupl-mt.adm-review',
@@ -233,7 +233,7 @@ return [
                     ],
                       'return-uklupl-examination' => [    // UKL-UPL returned
                           'from' => 'uklupl-mt.examination-meeting',
-                          'to' => 'uklupl-mt.returned',
+                          'to' => 'uklupl-mt.returned-examination',
                       ],
                       'draft-uklupl-ba' => [              // continue
                           'from' => 'uklupl-mt.examination-meeting',

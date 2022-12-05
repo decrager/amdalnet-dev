@@ -82,7 +82,7 @@
                 >
                   Publish
                 </el-button>
-                <el-button
+                <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
@@ -90,7 +90,7 @@
                   @click="handleEditForm(scope.row.id)"
                 >
                   Edit
-                </el-button>
+                </el-button> -->
                 <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
@@ -155,7 +155,7 @@
                   Dokumen Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator)) && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && scope.row.marking !== 'uklupl-mt.returned-examination' && ((isFormulator && scope.row.ukl_upl_document) || (isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator)) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -298,15 +298,17 @@
                 >
                   Workspace RKL RPL
                 </el-button>
-                <el-button
-                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
-                  href="#"
-                  type="text"
-                  icon="el-icon-document"
-                  @click="handleWorkspaceUKLUPL(scope.row.id)"
-                >
-                  Workspace UKL UPL
-                </el-button>
+                <span v-for="item in scope.row.version_workspace" :key="item.id">
+                  <el-button
+                    v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
+                    href="#"
+                    type="text"
+                    icon="el-icon-document"
+                    @click="handleWorkspaceUKLUPL(scope.row.id)"
+                  >
+                    Workspace UKL UPL versi {{ item.versi }}
+                  </el-button>
+                </span>
                 <el-button
                   v-if="isInitiator && !isScoping && !isDigiWork && isPemerintah"
                   href="#"
@@ -568,6 +570,7 @@ export default {
     ...mapGetters({
       'userInfo': 'user',
       'userId': 'userId',
+      'markingStatus': 'markingStatus',
     }),
     couldCreateProject(){
       return this.$store.getters.permissions.includes('create project');

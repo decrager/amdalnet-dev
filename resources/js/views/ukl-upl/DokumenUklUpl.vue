@@ -85,10 +85,12 @@ export default {
       showDocument: false,
       docxUrl: null,
       downloadDocxPath: '',
+      dataWorkspace: null,
     };
   },
   computed: {
     ...mapGetters({
+      markingStatus: 'markingStatus',
       userInfo: 'user',
       userId: 'userId',
     }),
@@ -97,6 +99,9 @@ export default {
     },
     isInitiator() {
       return this.userInfo.roles.includes('initiator');
+    },
+    isMarking() {
+      return this.markingStatus === 'uklupl-mt.returned-examination';
     },
   },
   mounted() {
@@ -110,9 +115,16 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
-      const data = await axios.get(
-        `/api/dokumen-ukl-upl/${this.$route.params.id}`
-      );
+      if (this.isMarking) {
+        this.dataWorkspace = await axios.get(
+          `/api/dokumen-ukl-upl/${this.$route.params.id}?revisi=true`
+        );
+      } else if (!this.markingStatus === 'uklupl-mt.returned-examination') {
+        this.dataWorkspace = await axios.get(
+          `/api/dokumen-ukl-upl/${this.$route.params.id}`
+        );
+      }
+      const data = this.dataWorkspace;
       this.docxUrl = data.data.docx_url;
       this.urlPdf = data.data.pdf_url;
       this.createTime = data.data.create_time;
