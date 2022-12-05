@@ -44,7 +44,19 @@
 
       <el-table-column label="Satuan">
         <template slot-scope="scope">
-          {{ scope.row.scale_unit }}
+          <div v-if="scope.row.param === 'semua besaran'">
+            <el-input
+              v-model="scope.row.scale_unit"
+              size="mini"
+              type="text"
+              class="edit-input"
+              :disabled="!scope.row.used"
+              @blur="handleBlur(scope.row)"
+            />
+          </div>
+          <div v-else>
+            {{ scope.row.scale_unit }}
+          </div>
         </template>
       </el-table-column>
 
@@ -122,12 +134,22 @@ export default {
     // },
     handleUsedChange(value) {
       delete value.scale;
+      // delete value.scale_unit;
       delete value.result;
       delete value.amdal_type;
       // this.handleRefreshDialog();
     },
     handleCancelParam() {
-      this.$emit('handleCancelParam');
+      console.log({ gunx: this.list });
+      if (this.list[0].scale_unit === '' || !this.list[0].scale_unit) {
+        this.$message({
+          message: `Satuan belum diisi, silahkan isi terlebih dahulu.`,
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      } else {
+        this.$emit('handleCancelParam');
+      }
     },
     async handleBlur(value){
       // reset min and max scale

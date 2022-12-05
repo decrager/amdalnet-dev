@@ -349,8 +349,6 @@ export default {
         idProject: this.idProject,
       });
 
-      console.log({ gun: data });
-
       this.verifications = data;
       this.lpjp = data.lpjp;
       this.penyusunMandiri = data.penyusun_mandiri;

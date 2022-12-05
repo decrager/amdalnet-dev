@@ -325,15 +325,15 @@
                 >
                   Unduh SPPL
                 </el-button>
-                <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc === 'UKL-UPL' && scope.row.result_risk === 'Menengah Rendah' && !isPemerintah"
+                <!-- <el-button
+                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc === 'UKL-UPL' && scope.row.result_risk === 'Menengah Rendah' && scope.row.oss_risk === null || scope.row.oss_risk !== 'Tinggi') && !isPemerintah"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleDownloadPKPLHFromOSS(scope.row)"
                 >
                   Unduh PKPLH Otomatis
-                </el-button>
+                </el-button> -->
                 <el-button
                   v-if="isAmdal(scope.row) && isPJM(scope.row) && isMeetReportAccepted(scope.row)"
                   href="#"
@@ -378,21 +378,6 @@
           <!-- <span>{{
               scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
             }}</span> -->
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="created_at"
-          align="center"
-          label="Tanggal"
-          sortable="custom"
-          width="150px"
-        >
-          <template slot-scope="scope">
-            <div style="line-height: 1.1em;">
-              <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}</span>
-              <!-- <br>
-              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span> -->
-            </div>
           </template>
         </el-table-column>
         <el-table-column
@@ -470,6 +455,21 @@
               </span>
             </div>
             {{ scope.row.marking_label || projectStep }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="updated_at"
+          align="center"
+          label="Tanggal"
+          sortable="custom"
+          width="150px"
+        >
+          <template slot-scope="scope">
+            <div style="line-height: 1.1em;">
+              <span>{{ scope.row.updated_at | parseTime('{y}-{m}-{d}') }}</span>
+              <!-- <br>
+              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span> -->
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -1522,7 +1522,7 @@ export default {
         if (this.initiator.user_type === 'Pemerintah') {
           return true;
         } else {
-          if (project.risk_level !== 'Menengah Rendah') {
+          if (project.oss_risk !== null) {
             return true;
           }
         }

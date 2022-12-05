@@ -82,7 +82,6 @@ export default {
             team = this.tukName(
               x.feasibility_test_team_member.feasibility_test_team
             );
-            console.log({ gun: team });
           }
         }
 

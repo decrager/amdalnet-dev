@@ -107,6 +107,10 @@ export default {
       type: String,
       default: 'sample.docx',
     },
+    createTime: {
+      type: String,
+      default: '00:00:00',
+    },
     workspaceType: {
       type: String,
       default: null,
@@ -260,8 +264,12 @@ export default {
         filename = this.$route.params.filename;
       }
 
+      let createTime = this.createTime;
+      if (this.$route.params.createTime) {
+        createTime = this.$route.params.createTime;
+      }
       workspaceResource
-        .getConfig(this.$route.params.id, filename)
+        .getConfig(this.$route.params.id, filename, createTime)
         .then(resp => {
           console.log(resp);
           this.docEditor = new window.DocsAPI.DocEditor('placeholder', resp);

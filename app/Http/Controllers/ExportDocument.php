@@ -488,16 +488,19 @@ class ExportDocument extends Controller
 
 
         Carbon::setLocale('id');
-        $project = Project::findOrFail($id_project);
+        $project = Project::with('listSubProject')->findOrFail($id_project);
 
-        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->first();
-        if($document_attachment) {
+        $listSubProject = array_values($project->listSubProject->toArray());
+
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->orderBy('created_at', 'desc')->first();
+        if($document_attachment && !request()->has('regenerate')) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
             return [
                 'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
                 'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
                 'pdf_url' => $pdf_url,
-                'docx_url' => $document_attachment->attachment
+                'docx_url' => $document_attachment->attachment,
+                'create_time' => $document_attachment->created_at->toTimeString()
             ];
         }
 
@@ -511,7 +514,7 @@ class ExportDocument extends Controller
         $pic = $project->initiator->pic;
         $pic_position = $project->initiator->pic_role;
         $district = '';
-        $project_sector = $project->sector;
+        $project_sector = $listSubProject[0]['sector_name'];
         $project_title = $project->project_title;
         $project_kbli = '';
         $project_scale = $project->scale .  ' ' . $project->scale_unit;
@@ -607,7 +610,7 @@ class ExportDocument extends Controller
                         $com_pra_konstruksi[] = [
                             'com_pra_konstruksi_name' => $component,
                             'com_pra_konstruksi_desc' => '${pk_desc_' . $imp->id . '}',
-                            'com_pra_konstruksi_unit' => $imp->ronaAwal->measurement
+                            'com_pra_konstruksi_unit' => htmlspecialchars($imp->ronaAwal->measurement)
                         ];
 
                         $html_data[] = [
@@ -624,7 +627,7 @@ class ExportDocument extends Controller
                         $com_konstruksi[] = [
                             'com_konstruksi_name' => $component,
                             'com_konstruksi_desc' => '${k_desc_' . $imp->id . '}',
-                            'com_konstruksi_unit' => $imp->ronaAwal->measurement
+                            'com_konstruksi_unit' => htmlspecialchars($imp->ronaAwal->measurement)
                         ];
 
                         $html_data[] = [
@@ -680,7 +683,7 @@ class ExportDocument extends Controller
 
                 if($s->name == 'Pasca Operasi') {
                     $dl_pasca_operasi[] = [
-                        'dl_pasca_operasi_name' => "$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->ronaAwal->measurement
+                        'dl_pasca_operasi_name' => htmlspecialchars("$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->ronaAwal->measurement)
                     ];
 
                     $po[] = $this->getUklUplData($imp, 'po', $component, $change_type, $ronaAwal);
@@ -801,7 +804,8 @@ class ExportDocument extends Controller
             'file_name' => $save_file_name,
             'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
             'pdf_url' => $pdf_url,
-            'docx_url' => $document_attachment->attachment
+            'docx_url' => $document_attachment->attachment,
+            'create_time' => $document_attachment->created_at->toTimeString()
         ];
     }
 
@@ -861,7 +865,8 @@ class ExportDocument extends Controller
             if($imp->envManagePlan->forms) {
                 if($imp->envManagePlan->forms->first()) {
                     foreach($imp->envManagePlan->forms as $uk) {
-                        $ukl_bentuk .= "- {$uk->description} </w:t><w:p/><w:t>";
+                        $desc = htmlspecialchars($uk->description);
+                        $ukl_bentuk .= "- {$desc} </w:t><w:p/><w:t>";
                     }
                 }
             }
@@ -869,7 +874,8 @@ class ExportDocument extends Controller
             if($imp->envManagePlan->locations) {
                 if($imp->envManagePlan->locations->first()) {
                     foreach($imp->envManagePlan->locations as $uk)  {
-                        $ukl_lokasi .= "- {$uk->description} </w:t><w:p/><w:t>";
+                        $desc = htmlspecialchars($uk->description);
+                        $ukl_lokasi .= "- {$desc} </w:t><w:p/><w:t>";
                     }
                 }
             }
@@ -879,7 +885,8 @@ class ExportDocument extends Controller
             if($imp->envMonitorPlan->forms) {
                if($imp->envMonitorPlan->forms->first()) {
                    foreach($imp->envMonitorPlan->forms as $up) {
-                       $upl_bentuk .= "- {$up->description} </w:t><w:p/><w:t>";
+                        $desc = htmlspecialchars($up->description);
+                        $upl_bentuk .= "- {$desc} </w:t><w:p/><w:t>";
                    }
                }
             }
@@ -887,7 +894,8 @@ class ExportDocument extends Controller
             if($imp->envMonitorPlan->locations) {
                 if($imp->envMonitorPlan->locations->first()) {
                     foreach($imp->envMonitorPlan->locations as $up) {
-                        $upl_lokasi .= "- {$up->description} </w:t><w:p/><w:t>";
+                        $desc = htmlspecialchars($up->description);
+                        $upl_lokasi .= "- {$desc} </w:t><w:p/><w:t>";
                     }
                 }
             }

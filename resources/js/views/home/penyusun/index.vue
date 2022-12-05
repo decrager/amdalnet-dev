@@ -10,7 +10,7 @@
           <el-input
             v-model="listQuery.search"
             suffix-icon="el-icon search"
-            style="width: 30%;  margin-left: 70%;"
+            style="width: 30%;  margin-left: 70%; margin-bottom: 10px;"
             placeholder="Pencarian..."
             @input="inputSearch"
           >
@@ -24,7 +24,8 @@
         <el-tabs
           v-if="!updateCertificate"
           v-model="activeName"
-          style="border: #3AB06F;"
+          style="border: #3AB06F;
+          border-color:#f6993f;"
           type="card"
           @tab-click="handleClickTab"
         >
@@ -64,7 +65,7 @@
           :header-cell-style="{ background: '#3AB06F', color: 'white' }"
         >
           <el-table-column align="center" label="Nama" prop="name" sortable />
-          <el-table-column
+          <!-- <el-table-column
             align="center"
             label="No. Registrasi"
             prop="reg_no"
@@ -75,21 +76,19 @@
             label="No. Sertifikat"
             prop="cert_no"
             sortable
-          />
+          /> -->
           <el-table-column
             align="center"
             label="Sertifikasi"
             prop="membership_status"
             sortable
           />
-
-          <el-table-column align="center" label="Status" prop="status" sortable>
-            <template slot-scope="scope">
-              <el-tag :type="scope.row.status | statusFilter">
-                {{ scope.row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
+          <el-table-column
+            align="center"
+            label="Status Registrasi Amdalnet"
+            prop="user"
+            sortable
+          />
         </el-table>
         <div class="block" style="text-align: right">
           <pagination
@@ -125,7 +124,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        active: 'true',
+        // active: 'true',
         search: null,
       },
       total: 0,
@@ -160,10 +159,14 @@ export default {
     async getList() {
       this.loading = true;
       const { data, meta } = await formulatorResource.list(this.listQuery);
+      // console.log(data[0]);
       this.list = data.map((x) => {
         x.membership_status = x.membership_status ? x.membership_status : '-';
         x.status = this.calculateStatus(x.date_start, x.date_end);
         x.cert_no = this.noCertificate(x.cert_no);
+        x.user = x.user.active === 1 ? 'Aktif' : 'Tidak Aktif';
+
+        console.log({ guns: x.user });
         return x;
       });
       this.total = meta.total;

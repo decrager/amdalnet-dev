@@ -29,8 +29,8 @@ class LspController extends Controller
             return LspResource::collection(Lsp::all());
         }
 
-        if($request->byUserId) {
-            $lsp = Lsp::where('email', $request->email)->first();
+        if($request->byUserEmail) {
+            $lsp = LspResource::collection(Lsp::where('email', $request->email)->get());
             return $lsp;
         }
 

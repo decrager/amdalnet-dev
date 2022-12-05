@@ -166,13 +166,42 @@
                 placeholder="Pilihan"
                 :disabled="!isFormulator || isReadOnly"
               >
-                <el-option
-                  v-for="item in periode"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                  :disabled="isReadOnly"
-                />
+                <span v-if="scope.row.id_project_stage === 4">
+                  <el-option
+                    v-for="item in periodePraKonstruksi"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="isReadOnly"
+                  />
+                </span>
+                <span v-if="scope.row.id_project_stage === 1">
+                  <el-option
+                    v-for="item in periodeKonstruksi"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="isReadOnly"
+                  />
+                </span>
+                <span v-if="scope.row.id_project_stage === 2">
+                  <el-option
+                    v-for="item in periodeOperasi"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="isReadOnly"
+                  />
+                </span>
+                <span v-if="scope.row.id_project_stage === 3">
+                  <el-option
+                    v-for="item in periodePascaOperasi"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="isReadOnly"
+                  />
+                </span>
               </el-select>
               <small
                 v-if="checkError(scope.row.env_monitor_plan.errors, 'period_description')"
@@ -250,7 +279,7 @@ export default {
       data: [],
       deletedForm: [],
       deletedLocation: [],
-      periode: [
+      periodePraKonstruksi: [
         {
           label: 'per Hari',
           value: 'per Hari',
@@ -264,8 +293,110 @@ export default {
           value: 'per Bulan',
         },
         {
+          label: 'per Triwulan',
+          value: 'per Triwulan',
+        },
+        {
+          label: 'per Semester',
+          value: 'per Semester',
+        },
+        {
           label: 'per Tahun',
           value: 'per Tahun',
+        },
+        {
+          label: 'selama tahap Pra Konstruksi',
+          value: 'selama tahap Pra Konstruksi',
+        },
+      ],
+      periodeKonstruksi: [
+        {
+          label: 'per Hari',
+          value: 'per Hari',
+        },
+        {
+          label: 'per Minggu',
+          value: 'per Minggu',
+        },
+        {
+          label: 'per Bulan',
+          value: 'per Bulan',
+        },
+        {
+          label: 'per Triwulan',
+          value: 'per Triwulan',
+        },
+        {
+          label: 'per Semester',
+          value: 'per Semester',
+        },
+        {
+          label: 'per Tahun',
+          value: 'per Tahun',
+        },
+        {
+          label: 'selama tahap Konstruksi',
+          value: 'selama tahap Konstruksi',
+        },
+      ],
+      periodeOperasi: [
+        {
+          label: 'per Hari',
+          value: 'per Hari',
+        },
+        {
+          label: 'per Minggu',
+          value: 'per Minggu',
+        },
+        {
+          label: 'per Bulan',
+          value: 'per Bulan',
+        },
+        {
+          label: 'per Triwulan',
+          value: 'per Triwulan',
+        },
+        {
+          label: 'per Semester',
+          value: 'per Semester',
+        },
+        {
+          label: 'per Tahun',
+          value: 'per Tahun',
+        },
+        {
+          label: 'selama tahap Operasi',
+          value: 'selama tahap Operasi',
+        },
+      ],
+      periodePascaOperasi: [
+        {
+          label: 'per Hari',
+          value: 'per Hari',
+        },
+        {
+          label: 'per Minggu',
+          value: 'per Minggu',
+        },
+        {
+          label: 'per Bulan',
+          value: 'per Bulan',
+        },
+        {
+          label: 'per Triwulan',
+          value: 'per Triwulan',
+        },
+        {
+          label: 'per Semester',
+          value: 'per Semester',
+        },
+        {
+          label: 'per Tahun',
+          value: 'per Tahun',
+        },
+        {
+          label: 'selama tahap Pasca Operasi',
+          value: 'selama tahap Pasca Operasi',
         },
       ],
       loading: true,
