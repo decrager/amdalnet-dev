@@ -42,31 +42,17 @@
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Pendukung</span>
               </div>
-              <div v-if="isReadOnly && !isUrlAndal">
-                <components-list
-                  :id="'supporting_'+stage.id"
-                  :components="subProjects.filter(s => s.type === 'pendukung')"
-                  :show-delete="false"
-                  :show-edit="false"
-                  :active-component="activeScoping.sub_projects"
-                  :class-name="'scoping'"
-                  :selectable="true"
-                  :disabled="isReadOnly && !isUrlAndal"
-                  :de-select-all="!isReadOnly && isUrlAndal && deSelectAllSPPendukung"
-                />
-              </div>
-              <div v-else>
-                <components-list
-                  :id="'supporting_'+stage.id"
-                  :components="subProjects.filter(s => s.type === 'pendukung')"
-                  :show-delete="false"
-                  :show-edit="false"
-                  :active-component="activeScoping.sub_projects"
-                  :class-name="'scoping'"
-                  :selectable="true"
-                  :de-select-all="deSelectAllSPPendukung"
-                />
-              </div>
+              <components-list
+                :id="'supporting_'+stage.id"
+                :components="subProjects.filter(s => s.type === 'pendukung')"
+                :show-delete="false"
+                :show-edit="false"
+                :active-component="activeScoping.sub_projects"
+                :class-name="'scoping'"
+                :selectable="true"
+                :de-select-all="deSelectAllSPPendukung"
+                @onSelect="onSelectSubProjects"
+              />
             </el-card>
           </el-col>
           <el-col :span="4">
