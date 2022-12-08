@@ -46,6 +46,7 @@ import JenisBesaranDampakTable from './components/tables/JenisBesaranDampakTable
 import WorkflowUkl from '@/components/WorkflowUkl';
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
+const saveStatus = new Resource('save-status');
 
 export default {
   name: 'FormulirUklUpl',
@@ -112,12 +113,34 @@ export default {
         this.isProjectUklUpl = true;
       }
     },
-    handleSaveForm() {
-      const id = this.$route.params && this.$route.params.id;
-      this.$router.push({
-        name: 'MatriksUklUpl',
-        params: id,
+    async handleSaveForm() {
+      const projectId = this.$route.params && this.$route.params.id;
+      const sections = ['formulir.uklupl.jenis.besaran.dampak'];
+      const result = await saveStatus.list({
+        sections,
+        project_id: projectId,
       });
+      const errors = [];
+      sections.map((value, index) => {
+        result.map((val, ind) => {
+          if (value === val.section && val.temporary) {
+            errors.push(value);
+          }
+        });
+      });
+      if (errors.length >= 1) {
+        this.$alert(
+          'Silahkan lengkapi data Jenis dan Besaran Dampak kemudian pilih tombol Simpan Perubahan pada masing-masing matriks',
+          {
+            confirmButtonText: 'OK',
+          }
+        );
+      } else {
+        this.$router.push({
+          name: 'MatriksUklUpl',
+          params: projectId,
+        });
+      }
     },
     handleEnableSimpanLanjutkan() {
       this.isSubmitEnabled = true;
