@@ -300,15 +300,24 @@
                 </el-button>
                 <span v-for="item in scope.row.version_workspace" :key="item.id">
                   <el-button
-                    v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
+                    v-if="isUklUpl(scope.row) && scope.row.version_workspace !== null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
                     href="#"
                     type="text"
                     icon="el-icon-document"
-                    @click="handleWorkspaceUKLUPL(scope.row.id)"
+                    @click="handleWorkspaceUKLUPL(scope.row.id, item.versi)"
                   >
                     Workspace UKL UPL versi {{ item.versi }}
                   </el-button>
                 </span>
+                <el-button
+                  v-if="isUklUpl(scope.row) && scope.row.version_workspace === null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceUKLUPL(scope.row.id, item.versi)"
+                >
+                  Workspace UKL UPL
+                </el-button>
                 <el-button
                   v-if="isInitiator && !isScoping && !isDigiWork && isPemerintah"
                   href="#"
@@ -1452,15 +1461,17 @@ export default {
         },
       });
     },
-    async handleWorkspaceUKLUPL(idProject) {
+    async handleWorkspaceUKLUPL(idProject, version) {
       const data = await axios.get(
-        `/api/dokumen-ukl-upl/${idProject}`
+        `/api/dokumen-ukl-upl/${idProject}?versi=${version}`
       );
       this.$router.push({
         name: 'projectWorkspace',
         params: {
           id: idProject,
+          versi: data.data.versi_doc,
           filename: data.data.file_name,
+          createTime: data.data.create_time,
         },
       });
     },

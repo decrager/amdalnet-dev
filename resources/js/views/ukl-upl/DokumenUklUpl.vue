@@ -84,6 +84,7 @@ export default {
       createTime: null,
       showDocument: false,
       docxUrl: null,
+      versi: null,
       downloadDocxPath: '',
       dataWorkspace: null,
     };
@@ -119,7 +120,7 @@ export default {
         this.dataWorkspace = await axios.get(
           `/api/dokumen-ukl-upl/${this.$route.params.id}?revisi=true`
         );
-      } else if (!this.markingStatus === 'uklupl-mt.returned-examination') {
+      } else if (!this.markingStatus === 'uklupl-mt.returned-examination' || this.markingStatus === null) {
         this.dataWorkspace = await axios.get(
           `/api/dokumen-ukl-upl/${this.$route.params.id}`
         );
@@ -130,6 +131,7 @@ export default {
       this.createTime = data.data.create_time;
       this.showDocument = true;
       this.projectName = data.data.file_name;
+      this.versi = data.data.versi_doc;
       this.loading = false;
       this.downloadDocxPath = this.docxUrl;
     },
@@ -146,6 +148,7 @@ export default {
           id: this.$route.params.id,
           filename: this.projectName,
           createTime: this.createTime,
+          versi: this.versi,
         },
       });
     },

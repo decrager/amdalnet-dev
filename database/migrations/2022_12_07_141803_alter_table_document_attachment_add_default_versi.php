@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterTableDocumentAttachmentAddVersiColumn extends Migration
+class AlterTableDocumentAttachmentAddDefaultVersi extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AlterTableDocumentAttachmentAddVersiColumn extends Migration
     public function up()
     {
         Schema::table('document_attachment', function (Blueprint $table) {
-            $table->integer('versi')->nullable();
+            $table->integer('versi')->default(0)->nullable();
         });
     }
 

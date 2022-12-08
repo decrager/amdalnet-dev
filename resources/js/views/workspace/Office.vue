@@ -25,6 +25,10 @@ export default {
       type: String,
       default: '00:00:00',
     },
+    version: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -113,8 +117,13 @@ export default {
       if (this.$route.params.createTime) {
         createTime = this.$route.params.createTime;
       }
+
+      let version = this.version;
+      if (this.$route.params.versi) {
+        version = this.$route.params.versi;
+      }
       workspaceResource
-        .getConfig(this.$route.params.id, filename, createTime)
+        .getConfig(this.$route.params.id, filename, createTime, version)
         .then(resp => {
           console.log(resp);
           this.docEditor = new window.DocsAPI.DocEditor('placeholder', resp);
