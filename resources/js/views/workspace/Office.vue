@@ -11,9 +11,11 @@
       <div v-if="showForm" style="background-color: #404040; padding-top: 3rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%; overflow: scroll;">
         <div style="width: 100%;">
           <el-table
-            :data="tableData"
+            :data="comments"
             min-height="180"
             max-height="200"
+            highlight-current-row
+            @row-click="handleClickRowTable"
           >
             <el-table-column
               label="Saran/ Pendapat/ Tanggapan"
@@ -27,17 +29,37 @@
               prop="page"
               label="Halaman"
               width="150"
+              align="center"
             />
             <el-table-column
               label="Perbaikan/ Tanggapan Pemrakarsa"
               width="150"
             >
-              <template v-slot="scope">
-                <span v-html="scope ? scope.row.reply : ''" />
-              </template>
+              <!-- <template v-slot="scope">
+                <span v-html="scope ? scope.row.replies.description : ''" />
+              </template> -->
+              <!-- <div v-for="reply in comments[index].replies" :key="reply.id">
+                <span v-html="reply ? reply.description : ''" />
+              </div> -->
+              <!-- <template v-slot="scope">
+                <span v-html="scope ? scope.row.replies.description : ''" />
+              </template> -->
+              <!-- <div v-for="reply in comments" :key="reply.id">
+                <div v-html="reply.description" />
+              </div> -->
+              <!-- <div v-for="(re, index) in comments" :key="re.id">
+                <div v-for="reply in comments[index].replies" :key="reply.id">
+                  <div v-html="reply ? reply.description : null" />
+                </div>
+              </div> -->
+              <div v-for="(re, index) in comments" :key="re.id">
+                <div v-for="reply in comments[index].replies" :key="reply.id">
+                  <div v-html="reply ? reply.description : null" />
+                </div>
+              </div>
             </el-table-column>
             <el-table-column
-              prop="repair_page"
+              prop="reply_to"
               label="Halaman Perbaikan"
               width="150"
             />
@@ -45,7 +67,7 @@
         </div>
         <div style="background-color: #555555;">
           <div style="display: flex; align-items: center; padding: 5px; justify-content: space-between; flex-direction: row;">
-            <div style="display: flex; align-items: center; padding: 5px; justify-content: space-between; width: 100%;">
+            <div v-if="isTUK" style="display: flex; align-items: center; padding: 5px; justify-content: space-between; width: 100%;">
               <div style="max-width: 50%; padding-right: 10px; color: #fff; font-weight: bold;">
                 <span>Halaman</span>
               </div>
@@ -53,7 +75,7 @@
                 <el-input v-model="rekaps.page" type="number" :class="{ 'is-error': isStageError }" />
               </div>
             </div>
-            <div style="display: flex; align-items: center; padding: 5px; justify-content: space-between; width: 100%;">
+            <div v-if="!isTUK" style="display: flex; align-items: center; padding: 5px; justify-content: space-between; width: 100%;">
               <div style="max-width: 50%; padding-right: 10px; color: #fff; font-weight: bold;">
                 <span>Halaman Perbaikan</span>
               </div>
@@ -65,7 +87,8 @@
         </div>
         <div style="background-color: #555555; padding-top: 5px;">
           <div style="padding: 5px; background-color: #39773b; color: #ffffff; font-weight: bold; text-align: center;">
-            <span>Saran/ Pendapat/ Tanggapan</span>
+            <span v-if="isTUK">Saran/ Pendapat/ Tanggapan</span>
+            <span v-if="!isTUK">Perbaikan/ Tanggapan Pemrakarsa</span>
           </div>
           <div style="padding: 5px;">
             <TextEditor
@@ -130,14 +153,7 @@ export default {
       idCat: null,
       rekaps: [],
       showForm: false,
-      tableData: [{
-        date: '2016-05-02',
-        name: 'Tom',
-        state: 'California',
-        city: 'Los Angeles',
-        address: 'No. 189, Grove St, Los Angeles',
-        zip: 'CA 90036',
-      }],
+      comments: [],
     };
   },
   computed: {
@@ -173,7 +189,30 @@ export default {
     this.officeUrl = process.env.MIX_OFFICE_URL;
     this.addOfficeScript();
   },
+  created() {
+    window.addEventListener('beforeunload', this.reload);
+    this.getComments();
+  },
   methods: {
+    async getComments(){
+      const comments = await workspaceCommentResource.list({
+        filename_document: this.filename === 'sample.docx' ? localStorage.getItem('filenameLocal') : this.filename,
+      });
+      this.comments = comments;
+    },
+    reload: function reload(event) {
+      if (this.filename === 'sample.docx') {
+        localStorage.setItem('filenameLocal', localStorage.getItem('filenameLocal'));
+      } else {
+        localStorage.setItem('filenameLocal', this.filename);
+      }
+      console.log('reload');
+      // localStorage.getItem('filenameLocal') ? localStorage.getItem('filenameLocal') : localStorage.setItem('filenameLocal', JSON.stringify(this.filename));
+    },
+    handleClickRowTable(row) {
+      // this.reply_to = this.row.id;
+      console.log(row.id);
+    },
     clearError() {
       this.isStageError = false;
     },
@@ -185,15 +224,14 @@ export default {
       this.showForm = !this.showForm;
     },
     addComment() {
-      console.log({ rekap: this.rekaps.description });
+      console.log({ rekap: this.rekaps });
       console.log({ useriInfo: this.userInfo });
       console.log({ store: this.$store });
       console.log({ route: this.$route });
-      console.log({ route: this.workspaceType });
-      // this.tableData.push(this.rekaps);
-      // this.clearError();
-      // if() {}
+      console.log({ workspaceType: this.workspaceType });
+      console.log({ filename: this.$route.params.filename || localStorage.getItem('filenameLocal') });
       this.handleSubmitCommnet();
+      this.getComments();
     },
     async handleSubmitCommnet() {
       const newComment = await workspaceCommentResource.store({
@@ -203,12 +241,15 @@ export default {
         page: this.rekaps.page,
         description: this.rekaps.description,
         repair_page: this.userInfo.roles.includes('examiner-substance') ? null : this.rekaps.repair_page,
-        reply_to: this.userInfo.roles.includes('examiner-substance') ? null : this.rekaps.page,
+        reply_to: this.userInfo.roles.includes('examiner-substance') ? null : this.reply_to,
         document_type: this.workspaceType,
-        filename_document: this.filename,
+        filename_document: this.filename === 'sample.docx' ? localStorage.getItem('filenameLocal') : this.filename,
       });
-
+      this.rekaps.push(newComment);
       this.rekaps.unshift(newComment);
+      this.rekaps.description = null;
+      this.rekaps.page = null;
+      this.rekaps.repair_page = null;
     },
     handleTemplateUploadChange(file, fileList) {
       // add file to multipart
@@ -317,10 +358,16 @@ export default {
 </style>
 
 <style scoped lang="scss">
-.is-error .el-input__inner,
-.is-error .el-textarea__inner {
-  border-color: #f56c6c;
-}
+  .is-error .el-input__inner,
+  .is-error .el-textarea__inner {
+    border-color: #f56c6c;
+  }
+  .is-click .el-table__cell {
+    background-color: #ffd93a;
+  }
+  .custom-highlight-row{
+    background-color: pink
+  }
 
   iframe {
     height: calc(100vh - 94px);

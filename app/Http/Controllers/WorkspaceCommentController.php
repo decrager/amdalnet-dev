@@ -13,9 +13,36 @@ class WorkspaceCommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // $comment = [];
+        $comment = WorkspaceComment::where([['filename_document', $request->filename_document], ['reply_to', null]])->orderBY('id', 'DESC')->get();
+        // $comments = [];
+        foreach($comment as $c) {
+            $replies = [];
+            if($c->reply) {
+                foreach($c->reply as $r) {
+                    $replies[] = [
+                        'id' => $r->id,
+                        'name' => $r->user->name,
+                        'description' => $r->description,
+                    ];
+                }
+                usort($replies, function($a, $b) {
+                    return $a['id'] <=> $b['id'];
+                });
+            }
+            $comments[] = [
+                'id' => $c->id,
+                'user' => $c->user->name,
+                'description' => $c->description,
+                'page' => $c->page,
+                'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                'replies' => $replies
+            ];
+        }
+        return $comments;
+        // return $comment;
     }
 
     /**
