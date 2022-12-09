@@ -72,6 +72,8 @@ deploy_app-dev_menlhk:
   stage: staging
   script:
     - cd /var/www/amdalnet/
+    - which npm
+    - which node
     - git reset --hard origin/master
     - git pull
     - composer install
