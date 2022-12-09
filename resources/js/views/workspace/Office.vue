@@ -35,9 +35,15 @@
               label="Perbaikan/ Tanggapan Pemrakarsa"
               width="150"
             >
-              <!-- <template v-slot="scope">
-                <span v-html="scope ? scope.row.replies.description : ''" />
-              </template> -->
+              <template v-slot="scope">
+                <!-- <span v-html="scope ? scope.row.replies.description : ''" /> -->
+                <!-- <span v-html="scope ? scope.row.user : ''" /> -->
+                <div v-for="rep in scope.row.replies" :key="rep.id">
+                  <div>
+                    <span v-html="rep ? rep.description : ''" />
+                  </div>
+                </div>
+              </template>
               <!-- <div v-for="reply in comments[index].replies" :key="reply.id">
                 <span v-html="reply ? reply.description : ''" />
               </div> -->
@@ -52,14 +58,14 @@
                   <div v-html="reply ? reply.description : null" />
                 </div>
               </div> -->
-              <div v-for="(re, index) in comments" :key="re.id">
+              <!-- <div v-for="(re, index) in comments" :key="re.id">
                 <div v-for="reply in comments[index].replies" :key="reply.id">
                   <div v-html="reply ? reply.description : null" />
                 </div>
-              </div>
+              </div> -->
             </el-table-column>
             <el-table-column
-              prop="reply_to"
+              prop="repair_page"
               label="Halaman Perbaikan"
               width="150"
             />
@@ -210,8 +216,8 @@ export default {
       // localStorage.getItem('filenameLocal') ? localStorage.getItem('filenameLocal') : localStorage.setItem('filenameLocal', JSON.stringify(this.filename));
     },
     handleClickRowTable(row) {
-      // this.reply_to = this.row.id;
-      console.log(row.id);
+      this.reply_to = row.id;
+      // console.log(row.id);
     },
     clearError() {
       this.isStageError = false;
