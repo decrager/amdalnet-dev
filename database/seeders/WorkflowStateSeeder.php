@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Entity\WorkflowState;
+use Workflow;
 
 class WorkflowStateSeeder extends Seeder
 {
@@ -87,7 +88,7 @@ class WorkflowStateSeeder extends Seeder
                 'code' => 'UKL-4'
             ],
             [
-                'state' => 'uklupl-mt.returned',
+                'state' => 'uklupl-mt.returned-adm',
                 'public_tracking' => 'UKL-UPL Dikembalikan',
                 'code' => 'UKL-5'
             ],
@@ -112,7 +113,7 @@ class WorkflowStateSeeder extends Seeder
                 'code' => 'UKL-9'
             ],
             [
-                'state' => 'uklupl-mt.returned',
+                'state' => 'uklupl-mt.returned-examination',
                 'public_tracking' => 'UKL-UPL Dikembalikan untuk Diperbaiki',
                 'code' => 'UKL-10'
             ],
@@ -296,7 +297,16 @@ class WorkflowStateSeeder extends Seeder
         ];
 
         foreach($states as $state){
-            WorkflowState::create($state);
+            $workflow = new WorkflowState();
+            $workflow->updateOrCreate(
+                [
+                    'code' => $state['code'],
+                ],
+                [
+                    'state' => $state['state'],
+                    'public_tracking' => $state['public_tracking'],
+                ],
+            );
         }
     }
 }

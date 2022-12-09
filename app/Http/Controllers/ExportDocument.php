@@ -480,28 +480,43 @@ class ExportDocument extends Controller
         return DocumentAttachment::where('id_project', '=', $request->id)->where('type', '=', 'Formulir KA')->first();
     }
 
-    public function uklUpl($id_project)
+    // public function getVersionUklUPl()
+
+    public function uklUpl($id_project, Request $request)
     {
         // if (!File::exists(storage_path('app/public/workspace/'))) {
         //     File::makeDirectory(storage_path('app/public/workspace/'));
         // }
 
-
         Carbon::setLocale('id');
         $project = Project::with('listSubProject')->findOrFail($id_project);
-
         $listSubProject = array_values($project->listSubProject->toArray());
-
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->orderBy('created_at', 'desc')->first();
-        if($document_attachment && !request()->has('regenerate')) {
+        if($document_attachment && !request()->has('regenerate') && !request()->has('revisi') && !request()->has('versi')) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
             return [
                 'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
                 'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
                 'pdf_url' => $pdf_url,
                 'docx_url' => $document_attachment->attachment,
-                'create_time' => $document_attachment->created_at->toTimeString()
+                'create_time' => $document_attachment->created_at->toTimeString(),
+                'versi_doc' => $document_attachment->versi,
             ];
+        }
+
+        if($request->has('versi')) {
+            $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL'], ['versi', $request->versi]])->orderBy('created_at', 'desc')->first();
+            if($document_attachment && !request()->has('regenerate') && !request()->has('revisi')) {
+                $pdf_url = $this->docxToPdf($document_attachment->attachment);
+                return [
+                    'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
+                    'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
+                    'pdf_url' => $pdf_url,
+                    'docx_url' => $document_attachment->attachment,
+                    'create_time' => $document_attachment->created_at->toTimeString(),
+                    'versi_doc' => $document_attachment->versi,
+                ];
+            }
         }
 
         $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
@@ -792,6 +807,17 @@ class ExportDocument extends Controller
         unlink($tmpName);
 
         $document_attachment = new DocumentAttachment();
+        if($project->marking === 'uklupl-mt.returned-examination' && !request()->has('regenerate')) {
+            $document = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->orderBy('created_at', 'desc')->first();
+            $document_attachment->versi = $document->versi + 1;
+
+            // Workflow when first generate revisi
+            $project->applyWorkFlowTransition('return-uklupl-examination', 'uklupl-mt.returned-examination', 'uklupl-mt.matrix-upl');
+            $project->save();
+        } else {
+            $document = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->orderBy('created_at', 'desc')->first();
+            $document_attachment->versi = $document->versi;
+        }
         $document_attachment->id_project = $project->id;
         $document_attachment->attachment = 'workspace/' . $save_file_name;
         $document_attachment->type = 'Dokumen UKL UPL';

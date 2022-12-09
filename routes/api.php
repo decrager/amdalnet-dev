@@ -171,6 +171,7 @@ Route::apiResource('oss-projects', 'OssProjectController');
 Route::apiResource('project-authorities', 'ProjectAuthorityController');
 Route::apiResource('responder-types', 'ResponderTypeController');
 Route::apiResource('feedbacks', 'FeedbackController');
+Route::apiResource('export-document', 'ExportDocumentController@uklUpl');
 Route::apiResource('support-docs', 'SupportDocController');
 Route::apiResource('announcements', 'AnnouncementController');
 Route::apiResource('initiators', 'InitiatorController');
