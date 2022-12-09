@@ -74,6 +74,7 @@ deploy_app-dev_menlhk:
     - cd /var/www/amdalnet/
     - which npm
     - which node
+    - nvm list
     - git reset --hard origin/master
     - git pull
     - composer install
