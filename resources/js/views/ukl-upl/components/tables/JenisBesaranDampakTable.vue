@@ -10,6 +10,16 @@
     >
       Simpan Perubahan
     </el-button>
+    <el-button
+      type="success"
+      size="small"
+      icon="el-icon-check"
+      style="margin-bottom: 10px;"
+      :disabled="isReadOnly"
+      @click="!isReadOnly && handleSaveFormTemp()"
+    >
+      Simpan Sementara
+    </el-button>
     <el-table
       v-loading="loading"
       :data="data"
@@ -140,6 +150,31 @@ export default {
       impactIdtResource
         .store({
           unit_data: this.data,
+          temporary: false,
+        })
+        .then((response) => {
+          if (response.code === 200) {
+            this.$message({
+              message: 'Jenis dan besaran dampak berhasil disimpan',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            this.$emit('handleEnableSimpanLanjutkan');
+          }
+        })
+        .catch((err) => {
+          this.$message({
+            message: err.response.data.message,
+            type: 'error',
+            duration: 5 * 1000,
+          });
+        });
+    },
+    handleSaveFormTemp() {
+      impactIdtResource
+        .store({
+          unit_data: this.data,
+          temporary: true,
         })
         .then((response) => {
           if (response.code === 200) {
