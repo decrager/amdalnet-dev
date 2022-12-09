@@ -1418,6 +1418,7 @@ export default {
         params: {
           id: project.id,
           filename: `ka-${project.id}-${project.project_title.toLowerCase()}.docx`,
+          workspaceType: 'ka',
         },
       });
     },
@@ -1432,6 +1433,7 @@ export default {
         params: {
           id: idProject,
           filename: `${idProject}-andal.docx`,
+          workspaceType: 'andal',
         },
       });
     },
@@ -1446,6 +1448,7 @@ export default {
         params: {
           id: idProject,
           filename: `${idProject}-rkl-rpl.docx`,
+          workspaceType: 'rkl-rpl',
         },
       });
     },
@@ -1458,6 +1461,7 @@ export default {
         params: {
           id: idProject,
           filename: data.data.file_name,
+          workspaceType: 'ukl-upl',
         },
       });
     },

@@ -138,13 +138,22 @@ export default {
       });
     },
     regenerateDocx() {
-      this.loading = true;
-      axios
-        .get(`/api/dokumen-ukl-upl/${this.$route.params.id}?regenerate=true`)
-        .then(() => {
-          this.getData();
-          this.loading = false;
-        });
+      this.$confirm(
+        'Reset Dokumen. Apakah anda yakin akan mengenerate ulang dokumen?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }).then(() => {
+        this.loading = true;
+        axios
+          .get(`/api/dokumen-ukl-upl/${this.$route.params.id}?regenerate=true`)
+          .then(() => {
+            this.getData();
+            this.loading = false;
+          });
+      });
     },
   },
 };
