@@ -816,7 +816,11 @@ class ExportDocument extends Controller
             $project->save();
         } else {
             $document = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->orderBy('created_at', 'desc')->first();
-            $document_attachment->versi = $document->versi;
+            if($document === null) {
+                $document_attachment->versi = 0;
+            } else {
+                $document_attachment->versi = $document->versi;
+            }
         }
         $document_attachment->id_project = $project->id;
         $document_attachment->attachment = 'workspace/' . $save_file_name;

@@ -201,9 +201,6 @@ class Project extends Model implements Auditable
 
     public function getRklRplDocumentAttribute()
     {
-        if (!Storage::disk('public')->exists('workspace')) {
-            return false;
-        }
 
         $save_file_name = $this->id . '-rkl-rpl' . '.docx';
 
@@ -216,9 +213,6 @@ class Project extends Model implements Auditable
 
     public function getUklUplDocumentAttribute()
     {
-        if (!Storage::disk('public')->exists('workspace')) {
-            return false;
-        }
 
         $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $this->project_title)) . '.docx';
 
