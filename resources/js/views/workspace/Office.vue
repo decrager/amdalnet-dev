@@ -1,131 +1,58 @@
 <template>
-  <div class="app-container" style="position: relative; display: flex; flex-direction: row;">
+  <div class="app-container" style="position: relative; display: flex; flex-direction: column;">
+    <div class="uji-collab">
+      <div style="padding-bottom: 0.5rem;">
+        <el-button @click="showHide">Masukan Saran/Tanggapan</el-button>
+      </div>
+      <div v-if="showForm" style="position: absolute; overflow-x: scroll; background-color: #404040; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
+        <div style="width: 100%;">
+          <table class="table table-bordered">
+            <thead>
+              <th style="width: 1%;">No</th>
+              <th style="width: 35%;">Saran/Pendapat/Tanggapan</th>
+              <th style="width: 35%;">Perbaikan/Tanggapan Pemrakarsa</th>
+              <th style="width: 15%;">Aksi</th>
+            </thead>
+            <tbody>
+              <Comment
+                v-for="(comnt, index) in comments"
+                :key="index"
+                :no="comnt.no"
+                :page="comnt.page"
+                :suggest="comnt.suggest"
+                :page-fix="comnt.pageFix"
+                :response="comnt.response"
+                @handleSaveComment="handleSaveComment"
+                @handleDeleteComment="handleDeleteComment"
+              />
+              <NewComment
+                :next-comment="nextComment"
+                @handleAddComment="handleAddComment"
+              />
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
     <div id="etherpad-wrapper" style="height: 100%; width: 100%;">
       <div id="placeholder" />
-    </div>
-    <div class="uji-collab" style="margin-bottom: 10vh; max-width: 35%; height: 100%; background-color: #eeeee5;">
-      <div style="align-content: center; justify-content: center; display: flex; position: absolute; right: 1.5rem; top: 1.7rem;">
-        <el-button v-if="!showForm" style="border: 0; color: #363636; background-color: #bababa;" @click="showHide">&lt;</el-button>
-        <el-button v-if="showForm" style="border: 0; color: #363636; background-color: #bababa;" @click="showHide">&gt;</el-button>
-      </div>
-      <div v-if="showForm" style="background-color: #404040; padding-top: 3rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%; overflow: scroll;">
-        <div style="width: 100%;">
-          <el-table
-            :data="comments"
-            min-height="180"
-            max-height="200"
-            highlight-current-row
-            @row-click="handleClickRowTable"
-          >
-            <el-table-column
-              label="Saran/ Pendapat/ Tanggapan"
-              width="150"
-            >
-              <template v-slot="scope">
-                <span v-html="scope ? scope.row.description : ''" />
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="page"
-              label="Halaman"
-              width="150"
-              align="center"
-            />
-            <el-table-column
-              label="Perbaikan/ Tanggapan Pemrakarsa"
-              width="150"
-            >
-              <template v-slot="scope">
-                <!-- <span v-html="scope ? scope.row.replies.description : ''" /> -->
-                <!-- <span v-html="scope ? scope.row.user : ''" /> -->
-                <div v-for="rep in scope.row.replies" :key="rep.id">
-                  <div>
-                    <span v-html="rep ? rep.description : ''" />
-                  </div>
-                </div>
-              </template>
-              <!-- <div v-for="reply in comments[index].replies" :key="reply.id">
-                <span v-html="reply ? reply.description : ''" />
-              </div> -->
-              <!-- <template v-slot="scope">
-                <span v-html="scope ? scope.row.replies.description : ''" />
-              </template> -->
-              <!-- <div v-for="reply in comments" :key="reply.id">
-                <div v-html="reply.description" />
-              </div> -->
-              <!-- <div v-for="(re, index) in comments" :key="re.id">
-                <div v-for="reply in comments[index].replies" :key="reply.id">
-                  <div v-html="reply ? reply.description : null" />
-                </div>
-              </div> -->
-              <!-- <div v-for="(re, index) in comments" :key="re.id">
-                <div v-for="reply in comments[index].replies" :key="reply.id">
-                  <div v-html="reply ? reply.description : null" />
-                </div>
-              </div> -->
-            </el-table-column>
-            <el-table-column
-              prop="repair_page"
-              label="Halaman Perbaikan"
-              width="150"
-            />
-          </el-table>
-        </div>
-        <div style="background-color: #555555;">
-          <div style="display: flex; align-items: center; padding: 5px; justify-content: space-between; flex-direction: row;">
-            <div v-if="isTUK" style="display: flex; align-items: center; padding: 5px; justify-content: space-between; width: 100%;">
-              <div style="max-width: 50%; padding-right: 10px; color: #fff; font-weight: bold;">
-                <span>Halaman</span>
-              </div>
-              <div style="max-width: 50%;">
-                <el-input v-model="rekaps.page" type="number" :class="{ 'is-error': isStageError }" />
-              </div>
-            </div>
-            <div v-if="!isTUK" style="display: flex; align-items: center; padding: 5px; justify-content: space-between; width: 100%;">
-              <div style="max-width: 50%; padding-right: 10px; color: #fff; font-weight: bold;">
-                <span>Halaman Perbaikan</span>
-              </div>
-              <div style="max-width: 50%;">
-                <el-input v-model="rekaps.repair_page" type="number" :class="{ 'is-error': isStageError }" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style="background-color: #555555; padding-top: 5px;">
-          <div style="padding: 5px; background-color: #39773b; color: #ffffff; font-weight: bold; text-align: center;">
-            <span v-if="isTUK">Saran/ Pendapat/ Tanggapan</span>
-            <span v-if="!isTUK">Perbaikan/ Tanggapan Pemrakarsa</span>
-          </div>
-          <div style="padding: 5px;">
-            <TextEditor
-              v-model="rekaps.description"
-              output-format="html"
-              :menubar="''"
-              :image="false"
-              :toolbar="['bold italic underline bullist numlist fullscreen']"
-              :height="50"
-            />
-          </div>
-        </div>
-        <div style="background-color: #555555; padding-top: 1rem;">
-          <el-button v-if="showForm" style="border: 0; color: #363636; background-color: #bababa; width: 100%;margin-bottom: 1rem;" @click="addComment">Simpan</el-button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
 import WorkspaceResource from '@/api/workspace';
-import TextEditor from '@/components/Tinymce';
 import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
+import Comment from '../comment-recap/Comment.vue';
+import NewComment from '../comment-recap/NewComment.vue';
 const workspaceResource = new WorkspaceResource();
 const workspaceCommentResource = new Resource('workspace-comment');
 
 export default {
   components: {
-    TextEditor,
+    Comment,
+    NewComment,
   },
   props: {
     project: {
@@ -159,7 +86,22 @@ export default {
       idCat: null,
       rekaps: [],
       showForm: false,
-      comments: [],
+      comments: [
+        {
+          no: 1,
+          page: 1,
+          suggest: 'Kurang Mantab',
+          pageFix: 1,
+          response: 'Masa sih',
+        },
+        {
+          no: 2,
+          page: 2,
+          suggest: 'Kurang Mantab Gan',
+          pageFix: 2,
+          response: 'Masa sih bro',
+        },
+      ],
     };
   },
   computed: {
@@ -182,6 +124,10 @@ export default {
       }
       return '';
     },
+    nextComment() {
+      const lastComment = this.comments[this.comments.length - 1];
+      return parseInt(lastComment?.no ?? 0) + 1;
+    },
   },
   watch: {
     activeNames: function(val) {
@@ -197,9 +143,26 @@ export default {
   },
   created() {
     window.addEventListener('beforeunload', this.reload);
-    this.getComments();
+    // this.getComments();
   },
   methods: {
+    handleAddComment(comment) {
+      this.comments.push(comment);
+    },
+    handleSaveComment(comment) {
+      const found = this.comments.find((value, index) => {
+        return value.no === comment.no;
+      });
+      found.no = comment.no;
+      found.page = comment.page;
+      found.pageFix = comment.pageFix;
+      found.response = comment.response;
+      found.suggest = comment.suggest;
+    },
+    handleDeleteComment(no) {
+      const newComments = this.comments.filter((val) => val.no !== no);
+      this.comments = newComments;
+    },
     async getComments(){
       const comments = await workspaceCommentResource.list({
         filename_document: this.filename === 'sample.docx' ? localStorage.getItem('filenameLocal') : this.filename,
@@ -363,7 +326,7 @@ export default {
   }
 </style>
 
-<style scoped lang="scss">
+<style lang="scss">
   .is-error .el-input__inner,
   .is-error .el-textarea__inner {
     border-color: #f56c6c;
@@ -374,7 +337,6 @@ export default {
   .custom-highlight-row{
     background-color: pink
   }
-
   iframe {
     height: calc(100vh - 94px);
   }
@@ -399,9 +361,26 @@ export default {
       cursor: pointer;
     }
   }
-
   .muted {
     color: gray;
     font-size: 80%;
+  }
+  .table {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: white;
+  }
+  .table td, .table th {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+  }
+  .table thead th {
+    vertical-align: center;
+    border-bottom: 2px solid #dee2e6;
+    border-left: 1px solid #dee2e6;
+    background-color: #143b17;
+    color: white;
   }
 </style>

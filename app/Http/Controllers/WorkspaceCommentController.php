@@ -15,20 +15,20 @@ class WorkspaceCommentController extends Controller
      */
     public function index(Request $request)
     {
-        // $comment = [];
+        $comments = [];
         $comment = WorkspaceComment::where([['filename_document', $request->filename_document], ['reply_to', null]])->orderBY('id', 'DESC')->get();
         // $comments = [];
-        foreach($comment as $c) {
+        foreach ($comment as $c) {
             $replies = [];
-            if($c->reply) {
-                foreach($c->reply as $r) {
+            if ($c->reply) {
+                foreach ($c->reply as $r) {
                     $replies[] = [
                         'id' => $r->id,
                         'name' => $r->user->name,
                         'description' => $r->description,
                     ];
                 }
-                usort($replies, function($a, $b) {
+                usort($replies, function ($a, $b) {
                     return $a['id'] <=> $b['id'];
                 });
             }
@@ -76,7 +76,7 @@ class WorkspaceCommentController extends Controller
             $workspaceComment->filename_document = $request->filename_document;
             $workspaceComment->save();
             DB::commit();
-            if($request->reply_to) {
+            if ($request->reply_to) {
                 return [
                     'user' => $workspaceComment->name,
                     'description' => $workspaceComment->description,
