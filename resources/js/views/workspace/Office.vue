@@ -28,6 +28,7 @@
                 @handleDeleteComment="handleDeleteComment"
               />
               <NewComment
+                v-if="isTUK"
                 :next-comment="nextComment"
                 :checktuk="isTUK"
                 @handleAddComment="handleAddComment"

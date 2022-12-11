@@ -23,7 +23,7 @@
     </td>
     <td>
       <el-button rounded :disabled="!enableSaveButton" type="primary" @click="handleSave()">Save</el-button>
-      <el-button rounded type="danger" @click="handleDelete()">Delete</el-button>
+      <el-button v-if="checktuk" rounded type="danger" @click="handleDelete()">Delete</el-button>
     </td>
   </tr>
 </template>
