@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="position: relative; display: flex; flex-direction: column;">
-    <div class="uji-collab">
+    <div v-if="isAbleToComment" class="uji-collab">
       <div style="padding-bottom: 0.5rem;">
         <el-button @click="showHide">{{ !showForm ? 'Tampilkan Masukan Saran/Tanggapan' : 'Sembunyikan Masukan Saran/Tanggapan' }}</el-button>
       </div>
@@ -109,9 +109,28 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
+      markingStatus: 'markingStatus',
     }),
+    isAbleToComment() {
+      const status = [
+        'uklupl-mt.returned-examination',
+        'uklupl-mt.matrix-ukl',
+        'uklupl-mt.matrix-upl',
+        'uklupl-mt.sent',
+        'uklupl-mt.adm-review',
+        'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination',
+        'uklupl-mt.examination-meeting',
+        'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed',
+        'uklupl-mt.recommendation-drafting',
+      ];
+      console.log({ markingStatus: this.markingStatus });
+      return status.includes(this.markingStatus);
+    },
     isPenyusun() {
       return this.userInfo.roles.includes('formulator');
     },
@@ -140,6 +159,7 @@ export default {
     },
   },
   async mounted() {
+    this.getMarking();
     this.officeUrl = process.env.MIX_OFFICE_URL;
     this.addOfficeScript();
   },
@@ -148,6 +168,9 @@ export default {
     this.getComments();
   },
   methods: {
+    async getMarking() {
+      await this.$store.dispatch('getMarking', this.$route.params.id);
+    },
     loadWorkspaceType() {
       if (localStorage.getItem('workspaceType')) {
         this.workspaceType = localStorage.getItem('workspaceType');
