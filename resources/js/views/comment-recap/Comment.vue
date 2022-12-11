@@ -59,6 +59,10 @@ export default {
       type: String,
       default: null,
     },
+    checktuk: {
+      type: Boolean,
+      default: null,
+    },
   },
   data() {
     return {
@@ -101,12 +105,16 @@ export default {
       this.$emit('handleDeleteComment', this.id);
     },
     handleDoubleClickSuggest() {
-      this.toggleSuggestInput();
-      this.enableSaveButton = true;
+      if (this.checktuk) {
+        this.toggleSuggestInput();
+        this.enableSaveButton = true;
+      }
     },
     handleDoubleClickResponse() {
-      this.toggelResponseInput();
-      this.enableSaveButton = true;
+      if (!this.checktuk) {
+        this.toggelResponseInput();
+        this.enableSaveButton = true;
+      }
     },
   },
 };

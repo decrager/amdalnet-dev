@@ -23,11 +23,13 @@
                 :suggest="comnt.suggest"
                 :page-fix="comnt.pageFix"
                 :response="comnt.response"
+                :checktuk="isTUK"
                 @handleSaveComment="handleSaveComment"
                 @handleDeleteComment="handleDeleteComment"
               />
               <NewComment
                 :next-comment="nextComment"
+                :checktuk="isTUK"
                 @handleAddComment="handleAddComment"
               />
             </tbody>
@@ -117,7 +119,7 @@ export default {
       return this.userInfo.roles.includes('initiator');
     },
     isTUK() {
-      return this.userInfo.roles.includes('examiner-substance');
+      return this.userInfo.roles.some((role) => role.includes('examiner'));
     },
     padSrc() {
       if (this.sessionID) {

@@ -2,13 +2,13 @@
   <tr>
     <td>{{ nextComment }}</td>
     <td @dblclick="handleDoubleClickSuggest()">
-      <div>
+      <div v-if="checktuk">
         <el-input v-model="page" name="halaman" placeholder="Halaman" />
         <TextEditor v-model="suggest" />
       </div>
     </td>
     <td @dblclick="handleDoubleClickResponse()">
-      <div>
+      <div v-if="!checktuk">
         <el-input v-model="pageFix" placeholder="Halaman Perbaikan" />
         <TextEditor v-model="response" />
       </div>
@@ -30,6 +30,10 @@ export default {
       type: Number,
       default: null,
     },
+    checktuk: {
+      type: Boolean,
+      default: null,
+    },
   },
   data() {
     return {
@@ -43,7 +47,7 @@ export default {
   },
   computed: {
     enableAddButton() {
-      if (this.suggest && this.page && this.pageFix && this.response) {
+      if ((this.suggest && this.page) || (this.pageFix && this.response)) {
         return true;
       } else {
         return false;
@@ -51,7 +55,7 @@ export default {
     },
   },
   watch: {},
-  mounted: {},
+  mounted() {},
   methods: {
     handleAdd() {
       const newComment = {
