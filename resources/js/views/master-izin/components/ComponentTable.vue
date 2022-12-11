@@ -9,7 +9,16 @@
     <el-table-column type="expand">
       <template slot-scope="scope">
         <div>Penerbit SK : {{ scope.row.publisher }}</div>
-        <div>File : {{ scope.row.file }}</div>
+        <!-- <div><button :href="scope.row.file">Unduh Izin</button></div> -->
+        <el-button
+          type="text"
+          href="#"
+          icon="el-icon-edit"
+        >
+          <a :href="scope.row.file" target="_blank" style="color: grey">
+            Unduh Izin
+          </a>
+        </el-button>
         <el-button
           v-if="
             checkPermission(['manage permission list']) || checkRole(['admin'])

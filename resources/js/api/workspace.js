@@ -22,10 +22,10 @@ class WorkspaceResource extends Resource {
     });
   }
 
-  getConfig(id, filename) {
+  getConfig(id, filename, createTime, version) {
     return request({
       url: '/' + this.uri + '/config/' + id,
-      params: { filename },
+      params: { filename, createTime, version },
       method: 'get',
     });
   }

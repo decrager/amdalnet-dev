@@ -172,6 +172,7 @@ Route::apiResource('oss-projects', 'OssProjectController');
 Route::apiResource('project-authorities', 'ProjectAuthorityController');
 Route::apiResource('responder-types', 'ResponderTypeController');
 Route::apiResource('feedbacks', 'FeedbackController');
+Route::apiResource('export-document', 'ExportDocumentController@uklUpl');
 Route::apiResource('support-docs', 'SupportDocController');
 Route::apiResource('announcements', 'AnnouncementController');
 Route::apiResource('initiators', 'InitiatorController');
@@ -276,6 +277,7 @@ Route::get('activities', [ProjectController::class, 'states']);
 Route::apiResource('tuk-project', 'TukProjectController');
 Route::apiResource('reset-password', 'ResetPasswordController');
 Route::apiResource('ka-attachments', 'KaAttachmentController');
+Route::apiResource('save-status', 'SaveStatusController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
