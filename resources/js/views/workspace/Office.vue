@@ -2,7 +2,7 @@
   <div class="app-container" style="position: relative; display: flex; flex-direction: column;">
     <div class="uji-collab">
       <div style="padding-bottom: 0.5rem;">
-        <el-button @click="showHide">Masukan Saran/Tanggapan</el-button>
+        <el-button @click="showHide">{{ !showForm ? 'Tampilkan Masukan Saran/Tanggapan' : 'Sembunyikan Masukan Saran/Tanggapan' }}</el-button>
       </div>
       <div v-if="showForm" style="position: absolute; background-color: #404040; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
         <div style="width: 100%; height: 100%; overflow-x: scroll; margin-bottom: 1rem;">
