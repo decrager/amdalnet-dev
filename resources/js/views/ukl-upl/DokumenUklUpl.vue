@@ -120,7 +120,7 @@ export default {
         this.dataWorkspace = await axios.get(
           `/api/dokumen-ukl-upl/${this.$route.params.id}?revisi=true`
         );
-      } else if (!this.markingStatus === 'uklupl-mt.returned-examination' || this.markingStatus === null) {
+      } else if (this.markingStatus !== 'uklupl-mt.returned-examination' || this.markingStatus === null) {
         this.dataWorkspace = await axios.get(
           `/api/dokumen-ukl-upl/${this.$route.params.id}`
         );
