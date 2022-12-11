@@ -33,6 +33,10 @@ export default {
         return [];
       },
     },
+    readonly: {
+      type: Number,
+      default: 0,
+    },
     menubar: {
       type: String,
       default: 'file edit insert view format table',
@@ -104,6 +108,7 @@ export default {
         body_class: 'panel-body ',
         object_resizing: false,
         toolbar: this.toolbar.length > 0 ? this.toolbar : toolbar,
+        readonly: this.readonly ? this.readonly : 0,
         menubar: this.menubar,
         plugins: plugins,
         end_container_on_empty_block: true,
