@@ -101,7 +101,7 @@
                   Delete
                 </el-button> -->
                 <el-button
-                  v-if="couldViewProject && !isScoping && !isDigiWork"
+                  v-if="(couldViewProject || isExaminer || isChief || isSecretary || isSubtance || isAdmin) && !isScoping && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-view"

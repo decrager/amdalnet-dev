@@ -47,6 +47,9 @@
         <el-button type="warning" @click="handleTukProjectMember(scope.row.id)">
           Ubah
         </el-button>
+        <el-button type="warning" @click="handleViewForm(scope.row.id)">
+          Lihat Detail Penapisan
+        </el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -74,6 +77,20 @@ export default {
     handleTukProjectMember(id) {
       // eslint-disable-next-line object-curly-spacing
       this.$router.push({ name: 'tukProjectMember', params: { id } });
+    },
+    handleViewForm(id) {
+      const currentProject = this.list.find((item) => item.id === id);
+
+      // change project_year to string
+      currentProject.project_year = currentProject.project_year.toString();
+      // change field to number and formulator team
+      currentProject.field = Number(currentProject.field);
+      currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
+
+      this.$router.push({
+        name: 'publishProject',
+        params: { project: currentProject, readonly: true },
+      });
     },
   },
 };
