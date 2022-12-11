@@ -4,8 +4,8 @@
       <div style="padding-bottom: 0.5rem;">
         <el-button @click="showHide">Masukan Saran/Tanggapan</el-button>
       </div>
-      <div v-if="showForm" style="position: absolute; overflow-x: scroll; background-color: #404040; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
-        <div style="width: 100%;">
+      <div v-if="showForm" style="position: absolute; background-color: #404040; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
+        <div style="width: 100%; height: 100%; overflow-x: scroll; margin-bottom: 1rem;">
           <table class="table table-bordered">
             <thead>
               <th style="width: 1%;">No</th>
@@ -16,6 +16,7 @@
             <tbody>
               <Comment
                 v-for="(comnt, index) in comments"
+                :id="comnt.id"
                 :key="index"
                 :no="comnt.no"
                 :page="comnt.page"
@@ -137,21 +138,43 @@ export default {
     },
   },
   async mounted() {
-    console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
     this.officeUrl = process.env.MIX_OFFICE_URL;
     this.addOfficeScript();
   },
   created() {
-    window.addEventListener('beforeunload', this.reload);
-    // this.getComments();
+    this.loadWorkspaceType();
+    this.getComments();
   },
   methods: {
-    handleAddComment(comment) {
+    loadWorkspaceType() {
+      if (localStorage.getItem('workspaceType')) {
+        this.workspaceType = localStorage.getItem('workspaceType');
+      } else {
+        localStorage.setItem('workspaceType', this.workspaceType);
+      }
+    },
+    async handleAddComment(comment) {
+      const result = await workspaceCommentResource.store({
+        id_user: this.userInfo.id,
+        id_project: this.$route.params.id,
+        page: comment.page,
+        suggest: comment.suggest,
+        page_fix: comment.pageFix,
+        response: comment.response,
+        document_type: this.workspaceType,
+      });
+      comment.id = result.id;
       this.comments.push(comment);
     },
-    handleSaveComment(comment) {
+    async handleSaveComment(comment) {
+      await workspaceCommentResource.update(comment.id, {
+        page: comment.page,
+        suggest: comment.suggest,
+        page_fix: comment.pageFix,
+        response: comment.response,
+      });
       const found = this.comments.find((value, index) => {
-        return value.no === comment.no;
+        return value.id === comment.id;
       });
       found.no = comment.no;
       found.page = comment.page;
@@ -159,28 +182,21 @@ export default {
       found.response = comment.response;
       found.suggest = comment.suggest;
     },
-    handleDeleteComment(no) {
-      const newComments = this.comments.filter((val) => val.no !== no);
+    async handleDeleteComment(id) {
+      await workspaceCommentResource.destroy(id);
+      const newComments = this.comments.filter((val) => val.id !== id);
       this.comments = newComments;
     },
     async getComments(){
       const comments = await workspaceCommentResource.list({
-        filename_document: this.filename === 'sample.docx' ? localStorage.getItem('filenameLocal') : this.filename,
+        id_project: this.$route.params.id,
+        document_type: this.workspaceType,
+      });
+      comments.map((value, index) => {
+        value.no = ++index;
+        value.pageFix = value.page_fix;
       });
       this.comments = comments;
-    },
-    reload: function reload(event) {
-      if (this.filename === 'sample.docx') {
-        localStorage.setItem('filenameLocal', localStorage.getItem('filenameLocal'));
-      } else {
-        localStorage.setItem('filenameLocal', this.filename);
-      }
-      console.log('reload');
-      // localStorage.getItem('filenameLocal') ? localStorage.getItem('filenameLocal') : localStorage.setItem('filenameLocal', JSON.stringify(this.filename));
-    },
-    handleClickRowTable(row) {
-      this.reply_to = row.id;
-      // console.log(row.id);
     },
     clearError() {
       this.isStageError = false;
@@ -189,36 +205,7 @@ export default {
       console.log('resize');
     },
     showHide() {
-      console.log({ route: this.$route });
       this.showForm = !this.showForm;
-    },
-    addComment() {
-      console.log({ rekap: this.rekaps });
-      console.log({ useriInfo: this.userInfo });
-      console.log({ store: this.$store });
-      console.log({ route: this.$route });
-      console.log({ workspaceType: this.workspaceType });
-      console.log({ filename: this.$route.params.filename || localStorage.getItem('filenameLocal') });
-      this.handleSubmitCommnet();
-      this.getComments();
-    },
-    async handleSubmitCommnet() {
-      const newComment = await workspaceCommentResource.store({
-        id_user: this.userInfo.id,
-        name: this.userInfo.name,
-        id_project: this.$route.params.id,
-        page: this.rekaps.page,
-        description: this.rekaps.description,
-        repair_page: this.userInfo.roles.includes('examiner-substance') ? null : this.rekaps.repair_page,
-        reply_to: this.userInfo.roles.includes('examiner-substance') ? null : this.reply_to,
-        document_type: this.workspaceType,
-        filename_document: this.filename === 'sample.docx' ? localStorage.getItem('filenameLocal') : this.filename,
-      });
-      this.rekaps.push(newComment);
-      this.rekaps.unshift(newComment);
-      this.rekaps.description = null;
-      this.rekaps.page = null;
-      this.rekaps.repair_page = null;
     },
     handleTemplateUploadChange(file, fileList) {
       // add file to multipart

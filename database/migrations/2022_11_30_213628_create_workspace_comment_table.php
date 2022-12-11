@@ -15,12 +15,13 @@ class CreateWorkspaceCommentTable extends Migration
     {
         Schema::create('workspace_comment', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_project')->references('id')->on('projects');
             $table->integer('id_user')->nullable();
-            $table->integer('page')->nullable();
-            $table->text('description')->nullable();
-            $table->integer('repair_page')->nullable();
+            $table->string('page');
+            $table->text('suggest');
+            $table->string('page_fix')->nullable();
+            $table->text('response')->nullable();
             $table->string('document_type')->nullable();
-            $table->integer('reply_to')->nullable();
             $table->timestamps();
         });
     }

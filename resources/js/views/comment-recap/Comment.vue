@@ -35,6 +35,10 @@ export default {
     TextEditor,
   },
   props: {
+    id: {
+      type: Number,
+      default: null,
+    },
     no: {
       type: Number,
       default: null,
@@ -81,6 +85,7 @@ export default {
     },
     handleSave() {
       const comment = {
+        id: this.id,
         no: this.no,
         page: this.page,
         suggest: this.suggest,
@@ -93,7 +98,7 @@ export default {
       this.$emit('handleSaveComment', comment);
     },
     handleDelete() {
-      this.$emit('handleDeleteComment', this.no);
+      this.$emit('handleDeleteComment', this.id);
     },
     handleDoubleClickSuggest() {
       this.toggleSuggestInput();
