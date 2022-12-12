@@ -5,7 +5,7 @@ image: php:7.4-cli
 
 stages:
   # - test
-  - dev
+  # - dev
   - staging
   - production
 
