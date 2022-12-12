@@ -5,7 +5,7 @@ image: php:7.4-cli
 
 stages:
   # - test
-  # - dev
+  - dev
   - staging
   - production
 
@@ -18,34 +18,34 @@ stages:
 #     - php artisan migrate
 #     - vendor/bin/phpunit
 
-deploy_dev:
-  stage: dev
-  script:
-    - echo "BUILD ${CI_COMMIT_TAG} ${CI_COMMIT_SHORT_SHA}"
-    - cd /home/adminhadoop/apps/amdalnet/
-    - git reset --hard origin/master
-    - git pull
-    - docker-compose up -d
-    - sudo chown adminhadoop:adminhadoop -R storage/
-    - sudo chmod 777 -R storage/
-    - docker-compose exec -T laravel composer install
-    - docker-compose exec -T laravel composer dump-autoload
-    - docker-compose exec -T laravel php artisan migrate
-    - docker-compose exec -T laravel php artisan cache:clear
-    - docker-compose exec -T laravel php artisan config:clear
-    - docker-compose exec -T laravel php artisan route:clear
-    - docker-compose exec -T laravel npm install
-    - docker-compose exec -T laravel npm run production
-    # - docker-compose restart laravel
-    - echo "Update db cloud"
-    #- ssh hadoop@192.168.7.23 'PGPASSWORD=SemangatT3rus pg_dump -h localhost -U amdaldevs -d amdalnet -c --if-exists 
-    #- ssh amdalnet@103.172.205.4 'PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql; PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet_bak -U postgres -f ~/amdalnet.sql'
-  environment:
-    name: staging
-  only:
-    - master
-  tags:
-    - amdalnet
+# deploy_dev:
+#   stage: dev
+#   script:
+#     - echo "BUILD ${CI_COMMIT_TAG} ${CI_COMMIT_SHORT_SHA}"
+#     - cd /home/adminhadoop/apps/amdalnet/
+#     - git reset --hard origin/master
+#     - git pull
+#     - docker-compose up -d
+#     - sudo chown adminhadoop:adminhadoop -R storage/
+#     - sudo chmod 777 -R storage/
+#     - docker-compose exec -T laravel composer install
+#     - docker-compose exec -T laravel composer dump-autoload
+#     - docker-compose exec -T laravel php artisan migrate
+#     - docker-compose exec -T laravel php artisan cache:clear
+#     - docker-compose exec -T laravel php artisan config:clear
+#     - docker-compose exec -T laravel php artisan route:clear
+#     - docker-compose exec -T laravel npm install
+#     - docker-compose exec -T laravel npm run production
+#     # - docker-compose restart laravel
+#     - echo "Update db cloud"
+#     #- ssh hadoop@192.168.7.23 'PGPASSWORD=SemangatT3rus pg_dump -h localhost -U amdaldevs -d amdalnet -c --if-exists 
+#     #- ssh amdalnet@103.172.205.4 'PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql; PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet_bak -U postgres -f ~/amdalnet.sql'
+#   environment:
+#     name: staging
+#   only:
+#     - master
+#   tags:
+#     - amdalnet
 
 
 deploy_api-dev_menlhk:
