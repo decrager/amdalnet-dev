@@ -4,7 +4,7 @@
 
 <script>
 import axios from 'axios';
-import { isLogged, setLogged } from '@/utils/auth';
+import { isLogged, setLogged, setOSS } from '@/utils/auth';
 
 export default {
   name: 'OssAuth',
@@ -131,6 +131,7 @@ export default {
         .then(response => {
           if (response.status === 200) {
             setLogged('1');
+            setOSS('1');
             this.$message({
               message: 'Anda berhasil login sebagai ' + this.userInfo.email,
               type: 'success',
