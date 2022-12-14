@@ -386,7 +386,6 @@ export default {
       if (this.noMaster){
         return ((this.data.name).trim() === '') || emptyTexts;
       }
-      console.log({ guns: this.data });
       return (this.data.id === null) || (this.data.id <= 0) || emptyTexts;
     },
   },
