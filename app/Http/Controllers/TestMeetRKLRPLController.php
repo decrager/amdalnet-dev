@@ -170,8 +170,7 @@ class TestMeetRKLRPLController extends Controller
                     $tmpName = tempnam(sys_get_temp_dir(),'');
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
                     file_put_contents($tmpName, $tmpFile);
-
-                    Notification::send($user, new MeetingInvitation($meeting, $tmpName));
+                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName));
 
                     unlink($tmpName);
 

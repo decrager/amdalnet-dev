@@ -28,10 +28,19 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   const isUserLogged = isLogged();
+  const query = to.query.redirect;
   if (isUserLogged) {
     if (to.path === '/login') {
-      // if is logged in, redirect to the home page
-      next({ path: '/dashboard' });
+      if (to.fullPath === '/login') {
+        console.log({ gung: to.query.redirect });
+        next({ path: '/dashboard' });
+      } else if (to.query.redirect.includes('/project/docspace')) {
+        next({ path: to.query.redirect, query: {
+          idProject: query.substring(query.indexOf('e/') + 2, query.lastIndexOf('/')),
+        }});
+      } else {
+        next({ path: '/dashboard' });
+      }
       NProgress.done();
     } else {
       // determine whether the user has obtained his permission roles through getInfo
