@@ -17,11 +17,11 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         // clean up first
-        
+
         $userList = [
-            "Adriana C. Ocampo Uria",
+            "Adriana C Ocampo Uria",
             "Albert Einstein",
-            "Anna K. Behrensmeyer",
+            "Anna K Behrensmeyer",
             "Blaise Pascal",
             "Caroline Herschel",
             "Cecilia Payne-Gaposchkin",
@@ -35,9 +35,9 @@ class UsersTableSeeder extends Seeder
             "Flossie Wong-Staal",
             "Frieda Robscheit-Robbins",
             "Geraldine Seydoux",
-            "Gertrude B. Elion",
+            "Gertrude B Elion",
             "Ingrid Daubechies",
-            "Jacqueline K. Barton",
+            "Jacqueline K Barton",
             "Jane Goodall",
             "Jocelyn Bell Burnell",
             "Johannes Kepler",
@@ -50,10 +50,10 @@ class UsersTableSeeder extends Seeder
             "Max Planck",
             "Melissa Franklin",
             "Michael Faraday",
-            "Mildred S. Dresselhaus",
+            "Mildred S Dresselhaus",
             "Nicolaus Copernicus",
             "Niels Bohr",
-            "Patricia S. Goldman-Rakic",
+            "Patricia S Goldman-Rakic",
             "Patty Jo Watson",
             "Polly Matzinger",
             "Richard Phillips Feynman",
@@ -61,7 +61,7 @@ class UsersTableSeeder extends Seeder
             "Rosalind Franklin",
             "Ruzena Bajcsy",
             "Sarah Boysen",
-            "Shannon W. Lucid",
+            "Shannon W Lucid",
             "Shirley Ann Jackson",
             "Sir Ernest Rutherford",
             "Sir Isaac Newton",
@@ -87,7 +87,7 @@ class UsersTableSeeder extends Seeder
             $user = User::where([
                 'name' => $fullName,
                 'email' => strtolower($name) . '@amdalnet.dev'])->first();
-            
+
             if (!$user) {
                 $user = User::create([
                     'name' => $fullName,

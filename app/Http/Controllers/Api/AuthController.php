@@ -126,6 +126,30 @@ class AuthController extends BaseController
             ], 404);
         }
     }
+
+    public function loginSso(Request $request)
+    {
+        $validated = $request->only('username', 'password');
+        $resp = $this->validateLogin($validated);
+        $resp_json = $resp->json();
+        if ($resp_json['status'] == 200) {
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => [
+                    'access-token' => $resp_json['data']['access_token'],
+                    'refresh_token' => $resp_json['data']['refresh_token'],
+                ],
+            ]);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'code' => 404,
+                'message' => 'User not found',
+            ], 404);
+        }
+    }
+
     public function registerOss(Request $request)
     {
         $validated = $request->only('email', 'username', 'name',
@@ -185,8 +209,8 @@ class AuthController extends BaseController
             [
                 'access-token' => 'required',
                 'refresh_token' => 'required',
-                'kd_izin' => 'required',
-                'id_izin' => 'required',
+                'kd_izin' => 'nullable',
+                'id_izin' => 'nullable',
             ]
         );
         if ($validator->fails()) {
@@ -230,8 +254,8 @@ class AuthController extends BaseController
         $created = OssLicense::create([
             'id_initiator' => $id_initiator,
             'email' => $user_info['email'],
-            'id_izin' => $validated['id_izin'],
-            'kd_izin' => $validated['kd_izin'],
+            'id_izin' => $validated['id_izin'] ?? null,
+            'kd_izin' => $validated['kd_izin'] ?? null,
         ]);
         if ($created) {
             Log::debug('Token berhasil diterima.');
@@ -332,5 +356,17 @@ class AuthController extends BaseController
             'status' => 500,
             'errors' => ['email' => [__($status)]]
         ], 500);
+    }
+
+    private function validateLogin(array $validated)
+    {
+        $params = [
+            'username' => $validated['username'],
+            'password' => $validated['password']
+        ];
+        return Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+        ])->withBasicAuth(env('OSS_REQUEST_USERNAME'), env('OSS_CLIENT_SECRET'))
+            ->post(env('OSS_ENDPOINT_SSO') . '/users/login', $params);
     }
 }

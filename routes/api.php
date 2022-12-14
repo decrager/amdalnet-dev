@@ -69,6 +69,7 @@ Route::namespace('Api')->group(function () {
     Route::post('auth/update-token', 'AuthController@updateToken');
     Route::post('auth/login-oss', 'AuthController@loginOss');
     Route::post('auth/register-oss', 'AuthController@registerOss');
+    Route::post('auth/sso/login', 'AuthController@loginSso');
 
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes

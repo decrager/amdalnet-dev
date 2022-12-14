@@ -25,8 +25,8 @@ export default {
   mounted() {
     this.fullscreenLoading = true;
     console.log('this.token = ' + this.$route.query['access-token']);
-    if (this.token === undefined || this.refresh_token === undefined ||
-      this.id_izin === undefined || this.kd_izin === undefined) {
+    if (this.token === undefined || this.refresh_token === undefined /* ||
+      this.id_izin === undefined || this.kd_izin === undefined */) {
       this.fullscreenLoading = false;
       this.$message({
         message: 'Link tidak valid. Silakan coba lagi.',
@@ -55,7 +55,7 @@ export default {
                     type: 'error',
                     duration: 5 * 1000,
                   });
-                  this.$router.push({ path: '/' });
+                  // this.$router.push({ path: '/' });
                 } else {
                   this.isEmailRegistered()
                     .then(response => {

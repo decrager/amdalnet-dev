@@ -68,6 +68,24 @@ const actions = {
     });
   },
 
+  loginOss({ commit }, userInfo) {
+    const { username, password } = userInfo;
+    return new Promise((resolve, reject) => {
+      axios.post('/api/auth/sso/login', { username: username.trim(), password: password })
+        .then(response => {
+          const { data } = response;
+          if (!data) {
+            reject('Verification failed, please Login again.');
+          }
+          resolve(data);
+        })
+        .catch(error => {
+          console.log(error);
+          reject(error);
+        });
+    });
+  },
+
   setPage({ commit }, page) {
     commit('SET_PAGE_REGISTER', page);
   },
