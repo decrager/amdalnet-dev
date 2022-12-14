@@ -32,7 +32,6 @@ router.beforeEach(async(to, from, next) => {
   if (isUserLogged) {
     if (to.path === '/login') {
       if (to.fullPath === '/login') {
-        console.log({ gung: to.query.redirect });
         next({ path: '/dashboard' });
       } else if (to.query.redirect.includes('/project/docspace')) {
         next({ path: to.query.redirect, query: {

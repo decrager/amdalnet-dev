@@ -170,16 +170,19 @@ export default {
   },
   async created() {
     const idProject = this.$route.query.idProject;
-    const data = await Axios.get(
-      `/api/dokumen-ukl-upl/${idProject}`
-    );
+    if (idProject) {
+      const data = await Axios.get(
+        `/api/dokumen-ukl-upl/${idProject}`
+      );
 
-    const datas = data.data;
-    this.filenames = datas.file_name;
-    this.createTimes = datas.create_time;
-    this.versions = datas.versi_doc;
-
-    this.addOfficeScript(datas);
+      const datas = data.data;
+      this.filenames = datas.file_name;
+      this.createTimes = datas.create_time;
+      this.versions = datas.versi_doc;
+      this.addOfficeScript(datas);
+    } else {
+      this.addOfficeScript();
+    }
     this.loadWorkspaceType();
     this.getComments();
   },
@@ -301,7 +304,6 @@ export default {
       if (this.$route.params.filename || data) {
         filename = this.$route.params.filename === undefined ? data.file_name : this.$route.params.filename;
       }
-      console.log({ gunf: filename });
 
       let createTime = this.createTime;
       if (this.$route.params.createTime || data) {

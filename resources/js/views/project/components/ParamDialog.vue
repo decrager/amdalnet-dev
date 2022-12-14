@@ -140,7 +140,6 @@ export default {
       // this.handleRefreshDialog();
     },
     handleCancelParam() {
-      console.log({ gunx: this.list });
       if (this.list[0].scale_unit === '' || !this.list[0].scale_unit) {
         this.$message({
           message: `Satuan belum diisi, silahkan isi terlebih dahulu.`,

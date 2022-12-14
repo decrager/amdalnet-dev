@@ -166,7 +166,6 @@ export default {
         x.cert_no = this.noCertificate(x.cert_no);
         x.user = x.user.active === 1 ? 'Aktif' : 'Tidak Aktif';
 
-        console.log({ guns: x.user });
         return x;
       });
       this.total = meta.total;
