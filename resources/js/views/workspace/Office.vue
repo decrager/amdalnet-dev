@@ -175,8 +175,8 @@ export default {
     this.getComments();
   },
   methods: {
-    download() {
-      this.loadingDownload = true;
+    async download() {
+      // const formData = new FormData();
       axios
         .get(
           `/api/workspace-comment?download=true&id_project=${this.$route.params.id}&document_type=${this.workspaceType}`,
@@ -191,11 +191,9 @@ export default {
           fileLink.setAttribute('download', 'rekap.docx');
           document.body.appendChild(fileLink);
           fileLink.click();
-          this.loadingDownload = false;
         })
         .catch((error) => {
           console.log(error.response.data);
-          this.loadingDownload = false;
         });
     },
     async getMarking() {
