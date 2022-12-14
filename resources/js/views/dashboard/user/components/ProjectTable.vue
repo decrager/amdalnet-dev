@@ -1,8 +1,8 @@
-<!-- <template>
+<template>
   <div>
     <el-alert
       style="margin-top: 5px; margin-bottom: 5px"
-      title="Silahkan melanjutkan proses penapisan proyek yang diajukan"
+      title="Silahkan melanjutkan proses penapisan proyek yang diajukan melalui OSS RBA"
       type="warning"
       effect="dark"
       :closable="false"
@@ -19,7 +19,7 @@
             (data.id_proyek ? data.id_proyek : '')
               .toLowerCase()
               .includes(search.toLowerCase()) ||
-            (data.idizin ? data.idizin : '')
+            (data.id_izin ? data.id_izin : '')
               .toLowerCase()
               .includes(search.toLowerCase()) ||
             (data.name ? data.name : '')
@@ -55,7 +55,7 @@
       >
         <template slot-scope="scope">
           <div><b>ID Proyek :</b> {{ scope.row.id_proyek }}</div>
-          <div><b>ID Izin :</b> {{ scope.row.idizin }}</div>
+          <div><b>ID Izin :</b> {{ scope.row.id_izin }}</div>
           <div><b>Nama Kegiatan :</b> {{ scope.row.name }}</div>
           <div><b>KBLI :</b> {{ scope.row.kbli }}</div>
           <div><b>Tingkat Risiko :</b> {{ scope.row.skala_resiko | tingkatResiko }}</div>
@@ -95,7 +95,7 @@
       </el-table-column>
     </el-table>
   </div>
-</template> -->
+</template>
 
 <script>
 import { mapGetters } from 'vuex';
@@ -135,7 +135,7 @@ export default {
     ); // get data from ossnib
 
     const ossProjects = this.$store.getters.ossByNib.data_proyek?.filter(
-      (e) => (e.file_izin === '-' || !e.file_izin) && !e.status_tapis
+      (e) => e.id_izin && (e.skala_resiko === 'MT' || e.skala_resiko === 'T') && (e.file_izin === '-' || !e.file_izin) && !e.status_tapis
     );
     console.log(ossProjects);
     console.log(this.$store.getters.ossByNib);
@@ -151,7 +151,7 @@ export default {
             kewenangan: e.kewenangan,
             lokasi: e.data_lokasi_proyek,
             skala_resiko: e.skala_resiko,
-            idizin: e.id_izin,
+            id_izin: e.id_izin,
           });
         } else {
           this.list.push({
@@ -161,7 +161,7 @@ export default {
             kewenangan: e.kewenangan,
             lokasi: e.data_lokasi_proyek,
             skala_resiko: e.skala_resiko,
-            idizin: e.id_izin,
+            id_izin: e.id_izin,
           });
         }
       });
