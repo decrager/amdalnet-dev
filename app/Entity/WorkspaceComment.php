@@ -12,10 +12,6 @@ class WorkspaceComment extends Model
     protected $guarded = [];
     protected $table = 'workspace_comment';
 
-    public function reply()
-    {
-        return $this->hasMany(WorkspaceComment::class, 'reply_to', 'id');
-    }
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user', 'id');
