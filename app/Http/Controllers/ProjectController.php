@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use App\Utils\TemplateProcessor;
 use PhpOffice\PhpWord\Element\Table;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\Shared\Html;
 
 class ProjectController extends Controller
@@ -1377,6 +1378,7 @@ class ProjectController extends Controller
         $numberSubProject = 1;
         $numberAddress = 1;
         $listSubProject = array_values($dataProject->listSubProject->sortByDesc('type')->toArray());
+        Settings::setOutputEscapingEnabled(true);
         foreach ($listSubProject as $key => $subProject) {
             $dataDaftarKegiatan[$key]['no'] = $numberSubProject++;
             $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['biz_name'] ?? '-') . ' ' . $dataProject->kbli . ' - Sektor ' . $subProject['sector_name'];
@@ -1394,6 +1396,8 @@ class ProjectController extends Controller
 
         $document->cloneRowAndSetValues('no', $dataDaftarKegiatan);
         $document->cloneRowAndSetValues('no_lokasi', $dataDaftarLokasi);
+
+        Settings::setOutputEscapingEnabled(false);
 
         $outputWord = storage_path('app/public/' . 'print-penapisan.docx');
         // save word to local

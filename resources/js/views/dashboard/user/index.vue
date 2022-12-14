@@ -31,7 +31,7 @@
         </el-col>
       </el-row>
       <el-row v-if="!isPemerintah">
-        <project-table v-if="isInitiator" />
+        <project-table v-if="isInitiator && isLoginFromOSS" />
       </el-row>
       <el-row v-if="isLPJP && user">
         <lpjp-formulators :user="user" />
@@ -74,6 +74,7 @@ import ExaminerActivities from './components/ExaminerActivities.vue';
 import LpjpInformation from './components/LpjpInformation.vue';
 import LpjpFormulators from './components/LpjpFormulators.vue';
 import LpjpSummary from './components/LpjpSummary.vue';
+import { isOSS } from '@/utils/auth';
 
 export default {
   name: 'UserDashboard',
@@ -112,6 +113,9 @@ export default {
     },
     isLPJP() {
       return this.$store.getters.roles.includes('lpjp');
+    },
+    isLoginFromOSS() {
+      return isOSS();
     },
   },
   mounted() {

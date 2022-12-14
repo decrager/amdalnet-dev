@@ -1,6 +1,6 @@
 import { logout, getInfo } from '@/api/auth';
 // import axios from 'axios';
-import { isLogged, setLogged, removeToken } from '@/utils/auth';
+import { isLogged, setLogged, removeToken, removeIsOSS } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
 import axios from 'axios';
@@ -136,6 +136,7 @@ const actions = {
           commit('SET_TOKEN', '');
           commit('SET_ROLES', []);
           removeToken();
+          removeIsOSS();
           resetRouter();
           resolve();
         })
@@ -151,6 +152,7 @@ const actions = {
       commit('SET_TOKEN', '');
       commit('SET_ROLES', []);
       removeToken();
+      removeIsOSS();
       resolve();
     });
   },

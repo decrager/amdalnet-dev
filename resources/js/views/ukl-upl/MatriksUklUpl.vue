@@ -55,6 +55,7 @@ import Resource from '@/api/resource';
 import axios from 'axios';
 import UploadPetaBatasUklUpl from './components/UploadPetaBatasUklUpl.vue';
 const impactIdtResource = new Resource('impact-identifications');
+const saveStatus = new Resource('save-status');
 
 export default {
   name: 'MatriksUklUpl',
@@ -155,12 +156,34 @@ export default {
     handleDokPendukungUploaded() {
       this.petaBatasDisabled = false;
     },
-    handleSaveForm() {
-      const id = this.$route.params && this.$route.params.id;
-      this.$router.push({
-        name: 'DokumenUklUpl',
-        params: id,
+    async handleSaveForm() {
+      const projectId = this.$route.params && this.$route.params.id;
+      const sections = ['matriks.ukl', 'matriks.upl'];
+      const result = await saveStatus.list({
+        sections,
+        project_id: projectId,
       });
+      const errors = [];
+      sections.map((value, index) => {
+        result.map((val, ind) => {
+          if (value === val.section && val.temporary) {
+            errors.push(value);
+          }
+        });
+      });
+      if (errors.length >= 1) {
+        this.$alert(
+          'Silahkan lengkapi data matriks UKL atau matriks UPL kemudian pilih tombol Simpan Perubahan pada masing-masing matriks',
+          {
+            confirmButtonText: 'OK',
+          }
+        );
+      } else {
+        this.$router.push({
+          name: 'DokumenUklUpl',
+          params: projectId,
+        });
+      }
     },
   },
 };

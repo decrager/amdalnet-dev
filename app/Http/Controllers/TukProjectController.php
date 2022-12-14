@@ -107,7 +107,7 @@ class TukProjectController extends Controller
                             });
                         }
                     })
-                    ->with(['address', 'initiator' => function($q) {
+                    ->with(['address', 'listSubProject', 'initiator' => function($q) {
                         $q->select('id', 'name');
                     }])
                     ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')

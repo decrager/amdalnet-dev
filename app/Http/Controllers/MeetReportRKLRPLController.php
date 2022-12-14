@@ -100,6 +100,15 @@ class MeetReportRKLRPLController extends Controller
             if($document_type == 'ukl-upl') {
                 $project = Project::findOrFail($request->idProject);
                 if(!$request->isAccepted) {
+                    // update workflow
+                    if($project->marking == 'uklupl-mt.examination') {
+                        $project->workflow_apply('held-uklupl-examination-meeting');
+                        $project->workflow_apply('return-uklupl-examination');
+                        $project->save();
+                    } else if ('uklupl-mt.ba-drafting') {
+                        $project->applyWorkFlowTransition('draft-uklupl-ba', 'uklupl-mt.examination-meeting', 'uklupl-mt.returned-examination');
+                        $project->save();
+                    }
                     // delete file
                     $document = KaReview::where([['id_project', $request->idProject],['status', 'submit']])->first();
                     Storage::disk('public')->delete($document->getRawApplicationLetter());
@@ -107,12 +116,6 @@ class MeetReportRKLRPLController extends Controller
                     // delete submit document
                     KaReview::where('id_project', $request->idProject)->delete();
 
-                    // update workflow
-                    if($project->marking == 'uklupl-mt.examination') {
-                        $project->workflow_apply('held-uklupl-examination-meeting');
-                        $project->workflow_apply('return-uklupl-examination');
-                        $project->save();
-                    }
                 }
 
                 // === NOTIFICATIONS === //

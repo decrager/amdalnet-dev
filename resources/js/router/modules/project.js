@@ -116,7 +116,7 @@ const projectRoutes = {
       props: true,
     },
     {
-      path: 'docspace/:id(\\d+)',
+      path: 'docspace/:id(\\d+)/:versi',
       component: () => import('@/views/workspace/Office'),
       name: 'projectWorkspace',
       hidden: true,

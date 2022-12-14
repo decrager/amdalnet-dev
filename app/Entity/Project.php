@@ -55,7 +55,7 @@ class Project extends Model implements Auditable
 
     protected $guarded = [];
 
-    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document', 'form_ka_doc'];
+    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document', 'form_ka_doc', 'version_workspace'];
 
     public function team()
     {
@@ -178,6 +178,21 @@ class Project extends Model implements Auditable
         return false;
     }
 
+    public function getVersionWorkspaceAttribute()
+    {
+        $data = array();
+        for($i= 0; $i < 100; $i++) {
+            $docVersi = DocumentAttachment::select('versi')->where('id_project', $this->id)->where('versi', $i)->orderBy('created_at', 'desc')->first();
+            if($docVersi === null) {
+                continue;
+            } else {
+                $data[] = $docVersi;
+            }
+        };
+
+        return $data;
+    }
+
     public function getSubmissionDeadlineAttribute()
     {
         Carbon::setLocale('id');
@@ -186,9 +201,6 @@ class Project extends Model implements Auditable
 
     public function getRklRplDocumentAttribute()
     {
-        if (!Storage::disk('public')->exists('workspace')) {
-            return false;
-        }
 
         $save_file_name = $this->id . '-rkl-rpl' . '.docx';
 
@@ -201,9 +213,6 @@ class Project extends Model implements Auditable
 
     public function getUklUplDocumentAttribute()
     {
-        if (!Storage::disk('public')->exists('workspace')) {
-            return false;
-        }
 
         $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $this->project_title)) . '.docx';
 

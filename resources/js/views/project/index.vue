@@ -82,7 +82,7 @@
                 >
                   Publish
                 </el-button>
-                <el-button
+                <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
@@ -90,7 +90,7 @@
                   @click="handleEditForm(scope.row.id)"
                 >
                   Edit
-                </el-button>
+                </el-button> -->
                 <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
@@ -101,7 +101,7 @@
                   Delete
                 </el-button> -->
                 <el-button
-                  v-if="couldViewProject && !isScoping && !isDigiWork"
+                  v-if="(couldViewProject || isExaminer || isChief || isSecretary || isSubtance || isAdmin) && !isScoping && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -155,7 +155,7 @@
                   Dokumen Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator)) && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && scope.row.marking !== 'uklupl-mt.returned-examination' && ((isFormulator && scope.row.ukl_upl_document) || (isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator)) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -298,12 +298,23 @@
                 >
                   Workspace RKL RPL
                 </el-button>
+                <span v-for="item in scope.row.version_workspace" :key="item.id">
+                  <el-button
+                    v-if="isUklUpl(scope.row) && scope.row.version_workspace !== null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
+                    href="#"
+                    type="text"
+                    icon="el-icon-document"
+                    @click="handleWorkspaceUKLUPL(scope.row.id, item.versi)"
+                  >
+                    Workspace UKL UPL versi {{ item.versi }}
+                  </el-button>
+                </span>
                 <el-button
-                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
+                  v-if="isUklUpl(scope.row) && scope.row.version_workspace === null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleWorkspaceUKLUPL(scope.row.id)"
+                  @click="handleWorkspaceUKLUPL(scope.row.id, item.versi)"
                 >
                   Workspace UKL UPL
                 </el-button>
@@ -568,6 +579,7 @@ export default {
     ...mapGetters({
       'userInfo': 'user',
       'userId': 'userId',
+      'markingStatus': 'markingStatus',
     }),
     couldCreateProject(){
       return this.$store.getters.permissions.includes('create project');
@@ -1418,6 +1430,7 @@ export default {
         params: {
           id: project.id,
           filename: `ka-${project.id}-${project.project_title.toLowerCase()}.docx`,
+          workspaceType: 'ka',
         },
       });
     },
@@ -1432,6 +1445,7 @@ export default {
         params: {
           id: idProject,
           filename: `${idProject}-andal.docx`,
+          workspaceType: 'andal',
         },
       });
     },
@@ -1446,18 +1460,22 @@ export default {
         params: {
           id: idProject,
           filename: `${idProject}-rkl-rpl.docx`,
+          workspaceType: 'rkl-rpl',
         },
       });
     },
-    async handleWorkspaceUKLUPL(idProject) {
+    async handleWorkspaceUKLUPL(idProject, version) {
       const data = await axios.get(
-        `/api/dokumen-ukl-upl/${idProject}`
+        `/api/dokumen-ukl-upl/${idProject}?versi=${version}`
       );
       this.$router.push({
         name: 'projectWorkspace',
         params: {
           id: idProject,
+          versi: data.data.versi_doc,
           filename: data.data.file_name,
+          createTime: data.data.create_time,
+          workspaceType: 'ukl-upl',
         },
       });
     },

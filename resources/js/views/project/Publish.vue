@@ -94,18 +94,15 @@
       <el-row :gutter="4">
         <el-col :span="12">
           <h2>Hasil Penapisan Rencana Kegiatan</h2>
-          <div role="alert" class="el-alert el-alert--info is-light">
+          <div v-if="!isPemerintah" role="alert" class="el-alert el-alert--info is-light space">
             <i class="el-alert__icon el-icon-warning is-big" />
-            <div class="el-alert__content"><span class="el-alert__title is-bold">Dokumen yang diupload dapat berupa :</span>
+            <div class="el-alert__content">
               <p class="el-alert__description">
-                Persetujuan Kesesuaian Kegiatan Pemanfaatan Ruang (PKKPR) yang diterbitkan OSS atau
-                Rekomendasi Kesesuaian Tata Ruang yang diterbitkan oleh Kementerian ATR/BPN atau
-                Pernyataan Mandiri Kesesuaian Tata Ruang (untuk jenis Usaha Mikro Kecil / UMK). <br>
-                Catatan: Dokumen yang diupload masih bisa diperbarui pada tahap penyusunan Formulir KA, ANDAL atau UKL-UPL
+                Permohonan Persetujuan Lingkungan dengan tingkat Resiko <b>Rendah</b> atau <b>Menengah Rendah</b> dilakukan secara otomatis melalui sistem <b>OSS RBA</b>
               </p>
             </div>
+            <br><br>
           </div>
-          <br><br>
           <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
             <el-col :span="12">{{ project.registration_no || "Belum Mempunyai" }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
@@ -226,6 +223,9 @@ export default {
     getLpjps(){
       return this.$store.getters.lpjps;
     },
+    isPemerintah(){
+      return this.$store.getters.isPemerintah;
+    },
     isRiskShow() {
       if (this.project.required_doc != null) {
         if (this.$store.getters.isPemerintah) {
@@ -240,7 +240,7 @@ export default {
     },
   },
   async mounted() {
-    console.log(this.project);
+    console.log(this.project, this.list);
     this.fullLoading = true;
     // for step
     this.$store.dispatch('getStep', 1);
@@ -755,7 +755,7 @@ export default {
         },
         {
           param: 'Bidang Usaha/Kegiatan',
-          value: this.project.listSubProject[0].biz_name,
+          value: this.project.listSubProject[0].biz_name === undefined ? this.project.list_sub_project[0].biz_name : this.project.listSubProject[0].biz_name,
         },
         {
           param: 'Skala/Besaran',
@@ -808,5 +808,9 @@ export default {
 <style>
 .bold-row {
   font-weight: bold;
+}
+
+.space {
+  margin-bottom: 1rem;
 }
 </style>

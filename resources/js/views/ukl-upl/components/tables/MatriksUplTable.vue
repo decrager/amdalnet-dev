@@ -1,16 +1,51 @@
 <template>
   <div class="app-container">
-    <el-button
-      :loading="loadingSubmit"
-      type="success"
-      size="small"
-      icon="el-icon-check"
-      style="margin-bottom: 10px;"
-      :disabled="isReadOnly"
-      @click="!isReadOnly && handleSaveForm()"
-    >
-      Simpan Perubahan
-    </el-button>
+    <el-row :gutter="20">
+      <el-col :span="6">
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="Klik tombol ini untuk jika seluruh data yang sudah terisi dalam Tabel, dan siap untuk disimpan
+          klik tombol ini jika seluruh data sudah terisi dalam Tabel dan siap untuk disimpan"
+          placement="top"
+        >
+          <i class="el-alert__icon el-icon-warning" />
+        </el-tooltip>
+      </el-col>
+      <el-col :span="6">
+        <el-tooltip class="item" effect="dark" content="klik tombol ini untuk menyimpan sebagian data yang sudah diinput dalam Tabel" placement="top">
+          <i class="el-alert__icon el-icon-warning" />
+        </el-tooltip>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="6">
+        <el-button
+          :loading="loadingSubmit"
+          type="success"
+          size="small"
+          icon="el-icon-check"
+          style="margin-bottom: 10px;"
+          :disabled="isReadOnly"
+          @click="!isReadOnly && handleSaveForm()"
+        >
+          Simpan Perubahan
+        </el-button>
+      </el-col>
+      <el-col :span="6">
+        <el-button
+          :loading="loadingSubmit"
+          type="warning"
+          size="small"
+          icon="el-icon-check"
+          style="margin-bottom: 10px;"
+          :disabled="isReadOnly"
+          @click="!isReadOnly && handleSaveFormTemp()"
+        >
+          Simpan Sementara
+        </el-button>
+      </el-col>
+    </el-row>
     <el-table
       v-loading="loading"
       :data="data"
@@ -553,6 +588,7 @@ export default {
             env_monitor_plan_data: this.data,
             deleted_form: JSON.stringify(this.deletedForm),
             deleted_location: JSON.stringify(this.deletedLocation),
+            temporary: false,
           })
           .then((response) => {
             if (response.code === 200) {
@@ -575,6 +611,35 @@ export default {
             });
           });
       }
+    },
+    handleSaveFormTemp() {
+      impactIdtResource
+        .store({
+          env_monitor_plan_data: this.data,
+          deleted_form: JSON.stringify(this.deletedForm),
+          deleted_location: JSON.stringify(this.deletedLocation),
+          temporary: true,
+        })
+        .then((response) => {
+          if (response.code === 200) {
+            this.loadingSubmit = false;
+            this.$message({
+              message: 'Matriks UPL berhasil disimpan',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            this.getData();
+          // this.$emit('handleCheckProjectMarking');
+          }
+        })
+        .catch((err) => {
+          this.loadingSubmit = false;
+          this.$message({
+            message: err.response.data.message,
+            type: 'error',
+            duration: 5 * 1000,
+          });
+        });
     },
     addPlanToImpact(idImp, plan) {
       const idx = this.data.findIndex(imp => imp.id === idImp);
