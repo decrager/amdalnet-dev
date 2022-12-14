@@ -15,6 +15,7 @@
               <th style="width: 15%;">Aksi</th>
             </thead>
             <tbody>
+              <EmptyComment v-if="comments.length < 1" />
               <Comment
                 v-for="(comnt, index) in comments"
                 :id="comnt.id"
@@ -51,6 +52,7 @@ import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import Comment from '../comment-recap/Comment.vue';
 import NewComment from '../comment-recap/NewComment.vue';
+import EmptyComment from '../comment-recap/EmptyComment.vue';
 const workspaceResource = new WorkspaceResource();
 const workspaceCommentResource = new Resource('workspace-comment');
 import axios from 'axios';
@@ -59,6 +61,7 @@ export default {
   components: {
     Comment,
     NewComment,
+    EmptyComment,
   },
   props: {
     project: {
@@ -135,7 +138,6 @@ export default {
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
       ];
-      console.log({ markingStatus: this.markingStatus });
       return status.includes(this.markingStatus);
     },
     isPenyusun() {
@@ -172,6 +174,7 @@ export default {
   },
   created() {
     this.loadWorkspaceType();
+    this.loadFileName();
     this.getComments();
   },
   methods: {
@@ -204,6 +207,13 @@ export default {
         this.workspaceType = localStorage.getItem('workspaceType');
       } else {
         localStorage.setItem('workspaceType', this.workspaceType);
+      }
+    },
+    loadFileName() {
+      if (localStorage.getItem('fileName')) {
+        this.filename = localStorage.getItem('fileName');
+      } else {
+        localStorage.setItem('fileName', this.filename);
       }
     },
     async handleAddComment(comment) {
