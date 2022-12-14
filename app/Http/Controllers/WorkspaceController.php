@@ -154,8 +154,8 @@ class WorkspaceController extends Controller
                     'edit' => ($commentOnly || in_array($projectMarking, $dataMarking))? false : true,
                     'modifyContentControl' => true,
                     'copy' => false,
-                    'print' => false,
-                    'download' => false,
+                    'print' => true,
+                    'download' => true,
                     'comment' => true
                 ]
             ],
