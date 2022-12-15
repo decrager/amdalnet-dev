@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\DocumentAttachment;
 use App\Entity\EnvManageDoc;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
@@ -168,27 +169,15 @@ class TestMeetRKLRPLController extends Controller
                     $meeting->is_invitation_sent = true;
                     $meeting->save();
 
+                    $document_attachment =  DocumentAttachment::where('id_project', $project->id)->first();
+                    $pdf_url = $this->docxToPdf($document_attachment->attachment);
+                    $filename = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title));
+
                     $tmpName = tempnam(sys_get_temp_dir(),'');
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
-                    $data = Storage::disk('public')->get('workspace/'. 'ukl-upl-' . strtolower($project->project_title) . '.docx');
                     file_put_contents($tmpName, $tmpFile);
-                    file_put_contents(storage_path('app/document.docx'), $data);
-                    $name = 'ukl-upl-' . strtolower($project->project_title);
 
-                    // /* Set the PDF Engine Renderer Path */
-                    // $domPdfPath = base_path('vendor/dompdf/dompdf');
-                    // \PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
-                    // \PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
-
-                    // //Load word file
-                    // $Content = \PhpOffice\PhpWord\IOFactory::load(public_path('ukl-upl-spbu akr pangsud.docx'));
-
-                    // //Save it into PDF
-                    // $PDFWriter = \PhpOffice\PhpWord\IOFactory::createWriter($Content,'PDF');
-                    // $PDFWriter->save(storage_path('new-result.pdf'));
-                    // dd($kk);
-
-                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, storage_path('app/document.docx')));
+                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, $pdf_url, $filename));
 
                     unlink($tmpName);
 
@@ -335,6 +324,15 @@ class TestMeetRKLRPLController extends Controller
         }
 
         return response()->json(['message' => 'success']);
+    }
+
+    private function docxToPdf($url)
+    {
+        $downloadUri = url($url);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 
     /**
