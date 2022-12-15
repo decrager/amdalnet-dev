@@ -9,7 +9,7 @@
       </div>
     </td>
     <!-- Jika TUK dan belum ada response -->
-    <td v-if="checktuk && !anyResponses" @dblclick="handleDoubleClickSuggest()">
+    <td v-if="checktuk && !anyResponses" colspan="2" @dblclick="handleDoubleClickSuggest()">
       <div v-if="checktuk">
         <el-input v-model="page" name="halaman" placeholder="Halaman" />
         <TextEditor v-model="suggest" />

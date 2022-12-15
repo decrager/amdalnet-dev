@@ -1,7 +1,8 @@
 <template>
   <tr>
     <td>{{ no }}</td>
-    <td @dblclick="handleDoubleClickSuggest()">
+    <!-- Jika TUK dan tidak ada response -->
+    <td v-if="checktuk && !anyResponse" colspan="2" @dblclick="handleDoubleClickSuggest()">
       <div v-if="!enableSuggestInput">
         <h3>Halaman: {{ page }}</h3>
         <div v-html="suggest" />
@@ -12,6 +13,16 @@
       </div>
     </td>
     <!-- Jika TUK dan ada response -->
+    <td v-if="checktuk && anyResponse" @dblclick="handleDoubleClickSuggest()">
+      <div v-if="!enableSuggestInput">
+        <h3>Halaman: {{ page }}</h3>
+        <div v-html="suggest" />
+      </div>
+      <div v-else>
+        <el-input v-model="page" name="halaman" placeholder="Halaman" />
+        <TextEditor v-model="suggest" />
+      </div>
+    </td>
     <td v-if="checktuk && anyResponse" @dblclick="handleDoubleClickResponse()">
       <div v-if="!enableResponseInput">
         <h3>Halaman di perbaiki: {{ pageFix }}</h3>
@@ -23,6 +34,16 @@
       </div>
     </td>
     <!-- Jika Bukan TUK maka tampilkan semua -->
+    <td v-if="!checktuk" @dblclick="handleDoubleClickSuggest()">
+      <div v-if="!enableSuggestInput">
+        <h3>Halaman: {{ page }}</h3>
+        <div v-html="suggest" />
+      </div>
+      <div v-else>
+        <el-input v-model="page" name="halaman" placeholder="Halaman" />
+        <TextEditor v-model="suggest" />
+      </div>
+    </td>
     <td v-if="!checktuk" @dblclick="handleDoubleClickResponse()">
       <div v-if="!enableResponseInput">
         <h3>Halaman di perbaiki: {{ pageFix }}</h3>
@@ -89,9 +110,7 @@ export default {
   },
   computed: {
     anyResponse() {
-      console.log({ HALO: 'ASDASD' });
-      console.log({ ANY_RESPONSE: this.comments.some((val) => val.response != null) });
-      return this.comments.some((val) => val.response != null);
+      return this.response != null;
     },
   },
   watch: {
