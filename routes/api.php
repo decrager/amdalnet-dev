@@ -4,6 +4,7 @@ use App\Http\Controllers\ArcgisServiceController;
 use App\Http\Controllers\BaganAlirController;
 use App\Http\Controllers\BesaranDampakController;
 use App\Http\Controllers\ExportDocument;
+use App\Http\Controllers\SubProjectRonaAwalController;
 use App\Http\Controllers\UklUplCommentController;
 use App\Http\Controllers\ProjectMapAttachmentController;
 use App\Http\Resources\UserResource;
@@ -18,15 +19,12 @@ use App\Http\Controllers\FormulatorTeamController;
 use App\Http\Controllers\PieParamController;
 use App\Http\Controllers\ImpactIdentificationController;
 use App\Http\Controllers\LpjpController;
-use App\Http\Controllers\TukController;
 use App\Http\Controllers\MatriksDampakController;
 use App\Http\Controllers\MatriksUklUplController;
 use App\Http\Controllers\WebgisController;
 use App\Laravue\Models\User;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\KaCommentController;
-use App\Http\Controllers\WorkspaceCommentController;
 use App\Http\Controllers\TrackingDocumentController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PeraturanController;
@@ -35,14 +33,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalPermitController;
 use App\Http\Controllers\OssController;
 use App\Http\Controllers\EnvironmentalApprovalController;
-use App\Http\Controllers\GovernmentInstitutionController;
 use App\Http\Controllers\MediumLowUklUplTemplateController;
 use App\Http\Controllers\EnvironmentalManagemenSopController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\VideoTutorialController;
-use App\Http\Controllers\ProjectOtherComponentController;
 use App\Http\Controllers\SubProjectComponentController;
-use App\Http\Controllers\ProjectKegiatanLainSekitarController;
 use App\Http\Controllers\SigapWebgisController;
 use App\Http\Controllers\ProjectAttachmentController;
 
@@ -74,6 +69,7 @@ Route::namespace('Api')->group(function () {
     Route::post('auth/update-token', 'AuthController@updateToken');
     Route::post('auth/login-oss', 'AuthController@loginOss');
     Route::post('auth/register-oss', 'AuthController@registerOss');
+    Route::post('auth/sso/login', 'AuthController@loginSso');
 
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
@@ -172,7 +168,6 @@ Route::apiResource('oss-projects', 'OssProjectController');
 Route::apiResource('project-authorities', 'ProjectAuthorityController');
 Route::apiResource('responder-types', 'ResponderTypeController');
 Route::apiResource('feedbacks', 'FeedbackController');
-Route::apiResource('export-document', 'ExportDocumentController@uklUpl');
 Route::apiResource('support-docs', 'SupportDocController');
 Route::apiResource('announcements', 'AnnouncementController');
 Route::apiResource('initiators', 'InitiatorController');

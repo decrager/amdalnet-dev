@@ -486,7 +486,6 @@ export default {
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       await axios.get('api/matriks-ukl-upl/table-ukl/' + this.idProject)
         .then(response => {
-          console.log({ guna: response });
           this.data = response.data.map(x => {
             if (!x.is_stage) {
               if (x.env_manage_plan) {

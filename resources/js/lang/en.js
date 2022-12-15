@@ -122,6 +122,7 @@ export default {
     logIn: 'Log in',
     register: 'Register',
     username: 'Username',
+    usernameOSS: 'Please enter your OSS RBA username',
     password: 'Password',
     any: 'any',
     thirdparty: 'Or connect with',

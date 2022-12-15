@@ -118,7 +118,6 @@ export default {
   },
   mounted() {
     this.loadAttachment();
-    console.log({ guns: this.url_peta_tapak_shp });
     const splice = (this.data.ktr).split('/');
     this.file_ktr = splice[splice.length - 1];
   },

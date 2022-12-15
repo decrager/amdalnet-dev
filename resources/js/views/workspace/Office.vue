@@ -20,6 +20,7 @@
                 v-for="(comnt, index) in comments"
                 :id="comnt.id"
                 :key="index"
+                :comments="comments"
                 :no="comnt.no"
                 :page="comnt.page"
                 :suggest="comnt.suggest"
@@ -31,6 +32,7 @@
               />
               <NewComment
                 v-if="isTUK"
+                :comments="comments"
                 :next-comment="nextComment"
                 :checktuk="isTUK"
                 @handleAddComment="handleAddComment"
@@ -55,7 +57,7 @@ import NewComment from '../comment-recap/NewComment.vue';
 import EmptyComment from '../comment-recap/EmptyComment.vue';
 const workspaceResource = new WorkspaceResource();
 const workspaceCommentResource = new Resource('workspace-comment');
-import axios from 'axios';
+import Axios from 'axios';
 
 export default {
   components: {
@@ -170,9 +172,22 @@ export default {
   async mounted() {
     this.getMarking();
     this.officeUrl = process.env.MIX_OFFICE_URL;
-    this.addOfficeScript();
   },
-  created() {
+  async created() {
+    const idProject = this.$route.query.idProject;
+    if (idProject) {
+      const data = await Axios.get(
+        `/api/dokumen-ukl-upl/${idProject}`
+      );
+
+      const datas = data.data;
+      this.filenames = datas.file_name;
+      this.createTimes = datas.create_time;
+      this.versions = datas.versi_doc;
+      this.addOfficeScript(datas);
+    } else {
+      this.addOfficeScript();
+    }
     this.loadWorkspaceType();
     this.loadFileName();
     this.getComments();
@@ -180,7 +195,7 @@ export default {
   methods: {
     async download() {
       // const formData = new FormData();
-      axios
+      Axios
         .get(
           `/api/workspace-comment?download=true&id_project=${this.$route.params.id}&document_type=${this.workspaceType}`,
           {
@@ -308,32 +323,33 @@ export default {
       return isLt2M;
     },
 
-    addOfficeScript() {
+    addOfficeScript(data) {
       const officeScript = document.createElement('script');
       console.log('x', process.env.MIX_OFFICE_URL, process.env.MIX_ETHERPAD_URL);
       officeScript.setAttribute('src', process.env.MIX_OFFICE_URL + '/web-apps/apps/api/documents/api.js');
       document.head.appendChild(officeScript);
       officeScript.onload = () => {
-        this.createOfficeEditor();
+        this.createOfficeEditor(data);
       };
     },
 
-    createOfficeEditor() {
+    createOfficeEditor(data) {
       console.log('create office');
       let filename = this.filename;
-      if (this.$route.params.filename) {
-        filename = this.$route.params.filename;
+      if (this.$route.params.filename || data) {
+        filename = this.$route.params.filename === undefined ? data.file_name : this.$route.params.filename;
       }
 
       let createTime = this.createTime;
-      if (this.$route.params.createTime) {
-        createTime = this.$route.params.createTime;
+      if (this.$route.params.createTime || data) {
+        createTime = this.$route.params.createTime === undefined ? data.create_time : this.$route.params.createTime;
       }
 
       let version = this.version;
-      if (this.$route.params.versi) {
-        version = this.$route.params.versi;
+      if (this.$route.params.versi || data) {
+        version = this.$route.params.versi === undefined ? data.versi_doc : this.$route.params.versi;
       }
+
       workspaceResource
         .getConfig(this.$route.params.id, filename, createTime, version)
         .then(resp => {

@@ -46,7 +46,20 @@
             <p style="background-color: transparent; color: blue;">
               <router-link to="/oss/lupa-katasandi">Lupa Kata Sandi?</router-link>
             </p>
-            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak Memiliki Akun? <span style="color: red">Buat Akun Baru</span> </el-button>
+            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak
+              Memiliki Akun? <span style="color: red">Buat Akun Baru</span></el-button>
+          </el-row>
+          <el-divider>atau</el-divider>
+          <el-row>
+            <router-link to="/oss/login">
+              <el-button type="primary" style="width: 100%;">
+                <img
+                  alt="OSS RBA"
+                  :src="logoOSS"
+                  style="max-height: 20px !important;"
+                >
+              </el-button>
+            </router-link>
           </el-row>
         </el-form>
       </div>
@@ -126,13 +139,25 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="name" :label="$t('login.companyName')">
-                  <el-input v-model="registrationForm.name" name="name" type="text" auto-complete="on" :placeholder="$t('login.companyName')" />
+                  <el-input
+                    v-model="registrationForm.name"
+                    name="name"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.companyName')"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-form-item prop="address" :label="$t('login.address')">
-                <el-input v-model="registrationForm.address" name="name" type="textarea" auto-complete="on" :placeholder="$t('login.address')" />
+                <el-input
+                  v-model="registrationForm.address"
+                  name="name"
+                  type="textarea"
+                  auto-complete="on"
+                  :placeholder="$t('login.address')"
+                />
               </el-form-item>
             </el-row>
             <el-row :gutter="24">
@@ -177,7 +202,14 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item prop="email" :label="$t('login.email')">
-                  <el-input v-model="registrationForm.email" name="name" type="text" auto-complete="on" :placeholder="$t('login.email')" suffix-icon="el-icon-message" />
+                  <el-input
+                    v-model="registrationForm.email"
+                    name="name"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.email')"
+                    suffix-icon="el-icon-message"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -199,7 +231,13 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item prop="pic" :label="$t('login.pic')">
-                  <el-input v-model="registrationForm.pic" name="name" type="text" auto-complete="on" :placeholder="$t('login.pic')" />
+                  <el-input
+                    v-model="registrationForm.pic"
+                    name="name"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.pic')"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -272,13 +310,25 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="name" :label="$t('login.agencyName')">
-                  <el-input v-model="registrationForm.name" name="name" type="text" auto-complete="on" :placeholder="$t('login.agencyName')" />
+                  <el-input
+                    v-model="registrationForm.name"
+                    name="name"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.agencyName')"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-form-item prop="address" :label="$t('login.address')">
-                <el-input v-model="registrationForm.address" name="name" type="textarea" auto-complete="on" :placeholder="$t('login.address')" />
+                <el-input
+                  v-model="registrationForm.address"
+                  name="name"
+                  type="textarea"
+                  auto-complete="on"
+                  :placeholder="$t('login.address')"
+                />
               </el-form-item>
             </el-row>
             <el-row :gutter="24">
@@ -323,7 +373,14 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item prop="email" :label="$t('login.email')">
-                  <el-input v-model="registrationForm.email" name="name" type="text" auto-complete="on" :placeholder="$t('login.email')" suffix-icon="el-icon-message" />
+                  <el-input
+                    v-model="registrationForm.email"
+                    name="name"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.email')"
+                    suffix-icon="el-icon-message"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -345,7 +402,13 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item prop="pic" :label="$t('login.pic')">
-                  <el-input v-model="registrationForm.pic" name="name" type="text" auto-complete="on" :placeholder="$t('login.pic')" />
+                  <el-input
+                    v-model="registrationForm.pic"
+                    name="name"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.pic')"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -398,23 +461,42 @@
         <el-row v-else-if="user_type === 'Penyusun'">
           <el-form ref="regPenyusun" :model="registrationForm" :rules="regPenyusunRules">
             <div style="background-color: #ddddd5; padding: 5px 0;">
-              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama lengkap beserta gelar yang Anda masukkan sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
+              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama lengkap beserta gelar yang Anda masukkan
+                sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
             </div>
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item prop="name" :label="$t('login.name')">
-                  <el-input v-model="registrationForm.name" name="name" type="text" auto-complete="on" :placeholder="$t('login.name')" />
+                  <el-input
+                    v-model="registrationForm.name"
+                    name="name"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.name')"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="name" :label="$t('login.nik')">
-                  <el-input v-model="registrationForm.nik" name="nik" type="text" auto-complete="on" :placeholder="$t('login.nik')" />
+                  <el-input
+                    v-model="registrationForm.nik"
+                    name="nik"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.nik')"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-form-item prop="address" :label="$t('login.address')">
-                <el-input v-model="registrationForm.address" name="name" type="textarea" auto-complete="on" :placeholder="$t('login.address')" />
+                <el-input
+                  v-model="registrationForm.address"
+                  name="name"
+                  type="textarea"
+                  auto-complete="on"
+                  :placeholder="$t('login.address')"
+                />
               </el-form-item>
             </el-row>
             <el-row :gutter="24">
@@ -459,7 +541,14 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item prop="email" :label="$t('login.email')">
-                  <el-input v-model="registrationForm.email" name="name" type="text" auto-complete="on" :placeholder="$t('login.email')" suffix-icon="el-icon-message" />
+                  <el-input
+                    v-model="registrationForm.email"
+                    name="name"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.email')"
+                    suffix-icon="el-icon-message"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -511,7 +600,9 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item>
-                  <el-checkbox v-model="registrationForm.isCertified" name="isCertified">Memiliki Sertifikat Kompetensi AMDAL</el-checkbox>
+                  <el-checkbox v-model="registrationForm.isCertified" name="isCertified">Memiliki Sertifikat Kompetensi
+                    AMDAL
+                  </el-checkbox>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -570,7 +661,9 @@
         </el-row>
         <el-row type="flex" justify="space-between">
           <el-col :span="10">
-            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleCancelReg">Sudah Memiliki Akun?</el-button>
+            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleCancelReg">Sudah
+              Memiliki Akun?
+            </el-button>
           </el-col>
           <el-col :span="2">
             <el-button type="warning" :loading="loading" size="mini" @click="handleReg">Buat</el-button>
@@ -631,6 +724,7 @@ import { validEmail } from '@/utils/validate';
 import { csrf } from '@/api/auth';
 import Resource from '@/api/resource';
 import ClassicUpload from '@/components/ClassicUpload';
+
 const lspResource = new Resource('lsp');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -638,6 +732,7 @@ const initiatorResource = new Resource('initiators');
 const formulatorResource = new Resource('formulators');
 
 const logo = require('@/assets/login/logo-amdal.png').default;
+const logoOSS = require('@/assets/login/logo-oss.svg').default;
 
 export default {
   name: 'Login',
@@ -759,6 +854,7 @@ export default {
       redirect: undefined,
       otherQuery: {},
       logo: logo,
+      logoOSS: logoOSS,
       registrationForm: {},
       provinceOptions: [],
       districtOptions: [],
@@ -1023,8 +1119,8 @@ export default {
         return { value: i.id, label: i.lsp_name };
       });
     },
-    handleReg(){
-      if (this.user_type === 'Pemerintah'){
+    handleReg() {
+      if (this.user_type === 'Pemerintah') {
         this.$refs.regPemerintah.validate(valid => {
           if (valid) {
             console.log(this.registrationForm);
@@ -1056,9 +1152,9 @@ export default {
 
                   this.$message({
                     message:
-                'User Dengan Email ' +
-                this.registrationForm.email +
-                ' Berhasil Dibuat',
+                      'User Dengan Email ' +
+                      this.registrationForm.email +
+                      ' Berhasil Dibuat',
                     type: 'success',
                     duration: 5 * 1000,
                   });
@@ -1077,7 +1173,7 @@ export default {
             return false;
           }
         });
-      } else if (this.user_type === 'Pemrakarsa'){
+      } else if (this.user_type === 'Pemrakarsa') {
         this.$refs.regPemrakarsa.validate(valid => {
           if (valid) {
             console.log(this.registrationForm);
@@ -1109,9 +1205,9 @@ export default {
 
                   this.$message({
                     message:
-                'User Dengan Email ' +
-                this.registrationForm.email +
-                ' Berhasil Dibuat',
+                      'User Dengan Email ' +
+                      this.registrationForm.email +
+                      ' Berhasil Dibuat',
                     type: 'success',
                     duration: 5 * 1000,
                   });
@@ -1130,7 +1226,7 @@ export default {
             return false;
           }
         });
-      } else if (this.user_type === 'Penyusun'){
+      } else if (this.user_type === 'Penyusun') {
         this.$refs.regPenyusun.validate(valid => {
           if (valid) {
             this.registrationForm.user_type = this.user_type;
@@ -1174,9 +1270,9 @@ export default {
                   } else {
                     this.$message({
                       message:
-                  'User Dengan Email ' +
-                  this.registrationForm.email +
-                  ' Berhasil Dibuat',
+                        'User Dengan Email ' +
+                        this.registrationForm.email +
+                        ' Berhasil Dibuat',
                       type: 'success',
                       duration: 5 * 1000,
                     });
@@ -1204,8 +1300,8 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-$bg:#2d3a4b;
-$light_gray:#5F6368;
+$bg: #2d3a4b;
+$light_gray: #5F6368;
 
 /* reset element-ui css */
 .login-container {
@@ -1213,21 +1309,24 @@ $light_gray:#5F6368;
     display: inline-block;
     height: 47px;
     width: 85%;
+
     input {
       background: transparent;
-      border: 0px;
+      border: 0;
       -webkit-appearance: none;
-      border-radius: 0px;
+      border-radius: 0;
       padding: 12px 5px 12px 15px;
       color: $light_gray;
       height: 47px;
+
       &:-webkit-autofill {
         -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
-                box-shadow: 0 0 0px 1000px $bg inset !important;
+        box-shadow: 0 0 0px 1000px $bg inset !important;
         -webkit-text-colorfill-color: rgb(8, 7, 7) !important;
       }
     }
   }
+
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.1);
@@ -1235,15 +1334,19 @@ $light_gray:#5F6368;
     color: #454545;
   }
 }
-.el-upload-dragger{
-   width: auto;
+
+.el-upload-dragger {
+  width: auto;
 }
+
 .form-btn-cert {
   display: inline-block;
 }
+
 .alert-certificate {
   width: 37%;
 }
+
 .alert-certificate button.el-button--primary {
   background-color: #ff4949;
   border-color: #ff4949;
@@ -1252,12 +1355,12 @@ $light_gray:#5F6368;
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:rgb(7, 6, 6);
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: rgb(7, 6, 6);
 $bgColor: #143A16;
 $brown: #B27C66;
-$textColor:#eee;
+$textColor: #eee;
 
 .login {
   height: 100%;
@@ -1311,9 +1414,10 @@ $textColor:#eee;
     //     h4, span { margin: 0; }
     //   }
     // }
-    .el-button{
+    .el-button {
       background-color: #FFA84C;
     }
+
     .login-form {
       width: 50vw;
       min-width: 360px;
@@ -1323,18 +1427,21 @@ $textColor:#eee;
       padding: 60px 60px;
       position: relative;
       opacity: 1;
-      transition: opacity .3s ease-in-out,padding .2s ease-in-out;
+      transition: opacity .3s ease-in-out, padding .2s ease-in-out;
     }
+
     .tips {
       font-size: 14px;
       color: #fff;
       margin-bottom: 10px;
+
       span {
         &:first-of-type {
           margin-right: 16px;
         }
       }
     }
+
     .svg-container {
       padding: 6px 5px 6px 15px;
       color: $dark_gray;
@@ -1342,6 +1449,7 @@ $textColor:#eee;
       width: 30px;
       display: inline-block;
     }
+
     .title-wrap {
       display: block;
       margin-bottom: 15px;
@@ -1349,10 +1457,11 @@ $textColor:#eee;
       .title {
         font-size: 24px;
         color: $textColor;
-        margin: 0px auto 10px auto;
+        margin: 0 auto 10px auto;
         text-align: left;
         font-weight: bold;
       }
+
       .sub-heading {
         font-size: 14px;
         color: $textColor;
@@ -1369,6 +1478,7 @@ $textColor:#eee;
       cursor: pointer;
       user-select: none;
     }
+
     .set-language {
       color: $textColor;
       position: absolute;
@@ -1376,13 +1486,15 @@ $textColor:#eee;
       right: 35px;
     }
   }
-  .registration-container{
+
+  .registration-container {
     margin: auto;
     grid-template-columns: auto 480px;
     transition: all .3s ease-in-out;
     transform: scale(1);
     max-width: 882px;
-    .registration-form{
+
+    .registration-form {
       width: 50vw;
       min-width: 360px;
       max-width: 560px;
@@ -1391,17 +1503,20 @@ $textColor:#eee;
       padding: 50px 60px;
       position: relative;
       opacity: 1;
-      transition: opacity .3s ease-in-out,padding .2s ease-in-out;
+      transition: opacity .3s ease-in-out, padding .2s ease-in-out;
       border-radius: 20px;
     }
   }
 }
+
 .el-row {
   margin-bottom: 5px;
+
   &:last-child {
     margin-bottom: 0;
   }
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -1409,9 +1524,11 @@ $textColor:#eee;
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
   border-color: #409EFF;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -1420,6 +1537,7 @@ $textColor:#eee;
   line-height: 178px;
   text-align: center;
 }
+
 .avatar {
   width: 178px;
   height: 178px;

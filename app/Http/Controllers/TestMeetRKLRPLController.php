@@ -22,6 +22,7 @@ use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use App\Notifications\MeetingInvitation;
+use App\Utils\Document;
 use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
@@ -169,9 +170,25 @@ class TestMeetRKLRPLController extends Controller
 
                     $tmpName = tempnam(sys_get_temp_dir(),'');
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
+                    $data = Storage::disk('public')->get('workspace/'. 'ukl-upl-' . strtolower($project->project_title) . '.docx');
                     file_put_contents($tmpName, $tmpFile);
+                    file_put_contents(storage_path('app/document.docx'), $data);
+                    $name = 'ukl-upl-' . strtolower($project->project_title);
 
-                    Notification::send($user, new MeetingInvitation($meeting, $tmpName));
+                    // /* Set the PDF Engine Renderer Path */
+                    // $domPdfPath = base_path('vendor/dompdf/dompdf');
+                    // \PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
+                    // \PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
+
+                    // //Load word file
+                    // $Content = \PhpOffice\PhpWord\IOFactory::load(public_path('ukl-upl-spbu akr pangsud.docx'));
+
+                    // //Save it into PDF
+                    // $PDFWriter = \PhpOffice\PhpWord\IOFactory::createWriter($Content,'PDF');
+                    // $PDFWriter->save(storage_path('new-result.pdf'));
+                    // dd($kk);
+
+                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, storage_path('app/document.docx')));
 
                     unlink($tmpName);
 

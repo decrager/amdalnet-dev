@@ -24,10 +24,12 @@ class MeetingInvitation extends Notification
      *
      * @return void
      */
-    public function __construct(TestingMeeting $meeting, $attachment)
+    public function __construct(TestingMeeting $meeting, $idProject, $attachment, $pdf)
     {
         $this->meeting = $meeting;
         $this->attachment = $attachment;
+        $this->id_project = $idProject;
+        $this->pdf = $pdf;
     }
 
     /**
@@ -51,6 +53,7 @@ class MeetingInvitation extends Notification
     {
         Carbon::setLocale('id');
         $document = '';
+        $url = url("/#/project/docspace/". $this->id_project). "/". 0;
         if($this->meeting->document_type == 'ka') {
             $document = 'Formulir Kerangka Acuan';
         } else if($this->meeting->document_type == 'rkl-rpl') {
@@ -62,11 +65,17 @@ class MeetingInvitation extends Notification
                     ->greeting('Yth. ' . $notifiable->name)
                     ->line('Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada:')
                     ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . '<br>' . 'Tempat: ' . $this->meeting->location))
+                    ->line('Untuk memberikan Saran Masukan atau Tanggapan, silakan login ke dalam sistem Amdalnet terlebih dulu menggunakan akun yg telah diberikan.')
+                    ->action('Klik Untuk Memberikan SPT', $url)
                     ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
                     ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name))
                     ->attach($this->attachment, [
                         'as' => 'Undangan Rapat.pdf',
                         'mime' => 'application/pdf'
+                    ])
+                    ->attach($this->pdf, [
+                        'as' => 'Dokumen.docx',
+                        'mime' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                     ]);
     }
 

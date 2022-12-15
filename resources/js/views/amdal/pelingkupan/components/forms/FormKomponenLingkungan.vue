@@ -456,7 +456,6 @@ export default {
       }
 
       if (this.$route.name === 'FormulirUklUpl') {
-        console.log({ guns: this.data });
         return (this.data.name === '') || (this.data.component_type_name === '');
       } else {
         return (this.data.id === null) || (this.data.id_component_type === null) || (this.data.id <= 0) || emptyTexts;

@@ -1,6 +1,6 @@
 import { logout, getInfo } from '@/api/auth';
 // import axios from 'axios';
-import { isLogged, setLogged, removeToken } from '@/utils/auth';
+import { isLogged, setLogged, removeToken, removeIsOSS } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
 import axios from 'axios';
@@ -68,6 +68,24 @@ const actions = {
     });
   },
 
+  loginOss({ commit }, userInfo) {
+    const { username, password } = userInfo;
+    return new Promise((resolve, reject) => {
+      axios.post('/api/auth/sso/login', { username: username.trim(), password: password })
+        .then(response => {
+          const { data } = response;
+          if (!data) {
+            reject('Verification failed, please Login again.');
+          }
+          resolve(data);
+        })
+        .catch(error => {
+          console.log(error);
+          reject(error);
+        });
+    });
+  },
+
   setPage({ commit }, page) {
     commit('SET_PAGE_REGISTER', page);
   },
@@ -118,6 +136,7 @@ const actions = {
           commit('SET_TOKEN', '');
           commit('SET_ROLES', []);
           removeToken();
+          removeIsOSS();
           resetRouter();
           resolve();
         })
@@ -133,6 +152,7 @@ const actions = {
       commit('SET_TOKEN', '');
       commit('SET_ROLES', []);
       removeToken();
+      removeIsOSS();
       resolve();
     });
   },
