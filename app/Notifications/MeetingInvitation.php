@@ -24,11 +24,12 @@ class MeetingInvitation extends Notification
      *
      * @return void
      */
-    public function __construct(TestingMeeting $meeting, $idProject, $attachment)
+    public function __construct(TestingMeeting $meeting, $idProject, $attachment, $pdf)
     {
         $this->meeting = $meeting;
         $this->attachment = $attachment;
         $this->id_project = $idProject;
+        $this->pdf = $pdf;
     }
 
     /**
@@ -71,6 +72,10 @@ class MeetingInvitation extends Notification
                     ->attach($this->attachment, [
                         'as' => 'Undangan Rapat.pdf',
                         'mime' => 'application/pdf'
+                    ])
+                    ->attach($this->pdf, [
+                        'as' => 'Dokumen.docx',
+                        'mime' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                     ]);
     }
 
