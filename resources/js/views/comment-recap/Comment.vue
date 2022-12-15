@@ -11,7 +11,19 @@
         <TextEditor v-model="suggest" />
       </div>
     </td>
-    <td @dblclick="handleDoubleClickResponse()">
+    <!-- Jika TUK dan ada response -->
+    <td v-if="checktuk && anyResponse" @dblclick="handleDoubleClickResponse()">
+      <div v-if="!enableResponseInput">
+        <h3>Halaman di perbaiki: {{ pageFix }}</h3>
+        <div v-html="response" />
+      </div>
+      <div v-else>
+        <el-input v-model="pageFix" placeholder="Halaman Perbaikan" />
+        <TextEditor v-model="response" />
+      </div>
+    </td>
+    <!-- Jika Bukan TUK maka tampilkan semua -->
+    <td v-if="!checktuk" @dblclick="handleDoubleClickResponse()">
       <div v-if="!enableResponseInput">
         <h3>Halaman di perbaiki: {{ pageFix }}</h3>
         <div v-html="response" />
@@ -63,6 +75,10 @@ export default {
       type: Boolean,
       default: null,
     },
+    comments: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -72,7 +88,11 @@ export default {
     };
   },
   computed: {
-
+    anyResponse() {
+      console.log({ HALO: 'ASDASD' });
+      console.log({ ANY_RESPONSE: this.comments.some((val) => val.response != null) });
+      return this.comments.some((val) => val.response != null);
+    },
   },
   watch: {
 
@@ -105,9 +125,11 @@ export default {
       this.$emit('handleDeleteComment', this.id);
     },
     handleDoubleClickSuggest() {
-      if (this.checktuk) {
-        this.toggleSuggestInput();
-        this.enableSaveButton = true;
+      if (!this.anyResponse) {
+        if (this.checktuk) {
+          this.toggleSuggestInput();
+          this.enableSaveButton = true;
+        }
       }
     },
     handleDoubleClickResponse() {

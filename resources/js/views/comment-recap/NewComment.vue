@@ -1,13 +1,22 @@
 <template>
   <tr>
     <td>{{ nextComment }}</td>
-    <td @dblclick="handleDoubleClickSuggest()">
+    <!-- Jika TUK dan sudah ada response lakukan colspan-->
+    <td v-if="checktuk && anyResponses" colspan="2" @dblclick="handleDoubleClickSuggest()">
       <div v-if="checktuk">
         <el-input v-model="page" name="halaman" placeholder="Halaman" />
         <TextEditor v-model="suggest" />
       </div>
     </td>
-    <td @dblclick="handleDoubleClickResponse()">
+    <!-- Jika TUK dan belum ada response -->
+    <td v-if="checktuk && !anyResponses" @dblclick="handleDoubleClickSuggest()">
+      <div v-if="checktuk">
+        <el-input v-model="page" name="halaman" placeholder="Halaman" />
+        <TextEditor v-model="suggest" />
+      </div>
+    </td>
+    <!-- Jika bukan TUK-->
+    <td v-if="!checktuk" @dblclick="handleDoubleClickResponse()">
       <div v-if="!checktuk">
         <el-input v-model="pageFix" placeholder="Halaman Perbaikan" />
         <TextEditor v-model="response" />
@@ -34,6 +43,10 @@ export default {
       type: Boolean,
       default: null,
     },
+    comments: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -52,6 +65,9 @@ export default {
       } else {
         return false;
       }
+    },
+    anyResponses() {
+      return this.comments.some((val) => val.response != null);
     },
   },
   watch: {},

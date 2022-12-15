@@ -18,6 +18,7 @@
                 v-for="(comnt, index) in comments"
                 :id="comnt.id"
                 :key="index"
+                :comments="comments"
                 :no="comnt.no"
                 :page="comnt.page"
                 :suggest="comnt.suggest"
@@ -29,6 +30,7 @@
               />
               <NewComment
                 v-if="isTUK"
+                :comments="comments"
                 :next-comment="nextComment"
                 :checktuk="isTUK"
                 @handleAddComment="handleAddComment"
