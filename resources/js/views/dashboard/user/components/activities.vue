@@ -86,7 +86,8 @@ export default {
             console.log(d);
             activities.push({
               title: d.project_title,
-              location: (d.address.length > 0) ? d.address[0].district + ', ' + d.address[0].prov : d.district + ', ' + d.prov,
+              location: (d.address.length > 0) && this.isFormulator ? d.district + ', ' + d.prov : d.address[0].district + ', ' + d.address[0].prov,
+              // location: (d.address.length > 0) ? d.address[0].district + ', ' + d.address[0].prov : d.district + ', ' + d.prov,
               doc: d.required_doc,
               registration_no: d.registration_no,
             });
