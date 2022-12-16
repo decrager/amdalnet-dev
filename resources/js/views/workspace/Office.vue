@@ -1,8 +1,9 @@
 <template>
   <div class="app-container" style="position: relative; display: flex; flex-direction: column;">
-    <div v-if="isAbleToComment" class="uji-collab">
+    <div v-if="isAbleToComment" class="button-show">
       <div style="padding-bottom: 0.5rem;">
         <el-button @click="showHide">{{ !showForm ? 'Tampilkan Masukan Saran/Tanggapan' : 'Sembunyikan Masukan Saran/Tanggapan' }}</el-button>
+        <!-- <el-button @click="download">Download Rekap Komentar</el-button> -->
       </div>
       <div v-if="showForm" style="position: absolute; background-color: #404040; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
         <div style="width: 100%; height: 100%; overflow-x: scroll; margin-bottom: 1rem;">
@@ -14,6 +15,7 @@
               <th style="width: 15%;">Aksi</th>
             </thead>
             <tbody>
+              <EmptyComment v-if="comments.length < 1" />
               <Comment
                 v-for="(comnt, index) in comments"
                 :id="comnt.id"
@@ -52,14 +54,16 @@ import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import Comment from '../comment-recap/Comment.vue';
 import NewComment from '../comment-recap/NewComment.vue';
-import Axios from 'axios';
+import EmptyComment from '../comment-recap/EmptyComment.vue';
 const workspaceResource = new WorkspaceResource();
 const workspaceCommentResource = new Resource('workspace-comment');
+import Axios from 'axios';
 
 export default {
   components: {
     Comment,
     NewComment,
+    EmptyComment,
   },
   props: {
     project: {
@@ -98,20 +102,20 @@ export default {
       rekaps: [],
       showForm: false,
       comments: [
-        {
-          no: 1,
-          page: 1,
-          suggest: 'Kurang Mantab',
-          pageFix: 1,
-          response: 'Masa sih',
-        },
-        {
-          no: 2,
-          page: 2,
-          suggest: 'Kurang Mantab Gan',
-          pageFix: 2,
-          response: 'Masa sih bro',
-        },
+        // {
+        //   no: 1,
+        //   page: 1,
+        //   suggest: 'Kurang Mantab',
+        //   pageFix: 1,
+        //   response: 'Masa sih',
+        // },
+        // {
+        //   no: 2,
+        //   page: 2,
+        //   suggest: 'Kurang Mantab Gan',
+        //   pageFix: 2,
+        //   response: 'Masa sih bro',
+        // },
       ],
     };
   },
@@ -136,7 +140,6 @@ export default {
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
       ];
-      console.log({ markingStatus: this.markingStatus });
       return status.includes(this.markingStatus);
     },
     isPenyusun() {
@@ -186,9 +189,31 @@ export default {
       this.addOfficeScript();
     }
     this.loadWorkspaceType();
+    this.loadFileName();
     this.getComments();
   },
   methods: {
+    async download() {
+      // const formData = new FormData();
+      Axios
+        .get(
+          `/api/workspace-comment?download=true&id_project=${this.$route.params.id}&document_type=${this.workspaceType}`,
+          {
+            responseType: 'blob',
+          }
+        )
+        .then((response) => {
+          const fileUrl = window.URL.createObjectURL(response.data);
+          const fileLink = document.createElement('a');
+          fileLink.href = fileUrl;
+          fileLink.setAttribute('download', 'rekap.docx');
+          document.body.appendChild(fileLink);
+          fileLink.click();
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    },
     async getMarking() {
       await this.$store.dispatch('getMarking', this.$route.params.id);
     },
@@ -197,6 +222,13 @@ export default {
         this.workspaceType = localStorage.getItem('workspaceType');
       } else {
         localStorage.setItem('workspaceType', this.workspaceType);
+      }
+    },
+    loadFileName() {
+      if (localStorage.getItem('fileName')) {
+        this.filename = localStorage.getItem('fileName');
+      } else {
+        localStorage.setItem('fileName', this.filename);
       }
     },
     async handleAddComment(comment) {
@@ -235,6 +267,7 @@ export default {
     },
     async getComments(){
       const comments = await workspaceCommentResource.list({
+        id_user: this.userInfo.roles.some((role) => role.includes('examiner')) ? this.userInfo.id : null,
         id_project: this.$route.params.id,
         document_type: this.workspaceType,
       });
