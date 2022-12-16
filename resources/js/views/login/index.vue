@@ -49,7 +49,7 @@
             <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak
               Memiliki Akun? <span style="color: red">Buat Akun Baru</span></el-button>
           </el-row>
-          <el-divider>atau</el-divider>
+          <!-- <el-divider>atau</el-divider>
           <el-row>
             <router-link to="/oss/login">
               <el-button type="primary" style="width: 100%;">
@@ -60,7 +60,7 @@
                 >
               </el-button>
             </router-link>
-          </el-row>
+          </el-row> -->
         </el-form>
       </div>
     </div>
@@ -1320,8 +1320,8 @@ $light_gray: #5F6368;
       height: 47px;
 
       &:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
-        box-shadow: 0 0 0px 1000px $bg inset !important;
+        -webkit-box-shadow: 0 0 0px 1000px #d8e4d8  inset !important;
+        box-shadow: 0 0 0px 1000px #d8e4d8  inset !important;
         -webkit-text-colorfill-color: rgb(8, 7, 7) !important;
       }
     }
