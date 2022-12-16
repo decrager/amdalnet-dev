@@ -2,7 +2,14 @@
   <div class="login">
     <div v-if="form === 'login'" class="login-container">
       <div class="login-content">
-        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          :rules="loginRules"
+          class="login-form"
+          auto-complete="on"
+          label-position="left"
+        >
           <div class="title-wrap">
             <img
               class="logo"
@@ -18,7 +25,13 @@
             <span class="svg-container">
               <svg-icon icon-class="user" />
             </span>
-            <el-input v-model="loginForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
+            <el-input
+              v-model="loginForm.email"
+              name="email"
+              type="text"
+              auto-complete="on"
+              :placeholder="$t('login.email')"
+            />
           </el-form-item>
           <el-form-item prop="password">
             <span class="svg-container">
@@ -49,7 +62,7 @@
             <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak
               Memiliki Akun? <span style="color: red">Buat Akun Baru</span></el-button>
           </el-row>
-          <!-- <el-divider>atau</el-divider>
+          <el-divider>atau</el-divider>
           <el-row>
             <router-link to="/oss/login">
               <el-button type="primary" style="width: 100%;">
@@ -60,7 +73,7 @@
                 >
               </el-button>
             </router-link>
-          </el-row> -->
+          </el-row>
         </el-form>
       </div>
     </div>
@@ -115,7 +128,12 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="Unggah Dokumen NIB dan SPPL dari OSS" prop="fileNibDocOss">
-                  <classic-upload :name="fileNibDocOssName" style="border: 0px !important" :fid="'nibDocOssFile'" @handleFileUpload="handleFilenibDocOssUpload($event)" />
+                  <classic-upload
+                    :name="fileNibDocOssName"
+                    style="border: 0 !important"
+                    :fid="'nibDocOssFile'"
+                    @handleFileUpload="handleFilenibDocOssUpload($event)"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -263,7 +281,7 @@
                     :on-change="handleAgencyLogoUpload"
                     :before-upload="beforeAvatarUpload"
                   >
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar" alt="avatar">
                     <div v-else>
                       <i class="el-icon-upload" />
                       <div class="el-upload__text">Taruh File disini atau <em>tekan untuk unggah</em></div>
@@ -433,7 +451,7 @@
                     :on-change="handleAgencyLogoUpload"
                     :before-upload="beforeAvatarUpload"
                   >
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar" alt="avatar">
                     <div v-else>
                       <i class="el-icon-upload" />
                       <div class="el-upload__text">Taruh File disini atau <em>tekan untuk unggah</em></div>
@@ -755,7 +773,7 @@ export default {
       }
     };
     const validatefileNibDocOss = (rule, value, callback) => {
-      if (!this.registrationForm.fileNibDocOss){
+      if (!this.registrationForm.fileNibDocOss) {
         callback(new Error('File Nib Document Oss Belum Diunggah'));
       }
       callback();
@@ -808,10 +826,18 @@ export default {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
         fileNibDocOss: [{ required: true, trigger: 'change', validator: validatefileNibDocOss }],
-        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
+        password: [{
+          required: true,
+          pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+          message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus',
+          trigger: 'blur',
+        }],
         nib: [{ required: true, trigger: 'blur', message: 'NIB Dibutuhkan' }],
         // phone: [{ required: true, trigger: 'blur', message: 'Silahkan Masukan Nomor Telepon Yang Benar' }],
-        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
+        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, {
+          type: 'number',
+          message: 'Nomor Telepon berupa angka',
+        }],
       },
       regPenyusunRules: {
         province: [{ required: true, trigger: 'change', message: 'Provinsi Dibutuhkan' }],
@@ -823,9 +849,17 @@ export default {
         address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         // fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
-        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
+        password: [{
+          required: true,
+          pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+          message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus',
+          trigger: 'blur',
+        }],
         confirmPassword: [{ required: true, trigger: 'blur', validator: validateConfirmPassword }],
-        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
+        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, {
+          type: 'number',
+          message: 'Nomor Telepon berupa angka',
+        }],
         reg_no: [{ required: true, validator: validateRegistrationNumber }],
         certificateUpload: [{ required: true, validator: validateCertificateUpload }],
       },
@@ -839,7 +873,12 @@ export default {
         address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
-        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
+        password: [{
+          required: true,
+          pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+          message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus',
+          trigger: 'blur',
+        }],
       },
       registrationRules: {
         user_type: [{ required: true, trigger: 'change', message: 'Pilih Jenis User' }],
@@ -956,14 +995,14 @@ export default {
     this.getLsp();
   },
   methods: {
-    onChangeRadioUserType(){
+    onChangeRadioUserType() {
       console.log('masuk');
       this.registrationForm = {};
-      if (this.user_type === 'Pemerintah'){
+      if (this.user_type === 'Pemerintah') {
         this.$refs['regPemerintah'].resetFields();
-      } else if (this.user_type === 'Pemrakarsa'){
+      } else if (this.user_type === 'Pemrakarsa') {
         this.$refs['regPemrakarsa'].resetFields();
-      } else if (this.user_type === 'Penyusun'){
+      } else if (this.user_type === 'Penyusun') {
         this.$refs['regPenyusun'].resetFields();
       }
     },
@@ -974,10 +1013,10 @@ export default {
       this.cvFileName = e.target.files[0].name;
       this.cvFileUpload = e.target.files[0];
     },
-    handleAgencyLogoUpload(file, filelist){
+    handleAgencyLogoUpload(file, filelist) {
       this.imageUrl = URL.createObjectURL(file.raw);
 
-      if (file.raw.size > 1048576){
+      if (file.raw.size > 1048576) {
         this.showFileAlert('1');
         return;
       }
@@ -985,16 +1024,16 @@ export default {
       // this.fileAgencyUpload = e.target.files[0];
       this.registrationForm.fileAgencyUpload = file.raw;
     },
-    handleFilenibDocOssUpload(e){
+    handleFilenibDocOssUpload(e) {
       // reset validation
       this.$refs['regPemrakarsa'].fields.find((f) => f.prop === 'fileNibDocOss').resetField();
 
-      if (e.target.files[0].size > 10485760){
+      if (e.target.files[0].size > 10485760) {
         this.showFileAlert();
         return;
       }
 
-      if (e.target.files[0].type !== 'application/pdf'){
+      if (e.target.files[0].type !== 'application/pdf') {
         this.$alert('File yang diterima hanya .PDF', 'Format Salah');
         return;
       }
@@ -1012,7 +1051,7 @@ export default {
       this.registrationForm.file_sertifikat = file.raw;
       this.certificateName = file.name;
     },
-    showFileAlert(val){
+    showFileAlert(val) {
       this.$alert(`File Yang Diupload Melebihi ${val} MB`, {
         confirmButtonText: 'OK',
       });
@@ -1029,11 +1068,11 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    handleFileAgencyLogoUpload(e){
+    handleFileAgencyLogoUpload(e) {
       // reset validation
       // this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKtr').resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 1048576) {
         this.showFileAlert('1');
         return;
       }
@@ -1056,7 +1095,8 @@ export default {
           csrf().then(() => {
             this.$store.dispatch('user/login', this.loginForm)
               .then((response) => {
-                this.$router.push({ path: this.redirect || '/dashboard', query: this.otherQuery }, onAbort => {});
+                this.$router.push({ path: this.redirect || '/dashboard', query: this.otherQuery }, onAbort => {
+                });
                 this.loading = false;
                 window.location.reload();
               })
@@ -1083,16 +1123,16 @@ export default {
         return acc;
       }, {});
     },
-    handleOpenRegister(){
+    handleOpenRegister() {
       this.form = 'register';
     },
-    handleCancelReg(){
+    handleCancelReg() {
       this.form = 'login';
     },
-    handleOpenResetPassword(){
+    handleOpenResetPassword() {
       this.form = 'resetpassword';
     },
-    handleCancelReset(){
+    handleCancelReset() {
       this.form = 'login';
     },
     async changeProvince(value) {
@@ -1320,8 +1360,8 @@ $light_gray: #5F6368;
       height: 47px;
 
       &:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px #d8e4d8  inset !important;
-        box-shadow: 0 0 0px 1000px #d8e4d8  inset !important;
+        -webkit-box-shadow: 0 0 0 1000px #d8e4d8 inset !important;
+        box-shadow: 0 0 0 1000px #d8e4d8 inset !important;
         -webkit-text-colorfill-color: rgb(8, 7, 7) !important;
       }
     }
