@@ -293,7 +293,7 @@ class OssController extends Controller
                     throw new OssException('Error Create OssNib');
                 }
             }
-        } catch (OssException $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             report($e);
             return false;
