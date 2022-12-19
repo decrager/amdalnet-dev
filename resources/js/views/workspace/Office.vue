@@ -127,18 +127,19 @@ export default {
     }),
     isAbleToComment() {
       const status = [
-        'uklupl-mt.returned-examination',
-        'uklupl-mt.matrix-ukl',
-        'uklupl-mt.matrix-upl',
+        // 'uklupl-mt.matrix-ukl',
+        // 'uklupl-mt.matrix-upl',
         'uklupl-mt.sent',
         'uklupl-mt.adm-review',
         'uklupl-mt.examination-invitation-drafting',
         'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.returned-examination',
         'uklupl-mt.examination',
         'uklupl-mt.examination-meeting',
         'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
+        'uklupl-mt.recommendation-signed',
       ];
       return status.includes(this.markingStatus);
     },
