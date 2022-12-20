@@ -438,17 +438,25 @@
               <el-col :span="12">
                 <el-form-item label="" prop="fileOssReqDoc">
                   <div slot="label">
-                    <span>Unggah Hasil Penapisan di OSS (PDF max 10MB)</span>
+                    <span>* Unggah Hasil Penapisan di OSS (PDF max 10MB)
+                      <el-tooltip class="item" effect="dark" placement="top">
+                        <template #content>Dokumen yang diupload dapat berupa PDF</template><i class="el-alert__icon el-icon-warning" />
+                      </el-tooltip>
+                    </span>
                   </div>
-                  <classic-upload :name="fileOssReqDocName" :fid="'fileOssReqDoc'" @handleFileUpload="handlefileOssReqDocUpload" />
+                  <classic-upload :name="fileOssReqDocName" :fid="'fileOssReqDoc'" @handleFileUpload="handlefileOssReqDocUpload($event)" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="" prop="fileOssSpplDoc">
                   <div slot="label">
-                    <span>Unggah Dokumen SPPL dari OSS (PDF max 10MB)</span>
+                    <span>* Unggah Dokumen SPPL dari OSS (PDF max 10MB)
+                      <el-tooltip class="item" effect="dark" placement="top">
+                        <template #content>Dokumen yang diupload dapat berupa PDF</template><i class="el-alert__icon el-icon-warning" />
+                      </el-tooltip>
+                    </span>
                   </div>
-                  <classic-upload :name="fileOssSpplDocName" :fid="'fileOssSpplDoc'" @handleFileUpload="handlefileOssSpplDocUpload" />
+                  <classic-upload :name="fileOssSpplDocName" :fid="'fileOssSpplDoc'" @handleFileUpload="handlefileOssSpplDocUpload($event)" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -918,9 +926,21 @@ export default {
       }
       callback();
     };
+    var validatePdfPenapisanOss = (rule, value, callback) => {
+      if (!this.currentProject.fileOssReqDoc){
+        callback(new Error('File Hasil Penapisan di OSS Belum Diunggah'));
+      }
+      callback();
+    };
+    var validatePdfSpplOss = (rule, value, callback) => {
+      if (!this.currentProject.fileOssSpplDoc){
+        callback(new Error('File Dokumen SPPL dari OSS Belum Diunggah'));
+      }
+      callback();
+    };
     var validatePdfMap = (rule, value, callback) => {
       if (!this.filePdf){
-        callback(new Error('File Peta Tapak PDF Belum Diunggah'));
+        callback(new Error('File Peta Tapak Belum Diunggah'));
       }
       callback();
     };
@@ -1178,6 +1198,12 @@ export default {
         ],
         oss_invest_status: [
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
+        ],
+        fileOssReqDoc: [
+          { validator: validatePdfPenapisanOss, trigger: 'change' },
+        ],
+        fileOssSpplDoc: [
+          { validator: validatePdfSpplOss, trigger: 'change' },
         ],
       },
       penentuanKewenanganRules: {
