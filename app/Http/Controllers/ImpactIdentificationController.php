@@ -260,77 +260,86 @@ class ImpactIdentificationController extends Controller
     private function saveImpactUnits($params)
     {
         DB::beginTransaction();
+        $errors = [];
         $updated = 0;
         $count = 0;
-        $errors = [];
         $response = [];
         $unitEmpty = 0;
         $idProject = 0;
-        foreach ($params['unit_data'] as $impact) {
-            if (!$impact['is_stage']) {
-                $count++;
-                $toUpdate = ImpactIdentification::find($impact['id']);
-                if ($toUpdate != null) {
-                    if ($idProject == 0) {
-                        $idProject = $toUpdate->id_project;
-                    }
-                    if (empty($toUpdate->unit)) {
-                        $unitEmpty++;
-                    }
-                    try {
-                        $empty = 0;
-                        if (empty($impact['id_change_type']) && empty($impact['change_type_name']) && !$params['temporary']) {
-                            array_push($errors, 'Perubahan wajib diisi.');
-                            $empty++;
+        try {
+            foreach ($params['unit_data'] as $impact) {
+                if (!$impact['is_stage']) {
+                    $count++;
+                    $toUpdate = ImpactIdentification::find($impact['id']);
+                    if ($toUpdate != null) {
+                        if ($idProject == 0) {
+                            $idProject = $toUpdate->id_project;
                         }
-                        if (empty($impact['unit']) && !$params['temporary']) {
-                            array_push($errors, 'Besaran wajib diisi.');
-                            $empty++;
+                        if (empty($toUpdate->unit)) {
+                            $unitEmpty++;
                         }
-                        if ($empty > 0) {
-                            continue;
+                        try {
+                            $empty = 0;
+                            if (empty($impact['id_change_type']) && empty($impact['change_type_name']) && !$params['temporary']) {
+                                array_push($errors, 'Perubahan wajib diisi.');
+                                $empty++;
+                            }
+                            if (empty($impact['unit']) && !$params['temporary']) {
+                                array_push($errors, 'Besaran wajib diisi.');
+                                $empty++;
+                            }
+                            if ($empty > 0) {
+                                continue;
+                            }
+                            if (!empty($impact['id_change_type'])) {
+                                $impact['change_type_name'] = null;
+                            }
+                            $toUpdate->id_change_type = $impact['id_change_type'];
+                            $toUpdate->change_type_name = $impact['change_type_name'];
+                            $toUpdate->unit = $impact['unit'];
+                            $toUpdate->save();
+                            $updated++;
+                            array_push($response, $toUpdate);
+                        } catch (Exception $e) {
+                            array_push($errors, 'Gagal menyimpan Dampak.');
                         }
-                        if (!empty($impact['id_change_type'])) {
-                            $impact['change_type_name'] = null;
-                        }
-                        $toUpdate->id_change_type = $impact['id_change_type'];
-                        $toUpdate->change_type_name = $impact['change_type_name'];
-                        $toUpdate->unit = $impact['unit'];
-                        $toUpdate->save();
-                        $updated++;
-                        array_push($response, $toUpdate);
-                    } catch (Exception $e) {
-                        array_push($errors, 'Gagal menyimpan Dampak.');
                     }
                 }
             }
-        }
-        if ($updated == $count) {
-            SaveStatus::updateOrCreate(
-                [
-                    'project_id' => $idProject,
-                    'section'    => 'formulir.uklupl.jenis.besaran.dampak'
-                ],
-                [
-                    'temporary'  => $params['temporary'],
-                ]
-            );
+            if ($updated == $count) {
+                SaveStatus::updateOrCreate(
+                    [
+                        'project_id' => $idProject,
+                        'section'    => 'formulir.uklupl.jenis.besaran.dampak'
+                    ],
+                    [
+                        'temporary'  => $params['temporary'],
+                    ]
+                );
 
-            DB::commit();
-            if ($unitEmpty == $count) {
-                // First time saving unit: trigger workflow
-                /*$project = Project::findOrFail($idProject);
-                if ($project->marking == 'announcement-completed') {
-                    $project->workflow_apply('fill-uklupl-form');
-                    $project->save();
-                }*/
+                if ($unitEmpty == $count) {
+                    // First time saving unit: trigger workflow
+                    /*$project = Project::findOrFail($idProject);
+                    if ($project->marking == 'announcement-completed') {
+                        $project->workflow_apply('fill-uklupl-form');
+                        $project->save();
+                    }*/
+                }
+                DB::commit();
+                return response()->json([
+                    'status' => 200,
+                    'code' => 200,
+                    'data' => $response,
+                ], 200);
+            } else {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 500,
+                    'code' => 500,
+                    'message' => implode(', ', $errors),
+                ], 500);
             }
-            return response()->json([
-                'status' => 200,
-                'code' => 200,
-                'data' => $response,
-            ], 200);
-        } else {
+        } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status' => 500,
@@ -520,13 +529,16 @@ class ImpactIdentificationController extends Controller
                 ]
             );
 
-            DB::commit();
-            $project = Project::findOrFail($idProject);
-            if ($project->marking == 'uklupl-mt.form') {
-                $project->workflow_apply('fill-uklupl-matrix-ukl');
-                $project->save();
+            // save workflow when not temporary
+            if (!$params['temporary']) {
+                $project = Project::findOrFail($idProject);
+                if ($project->marking == 'uklupl-mt.form') {
+                    $project->workflow_apply('fill-uklupl-matrix-ukl');
+                    $project->save();
+                }
             }
 
+            DB::commit();
             return response()->json([
                 'status' => 200,
                 'code' => 200,
@@ -658,12 +670,15 @@ class ImpactIdentificationController extends Controller
                 ]
             );
 
-            DB::commit();
-            $project = Project::findOrFail($idProject);
-            if ($project->marking == 'uklupl-mt.matrix-ukl') {
-                $project->workflow_apply('fill-uklupl-matrix-upl');
-                $project->save();
+            // save workflow when not temporary
+            if (!$params['temporary']) {
+                $project = Project::findOrFail($idProject);
+                if ($project->marking == 'uklupl-mt.matrix-ukl') {
+                    $project->workflow_apply('fill-uklupl-matrix-upl');
+                    $project->save();
+                }
             }
+            DB::commit();
             return response()->json([
                 'status' => 200,
                 'code' => 200,
