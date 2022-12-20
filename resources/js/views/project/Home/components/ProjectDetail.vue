@@ -36,21 +36,16 @@
     <el-row :gutter="30">
       <el-col :sm="24" :md="14">
         <p class="header">Deskripsi Kegiatan</p>
-        <div v-if="isReadOnly && !isUrlAndal">
-          <Tinymce
-            v-model="data.description"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :toolbar="[
-              'bold italic underline bullist numlist  preview undo redo fullscreen',
-            ]"
-            :height="150"
-          />
-        </div>
-        <div v-else>
-          <p v-html="data.description" />
-        </div>
+        <Tinymce
+          v-model="data.description"
+          output-format="html"
+          :menubar="''"
+          :image="false"
+          :toolbar="[
+            'bold italic underline bullist numlist  preview undo redo fullscreen',
+          ]"
+          :height="150"
+        />
       </el-col>
       <el-col :sm="24" :md="10" align="right">
         <el-button :loading="loading" type="primary" style="margin-top: 16px;" @click="handleSave">Simpan</el-button>
