@@ -755,7 +755,7 @@ export default {
         },
         {
           param: 'Bidang Usaha/Kegiatan',
-          value: this.project.listSubProject[0].biz_name === undefined ? this.project.list_sub_project[0].biz_name : this.project.listSubProject[0].biz_name,
+          value: this.project.listSubProject[0].biz_name,
         },
         {
           param: 'Skala/Besaran',

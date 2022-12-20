@@ -79,7 +79,11 @@ export default {
       this.$router.push({ name: 'tukProjectMember', params: { id } });
     },
     handleViewForm(id) {
-      const currentProject = this.list.find((item) => item.id === id);
+      const mapped = this.list.map(e => {
+        e.listSubProject = e.list_sub_project;
+        return e;
+      });
+      const currentProject = mapped.find((item) => item.id === id);
 
       // change project_year to string
       currentProject.project_year = currentProject.project_year.toString();
