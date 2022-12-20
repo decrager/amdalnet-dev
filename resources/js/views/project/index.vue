@@ -114,7 +114,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-view"
-                  @click="handleViewSpt(scope.row.announcementId)"
+                  @click="handleViewSpt(scope.row.announcementId, scope.row.id)"
                 >
                   Lihat SPT
                 </el-button>
@@ -591,6 +591,7 @@ export default {
       return this.userInfo.roles.includes('lpjp');
     },
     isInitiator() {
+      console.log({ gun: this.markingStatus });
       return this.userInfo.roles.includes('initiator');
     },
     isFormulator() {
@@ -1397,9 +1398,12 @@ export default {
         path: `/lpjp-team/${project.id}/daftar-anggota`,
       });
     },
-    handleViewSpt(id) {
+    handleViewSpt(id, projectId) {
       this.$router.push({
         path: `/announcement/view/${id}`,
+        query: {
+          idProject: projectId,
+        },
       });
     },
     handleFlowChart(project) {

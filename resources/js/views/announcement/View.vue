@@ -1,7 +1,8 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card>
-      <workflow v-if="isInitiator" />
+      <workflowUkl v-if="isInitiator && requiredDoc === true" />
+      <workflow v-if="isInitiator && requiredDoc === false" />
       <announcement-detail
         :show-project-detail="showProjectDetail"
         :show-feedback-list="showFeedbackList"
@@ -19,17 +20,21 @@
 import { mapGetters } from 'vuex';
 import AnnouncementDetail from './components/Detail';
 import Workflow from '@/components/Workflow';
+import WorkflowUkl from '@/components/WorkflowUkl';
 import CreateFeedbackSPT from './components/CreateFeedbackSPT.vue';
+import Resource from '@/api/resource';
+const projectResource = new Resource('projects');
 // import { fetchInitiatorByEmail } from '@/api/klhk-role';
 
 export default {
   name: 'ViewForm',
-  components: { AnnouncementDetail, CreateFeedbackSPT, Workflow },
+  components: { AnnouncementDetail, CreateFeedbackSPT, Workflow, WorkflowUkl },
   data() {
     return {
       showProjectDetail: false,
       showCreateFeedback: false,
       showFeedbackList: false,
+      requiredDoc: false,
       showPublicConsultation: false,
       // userInfo: {},
     };
@@ -40,6 +45,7 @@ export default {
       'userId': 'userId',
     }),
     isInitiator() {
+      this.data();
       return this.userInfo.roles.includes('initiator');
     },
   },
@@ -48,6 +54,18 @@ export default {
     this.$store.dispatch('getStep', 2);
   },
   methods: {
+    data() {
+      projectResource.get(this.$route.query.idProject).then(res => {
+        const data = res.required_doc;
+        if (data === 'UKL-UPL') {
+          this.requiredDoc = true;
+          return this.requiredDoc;
+        } else {
+          this.requiredDoc = false;
+          return this.requiredDoc;
+        }
+      });
+    },
     // async setData(){
     //   // this.userInfo = await this.$store.dispatch('user/getInfo');
     //   if (!this.userInfo.email) {
