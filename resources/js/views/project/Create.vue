@@ -2251,6 +2251,7 @@ export default {
 
       this.fileOssReqDoc = e.target.files[0];
       this.fileOssReqDocName = e.target.files[0].name;
+      this.currentProject.fileOssReqDoc = e.target.files[0];
     },
     handlefileOssSpplDocUpload(e){
       if (!e.target) {
@@ -2271,6 +2272,7 @@ export default {
 
       this.fileOssSpplDoc = e.target.files[0];
       this.fileOssSpplDocName = e.target.files[0].name;
+      this.currentProject.fileOssSpplDoc = e.target.files[0];
     },
     handleFileTapakProyekPdfUpload(e){
       if (!e.target) {
