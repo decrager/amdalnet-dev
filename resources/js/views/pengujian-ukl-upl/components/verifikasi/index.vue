@@ -50,7 +50,15 @@
                   </a>
                 </span>
                 <span v-else>
-                  {{ formLabel[scope.row.name] }}
+                  <a
+                    v-if="scope.row.name === 'sistematika_penyusunan'"
+                    href="#"
+                    class="click"
+                    @click.prevent="showDocumentDialog = true"
+                  > {{ formLabel[scope.row.name] }} </a>
+                  <span v-if="scope.row.name !== 'sistematika_penyusunan'">
+                    {{ formLabel[scope.row.name] }}
+                  </span>
                   <span v-if="scope.row.name === 'peta'">
                     <li v-for="(link, index) in scope.row.link" :key="index">
                       <a
@@ -243,6 +251,16 @@
     <el-dialog title="" class="map-dialog" :visible.sync="showWebgisDialog">
       <WebgisVerifikasi />
     </el-dialog>
+    <el-dialog title="" class="map-dialog" :visible.sync="showDocumentDialog">
+      <iframe
+        :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+          urlPdf
+        )}&embedded=true`"
+        width="100%"
+        height="530px"
+        frameborder="0"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -271,6 +289,7 @@ export default {
       verifications: {},
       description: null,
       is_validate: false,
+      urlPdf: null,
       loadingverification: false,
       loadingSubmit: false,
       lpjpPenyusunDialog: false,
@@ -285,6 +304,7 @@ export default {
       loadingDocx: false,
       loadingPDFSPT: false,
       showWebgisDialog: false,
+      showDocumentDialog: false,
       out: '',
       errors: {},
       kesesuaian: [
@@ -326,6 +346,12 @@ export default {
     this.getVerifications();
   },
   methods: {
+    async getDokumenWorkspace() {
+      const data = await axios.get(
+        `/api/dokumen-ukl-upl/${this.$route.params.id}`
+      );
+      this.urlPdf = data.data.pdf_url;
+    },
     async getVerifications() {
       this.loadingverification = true;
       const data = await verifikasiRapatResource.list({
@@ -333,7 +359,6 @@ export default {
         idProject: this.idProject,
         uklUpl: 'true',
       });
-
       this.verifications = data;
       this.lpjp = data.lpjp;
       this.penyusunMandiri = data.penyusun_mandiri;
@@ -347,6 +372,7 @@ export default {
           );
         }
       }
+      this.getDokumenWorkspace();
       this.loadingverification = false;
     },
     async handleSubmit() {

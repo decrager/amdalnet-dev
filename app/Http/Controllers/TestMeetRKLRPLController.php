@@ -176,8 +176,7 @@ class TestMeetRKLRPLController extends Controller
                     $tmpName = tempnam(sys_get_temp_dir(),'');
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
                     file_put_contents($tmpName, $tmpFile);
-
-                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, $pdf_url, $filename));
+                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, $pdf_url, $filename, $request->role));
 
                     unlink($tmpName);
 
@@ -241,6 +240,8 @@ class TestMeetRKLRPLController extends Controller
 
         $meeting->meeting_date = $data['meeting_date'];
         $meeting->meeting_time = $data['meeting_time'];
+        $meeting->zone = $data['zone'];
+        $meeting->link = $data['link'];
         $meeting->location = $data['location'];
 
         // Invitation File
@@ -487,6 +488,8 @@ class TestMeetRKLRPLController extends Controller
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
             'file' => $meeting->file,
+            'link' => $meeting->link,
+            'zone' => $meeting->zone,
             'invitation_file' => $meeting->invitation_file,
             'deleted_invitations' => []
         ];

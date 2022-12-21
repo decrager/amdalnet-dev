@@ -24,13 +24,14 @@ class MeetingInvitation extends Notification
      *
      * @return void
      */
-    public function __construct(TestingMeeting $meeting, $idProject, $attachment, $pdf, $filename)
+    public function __construct(TestingMeeting $meeting, $idProject, $attachment, $pdf, $filename, $role)
     {
         $this->meeting = $meeting;
         $this->attachment = $attachment;
         $this->id_project = $idProject;
         $this->pdf = $pdf;
         $this->filename = $filename;
+        $this->role = $role;
     }
 
     /**
@@ -55,6 +56,20 @@ class MeetingInvitation extends Notification
         Carbon::setLocale('id');
         $document = '';
         $url = url("/#/project/docspace/". $this->id_project). "/". 0;
+        $role = '';
+
+        if ($this->role[0] == 'examiner-chief') {
+            $role = 'Ketua Ahli';
+        } else if ($this->role[0] == 'examiner-secretary') {
+            $role = 'Kepala Sekretariat';
+        } else if ($this->role[0] == 'examiner-administration') {
+            $role = 'Validator Administrasi';
+        } else if ($this->role[0] == 'examiner-substance') {
+            $role = 'Validator Substansi';
+        } else if ($this->role[0] == 'examiner-community') {
+            $role = 'Ahli Komunitas';
+        }
+
         if($this->meeting->document_type == 'ka') {
             $document = 'Formulir Kerangka Acuan';
         } else if($this->meeting->document_type == 'rkl-rpl') {
@@ -65,11 +80,11 @@ class MeetingInvitation extends Notification
                     ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
                     ->greeting('Yth. ' . $notifiable->name)
                     ->line('Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada:')
-                    ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . '<br>' . 'Tempat: ' . $this->meeting->location))
+                    ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . ' ' . $this->meeting->zone. '<br>' . 'Tempat: ' . $this->meeting->location . '<br>' . 'Link Meeting: ' . $this->meeting->link))
                     ->line('Untuk memberikan Saran Masukan atau Tanggapan, silakan login ke dalam sistem Amdalnet terlebih dulu menggunakan akun yg telah diberikan.')
                     ->action('Klik Untuk Memberikan SPT', $url)
                     ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
-                    ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name))
+                    ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name . '<br>' . $role))
                     ->attach($this->attachment, [
                         'as' => 'Undangan Rapat.pdf',
                         'mime' => 'application/pdf'

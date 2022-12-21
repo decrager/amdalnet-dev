@@ -47,7 +47,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :sm="24" :md="12">
+            <el-col :sm="12" :md="6">
               <el-form-item label="Waktu Rapat">
                 <el-time-picker
                   v-model="meetings.meeting_time"
@@ -56,6 +56,22 @@
                   value-format="HH:mm"
                   style="width: 100%"
                 />
+              </el-form-item>
+            </el-col>
+            <el-col :sm="12" :md="6">
+              <el-form-item label="Zona Waktu">
+                <el-select
+                  v-model="meetings.zone"
+                  placeholder="Pilih Zona Waktu"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="item in zone"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :sm="24" :md="12">
@@ -94,6 +110,16 @@
                     {{ invitation_file_name }}
                   </div>
                 </el-upload>
+              </el-form-item>
+            </el-col>
+            <el-col :sm="24" :md="12">
+              <el-form-item label="Apakah Rapat Akan diadakan Online?">
+                <el-checkbox v-model="status"><span style="font-size: 90%;">Checklist Jika 'Ya'</span></el-checkbox>
+              </el-form-item>
+            </el-col>
+            <el-col v-if="status === true" :sm="24" :md="12">
+              <el-form-item label="Link Meeting (Online)">
+                <el-input v-model="meetings.link" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -284,6 +310,20 @@ export default {
   data() {
     return {
       timUjiKelayakan: [],
+      zone: [
+        {
+          label: 'WIB',
+          value: 'WIB',
+        },
+        {
+          label: 'WIT',
+          value: 'WIT',
+        },
+        {
+          label: 'WITA',
+          value: 'WITA',
+        },
+      ],
       peran: [
         {
           label: 'Ketua TUK',
@@ -324,6 +364,7 @@ export default {
       ],
       loadingTuk: false,
       meetings: {},
+      status: false,
       idProject: this.$route.params.id,
       loading: false,
       loadingSubmit: false,
@@ -332,6 +373,7 @@ export default {
       errors: {},
       loadingSendInvitation: false,
       docxData: {},
+      role: null,
       invitationDocxData: {},
       loadingInvitationDocx: false,
       invitation_file: null,
@@ -772,6 +814,7 @@ export default {
           invitation: 'true',
           idProject: this.idProject,
           uklUpl: 'true',
+          role: this.$store.getters.roles,
         });
         if (response.error === 0) {
           this.$message({
