@@ -75,12 +75,13 @@ class MeetingInvitation extends Notification
         } else if($this->meeting->document_type == 'rkl-rpl') {
             $document = 'Dokumen Andal dan RKL RPL';
         }
+        $link = "&lt;a href='{$this->meeting->link}'&gt;{$this->meeting->link}&lt;/a&gt;";
 
         return (new MailMessage)
                     ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
                     ->greeting('Yth. ' . $notifiable->name)
                     ->line('Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada:')
-                    ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . ' ' . $this->meeting->zone. '<br>' . 'Tempat: ' . $this->meeting->location . '<br>' . 'Link Meeting: ' . $this->meeting->link))
+                    ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . ' ' . $this->meeting->zone. '<br>' . 'Tempat: ' . $this->meeting->location . '<br>' . 'Link Meeting: ' . htmlspecialchars_decode($link)))
                     ->line('Untuk memberikan Saran Masukan atau Tanggapan, silakan login ke dalam sistem Amdalnet terlebih dulu menggunakan akun yg telah diberikan.')
                     ->action('Klik Untuk Memberikan SPT', $url)
                     ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
