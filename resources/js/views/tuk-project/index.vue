@@ -62,6 +62,8 @@ export default {
         page: 1,
         limit: 10,
         search: null,
+        orderBy: 'created_at',
+        order: 'DESC',
       },
       timeoutId: null,
       total: 0,

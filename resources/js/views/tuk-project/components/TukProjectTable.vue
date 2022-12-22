@@ -4,6 +4,7 @@
     :data="list"
     fit
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
+    @sort-change="onTableSort"
   >
     <el-table-column align="center" label="No." width="54px">
       <template slot-scope="scope">
@@ -15,13 +16,13 @@
       align="center"
       label="Nomor Registrasi"
       prop="registration_no"
-      sortable
+      sortable="custom"
     />
     <el-table-column
       align="center"
       label="Nama Rencana Usaha/Kegiatan"
       prop="project_title"
-      sortable
+      sortable="custom"
     />
     <el-table-column
       align="center"
@@ -41,6 +42,19 @@
       prop="marking_label"
       sortable
     />
+    <el-table-column
+      prop="updated_at"
+      align="center"
+      label="Tanggal"
+      width="150px"
+      sortable="custom"
+    >
+      <template slot-scope="scope">
+        <div style="line-height: 1.1em;">
+          <span>{{ scope.row.updated_at | parseTime('{y}-{m}-{d}') }}</span>
+        </div>
+      </template>
+    </el-table-column>
 
     <el-table-column align="center" label="Anggota Uji Kelayakan">
       <template slot-scope="scope">
@@ -56,6 +70,8 @@
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const tukProjectResource = new Resource('tuk-project');
 export default {
   name: 'TukProjectTable',
   props: {
@@ -73,7 +89,65 @@ export default {
       default: () => 10,
     },
   },
+  data() {
+    return {
+      listQuery: {
+        page: 1,
+        limit: 10,
+        search: null,
+        orderBy: 'created_at',
+        order: 'DESC',
+      },
+      total: 0,
+    };
+  },
   methods: {
+    onTableSort(sort) {
+      this.listQuery.orderBy = sort.prop;
+      this.listQuery.order = (sort.order === 'ascending') ? 'ASC' : 'DESC';
+      this.handleFilter();
+    },
+    handleFilter() {
+      this.getFiltered(this.listQuery);
+    },
+    async getFiltered(query) {
+      this.loading = true;
+      const { data, total } = await tukProjectResource.list(query);
+      this.list = data.map((x) => {
+        x.initiator_name = x.initiator.name;
+        x.complete_address = this.getAddress(x.address);
+        return x;
+      });
+      this.total = total;
+      this.loading = false;
+    },
+    getAddress(address) {
+      if (address) {
+        if (address.length > 0) {
+          return `${address[0].address}, ${this.capitalize(
+            address[0].district
+          )}, Provinsi ${this.capitalize(address[0].prov)}`;
+        }
+      }
+
+      return '';
+    },
+    capitalize(mySentence) {
+      if (mySentence) {
+        const words = mySentence.split(' ');
+        const newWords = words
+          .map((word) => {
+            return (
+              word.toLowerCase()[0].toUpperCase() +
+              word.toLowerCase().substring(1)
+            );
+          })
+          .join(' ');
+        return newWords;
+      } else {
+        return '';
+      }
+    },
     handleTukProjectMember(id) {
       // eslint-disable-next-line object-curly-spacing
       this.$router.push({ name: 'tukProjectMember', params: { id } });
