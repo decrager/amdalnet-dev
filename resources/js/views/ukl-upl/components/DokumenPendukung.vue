@@ -7,8 +7,92 @@
         />&nbsp;&nbsp;Refresh data
       </el-button>
     </div>
+    <div>
+      <el-form label-position="top" label-width="100px">
+        <el-row v-loading="loading" :gutter="32">
+          <el-col :md="8" :sm="12" align="center">
+            <el-form-item label="Surat Pernyataan Pengelolaan Lingkungan Hidup" :required="true">
+              <a
+                v-if="attachment.sppl.id"
+                style="display: block; margin-bottom: 6px"
+                :href="attachment.sppl.filepath"
+                download
+              >
+                <i class="el-icon-download" />
+                Download
+              </a>
+              <el-upload
+                type="primary"
+                class="upload-demo"
+                :auto-upload="false"
+                :on-change="handleUpdateSppl"
+                action="#"
+                :show-file-list="false"
+              >
+                <el-button size="small" :disabled="isReadOnly" type="primary"> Upload </el-button>
+              </el-upload>
+              <div class="el-upload__tip">
+                {{ sppl.name }}
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :md="8" :sm="12" align="center">
+            <el-form-item label="Dokumen Persetujuan Teknis" :required="true">
+              <a
+                v-if="attachment.dpt.id"
+                style="display: block; margin-bottom: 6px"
+                :href="attachment.dpt.filepath"
+                download
+              >
+                <i class="el-icon-download" />
+                Download
+              </a>
+              <el-upload
+                type="primary"
+                class="upload-demo"
+                :auto-upload="false"
+                :on-change="handleUpdateDpt"
+                action="#"
+                :show-file-list="false"
+              >
+                <el-button size="small" :disabled="isReadOnly" type="primary"> Upload </el-button>
+              </el-upload>
+              <div class="el-upload__tip">
+                {{ dpt.name }}
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :md="8" :sm="12" align="center">
+            <el-form-item label="Dokumen Kesesuaian Tata Ruang" :required="true">
+              <a
+                v-if="attachment.ktr.id"
+                style="display: block; margin-bottom: 6px"
+                :href="attachment.ktr.filepath"
+                download
+              >
+                <i class="el-icon-download" />
+                Download
+              </a>
+              <el-upload
+                type="primary"
+                class="upload-demo"
+                :auto-upload="false"
+                :on-change="handleUpdateKtr"
+                action="#"
+                :show-file-list="false"
+              >
+                <el-button size="small" :disabled="isReadOnly" type="primary"> Upload </el-button>
+              </el-upload>
+              <div class="el-upload__tip">
+                {{ ktr.name }}
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
     <el-row v-loading="loading" :gutter="32">
-      <el-col :md="8" :sm="24" align="center">
+      <!-- <el-col :md="8" :sm="24" align="center">
         <div class="text-white fw-bold" style="margin-bottom: 4px">
           Surat Pernyataan Pengelolaan Lingkungan Hidup
         </div>
@@ -88,7 +172,7 @@
         <div class="el-upload__tip">
           {{ ktr.name }}
         </div>
-      </el-col>
+      </el-col> -->
       <el-col :sm="24" :md="24">
         <div
           style="
@@ -177,7 +261,7 @@
           type="primary"
           style="margin-top: 10px"
           :disabled="isReadOnly"
-          @click="!isReadOnly && handleSubmit()"
+          @click="!isReadOnly && handleCheckSubmit()"
         >
           Simpan
         </el-button>
@@ -304,6 +388,15 @@ export default {
       }
       this.ktr.file = file.raw;
       this.ktr.name = file.name;
+    },
+    handleCheckSubmit() {
+      if ((this.attachment.sppl.filepath === undefined && this.sppl.file === null) || (this.attachment.ktr.filepath === undefined && this.ktr.file === null) || (this.attachment.dpt.filepath === undefined && this.dpt.file === null)) {
+        this.$alert('Dokumen SPPL, Pertek, & Kesesuaian Tata Ruang Wajib di Upload', 'Informasi', {
+          center: true,
+        });
+      } else {
+        this.handleSubmit();
+      }
     },
     async handleSubmit() {
       this.loadingSubmit = true;
