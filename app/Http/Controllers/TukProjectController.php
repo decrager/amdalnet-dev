@@ -83,6 +83,9 @@ class TukProjectController extends Controller
                             $q->whereIn('authority', ['Kabupaten', 'kabupaten']);
                         }
                     })
+                    ->where(function ($query) use ($request) {
+                        return $request->marking_label ? $query->where('marking', $request->marking_label) : '';
+                    })
                     ->where(function($q) use($request) {
                         if($request->search) {
                             $q->where(function($query) use($request) {

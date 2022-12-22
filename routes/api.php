@@ -174,6 +174,7 @@ Route::apiResource('initiators', 'InitiatorController');
 Route::apiResource('lpjp', 'LpjpController');
 Route::apiResource('tuk', 'TukController');
 Route::apiResource('lsp', 'LspController');
+Route::apiResource('workflow-state', 'WorkflowStateController');
 Route::apiResource('formulators', 'FormulatorController');
 Route::apiResource('expert-banks', 'ExpertBankController');
 Route::apiResource('public-consultations', 'PublicConsultationController');

@@ -40,8 +40,27 @@
       align="center"
       label="Tahap"
       prop="marking_label"
-      sortable
-    />
+    >
+      <template slot="header">
+        <el-select
+          v-model="listQuery.marking_label"
+          class="filter-header"
+          clearable
+          placeholder="Tahap"
+          @change="onDocTypeFilter"
+        >
+          <el-option
+            v-for="item in marking"
+            :key="item.id"
+            :label="item.public_tracking"
+            :value="item.state"
+          />
+        </el-select>
+      </template>
+      <template slot-scope="scope">
+        <span>{{ scope.row.marking_label }}</span>
+      </template>
+    </el-table-column>
     <el-table-column
       prop="updated_at"
       align="center"
@@ -88,13 +107,17 @@ export default {
       type: Number,
       default: () => 10,
     },
+    marking: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       listQuery: {
         page: 1,
         limit: 10,
-        search: null,
+        marking_label: null,
         orderBy: 'created_at',
         order: 'DESC',
       },
@@ -147,6 +170,11 @@ export default {
       } else {
         return '';
       }
+    },
+    onDocTypeFilter(value) {
+      this.listQuery.marking_label = value;
+      this.listQuery.page = 1;
+      this.handleFilter();
     },
     handleTukProjectMember(id) {
       // eslint-disable-next-line object-curly-spacing

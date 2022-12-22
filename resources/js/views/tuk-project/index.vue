@@ -24,6 +24,7 @@
         :loading="loading"
         :page="listQuery.page"
         :limit="listQuery.limit"
+        :marking="markingOptions"
       />
       <pagination
         v-show="total > 0"
@@ -47,6 +48,7 @@ import checkRole from '@/utils/role';
 import Pagination from '@/components/Pagination';
 import Resource from '@/api/resource';
 const tukProjectResource = new Resource('tuk-project');
+const workflowStateResource = new Resource('workflow-state');
 
 export default {
   name: 'TukProject',
@@ -58,6 +60,7 @@ export default {
     return {
       loading: false,
       list: [],
+      markingOptions: [],
       listQuery: {
         page: 1,
         limit: 10,
@@ -70,12 +73,17 @@ export default {
     };
   },
   created() {
+    this.getMarking();
     this.getData();
   },
   methods: {
     checkRole,
     handleFilter() {
       this.getData();
+    },
+    async getMarking() {
+      const data = await workflowStateResource.list({ options: 'true' });
+      this.markingOptions = data;
     },
     async getData() {
       if (!this.checkRole(['examiner-secretary'])) {
