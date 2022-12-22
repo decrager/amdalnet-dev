@@ -111,7 +111,8 @@ class TukProjectController extends Controller
                         $q->select('id', 'name');
                     }])
                     ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
-                    ->orderBy('created_at', 'DESC')->paginate($request->limit);
+                    ->orderBy($request->orderBy, $request->order)->paginate($request->limit);
+                    // ->orderBy('created_at', 'DESC')->paginate($request->limit)
     }
 
     /**
