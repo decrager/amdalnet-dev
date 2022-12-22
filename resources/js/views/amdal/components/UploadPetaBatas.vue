@@ -590,7 +590,7 @@ export default {
       switch (idx) {
         case 1: // ekologis SHP
           if (this.$refs.peSHP.files[0].size <= 1048576) {
-            if (this.$refs.peSHP.files[0].type.includes('zip')) {
+            if (!this.$refs.peSHP.files[0].type.includes('zip')) {
               this.$refs.peSHP.value = null;
               this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Ekologis Salah', {
                 center: true,
@@ -634,7 +634,7 @@ export default {
           break;
         case 3:
           if (this.$refs.psSHP.files[0].size <= 10485760) {
-            if (this.$refs.psSHP.files[0].type.includes('zip')) {
+            if (!this.$refs.psSHP.files[0].type.includes('zip')) {
               this.$refs.psSHP.value = null;
               this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Sosial Salah', {
                 center: true,
@@ -678,7 +678,7 @@ export default {
           break;
         case 5:
           if (this.$refs.pwSHP.files[0].size <= 10485760) {
-            if (this.$refs.pwSHP.files[0].type.includes('zip')) {
+            if (!this.$refs.pwSHP.files[0].type.includes('zip')) {
               this.$refs.pwSHP.value = null;
               this.$alert('File yang diterima hanya .zip', 'Format Peta Batas Wilayah Studi Salah', {
                 center: true,
