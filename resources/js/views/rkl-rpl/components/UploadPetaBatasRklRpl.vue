@@ -1095,7 +1095,7 @@ export default {
       switch (idx) {
         case 1:
           if (this.$refs.refPengelolaanSHP.files[0].size <= 10485760) {
-            if (this.$refs.refPengelolaanSHP.files[0].type !== 'application/x-zip-compressed') {
+            if (this.$refs.refPengelolaanSHP.files[0].type.includes('zip')) {
               this.$refs.refPengelolaanSHP.value = null;
               this.$alert('File yang diterima hanya .zip', 'Format Peta Titik Pengelolaan Salah', {
                 center: true,
@@ -1143,7 +1143,7 @@ export default {
           break;
         case 3:
           if (this.$refs.refPemantauanSHP.files[0].size <= 10485760) {
-            if (this.$refs.refPemantauanSHP.files[0].type !== 'application/x-zip-compressed') {
+            if (this.$refs.refPemantauanSHP.files[0].type.includes('zip')) {
               this.$refs.refPemantauanSHP.value = null;
               this.$alert('File yang diterima hanya .zip', 'Format Peta Titik Pemantauan Salah', {
                 center: true,
@@ -1188,7 +1188,7 @@ export default {
           break;
         case 5:
           if (this.$refs.refAreaPengelolaanSHP.files[0].size <= 10485760) {
-            if (this.$refs.refAreaPengelolaanSHP.files[0].type !== 'application/x-zip-compressed') {
+            if (this.$refs.refAreaPengelolaanSHP.files[0].type.includes('zip')) {
               this.$refs.refAreaPengelolaanSHP.value = null;
               this.$alert('File yang diterima hanya .zip', 'Format Peta Lokasi Pengelolaan Salah', {
                 center: true,
@@ -1233,7 +1233,7 @@ export default {
           break;
         case 7:
           if (this.$refs.refAreaPemantauanSHP.files[0].size <= 10485760) {
-            if (this.$refs.refAreaPemantauanSHP.files[0].type !== 'application/x-zip-compressed') {
+            if (this.$refs.refAreaPemantauanSHP.files[0].type.includes('zip')) {
               this.$refs.refAreaPemantauanSHP.value = null;
               this.$alert('File yang diterima hanya .zip', 'Format Peta Lokasi Pemantauan Salah', {
                 center: true,
