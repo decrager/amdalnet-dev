@@ -56,7 +56,17 @@
                     class="click"
                     @click.prevent="showDocumentDialog = true"
                   > {{ formLabel[scope.row.name] }} </a>
-                  <span v-if="scope.row.name !== 'sistematika_penyusunan'">
+                  <span v-if="scope.row.name === 'pertek'">
+                    <a
+                      v-if="scope.row.name === 'pertek'"
+                      :href="pertekFile"
+                      target="_blank"
+                      class="click"
+                    >
+                      {{ formLabel[scope.row.name] }}
+                    </a>
+                  </span>
+                  <span v-if="scope.row.name !== 'sistematika_penyusunan' && scope.row.name !== 'pertek'">
                     {{ formLabel[scope.row.name] }}
                   </span>
                   <span v-if="scope.row.name === 'peta'">
@@ -275,6 +285,7 @@ import WebgisVerifikasi from '@/views/pengujian/components/verifikasi/Webgis';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
 const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
+const envManageDocsResource = new Resource('env-manage-docs');
 
 export default {
   name: 'Verifikasi',
@@ -298,6 +309,7 @@ export default {
       formulatorTeamDialog: false,
       publicConsultationDialog: false,
       publicConsultation: null,
+      pertekFile: null,
       publicConsultationDocs: [],
       docxData: {},
       loadingComplete: false,
@@ -352,6 +364,13 @@ export default {
       );
       this.urlPdf = data.data.pdf_url;
     },
+    async getPertek() {
+      const { data } = await envManageDocsResource.list({
+        id_project: this.idProject,
+        type: 'DPT',
+      });
+      this.pertekFile = data[0].filepath;
+    },
     async getVerifications() {
       this.loadingverification = true;
       const data = await verifikasiRapatResource.list({
@@ -373,6 +392,7 @@ export default {
         }
       }
       this.getDokumenWorkspace();
+      this.getPertek();
       this.loadingverification = false;
     },
     async handleSubmit() {
