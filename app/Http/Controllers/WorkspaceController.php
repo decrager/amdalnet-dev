@@ -148,7 +148,7 @@ class WorkspaceController extends Controller
                 'title' => 'Edited Document.docx',
                 // 'url' => $appUrl.'/workspace/document/download?fileName=61943e88ad99a.docx',
                 // 'url' => $callUrl.'/storage/workspace/'.$filename,
-                'url' => Storage::disk('public')->temporaryUrl('workspace/'.$filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                'url' => Storage::disk('public')->temporaryUrl('workspace/'.$filename, now()->addMinutes(env('TEMPORARY_DOC_URL_TIMEOUT'))),
                 'permissions' => [
                     // 'fillForms' => true,
                     'edit' => ($commentOnly || in_array($projectMarking, $dataMarking))? false : true,
