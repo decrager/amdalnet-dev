@@ -10,6 +10,7 @@ use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mockery\Undefined;
 
 class TukProjectController extends Controller
 {
@@ -110,7 +111,7 @@ class TukProjectController extends Controller
                             });
                         }
                     })
-                    ->with(['address', 'listSubProject.listSubProjectParams', 'initiator' => function($q) {
+                    ->with(['address', 'tukProject', 'listSubProject.listSubProjectParams', 'initiator' => function($q) {
                         $q->select('id', 'name');
                     }])
                     ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
