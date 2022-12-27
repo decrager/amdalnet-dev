@@ -21,6 +21,9 @@
         >
           Export to .PDF
         </el-button> -->
+        <el-button :loading="loading" type="primary" @click="workspace">
+          Workspace
+        </el-button>
         <a
           v-if="showDocument"
           class="btn-pdf"
@@ -41,7 +44,7 @@
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
           <div class="grid-content bg-purple" />
-          <iframe
+          <!-- <iframe
             v-if="showDocument"
             :src="`https://docs.google.com/gview?url=${encodeURIComponent(
               urlPdf
@@ -49,7 +52,7 @@
             width="100%"
             height="723px"
             frameborder="0"
-          />
+          /> -->
           <!-- <iframe
             v-if="showDocument"
             :src="
@@ -107,6 +110,7 @@ export default {
       projects: '',
       urlPdf: '',
       loading: false,
+      fileNameKa: null,
       loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
       out: '',
@@ -171,12 +175,24 @@ export default {
         type: 'ka',
       });
       this.downloadDocxPath = data.file_name;
+      this.fileNameKa = data.file_name_ka;
       this.project_title = data.project_title;
       this.projects = this.downloadDocxPath;
       this.urlPdf = data.pdf_url;
       this.showDocument = true;
       this.loading = false;
       this.templateKALoaded = true;
+    },
+    workspace(){
+      console.log({ gun: this.fileNameKa });
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: this.$route.params.id,
+          filename: this.fileNameKa,
+          workspaceType: 'ka',
+        },
+      });
     },
     async exportPdf() {
       this.loadingPDF = true;

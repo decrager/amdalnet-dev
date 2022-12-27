@@ -237,11 +237,10 @@ class TestMeetRKLRPLController extends Controller
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
         }
 
-
         $meeting->meeting_date = $data['meeting_date'];
         $meeting->meeting_time = $data['meeting_time'];
-        $meeting->zone = $data['zone'];
-        $meeting->link = $data['link'];
+        $meeting->zone = $data['zone'] == null ? '-' : $data['zone'];
+        $meeting->link = $data['link'] == null ? '-' : $data['link'];
         $meeting->location = $data['location'];
 
         // Invitation File
@@ -398,6 +397,8 @@ class TestMeetRKLRPLController extends Controller
             'invitations' => [],
             'file' => null,
             'invitation_file' => null,
+            'zone' => null,
+            'link' => null,
             'deleted_invitations' => []
         ];
 

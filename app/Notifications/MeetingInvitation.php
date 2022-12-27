@@ -75,8 +75,10 @@ class MeetingInvitation extends Notification
         } else if($this->meeting->document_type == 'rkl-rpl') {
             $document = 'Dokumen Andal dan RKL RPL';
         }
-        $link = "&lt;a href='{$this->meeting->link}'&gt;{$this->meeting->link}&lt;/a&gt;";
-
+        $link = '-';
+        if ($this->meeting->link !== '-') {
+            $link = "&lt;a href='{$this->meeting->link}'&gt;{$this->meeting->link}&lt;/a&gt;";
+        }
         return (new MailMessage)
                     ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
                     ->greeting('Yth. ' . $notifiable->name)
