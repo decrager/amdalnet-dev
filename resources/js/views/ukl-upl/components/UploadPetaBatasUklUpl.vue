@@ -583,6 +583,7 @@ export default {
 
           if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            this.$refs.refPengelolaanSHP.value = null;
             return;
           }
 
@@ -651,11 +652,13 @@ export default {
 
           if (!['Polygon', 'MultiPolygon'].includes(data.features[0].geometry.type)) {
             alert('SHP yang dimasukkan harus Polygon atau MultiPolygon!.');
+            this.$refs.refAreaPengelolaanSHP.value = null;
             return;
           }
 
           if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            this.$refs.refAreaPengelolaanSHP.value = null;
             return;
           }
 
@@ -732,6 +735,7 @@ export default {
 
           if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            this.$refs.refPemantauanSHP.value = null;
             return;
           }
 
@@ -807,11 +811,13 @@ export default {
 
           if (!['Polygon', 'MultiPolygon'].includes(data.features[0].geometry.type)) {
             alert('SHP yang dimasukkan harus Polygon atau MultiPolygon!.');
+            this.$refs.refAreaPemantauanSHP.value = null;
             return;
           }
 
           if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            this.$refs.refAreaPemantauanSHP.value = null;
             return;
           }
 

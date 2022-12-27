@@ -2484,7 +2484,8 @@ class AndalComposingController extends Controller
                     return [
                         'file_name' => $document_attachment->attachment,
                         'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
-                        'pdf_url' => $pdf_url
+                        'pdf_url' => $pdf_url,
+                        'file_name_ka' => $save_file_name,
                     ];
                 }
             }
@@ -2813,7 +2814,8 @@ class AndalComposingController extends Controller
         return [
             'file_name' => $document_attachment->attachment,
             'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'pdf_url' => $pdf_url
+            'pdf_url' => $pdf_url,
+            'file_name_ka' => $save_file_name,
         ];
     }
 

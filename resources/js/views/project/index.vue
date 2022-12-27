@@ -272,7 +272,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isAmdal(scope.row) && isDocumentReviewed(scope.row, 'ka') && (tukAccess(scope.row, 'valsub') || testInvited(scope.row, 'ka')) && !isScreening && !isScoping && !isLpjp"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isFormKaComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ka')) || testInvited(scope.row, 'ka')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -591,7 +591,6 @@ export default {
       return this.userInfo.roles.includes('lpjp');
     },
     isInitiator() {
-      console.log({ gun: this.markingStatus });
       return this.userInfo.roles.includes('initiator');
     },
     isFormulator() {
@@ -1387,6 +1386,12 @@ export default {
       this.$router.push({
         path: `/uklupl/${project.id}/matriks`,
       });
+    },
+    isFormKaComplete(project) {
+      if (project.form_ka_doc === true) {
+        return true;
+      }
+      return false;
     },
     handleRklRpl(project) {
       this.$router.push({
