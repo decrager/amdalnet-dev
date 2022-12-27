@@ -11,15 +11,17 @@
           label-position="left"
         >
           <div class="title-wrap">
-            <img
-              class="logo"
-              alt="Amdalnet"
-              :src="logo"
-            >
-            <!-- h3 class="title">
-              {{ $t('login.title') }}
-              <lang-select class="set-language" />
-            </h3 -->
+            <router-link to="/">
+              <img
+                class="logo"
+                alt="Amdalnet"
+                :src="logo"
+              >
+              <!-- h3 class="title">
+                {{ $t('login.title') }}
+                <lang-select class="set-language" />
+              </h3 -->
+            </router-link>
           </div>
           <el-form-item prop="email">
             <span class="svg-container">
