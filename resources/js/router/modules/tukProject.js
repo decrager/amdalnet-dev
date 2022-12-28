@@ -8,18 +8,52 @@ const tukProjectRoutes = {
     icon: 'layout-fluid',
     permissions: ['view menu tuk project'],
   },
+  alwaysShow: true,
   children: [
     {
       path: '',
       component: () => import('@/views/tuk-project/index.vue'),
       name: 'tukProject',
       meta: {
-        title: 'Daftar Kegiatan',
+        title: 'Semua Kegiatan',
         icon: 'layout-fluid',
         noCache: true,
         permissions: ['view menu tuk project'],
       },
     },
+    {
+      path: '/listNotAssignMember',
+      component: () => import('@/views/tuk-project/listNotAssignMember.vue'),
+      name: 'tukProject',
+      meta: {
+        title: 'Kegiatan belum diproses',
+        icon: 'layout-fluid',
+        noCache: true,
+        permissions: ['view menu tuk project'],
+      },
+    },
+    {
+      path: '/listAssignMember',
+      component: () => import('@/views/tuk-project/listAssignMember.vue'),
+      name: 'tukProject',
+      meta: {
+        title: 'Kegiatan sudah diproses',
+        icon: 'layout-fluid',
+        noCache: true,
+        permissions: ['view menu tuk project'],
+      },
+    },
+    // {
+    //   path: '/listAssignMemberDisProv',
+    //   component: () => import('@/views/tuk-project/listAssignMemberDisProv.vue'),
+    //   name: 'tukProject',
+    //   meta: {
+    //     title: 'Kegiatan Kewenangan Daerah',
+    //     icon: 'layout-fluid',
+    //     noCache: true,
+    //     permissions: ['view menu tuk project'],
+    //   },
+    // },
     {
       path: ':id(\\d+)/member',
       component: () =>
