@@ -44,7 +44,7 @@
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
           <div class="grid-content bg-purple" />
-          <iframe
+          <!-- <iframe
             v-if="showDocument"
             :src="`https://docs.google.com/gview?url=${encodeURIComponent(
               urlPdf
@@ -52,7 +52,7 @@
             width="100%"
             height="723px"
             frameborder="0"
-          />
+          /> -->
           <!-- <iframe
             v-if="showDocument"
             :src="
