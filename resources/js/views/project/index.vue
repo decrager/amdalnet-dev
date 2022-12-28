@@ -512,6 +512,7 @@ import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
+import { isOSS } from '@/utils/auth';
 const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -619,6 +620,9 @@ export default {
     },
     isScreening(){
       return this.$route.name === 'screeningProject';
+    },
+    isLoginFromOSS() {
+      return isOSS();
     },
   },
   async created() {
@@ -973,9 +977,20 @@ export default {
     },
     handleCreate() {
       this.$router.push({
-        name: 'createProject',
+        name: 'createProjectOss',
         params: {},
       });
+      // if (isOSS()) {
+      //   this.$router.push({
+      //     name: 'createProjectOss',
+      //     params: {},
+      //   });
+      // } else {
+      //   this.$router.push({
+      //     name: 'createProject',
+      //     params: {},
+      //   });
+      // }
     },
     handleCreate2() {
       this.$router.push({
