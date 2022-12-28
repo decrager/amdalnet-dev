@@ -23,7 +23,7 @@ const tukProjectRoutes = {
     },
     {
       path: '/listNotAssignMember',
-      component: () => import('@/views/tuk-project/listNotAssignMember.vue'),
+      component: () => import('@/views/tuk-project/listNotAssignMembers.vue'),
       name: 'tukProject',
       meta: {
         title: 'Kegiatan belum diproses',
@@ -34,7 +34,7 @@ const tukProjectRoutes = {
     },
     {
       path: '/listAssignMember',
-      component: () => import('@/views/tuk-project/listAssignMember.vue'),
+      component: () => import('@/views/tuk-project/listAssignMembers.vue'),
       name: 'tukProject',
       meta: {
         title: 'Kegiatan sudah diproses',
@@ -45,7 +45,7 @@ const tukProjectRoutes = {
     },
     // {
     //   path: '/listAssignMemberDisProv',
-    //   component: () => import('@/views/tuk-project/listAssignMemberDisProv.vue'),
+    //   component: () => import('@/views/tuk-project/listAssignMemberDisProvs.vue'),
     //   name: 'tukProject',
     //   meta: {
     //     title: 'Kegiatan Kewenangan Daerah',
