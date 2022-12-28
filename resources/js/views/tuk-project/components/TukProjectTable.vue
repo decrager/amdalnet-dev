@@ -77,7 +77,7 @@
 
     <el-table-column align="center" label="Anggota Uji Kelayakan">
       <template slot-scope="scope">
-        <el-button type="warning" @click="handleTukProjectMember(scope.row.id)">
+        <el-button v-if="district" type="warning" @click="handleTukProjectMember(scope.row.id)">
           Ubah
         </el-button>
         <el-button type="warning" @click="handleViewForm(scope.row.id)">
@@ -102,6 +102,10 @@ export default {
     page: {
       type: Number,
       default: () => 1,
+    },
+    district: {
+      type: Boolean,
+      default: true,
     },
     limit: {
       type: Number,
