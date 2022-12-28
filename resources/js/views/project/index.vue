@@ -976,21 +976,22 @@ export default {
         });
     },
     handleCreate() {
-      this.$router.push({
-        name: 'createProjectOss',
-        params: {},
-      });
-      // if (isOSS()) {
-      //   this.$router.push({
-      //     name: 'createProjectOss',
-      //     params: {},
-      //   });
-      // } else {
-      //   this.$router.push({
-      //     name: 'createProject',
-      //     params: {},
-      //   });
-      // }
+      // console.log({ cekoss: isOSS() });
+      // this.$router.push({
+      //   name: 'createProjectOss',
+      //   params: {},
+      // });
+      if (isOSS()) {
+        this.$router.push({
+          name: 'createProjectOss',
+          params: {},
+        });
+      } else {
+        this.$router.push({
+          name: 'createProject',
+          params: {},
+        });
+      }
     },
     handleCreate2() {
       this.$router.push({

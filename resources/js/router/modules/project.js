@@ -46,13 +46,13 @@ const projectRoutes = {
     //   name: 'projectIssued',
     //   meta: { title: 'listProjectIssued', icon: 'documentation', permissions: ['view menu project issued'] },
     // },
-    // {
-    //   path: 'create',
-    //   component: () => import('@/views/project/Create'),
-    //   name: 'createProject',
-    //   hidden: true,
-    //   meta: { title: 'addProject', icon: 'apps-sort' },
-    // },
+    {
+      path: 'create',
+      component: () => import('@/views/project/Create'),
+      name: 'createProject',
+      hidden: true,
+      meta: { title: 'addProject', icon: 'apps-sort' },
+    },
     {
       path: 'createoss',
       component: () => import('@/views/project/CreateStaggingOSS'),
