@@ -40,7 +40,6 @@ class TukProjectController extends Controller
             } else if(strtolower($project->authority) == 'kabupaten') {
                 $where = [['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]];
             }
-
             $team = FeasibilityTestTeam::where($where)->whereHas('member', function($q) {
                 $q->where(function($q) {
                     $q->whereHas('lukMember', function($query) {
@@ -50,7 +49,6 @@ class TukProjectController extends Controller
                     });
                 })->where('position', 'Kepala Sekretariat');
             })->first();
-
             if($team) {
                 $secretary_members = TukSecretaryMember::select('id', 'id_feasibility_test_team', 'name', 'institution', 'nik', 'email')
                                         ->where('id_feasibility_test_team', $team->id)
@@ -72,7 +70,8 @@ class TukProjectController extends Controller
         $team_id = $this->getIdTeamByMemberEmail(Auth::user()->email);
         $team = FeasibilityTestTeam::findOrFail($team_id);
 
-        return Project::select('id', 'registration_no', 'project_title', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district',)->select('projects.*', 'workflow_states.public_tracking as marking_label')
+        if($request->list) {
+            return Project::select('id', 'registration_no', 'project_title', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district',)->select('projects.*', 'workflow_states.public_tracking as marking_label')
                     ->where(function($q) use($team) {
                         if($team->authority == 'Pusat') {
                             $q->whereIn('authority', ['Pusat', 'pusat']);
@@ -87,6 +86,7 @@ class TukProjectController extends Controller
                     ->where(function ($query) use ($request) {
                         return $request->marking_label ? $query->where('marking', $request->marking_label) : '';
                     })
+                    ->has('tukProject', ''.$request->operator.'', 0)
                     ->where(function($q) use($request) {
                         if($request->search) {
                             $q->where(function($query) use($request) {
@@ -117,6 +117,56 @@ class TukProjectController extends Controller
                     ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
                     ->orderBy($request->orderBy, $request->order)->paginate($request->limit);
                     // ->orderBy('created_at', 'DESC')->paginate($request->limit)
+        } else if (!$request->list) {
+            return Project::select('id', 'registration_no', 'project_title', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district',)->select('projects.*', 'workflow_states.public_tracking as marking_label')
+            // ->where(function ($q) use ($request) {
+            //     $request->district ? $q->whereIn('authority', $request->district) : '';
+            // })
+            ->where(function($q) use($team, $request) {
+                if($team->authority == 'Pusat') {
+                    $q->whereIn('authority', ['Pusat', 'pusat']);
+                } else if($team->authority == 'Provinsi') {
+                    $q->where('auth_province', $team->id_province_name);
+                    $q->whereIn('authority', ['Provinsi', 'provinsi']);
+                } else if($team->authority == 'Kabupaten/Kota') {
+                    $q->where('auth_district', $team->id_district_name);
+                    $q->whereIn('authority', ['Kabupaten', 'kabupaten']);
+                }
+            })
+            ->where(function ($query) use ($request) {
+                return $request->marking_label ? $query->where('marking', $request->marking_label) : '';
+            })
+            ->where(function($q) use($request) {
+                if($request->search) {
+                    $q->where(function($query) use($request) {
+                        $query->whereRaw("LOWER(project_title) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($query) use($request) {
+                        $query->whereRaw("LOWER(registration_no) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($query) use($request) {
+                        $query->whereHas('initiator', function($que) use($request) {
+                            $que->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                        });
+                    })->orWhere(function($query) use($request) {
+                        $query->whereHas('address', function($que) use($request) {
+                            $search = str_replace('provinsi', '', strtolower($request->search));
+                            $que->where(function($quer) use($search) {
+                                $quer->whereRaw("LOWER(prov) LIKE '%" . strtolower($search) . "%'");
+                            })->orWhere(function($quer) use($search) {
+                                $quer->whereRaw("LOWER(district) LIKE '%" . strtolower($search) . "%'");
+                            })->orWhere(function($quer) use($search) {
+                                $quer->whereRaw("LOWER(address) LIKE '%" . strtolower($search) . "%'");
+                            });
+                        });
+                    });
+                }
+            })
+            ->with(['address', 'tukProject', 'listSubProject.listSubProjectParams', 'initiator' => function($q) {
+                $q->select('id', 'name');
+            }])
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
+            ->orderBy($request->orderBy, $request->order)->paginate($request->limit);
+            // ->orderBy('created_at', 'DESC')->paginate($request->limit)
+        }
     }
 
     /**
