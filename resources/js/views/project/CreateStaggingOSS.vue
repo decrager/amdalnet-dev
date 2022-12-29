@@ -845,7 +845,7 @@ export default {
       fileName: 'No File Selected.',
       fileMap: null,
       filePdf: null,
-      isOss: true,
+      isOSS: true,
       fileKtrName: 'No File Selected',
       filepippibName: 'No File Selected',
       fileKawasanLindungName: 'No File Selected',
@@ -2395,7 +2395,7 @@ export default {
       // send to pubishProjectRoute
       this.$router.push({
         name: 'publishProject',
-        params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson, mapUploadPdf: this.filePdf },
+        params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson, mapUploadPdf: this.filePdf, isOSS: this.isOSS },
       });
       //   } else {
       //     console.log('error submit!!');

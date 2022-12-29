@@ -6,12 +6,22 @@
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col>
             <el-button
-              v-if="couldCreateProject && !isScoping && !isDigiWork"
+              v-if="couldCreateProject && !isScoping && !isDigiWork && !isLoginFromOSS"
               :disabled="addLoading"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
               @click="handleCreate"
+            >
+              {{ ' Kegiatan' }}
+            </el-button>
+            <el-button
+              v-if="isLoginFromOSS"
+              :disabled="addLoading"
+              class="filter-item"
+              type="primary"
+              icon="el-icon-plus"
+              @click="handleCreateOSS"
             >
               {{ ' Kegiatan' }}
             </el-button>
@@ -574,7 +584,6 @@ export default {
         { value: 'Rendah', label: 'SPPL' },
       ],
       isPemerintah: false,
-      isOSS: true,
     };
   },
   computed: {
@@ -977,30 +986,38 @@ export default {
         });
     },
     handleCreate() {
-      // console.log({ cekoss: isOSS() });
       // this.$router.push({
       //   name: 'createProjectOss',
       //   params: {},
       // });
-      // if (isOSS()) {
-      if (this.isOSS) {
-        this.$router.push({
-          name: 'createProjectOss',
-          params: {},
-        });
-      } else {
-        this.$router.push({
-          name: 'createProject',
-          params: {},
-        });
-      }
-    },
-    handleCreate2() {
       this.$router.push({
-        name: 'createProject2',
+        name: 'createProject',
+        params: {},
+      });
+      // if (this.isOSS) {
+      //   this.$router.push({
+      //     name: 'createProjectOss',
+      //     params: {},
+      //   });
+      // } else {
+      //   this.$router.push({
+      //     name: 'createProject',
+      //     params: {},
+      //   });
+      // }
+    },
+    handleCreateOSS() {
+      this.$router.push({
+        name: 'createProjectOss',
         params: {},
       });
     },
+    // handleCreate2() {
+    //   this.$router.push({
+    //     name: 'createProject2',
+    //     params: {},
+    //   });
+    // },
     download(url) {
       const a = document.createElement('a');
       a.href = url;
