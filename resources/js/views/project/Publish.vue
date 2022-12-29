@@ -108,7 +108,9 @@
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
             <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
           <el-row v-show="isRiskShow" style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
-            <el-col :span="12">{{ project.oss_risk }}</el-col></el-row>
+            <el-col v-if="!isFromOSS" :span="12">{{ project.oss_risk }}</el-col>
+            <el-col v-if="isFromOSS" :span="12">{{ project.result_risk }}</el-col>
+          </el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
             <el-col :span="12">{{ project.authority }}</el-col></el-row>
         </el-col>
@@ -169,6 +171,10 @@ export default {
     mapUploadPdf: {
       type: File,
       default: () => null,
+    },
+    isOSS: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -237,6 +243,9 @@ export default {
     },
     isProjectIdExist() {
       return this.project.id;
+    },
+    isFromOSS() {
+      return this.isOSS;
     },
   },
   async mounted() {
@@ -638,10 +647,17 @@ export default {
     },
     handleCancel() {
       // this.$router.back();
-      this.$router.push({
-        name: 'createProject',
-        params: { project: this.project },
-      });
+      if (this.isOSS) {
+        this.$router.push({
+          name: 'createProjectOss',
+          params: { project: this.project },
+        });
+      } else {
+        this.$router.push({
+          name: 'createProject',
+          params: { project: this.project },
+        });
+      }
     },
     async createTeam(id){
       // create tim using all list
@@ -674,6 +690,7 @@ export default {
 
         // make form data because we got file
         const formData = new FormData();
+        formData.append('isOSS', this.isOSS);
         formData.append('geomFromGeojson', JSON.stringify(this.geomFromGeojson));
         formData.append('geomProperties', JSON.stringify(this.geomProperties));
         formData.append('geomStyles', JSON.stringify(this.geomStyles));

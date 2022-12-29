@@ -54,6 +54,13 @@ const projectRoutes = {
       meta: { title: 'addProject', icon: 'apps-sort' },
     },
     {
+      path: 'createoss',
+      component: () => import('@/views/project/CreateStaggingOSS'),
+      name: 'createProjectOss',
+      hidden: true,
+      meta: { title: 'addProject', icon: 'apps-sort' },
+    },
+    {
       path: 'publish',
       component: () => import('@/views/project/Publish'),
       name: 'publishProject',

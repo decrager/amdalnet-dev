@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Entity\WorkflowStep;
 use App\Notifications\CreateProjectNotification;
 use App\Entity\ProjectSkklFinal;
+use App\Services\OssService;
 use App\Utils\Document;
 use App\Utils\ListRender;
 use Illuminate\Support\Carbon;
@@ -625,9 +626,9 @@ class ProjectController extends Controller
 
         // send status to OSS if not pemerintah
         // uncomment this for enabling oss -ossenabled
-        // if (!isset($request['isPemerintah'])) {
-        //     OssService::receiveLicenseStatus($project, '45');
-        // }
+        if (!isset($request['isPemerintah']) && isset($request['isOSS'])) {
+            OssService::receiveLicenseStatus($project, '45');
+        }
 
         return new ProjectResource($project);
 

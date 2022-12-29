@@ -6,12 +6,22 @@
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col>
             <el-button
-              v-if="couldCreateProject && !isScoping && !isDigiWork"
+              v-if="couldCreateProject && !isScoping && !isDigiWork && !isLoginFromOSS"
               :disabled="addLoading"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
               @click="handleCreate"
+            >
+              {{ ' Kegiatan' }}
+            </el-button>
+            <el-button
+              v-if="isLoginFromOSS"
+              :disabled="addLoading"
+              class="filter-item"
+              type="primary"
+              icon="el-icon-plus"
+              @click="handleCreateOSS"
             >
               {{ ' Kegiatan' }}
             </el-button>
@@ -512,6 +522,7 @@ import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
+import { isOSS } from '@/utils/auth';
 const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -619,6 +630,9 @@ export default {
     },
     isScreening(){
       return this.$route.name === 'screeningProject';
+    },
+    isLoginFromOSS() {
+      return isOSS();
     },
   },
   async created() {
@@ -972,17 +986,38 @@ export default {
         });
     },
     handleCreate() {
+      // this.$router.push({
+      //   name: 'createProjectOss',
+      //   params: {},
+      // });
       this.$router.push({
         name: 'createProject',
         params: {},
       });
+      // if (this.isOSS) {
+      //   this.$router.push({
+      //     name: 'createProjectOss',
+      //     params: {},
+      //   });
+      // } else {
+      //   this.$router.push({
+      //     name: 'createProject',
+      //     params: {},
+      //   });
+      // }
     },
-    handleCreate2() {
+    handleCreateOSS() {
       this.$router.push({
-        name: 'createProject2',
+        name: 'createProjectOss',
         params: {},
       });
     },
+    // handleCreate2() {
+    //   this.$router.push({
+    //     name: 'createProject2',
+    //     params: {},
+    //   });
+    // },
     download(url) {
       const a = document.createElement('a');
       a.href = url;
