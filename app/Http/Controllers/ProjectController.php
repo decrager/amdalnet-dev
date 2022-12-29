@@ -1351,7 +1351,7 @@ class ProjectController extends Controller
     {
         $document = new TemplateProcessor(public_path('document/Template-Penapisan.docx'));
         $dataProject = Project::with('address', 'listSubProject', 'initiator')->findOrFail($request->project_id);
-        $document->setValue('nama_project', $dataProject->project_title ?? '-');
+        $document->setValue('nama_project', htmlspecialchars($dataProject->project_title ?? '-'));
         $document->setValue('no_registrasi', $dataProject->registration_no ?? '-');
         $document->setValue('pemrakarsa', htmlspecialchars($dataProject->initiator->name ?? '-'));
         $document->setValue('penanggung_jawab', $dataProject->initiator->pic ?? '-');
