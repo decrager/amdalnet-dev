@@ -574,6 +574,7 @@ export default {
         { value: 'Rendah', label: 'SPPL' },
       ],
       isPemerintah: false,
+      isOSS: true,
     };
   },
   computed: {
@@ -981,7 +982,8 @@ export default {
       //   name: 'createProjectOss',
       //   params: {},
       // });
-      if (isOSS()) {
+      // if (isOSS()) {
+      if (this.isOSS) {
         this.$router.push({
           name: 'createProjectOss',
           params: {},

@@ -248,9 +248,9 @@
             </el-row>
             <!-- Alamat -->
             <!-- <el-row v-show="currentProject.isPemerintah === 'true'" type="flex" justify="end" :gutter="4"> -->
-            <el-row type="flex" justify="end" :gutter="4">
+            <!-- <el-row type="flex" justify="end" :gutter="4">
               <el-col :span="24" :xs="24">
-                <el-form-item label="Alamat" prop="address">
+                <el-form-item label="AlamatOss" prop="address">
                   <el-table :key="refresh" :data="currentProject.address" max-height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
                     <el-table-column align="center" width="55">
                       <template slot-scope="scope">
@@ -324,7 +324,7 @@
                   >+</el-button>
                 </el-form-item>
               </el-col>
-            </el-row>
+            </el-row> -->
             <el-row type="flex" justify="end">
               <el-col :span="5" style="padding-right: 0px">
                 <el-button size="medium" @click="activeName = '1'">
