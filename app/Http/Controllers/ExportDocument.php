@@ -31,6 +31,38 @@ use Illuminate\Support\Facades\Storage;
 
 class ExportDocument extends Controller
 {
+    public function index(Request $request) {
+        if($request->version) {
+            $data = array();
+            for($i= 0; $i < 100; $i++) {
+                $docVersi = DocumentAttachment::select('versi')->where('id_project', $request->id)->where('versi', $i)->orderBy('created_at', 'desc')->first();
+                if($docVersi === null) {
+                    continue;
+                } else {
+                    $data[] = $docVersi;
+                }
+            };
+
+            return $data;
+        }
+        if($request->changeVersi) {
+            Carbon::setLocale('id');
+            $project = Project::with('listSubProject')->findOrFail($request->id_project);
+            $document_attachment = DocumentAttachment::where([['id_project', $request->id_project],['type', 'Dokumen UKL UPL'], ['versi', $request->versi]])->orderBy('created_at', 'desc')->first();
+            if($document_attachment) {
+                $pdf_url = $this->docxToPdf($document_attachment->attachment);
+                return [
+                    'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
+                    'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
+                    'pdf_url' => $pdf_url,
+                    'docx_url' => $document_attachment->attachment,
+                    'create_time' => $document_attachment->created_at->toTimeString(),
+                    'versi_doc' => $document_attachment->versi,
+                ];
+            }
+        }
+    }
+
     public function KADocx($id)
     {
         $getInformation = DB::table('projects')
