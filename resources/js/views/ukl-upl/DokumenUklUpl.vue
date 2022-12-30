@@ -36,7 +36,7 @@
         <el-button :loading="loading" type="primary" @click="regenerateDocx">
           Buat ulang dokumen
         </el-button>
-        <span style="float: right;">
+        <!-- <span style="float: right;">
           <span style="font-weight: bold; padding-right: 10px;">Versi Workspace</span>
           <el-select v-model="version" filterable placeholder="Pilih Versi Workspace" size="mini" @change="getData(version)">
             <el-option
@@ -46,7 +46,7 @@
               :value="item.versi"
             />
           </el-select>
-        </span>
+        </span> -->
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
@@ -133,9 +133,10 @@ export default {
       this.loading = true;
       const versions = await exportDocumentResource.list({ version: true, id: this.$route.params.id });
       this.versiDoc = versions;
-      if (value != null) {
-        this.dataWorkspace = await exportDocumentResource.list({ changeVersi: true, versi: value, id_project: this.$route.params.id });
-      } else if (this.isMarking) {
+      // if (value != null) {
+      //   this.dataWorkspace = await exportDocumentResource.list({ changeVersi: true, versi: value, id_project: this.$route.params.id });
+      // } else
+      if (this.isMarking) {
         const data = await axios.get(
           `/api/dokumen-ukl-upl/${this.$route.params.id}?revisi=true`
         );
