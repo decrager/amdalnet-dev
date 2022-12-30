@@ -523,7 +523,7 @@ class ExportDocument extends Controller
         Carbon::setLocale('id');
         $project = Project::with('listSubProject')->findOrFail($id_project);
         $listSubProject = array_values($project->listSubProject->toArray());
-        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->orderBy('created_at', 'desc')->first();
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL'], ['versi', 0]])->orderBy('created_at', 'desc')->first();
         if($document_attachment && !request()->has('regenerate') && !request()->has('revisi') && !request()->has('versi')) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
             return [
