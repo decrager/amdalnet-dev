@@ -57,22 +57,27 @@
             </el-button>
           </el-form-item>
           <el-row type="flex" class="row-bg" justify="space-between">
-            <!-- <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenResetPassword">Lupa Kata Sandi?</el-button> -->
-            <p style="background-color: transparent; color: blue;">
-              <router-link to="/oss/lupa-katasandi">Lupa Kata Sandi?</router-link>
-            </p>
-            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak
-              Memiliki Akun? <span style="color: red">Buat Akun Baru</span></el-button>
+            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">
+              <span>Lupa Kata Sandi?</span>
+            </el-button>
+            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak Memiliki Akun?
+              <span style="color: red">Buat Akun Baru</span>
+            </el-button>
           </el-row>
           <el-divider>atau</el-divider>
+          <div style="text-align: start; margin-bottom: 15px;">
+            <span style="font-size: smaller; color: black;">Masuk dengan Akun OSS RBA</span>
+          </div>
           <el-row>
             <router-link to="/oss/login">
               <el-button type="primary" style="width: 100%;">
-                <img
-                  alt="OSS RBA"
-                  :src="logoOSS"
-                  style="max-height: 20px !important;"
-                >
+                <div>
+                  <img
+                    alt="OSS RBA"
+                    :src="logoOSS"
+                    style="max-height: 20px !important;"
+                  >
+                </div>
               </el-button>
             </router-link>
           </el-row>
