@@ -1137,7 +1137,10 @@ export default {
       this.form = 'login';
     },
     handleOpenResetPassword() {
-      this.form = 'resetpassword';
+      // this.form = 'resetpassword';
+      this.$router.push({
+        name: 'OssResetPassword',
+      });
     },
     handleCancelReset() {
       this.form = 'login';
