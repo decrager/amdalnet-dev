@@ -2315,7 +2315,10 @@ export default {
       this.kewenanganOSS = this.$store.getters.ossByNib.kewenangan;
       this.jenisKawasanOSS = this.$store.getters.ossByNib.jenis_kawasan;
 
-      const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => (e.file_izin === '-' || !e.file_izin) && !e.status_tapis);
+      // const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => (e.file_izin === '-' || !e.file_izin) && !e.status_tapis);
+      const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(
+        (e) => e.id_izin && (e.skala_resiko === 'MT' || e.skala_resiko === 'T') && (e.file_izin === '-' || !e.file_izin) && !e.status_tapis
+      );
       // console.log(ossProjects);
 
       ossProjects.forEach(e => {
