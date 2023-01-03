@@ -89,7 +89,7 @@
             placeholder="Cari berdasarkan Project atau Alamat"
           />
         </template>
-        <router-link to="/project/CreateStaggingOSS">
+        <router-link to="/project/createstaggingoss">
           <el-button type="primary">Proses Penapisan</el-button>
         </router-link>
       </el-table-column>
