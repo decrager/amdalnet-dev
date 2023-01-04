@@ -127,6 +127,7 @@ export default {
     }),
     isAbleToComment() {
       const status = [
+        // uklupl workflow state
         // 'uklupl-mt.matrix-ukl',
         // 'uklupl-mt.matrix-upl',
         'uklupl-mt.sent',
@@ -140,6 +141,19 @@ export default {
         'uklupl-mt.ba-signed',
         'uklupl-mt.recommendation-drafting',
         'uklupl-mt.recommendation-signed',
+        // amdal workflow state
+        'amdal.form-ka-submitted',
+        'amdal.form-ka-adm-review',
+        'amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved',
+        'amdal.form-ka-examination-invitation-drafting',
+        'amdal.form-ka-examination-invitation-sent',
+        'amdal.form-ka-examination',
+        'amdal.form-ka-examination-meeting',
+        'amdal.form-ka-returned',
+        'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting',
+        'amdal.form-ka-ba-signed',
       ];
       return status.includes(this.markingStatus);
     },
