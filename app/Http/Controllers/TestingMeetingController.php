@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\DocumentAttachment;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\FormulatorTeam;
@@ -21,6 +22,7 @@ use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use App\Notifications\MeetingInvitation;
+use App\Utils\Document;
 use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
@@ -163,10 +165,15 @@ class TestingMeetingController extends Controller
                     $meeting->save();
 
                     $tmpName = tempnam(sys_get_temp_dir(),'');
+                    $document_attachment =  DocumentAttachment::where('id_project', $project->id)->where('type', $meeting->document_type == 'ka' ? 'Formulir KA' : 'Formulir KA Andal')->first();
+                    $pdf_url = $this->docxToPdf($document_attachment->attachment);
+                    $filename = 'ka-andal-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+                    if($meeting->document_type == 'ka') {
+                        $filename = 'ka-' . $project->id . '-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+                    }
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
                     file_put_contents($tmpName, $tmpFile);
-
-                    Notification::send($user, new MeetingInvitation($meeting, $tmpName));
+                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, $pdf_url, $filename, $request->role));
 
                     unlink($tmpName);
 
@@ -226,6 +233,8 @@ class TestingMeetingController extends Controller
 
         $meeting->meeting_date = $data['meeting_date'];
         $meeting->meeting_time = $data['meeting_time'];
+        $meeting->zone = $data['zone'] == null ? '-' : $data['zone'];
+        $meeting->link = $data['link'] == null ? '-' : $data['link'];
         $meeting->location = $data['location'];
 
         // Invitation File
@@ -361,6 +370,8 @@ class TestingMeetingController extends Controller
             'project_name' => $project->project_title,
             'invitations' => [],
             'file' => null,
+            'zone' => null,
+            'link' => null,
             'invitation_file' => null,
             'deleted_invitations' => []
         ];
@@ -452,6 +463,8 @@ class TestingMeetingController extends Controller
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
             'file' => $meeting->file,
+            'zone' => $meeting->zone,
+            'link' => $meeting->link,
             'invitation_file' => $meeting->invitation_file,
             'deleted_invitations' => []
         ];
@@ -1196,5 +1209,13 @@ class TestingMeetingController extends Controller
             'extension' => $extension,
             'file' => base64_decode($file)
         ];
+    }
+    private function docxToPdf($url)
+    {
+        $downloadUri = url($url);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 }
