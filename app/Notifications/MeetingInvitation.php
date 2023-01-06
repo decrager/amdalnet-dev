@@ -55,7 +55,7 @@ class MeetingInvitation extends Notification
     {
         Carbon::setLocale('id');
         $document = '';
-        $url = url("/#/project/docspace/". $this->id_project). "/". 0;
+        $url = url("/#/project/docspace/". $this->id_project). "/". 0 . "?" . "idProject=" . $this->id_project;
         $role = '';
 
         if ($this->role[0] == 'examiner-chief') {
