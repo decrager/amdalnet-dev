@@ -107,6 +107,7 @@ class WorkspaceCommentController extends Controller
         $document = new TemplateProcessor(public_path('document/template_rekap_komentar.docx'));
         $comments = WorkspaceComment::with('user')->where('document_type', $document_type)->where('id_project', $id_project)->get()->toArray();
         $project = Project::findOrFail($id_project)->first();
+        // dd($project);
         $document->setValue('jenis_doc_form', $document_type);
         $document->setValue('nama_kegiatan', $project->project_title);
         $data = collect($comments)->groupBy('document_type')->map(function ($d) {
@@ -119,13 +120,6 @@ class WorkspaceCommentController extends Controller
             // dd($kategory);
             $replacements[] = array(
                 'kategori_komentar' => $blockComment,
-                // 'no_ahli' => '${no_ahli_'.$i.'}',
-                // 'nama_tuk_ahli' => '${nama_tuk_ahli_'.$i.'}',
-                // 'position_ahli' => '${position_ahli_'.$i.'}',
-                // 'saran_pendapat_ahli' => '${saran_pendapat_ahli_'.$i.'}',
-                // 'halaman_spt_ahli' => '${halaman_spt_ahli_'.$i.'}',
-                // 'perbaikan_pemrakarsa_ahli' => '${perbaikan_pemrakarsa_ahli_'.$i.'}',
-                // 'halaman_perbaikan_ahli' => '${halaman_perbaikan_ahli_'.$i.'}',
             );
             $i++;
         }
@@ -138,7 +132,7 @@ class WorkspaceCommentController extends Controller
                 $replacements[] = array(
                     'nama_tuk_ahli' => $key,
                     "position_ahli" => $key,
-                    'no_ahli' => '${no_ahli_'.$i.'}',
+                    'no_ahli' => '${no_ahli_'.$i.   '}',
                     'saran_pendapat_ahli' => '${saran_pendapat_ahli_'.$i.'}',
                     'halaman_spt_ahli' => '${halaman_spt_ahli_'.$i.'}',
                     'perbaikan_pemrakarsa_ahli' => '${perbaikan_pemrakarsa_ahli_'.$i.'}',
@@ -159,21 +153,21 @@ class WorkspaceCommentController extends Controller
                 // $containers = $section->getElements();
                 foreach($group as $key => $row) {
                     // dd($row);
-                    $section = (new PhpWord())->addSection();
-                    Html::addHtml($section, $row['suggest'], false, false);
-                    $containers = $section->getElements();
+                    // $section = (new PhpWord())->addSection();
+                    // Html::addHtml($section, $row['suggest'], false, false);
+                    // $containers = $section->getElements();
                     // dd($containers, $row['suggest']);
                     $values[] = array(
                         "no_ahli_{$i}" => $key +1,
-                        // "saran_pendapat_ahli_{$i}" => strip_tags($row['suggest']),
+                        "saran_pendapat_ahli_{$i}" => strip_tags($row['suggest']),
                         "halaman_spt_ahli_{$i}" => $row['page'],
                         "perbaikan_pemrakarsa_ahli_{$i}" => strip_tags($row['response']),
                         "halaman_perbaikan_ahli_{$i}" => $row['page_fix'],
                     );
                     // $document->setComplexBlock('saran_pendapat_ahli_'.($i), $containers[0]);
-                    for($j = 0; $j < count($containers); $j++) {
-                        $document->setComplexBlock('saran_pendapat_ahli_'.($j), $containers[$j]);
-                    }
+                    // for($j = 0; $j < count($containers); $j++) {
+                    //     $document->setComplexBlock('saran_pendapat_ahli_'.($j), $containers[$j]);
+                    // }
                 }
                 // for($j = 0; $j < count($containers); $j++) {
                 //     $document->setComplexBlock('saran_pendapat_ahli_'.($j), $containers[$j]);
