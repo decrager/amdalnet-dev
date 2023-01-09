@@ -27,9 +27,11 @@
         <DaftarHadir
           :invitations="reports.invitations"
           :reports="reports"
+          :reportsrapat="reportsRapat"
           :loadingtuk="loadingTuk"
           @deleteinvitation="deleteInvitation($event)"
           @updateuploadfile="updateUploadFile($event)"
+          @updateUploadFileRapat="updateUploadFileRapat($event)"
           @handleChangeRole="handleChangeRole($event)"
           @handleChangeName="handleChangeName($event)"
         />
@@ -97,6 +99,7 @@ export default {
       loadingTuk: false,
       loadingAccept: false,
       reports: {},
+      reportsRapat: {},
       docs: {},
       loadingDocs: false,
       showDocument: false,
@@ -121,6 +124,7 @@ export default {
     await this.getTukMembers();
     await this.getGovernmentInstitutions();
     await this.getReports();
+    await this.getReportsRapat();
     this.loadingTuk = false;
   },
   methods: {
@@ -230,6 +234,13 @@ export default {
         this.reports = data;
       }
     },
+    async getReportsRapat() {
+      const data = await meetingReportResource.list({
+        file_rapat: 'true',
+        projectId: this.idProject,
+      });
+      this.reportsRapat = data;
+    },
     async getGovernmentInstitutions() {
       this.governmentInstitutions = await institutionResource.list({
         meeting: 'true',
@@ -324,6 +335,7 @@ export default {
       });
       this.loadingTuk = true;
       await this.getReports();
+      await this.getReportsRapat();
       this.$message({
         message: 'Data sukses tersimpan',
         type: 'success',
@@ -375,6 +387,9 @@ export default {
     },
     updateUploadFile({ name }) {
       this.reports.file = name;
+    },
+    updateUploadFileRapat({ name_rapat }) {
+      this.reportsRapat.file = name_rapat;
     },
     acceptOrNot(accept) {
       this.$confirm('Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.', 'Warning', {

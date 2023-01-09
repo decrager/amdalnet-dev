@@ -71,6 +71,17 @@ class MeetReportRKLRPLController extends Controller
                 return $this->getFreshReport($request->idProject, $document_type);
             }
         }
+
+        if($request->file_rapat) {
+            // Check if meeting report exist
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            $report = MeetingReport::where([['id_project', $request->projectId],['document_type', $document_type]])->first();
+            if($report) {
+                return $this->getExistReportRapat($request->projectId, $document_type);
+            } else {
+                return null;
+            }
+        }
     }
 
     /**
@@ -201,11 +212,82 @@ class MeetReportRKLRPLController extends Controller
                         $project->save();
                     }
                 }
-            } else {
+            }
+            else {
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
             }
 
-            return response()->json(['errors' => null, 'name' => $meeting_report->file]);
+            return response()->json([
+                'errors' => null,
+                'name' => $meeting_report->file,
+            ]);
+        }
+
+        if($request->file_rapat) {
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+
+            if($request->dokumen_file_rapat) {
+                $project = Project::findOrFail($request->idProject);
+
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
+
+                if($meeting_report->file_rapat) {
+                    Storage::disk('public')->delete($meeting_report->rawFileRapat());
+                }
+
+
+                $file = $this->base64ToFileRapat($request->dokumen_file_rapat);
+                $name = 'berita-acara-rapat-' . $document_type . '/' . uniqid() . '.' . $file['extension'];
+                Storage::disk('public')->put($name, $file['file_rapat']);
+
+                $meeting_report->file_rapat = $name;
+                $meeting_report->save();
+
+                // === NOTIFICATIONS === //
+                $receiver = [];
+                // 1. Pemrakarsa
+                $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+                if($pemrakarsa_user) {
+                    $receiver[] = $pemrakarsa_user;
+                }
+                // 2. Penyusun
+                $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->get();
+                foreach($formulator_team_members as $ftm) {
+                    if($ftm->formulator) {
+                        $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                        if($formulator_user) {
+                            $receiver[] = $formulator_user;
+                        }
+                    }
+                }
+
+                if(count($receiver) > 0) {
+                    Notification::send($receiver, new MeetingReportNotification($meeting_report, 'disetujui'));
+                }
+
+                // === WORKFLOW === //
+                if($document_type == 'ukl-upl') {
+                    if($project->marking == 'uklupl-mt.ba-drafting') {
+                        $project->workflow_apply('sign-uklupl-ba');
+                        $project->save();
+                    }
+                } else {
+                    if($project->marking == 'amdal.feasibility-ba-drafting') {
+                        $project->workflow_apply('sign-amdal-feasibility-ba');
+                        $project->save();
+                    }
+                }
+            }
+            else {
+                return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
+            }
+
+            return response()->json([
+                'errors' => null,
+                'name_rapat' => Storage::disk('public')->temporaryUrl($meeting_report->file_rapat, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+            ]);
         }
 
         if ($request->formulir) {
@@ -437,6 +519,7 @@ class MeetReportRKLRPLController extends Controller
             'invitations' => $invitations,
             'notes' => null,
             'file' => null,
+            'file_rapat' => null,
             'is_accepted' => null,
             'deleted_invitations' => []
         ];
@@ -529,8 +612,20 @@ class MeetReportRKLRPLController extends Controller
             'invitations' => $invitations,
             'notes' => $report->notes,
             'file' => $report->file,
+            // 'file_rapat' => $report->file_rapat,
             'is_accepted' => $report->is_accepted,
             'deleted_invitations' => []
+        ];
+
+        return $data;
+    }
+
+    private function getExistReportRapat($id_project, $document_type) {
+        $report = MeetingReport::where([['id_project', $id_project],['document_type', $document_type]])->first();
+
+        $data = [
+            'id_project' => $id_project,
+            'file' => Storage::disk('public')->temporaryUrl($report->file_rapat, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
         ];
 
         return $data;
@@ -809,6 +904,24 @@ class MeetReportRKLRPLController extends Controller
         return [
             'extension' => $extension,
             'file' => base64_decode($file)
+        ];
+    }
+
+    private function base64ToFileRapat($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1);
+
+        // find substring fro replace here eg: data:image/png;base64,
+
+        $file = str_replace($replace, '', $file_64);
+
+        $file = str_replace(' ', '+', $file);
+
+        return [
+            'extension' => $extension,
+            'file_rapat' => base64_decode($file)
         ];
     }
 }
