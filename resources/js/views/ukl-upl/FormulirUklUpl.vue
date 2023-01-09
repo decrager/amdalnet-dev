@@ -53,7 +53,7 @@
           <jenis-besaran-dampak-table
             v-if="activeName === '3'"
             :perbaikan="isPerbaikan"
-            @handleEnableSimpanLanjutkan="handleEnbleSimpanLanjutkan"
+            @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan"
           />
         </el-collapse-item>
       </el-collapse>
