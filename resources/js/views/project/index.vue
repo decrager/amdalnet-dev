@@ -151,7 +151,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleKerangkaUklUpl(scope.row)"
+                  @click="handleKerangkaUklUpl(scope.row, scope.row.perbaikan)"
                 >
                   Formulir UKL UPL
                 </el-button>
@@ -165,11 +165,11 @@
                   Dokumen Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && scope.row.marking !== 'uklupl-mt.returned-examination' && ((isFormulator && scope.row.ukl_upl_document) || (isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator)) && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator)) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleDokumenUklUpl(scope.row)"
+                  @click="handleDokumenUklUpl(scope.row, scope.row.marking)"
                 >
                   Dokumen UKL UPL
                 </el-button>
@@ -205,7 +205,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleMatUklUpl(scope.row)"
+                  @click="handleMatUklUpl(scope.row, scope.row.perbaikan)"
                 >
                   Matriks UKL/UPL
                 </el-button>
@@ -308,23 +308,12 @@
                 >
                   Workspace RKL RPL
                 </el-button>
-                <span v-for="item in scope.row.version_workspace" :key="item.id">
-                  <el-button
-                    v-if="isUklUpl(scope.row) && scope.row.version_workspace !== null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
-                    href="#"
-                    type="text"
-                    icon="el-icon-document"
-                    @click="handleWorkspaceUKLUPL(scope.row.id, item.versi)"
-                  >
-                    Workspace UKL UPL versi {{ item.versi }}
-                  </el-button>
-                </span>
                 <el-button
-                  v-if="isUklUpl(scope.row) && scope.row.version_workspace === null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
+                  v-if="isUklUpl(scope.row) && scope.row.version_workspace !== null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleWorkspaceUKLUPL(scope.row.id, item.versi)"
+                  @click="handleWorkspaceUKLUPL(scope.row.id, scope.row.marking)"
                 >
                   Workspace UKL UPL
                 </el-button>
@@ -1127,11 +1116,19 @@ export default {
         path: `/amdal/${project.id}/formulir`,
       });
     },
-    handleKerangkaUklUpl(project) {
-      this.$router.push({
-        path: `/uklupl/${project.id}/formulir`,
-        // path: `/ukluplstatic/form`,
-      });
+    handleKerangkaUklUpl(project, perbaikan) {
+      if (perbaikan === true) {
+        this.$alert('Menu <b> Formulir UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        });
+      } else {
+        this.$router.push({
+          path: `/uklupl/${project.id}/formulir`,
+          // path: `/ukluplstatic/form`,
+        });
+      }
     },
     handleDokumenKA(project) {
       this.$router.push({
@@ -1143,10 +1140,18 @@ export default {
         path: `/amdal/${project.id}/dokumen-andal-rkl-rpl`,
       });
     },
-    handleDokumenUklUpl(project) {
-      this.$router.push({
-        path: `/uklupl/${project.id}/dokumen`,
-      });
+    handleDokumenUklUpl(project, marking) {
+      if (marking === 'uklupl-mt.returned-examination') {
+        this.$alert('Menu <b> Dokumen UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        });
+      } else {
+        this.$router.push({
+          path: `/uklupl/${project.id}/dokumen`,
+        });
+      }
     },
     handleUjiAdmKa(project) {
       this.$router.push({
@@ -1417,10 +1422,18 @@ export default {
         path: `/amdal/${project.id}/penyusunan-andal`,
       });
     },
-    handleMatUklUpl(project) {
-      this.$router.push({
-        path: `/uklupl/${project.id}/matriks`,
-      });
+    handleMatUklUpl(project, perbaikan) {
+      if (perbaikan === true) {
+        this.$alert('Menu <b> Matriks UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        });
+      } else {
+        this.$router.push({
+          path: `/uklupl/${project.id}/matriks`,
+        });
+      }
     },
     isFormKaComplete(project) {
       if (project.form_ka_doc === true) {
@@ -1508,20 +1521,36 @@ export default {
         },
       });
     },
-    async handleWorkspaceUKLUPL(idProject, version) {
-      const data = await axios.get(
-        `/api/dokumen-ukl-upl/${idProject}?versi=${version}`
-      );
-      this.$router.push({
-        name: 'projectWorkspace',
-        params: {
-          id: idProject,
-          versi: data.data.versi_doc,
-          filename: data.data.file_name,
-          createTime: data.data.create_time,
-          workspaceType: 'ukl-upl',
-        },
-      });
+    async handleWorkspaceUKLUPL(idProject, marking) {
+      if (marking === 'uklupl-mt.returned-examination') {
+        const that = this;
+        this.$alert('Silahkan Lakukan Perbaiki Pada Webform, anda akan dialihkan ke menu <b> Formulir UKL UPL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        }).then(res => {
+          that.$router.push({
+            path: `/uklupl/${idProject}/formulir`,
+            query: {
+              perbaikan: true,
+            },
+          });
+        });
+      } else {
+        const data = await axios.get(
+          `/api/dokumen-ukl-upl/${idProject}`
+        );
+        this.$router.push({
+          name: 'projectWorkspace',
+          params: {
+            id: idProject,
+            versi: data.data.versi_doc,
+            filename: data.data.file_name,
+            createTime: data.data.create_time,
+            workspaceType: 'ukl-upl',
+          },
+        });
+      }
     },
     // sorting, filtering
     onTableSort(sort) {

@@ -43,7 +43,7 @@
               v-for="item in versiDoc"
               :key="item.versi"
               :label="item.versi"
-              :value="item.versi"
+              :="item.versi"
             />
           </el-select>
         </span> -->
@@ -78,8 +78,6 @@ import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 import axios from 'axios';
 import WorkflowUkl from '@/components/WorkflowUkl';
 import Lampiran from '../review-dokumen/Lampiran.vue';
-import Resource from '@/api/resource';
-const exportDocumentResource = new Resource('export-document');
 
 export default {
   components: {
@@ -129,19 +127,9 @@ export default {
     await this.getData();
   },
   methods: {
-    async getData(value) {
+    async getData() {
       this.loading = true;
-      const versions = await exportDocumentResource.list({ version: true, id: this.$route.params.id });
-      this.versiDoc = versions;
-      // if (value != null) {
-      //   this.dataWorkspace = await exportDocumentResource.list({ changeVersi: true, versi: value, id_project: this.$route.params.id });
-      // } else
-      if (this.isMarking) {
-        const data = await axios.get(
-          `/api/dokumen-ukl-upl/${this.$route.params.id}?revisi=true`
-        );
-        this.dataWorkspace = data.data;
-      } else if (this.markingStatus !== 'uklupl-mt.returned-examination' || this.markingStatus === null) {
+      if (this.markingStatus !== 'uklupl-mt.returned-examination' || this.markingStatus === null) {
         const data = await axios.get(
           `/api/dokumen-ukl-upl/${this.$route.params.id}`
         );

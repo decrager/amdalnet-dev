@@ -5,6 +5,18 @@
       <h2>Matriks UKL UPL</h2>
       <span>
         <el-button
+          v-if="isFormulator && isPerbaikan"
+          class="pull-right"
+          type="danger"
+          size="small"
+          icon="el-icon-close"
+          style="margin-left: .5rem;"
+          @click="handleNotSave()"
+        >
+          Tidak
+        </el-button>
+        <el-button
+          v-if="isFormulator && !isPerbaikan"
           class="pull-right"
           type="success"
           size="small"
@@ -14,17 +26,30 @@
         >
           Simpan & Lanjutkan
         </el-button>
+        <el-button
+          v-if="isFormulator && isPerbaikan"
+          class="pull-right"
+          type="success"
+          size="small"
+          icon="el-icon-check"
+          @click="handleSaveForm(isPerbaikan)"
+        >
+          Ya
+        </el-button>
+        <span v-if="isPerbaikan" class="pull-right" style="font-weight: bold; margin-top: .5rem;">Apakah Ada Perbaikan pada Matriks UKL UPL ini?</span>
       </span>
       <el-collapse v-if="isFormulirComplete" v-model="activeName" :accordion="true" @change="checkIfFormComplete">
         <el-collapse-item name="1" title="MATRIKS UKL">
           <matriks-ukl-table
             v-if="activeName === '1'"
+            :perbaikan="isPerbaikan"
             @handleCheckProjectMarking="handleCheckProjectMarking"
           />
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS UPL" :disabled="matriksUplDisabled">
           <matriks-upl-table
             v-if="activeName === '2'"
+            :perbaikan="isPerbaikan"
             @handleCheckProjectMarking="handleCheckProjectMarking"
           />
         </el-collapse-item>
@@ -84,6 +109,14 @@ export default {
       // petaBatasDisabled: true,
     };
   },
+  computed: {
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isPerbaikan() {
+      return this.$route.query.perbaikan;
+    },
+  },
   mounted() {
     this.setProjectId();
     this.checkImpactIdentificationData();
@@ -118,6 +151,27 @@ export default {
       } else {
         this.isFormulirComplete = true;
       }
+    },
+    async handleNotSave() {
+      const data = await axios.get(
+        `/api/dokumen-ukl-upl/${this.idProject}`
+      );
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: this.idProject,
+          versi: data.data.versi_doc,
+          filename: data.data.file_name,
+          createTime: data.data.create_time,
+          workspaceType: 'ukl-upl',
+        },
+        query: {
+          perbaikan: true,
+          isFixFormulirUklUpl: this.$route.query.isFixFormulirUklUpl,
+          isFixMatriksUklUpl: false,
+        },
+      });
+      this.handleCetakMatriks();
     },
     async checkIfFormComplete() {
       const idProject = parseInt(this.$route.params && this.$route.params.id);
@@ -156,7 +210,12 @@ export default {
     handleDokPendukungUploaded() {
       this.petaBatasDisabled = false;
     },
-    async handleSaveForm() {
+    async handleCetakMatriks() {
+      await axios.get(
+        `/api/matriks-ukl-upl/${this.idProject}`
+      );
+    },
+    async handleSaveForm(perbaikan) {
       const projectId = this.$route.params && this.$route.params.id;
       const sections = ['matriks.ukl', 'matriks.upl'];
       const result = await saveStatus.list({
@@ -179,10 +238,43 @@ export default {
           }
         );
       } else {
-        this.$router.push({
-          name: 'DokumenUklUpl',
-          params: projectId,
-        });
+        if (perbaikan) {
+          this.$confirm(
+            'Pastikan data perbaikan anda sudah terisi semua pada <b> Matriks UKL UPL </b>. Apakah anda yakin akan melanjutkan ke <b> Workspace UKL UPL </b> ?',
+            'Peringatan',
+            {
+              confirmButtonText: 'OK',
+              cancelButtonText: 'Batal',
+              type: 'warning',
+              dangerouslyUseHTMLString: true,
+            }).then(() => {
+            axios.get(
+              `/api/dokumen-ukl-upl/${this.idProject}`
+            ).then(res => {
+              this.handleCetakMatriks();
+              this.$router.push({
+                name: 'projectWorkspace',
+                params: {
+                  id: this.idProject,
+                  versi: res.data.versi_doc,
+                  filename: res.data.file_name,
+                  createTime: res.data.create_time,
+                  workspaceType: 'ukl-upl',
+                },
+                query: {
+                  perbaikan: true,
+                  isFixFormulirUklUpl: this.$route.query.isFixFormulirUklUpl,
+                  isFixMatriksUklUpl: true,
+                },
+              });
+            });
+          });
+        } else {
+          this.$router.push({
+            name: 'DokumenUklUpl',
+            params: projectId,
+          });
+        }
       }
     },
   },

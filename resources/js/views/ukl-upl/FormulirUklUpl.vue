@@ -5,7 +5,18 @@
       <h2>Formulir UKL UPL</h2>
       <span>
         <el-button
-          v-if="isFormulator"
+          v-if="isFormulator && isPerbaikan"
+          class="pull-right"
+          type="danger"
+          size="small"
+          icon="el-icon-close"
+          style="margin-left: .5rem;"
+          @click="handleNotSave()"
+        >
+          Tidak
+        </el-button>
+        <el-button
+          v-if="isFormulator && !isPerbaikan"
           class="pull-right"
           type="success"
           size="small"
@@ -15,6 +26,17 @@
         >
           Simpan & Lanjutkan
         </el-button>
+        <el-button
+          v-if="isFormulator && isPerbaikan"
+          class="pull-right"
+          type="success"
+          size="small"
+          icon="el-icon-check"
+          @click="handleSaveForm(isPerbaikan)"
+        >
+          Ya
+        </el-button>
+        <span v-if="isPerbaikan" class="pull-right" style="font-weight: bold; margin-top: .5rem;">Apakah Ada Perbaikan pada Formulir UKL UPL ini?</span>
       </span>
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="IDENTIFIKASI KOMPONEN KEGIATAN DAN KOMPONEN LINGKUNGAN">
@@ -30,7 +52,8 @@
         <el-collapse-item name="3" title="JENIS DAN BESARAN DAMPAK">
           <jenis-besaran-dampak-table
             v-if="activeName === '3'"
-            @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan"
+            :perbaikan="isPerbaikan"
+            @handleEnableSimpanLanjutkan="handleEnbleSimpanLanjutkan"
           />
         </el-collapse-item>
       </el-collapse>
@@ -81,6 +104,9 @@ export default {
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },
+    isPerbaikan() {
+      return this.$route.query.perbaikan;
+    },
   },
   mounted() {
     this.setProjectId();
@@ -88,6 +114,17 @@ export default {
     this.checkifUklUpl();
     this.getMarking();
     this.data;
+  },
+  async beforeCreate() {
+    if (this.$route.query.refresh) { // Sementara sampai ketemu solusi page blank setelah access dari workspace
+      await this.$router.push({
+        path: `/uklupl/${this.$route.params.id}/formulir`,
+        query: {
+          perbaikan: true,
+        },
+      });
+      location.reload();
+    }
   },
   methods: {
     setProjectId(){
@@ -110,10 +147,21 @@ export default {
           params: this.idProject,
         });
       } else {
+        console.log('gun');
         this.isProjectUklUpl = true;
       }
     },
-    async handleSaveForm() {
+    async handleNotSave() {
+      this.$router.push({
+        name: 'MatriksUklUpl',
+        params: this.$route.params && this.$route.params.id,
+        query: {
+          perbaikan: true,
+          isFixFormulirUklUpl: false,
+        },
+      });
+    },
+    async handleSaveForm(perbaikan) {
       const projectId = this.$route.params && this.$route.params.id;
       const sections = ['formulir.uklupl.jenis.besaran.dampak'];
       const result = await saveStatus.list({
@@ -136,10 +184,31 @@ export default {
           }
         );
       } else {
-        this.$router.push({
-          name: 'MatriksUklUpl',
-          params: projectId,
-        });
+        if (perbaikan) {
+          this.$confirm(
+            'Pastikan data perbaikan anda sudah terisi semua pada <b> Formulir UKL UPL </b>. Apakah anda yakin akan melanjutkan ke <b> Matriks UKL UPL </b> ?',
+            'Peringatan',
+            {
+              confirmButtonText: 'OK',
+              cancelButtonText: 'Batal',
+              type: 'warning',
+              dangerouslyUseHTMLString: true,
+            }).then(() => {
+            this.$router.push({
+              name: 'MatriksUklUpl',
+              params: projectId,
+              query: {
+                perbaikan: true,
+                isFixFormulirUklUpl: true,
+              },
+            });
+          });
+        } else {
+          this.$router.push({
+            name: 'MatriksUklUpl',
+            params: projectId,
+          });
+        }
       }
     },
     handleEnableSimpanLanjutkan() {
