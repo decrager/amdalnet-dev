@@ -526,6 +526,12 @@ class ExportDocument extends Controller
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL'], ['versi', 0]])->orderBy('created_at', 'desc')->first();
         if($document_attachment && !request()->has('regenerate') && !request()->has('revisi') && !request()->has('versi')) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
+            if ($project->marking === 'uklupl-mt.returned-examination') {
+                $project = Project::findOrFail($id_project);
+                // Workflow when first generate revisi
+                $project->applyWorkFlowTransition('return-uklupl-examination', 'uklupl-mt.returned-examination', 'uklupl-mt.matrix-upl');
+                $project->save();
+            }
             return [
                 'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
                 'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
