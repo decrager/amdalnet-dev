@@ -526,6 +526,12 @@ class ExportDocument extends Controller
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL'], ['versi', 0]])->orderBy('created_at', 'desc')->first();
         if($document_attachment && !request()->has('regenerate') && !request()->has('revisi') && !request()->has('versi')) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
+            if ($project->marking === 'uklupl-mt.returned-examination') {
+                $project = Project::findOrFail($id_project);
+                // Workflow when first generate revisi
+                $project->applyWorkFlowTransition('return-uklupl-examination', 'uklupl-mt.returned-examination', 'uklupl-mt.matrix-upl');
+                $project->save();
+            }
             return [
                 'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
                 'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
@@ -869,6 +875,202 @@ class ExportDocument extends Controller
             'docx_url' => $document_attachment->attachment,
             'create_time' => $document_attachment->created_at->toTimeString()
         ];
+    }
+
+    public function matriksUklUpl($id_project) {
+        $project = Project::with('listSubProject')->findOrFail($id_project);
+        // ======= IMPACT IDENTIFICATION ===== //
+        $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_matriks_ukl_upl.docx'));
+        $ids = [4, 1, 2, 3];
+        $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
+            return array_search($model->getKey(), $ids);
+        });
+        $impact_identification = ImpactIdentification::where('id_project', $id_project)->get();
+
+        $dl_pasca_operasi = [];
+        $com_pra_konstruksi = [];
+        $com_konstruksi = [];
+        $com_operasi = [];
+        $pk = [];
+        $kgk = [];
+        $kb = [];
+        $kse = [];
+        $kkm = [];
+        $kls = [];
+        $kll = [];
+        $ogk = [];
+        $ob = [];
+        $ose = [];
+        $okm = [];
+        $ols = [];
+        $oll = [];
+        $po = [];
+        $pertek_block = [];
+        $html_data = [];
+
+        foreach($stages as $s) {
+            foreach($impact_identification as $imp) {
+                $ronaAwal = '';
+                $component = '';
+
+                $id_stages = null;
+
+                if ($imp->component) {
+                    $id_stages = $imp->component->component->id_project_stage;
+
+                    if ($id_stages == $s->id) {
+                        if ($imp->ronaAwal) {
+                            $ronaAwal = $imp->ronaAwal->rona_awal->name;
+                            $component = $imp->component->component->name;
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
+                $change_type = $imp->id_change_type ? $imp->changeType->name : '';
+
+                // component type
+                $component_type = $this->getComponentType($imp);
+
+                $komponen_desc = $this->renderHtmlTable($imp->component->description);
+
+                if($s->name  == 'Pra Konstruksi') {
+                    if(array_search($component, array_column($com_pra_konstruksi, 'com_pra_konstruksi_name')) === false) {
+                        $com_pra_konstruksi[] = [
+                            'com_pra_konstruksi_name' => $component,
+                            'com_pra_konstruksi_desc' => '${pk_desc_' . $imp->id . '}',
+                            'com_pra_konstruksi_unit' => htmlspecialchars($imp->ronaAwal->measurement)
+                        ];
+
+                        $html_data[] = [
+                            'label' => '${pk_desc_' . $imp->id . '}',
+                            'data' => $komponen_desc
+                        ];
+                    }
+
+                    $pk[] = $this->getUklUplData($imp, 'pk', $component, $change_type, $ronaAwal);
+                }
+
+                if($s->name == 'Konstruksi') {
+                    if(array_search($component, array_column($com_konstruksi, 'com_konstruksi_name')) === false) {
+                        $com_konstruksi[] = [
+                            'com_konstruksi_name' => $component,
+                            'com_konstruksi_desc' => '${k_desc_' . $imp->id . '}',
+                            'com_konstruksi_unit' => htmlspecialchars($imp->ronaAwal->measurement)
+                        ];
+
+                        $html_data[] = [
+                            'label' => '${k_desc_' . $imp->id . '}',
+                            'data' => $komponen_desc
+                        ];
+                    }
+
+                    if(strtolower($component_type) == 'geofisik kimia') {
+                        $kgk[] = $this->getUklUplData($imp, 'kgk', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'biologi') {
+                        $kb[] = $this->getUklUplData($imp, 'kb', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'sosial, ekonomi, dan budaya') {
+                        $kse[] = $this->getUklUplData($imp, 'kse', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'kesehatan masyarakat') {
+                        $kkm[] = $this->getUklUplData($imp, 'kkm', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'kegiatan lain sekitar') {
+                        $kls[] = $this->getUklUplData($imp, 'kls', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'lain lain') {
+                        $kll[] = $this->getUklUplData($imp, 'kll', $component, $change_type, $ronaAwal);
+                    }
+
+                }
+
+                if($s->name == 'Operasi') {
+                    if(array_search($component, array_column($com_operasi, 'com_operasi_name')) === false) {
+                        $com_operasi[] = [
+                            'com_operasi_name' => $component,
+                            'com_operasi_desc' => '${o_desc_' . $imp->id . '}',
+                            'com_operasi_unit' => $imp->ronaAwal->measurement
+                        ];
+
+                        $html_data[] = [
+                            'label' => '${o_desc_' . $imp->id . '}',
+                            'data' => $komponen_desc
+                        ];
+                    }
+
+                    if(strtolower($component_type) == 'geofisik kimia') {
+                        $ogk[] = $this->getUklUplData($imp, 'ogk', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'biologi') {
+                        $ob[] = $this->getUklUplData($imp, 'ob', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'sosial, ekonomi, dan budaya') {
+                        $ose[] = $this->getUklUplData($imp, 'ose', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'kesehatan masyarakat') {
+                        $okm[] = $this->getUklUplData($imp, 'okm', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'kegiatan lain sekitar') {
+                        $ols[] = $this->getUklUplData($imp, 'ols', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'lain lain') {
+                        $oll[] = $this->getUklUplData($imp, 'oll', $component, $change_type, $ronaAwal);
+                    }
+                }
+
+                if($s->name == 'Pasca Operasi') {
+                    $dl_pasca_operasi[] = [
+                        'dl_pasca_operasi_name' => htmlspecialchars("$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->ronaAwal->measurement)
+                    ];
+
+                    $po[] = $this->getUklUplData($imp, 'po', $component, $change_type, $ronaAwal);
+                }
+            }
+        }
+
+        $templateProcessor->cloneBlock('pertek_block', count($pertek_block), true, false, $pertek_block);
+        $templateProcessor->cloneBlock('dl_pasca_operasi_block', count($dl_pasca_operasi), true, false, $dl_pasca_operasi);
+        $templateProcessor->cloneBlock('com_pra_konstruksi_block', count($com_pra_konstruksi), true, false, $com_pra_konstruksi);
+        $templateProcessor->cloneBlock('com_konstruksi_block', count($com_konstruksi), true, false, $com_konstruksi);
+        $templateProcessor->cloneBlock('com_operasi_block', count($com_operasi), true, false, $com_operasi);
+        $templateProcessor->cloneRowAndSetValues('pk', $pk);
+        $templateProcessor->cloneRowAndSetValues('kgk', $kgk);
+        $templateProcessor->cloneRowAndSetValues('kb', $kb);
+        $templateProcessor->cloneRowAndSetValues('kse', $kse);
+        $templateProcessor->cloneRowAndSetValues('kkm', $kkm);
+        $templateProcessor->cloneRowAndSetValues('kls', $kls);
+        $templateProcessor->cloneRowAndSetValues('kll', $kll);
+        $templateProcessor->cloneRowAndSetValues('ogk', $ogk);
+        $templateProcessor->cloneRowAndSetValues('ob', $ob);
+        $templateProcessor->cloneRowAndSetValues('ose', $ose);
+        $templateProcessor->cloneRowAndSetValues('okm', $okm);
+        $templateProcessor->cloneRowAndSetValues('ols', $ols);
+        $templateProcessor->cloneRowAndSetValues('oll', $oll);
+        $templateProcessor->cloneRowAndSetValues('po', $po);
+
+        $tmpName = $templateProcessor->save();
+
+        $save_file_name = 'matriks-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+        Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
+
+        $document_attachment = new DocumentAttachment();
+        $document_attachment->id_project = $project->id;
+        $document_attachment->attachment = 'workspace/' . $save_file_name;
+        $document_attachment->type = 'Matriks UKL UPL';
+        $document_attachment->save();
+
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project], ['type', 'Matriks UKL UPL']])->orderBy('created_at', 'desc')->first();
+        $pdf_url = $this->docxToPdf($document_attachment->attachment);
+        return [
+            'file_name' => $save_file_name,
+            'pdf_url' => $pdf_url,
+            'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'docx_url' => Storage::disk('public')->temporaryUrl('workspace/'.$save_file_name, now()->addMinutes(120)),
+            'create_time' => $document_attachment->created_at->toTimeString(),
+            'versi_doc' => 0,
+        ];
+    }
+
+    public function deskripsiUklUpl($id_project) {
+
     }
 
     public function exportUklUplPdf($idProject)

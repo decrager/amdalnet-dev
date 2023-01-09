@@ -3,6 +3,49 @@
     <div v-if="isAbleToComment" class="button-show">
       <div style="padding-bottom: 0.5rem;">
         <el-button @click="showHide">{{ !showForm ? 'Tampilkan Masukan Saran/Tanggapan' : 'Sembunyikan Masukan Saran/Tanggapan' }}</el-button>
+        <el-button v-if="isPerbaikan && (isWebForm || fileDocxUrl) && dataPerbaikan" style="float: right;" type="success" @click="showHidePreviewMatriks">{{ !showPrev ? 'Tampilkan Perbaikan Matriks UKL UPL' : 'Sembunyikan Perbaikan Matriks UKL UPL' }}</el-button>
+        <!-- <el-button @click="download">Download Rekap Komentar</el-button> -->
+        <el-button v-if="isPerbaikan" style="float: right;" type="info" @click="loadPerbaikan">
+          <span>Perbaikan Ulang</span>
+        </el-button>
+      </div>
+      <div v-if="showPrev" style="position: absolute; background-color: #404040; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
+        <el-row :gutter="32">
+          <el-col :span="20">
+            <div style="height: 90%;">
+              <!-- <VueDocPreview :value="fileUrl" type="office" /> -->
+              <!-- <div id="placeholderMatriksUkl" /> -->
+              <iframe
+                :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+                  fileDocxUrl
+                )}&embedded=true`"
+                width="100%"
+                height="723px"
+                frameborder="0"
+              />
+            </div>
+          </el-col>
+          <el-col :span="4">
+            <div>
+              <h4 style="color: white"> Unduh File Perbaikan Matriks UKL UPL </h4>
+            </div>
+            <a
+              class="btn-docx"
+              :href="fileDocxUrl"
+              :download="`perbaikan-matriks-ukl-upl-${fileName}.docx`"
+            >
+              Download .Docx
+            </a>
+            <a
+              class="btn-pdf"
+              style="margin-top: .3rem;"
+              :href="filePdfUrl"
+              :download="`perbaikan-matriks-ukl-upl-${fileName}.docx`"
+            >
+              Download .Pdf
+            </a>
+          </el-col>
+        </el-row>
         <el-button @click="download">Download Rekap Komentar</el-button>
       </div>
       <div v-if="showForm" style="position: absolute; background-color: #404040; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
@@ -55,8 +98,10 @@ import Resource from '@/api/resource';
 import Comment from '../comment-recap/Comment.vue';
 import NewComment from '../comment-recap/NewComment.vue';
 import EmptyComment from '../comment-recap/EmptyComment.vue';
+// import VueDocPreview from 'vue-doc-preview';
 const workspaceResource = new WorkspaceResource();
 const workspaceCommentResource = new Resource('workspace-comment');
+const projectResource = new Resource('projects');
 import Axios from 'axios';
 
 export default {
@@ -64,6 +109,7 @@ export default {
     Comment,
     NewComment,
     EmptyComment,
+    // VueDocPreview,
   },
   props: {
     project: {
@@ -97,10 +143,15 @@ export default {
       sessionID: null,
       loading: false,
       docEditor: null,
+      fileDocxUrl: null,
+      filePdfUrl: null,
       isStageError: false,
       idCat: null,
+      fileName: null,
+      dataPerbaikan: false,
       rekaps: [],
       showForm: false,
+      showPrev: false,
       comments: [
         // {
         //   no: 1,
@@ -176,6 +227,20 @@ export default {
       const lastComment = this.comments[this.comments.length - 1];
       return parseInt(lastComment?.no ?? 0) + 1;
     },
+    isPerbaikan() {
+      if (this.$route.query.perbaikan) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    isWebForm() {
+      if (this.$route.query.isFixFormulirUklUpl || this.$route.query.isFixFormulirUklUpl) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   watch: {
     activeNames: function(val) {
@@ -186,6 +251,11 @@ export default {
   },
   async mounted() {
     this.getMarking();
+    if (this.isWebForm() || this.fileDocxUrl) {
+      this.handleCetakMatriks();
+    }
+    this.handleCetakMatriks();
+    this.getPerbaikan();
     this.officeUrl = process.env.MIX_OFFICE_URL;
   },
   async created() {
@@ -238,6 +308,22 @@ export default {
       } else {
         localStorage.setItem('workspaceType', this.workspaceType);
       }
+    },
+    loadPerbaikan() {
+      const that = this;
+      this.$alert('Anda akan dialihkan ke menu <b> Formulir UKL UPL </b>', 'Peringatan', {
+        confirmButtonText: 'Confirm',
+        center: true,
+        dangerouslyUseHTMLString: true,
+      }).then(res => {
+        that.$router.push({
+          path: `/uklupl/${this.$route.params.id}/formulir`,
+          query: {
+            perbaikan: true,
+            refresh: true,
+          },
+        });
+      });
     },
     loadFileName() {
       if (localStorage.getItem('fileName')) {
@@ -300,6 +386,9 @@ export default {
     },
     showHide() {
       this.showForm = !this.showForm;
+    },
+    showHidePreviewMatriks() {
+      this.showPrev = !this.showPrev;
     },
     handleTemplateUploadChange(file, fileList) {
       // add file to multipart
@@ -371,6 +460,24 @@ export default {
           console.log(resp);
           this.docEditor = new window.DocsAPI.DocEditor('placeholder', resp);
         });
+    },
+
+    async getPerbaikan() {
+      const data = await projectResource.list({
+        id_project: this.$route.params.id,
+        perbaikan: true,
+      });
+      this.dataPerbaikan = data.perbaikan;
+    },
+
+    async handleCetakMatriks() {
+      const data = await Axios.get(
+        `/api/matriks-ukl-upl/${this.$route.params.id}?perbaikanMatriksUkl=true`
+      );
+      this.fileDocxUrl = data.data.docx_url;
+      this.fileName = data.data.file_name;
+      this.filePdfUrl = data.data.pdf_url;
+      console.log(this.fileDocxUrl);
     },
 
     etherpadAuth() {
@@ -469,5 +576,31 @@ export default {
     border-left: 1px solid #dee2e6;
     background-color: #143b17;
     color: white;
+  }
+  .btn-docx,
+  .btn-pdf {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 4px;
+    color: #ffffff;
+    display: inline-block;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-appearance: none;
+    text-align: center;
+    box-sizing: border-box;
+    outline: none;
+    margin: 0;
+    transition: 0.1s;
+    font-weight: 400;
+  }
+  .btn-docx {
+    background-color: #216221;
+    border: 1px solid #216221;
+  }
+  .btn-pdf {
+    background-color: #ff4949;
+    border: 1px solid #ff4949;
   }
 </style>

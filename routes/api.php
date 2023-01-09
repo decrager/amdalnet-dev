@@ -211,7 +211,6 @@ Route::apiResource('testing-meeting', 'TestingMeetingController');
 Route::apiResource('meeting-report', 'MeetingReportController');
 Route::apiResource('test-verif-rkl-rpl', 'TestVerifRKLRPLController');
 Route::apiResource('test-meet-rkl-rpl', 'TestMeetRKLRPLController');
-Route::apiResource('export-document', 'ExportDocument');
 Route::apiResource('meet-report-rkl-rpl', 'MeetReportRKLRPLController');
 Route::apiResource('feasibility-test', 'FeasibilityTestController');
 Route::apiResource('skkl', 'SKKLController');
@@ -261,6 +260,7 @@ Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']
 Route::get('project-maps', [WebgisController::class, 'index']);
 Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
 Route::get('dokumen-ukl-upl/{id}', [ExportDocument::class, 'uklUpl']);
+Route::get('matriks-ukl-upl/{id}', [ExportDocument::class, 'matriksUklUpl']);
 Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf']);
 Route::apiResource('ka-comment', 'KaCommentController');
 Route::apiResource('workspace-comment', 'WorkspaceCommentController');

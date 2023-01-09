@@ -156,10 +156,12 @@ class KaReviewController extends Controller
             } else if($document_type == 'UKL UPL') {
                 if($project->marking == 'uklupl-mt.matrix-upl') {
                     $project->workflow_apply('submit-uklupl');
+                    $project->perbaikan = false;
                     // $project->workflow_apply('review-uklupl-adm');
                     $project->save();
                 } else if($project->marking == 'uklupl-mt.returned-examination') {
                     $project->applyWorkFlowTransition('submit-uklupl', 'uklupl-mt.returned-examination', 'uklupl-mt.sent');
+                    $project->perbaikan = false;
                     $project->save();
                 }
             }

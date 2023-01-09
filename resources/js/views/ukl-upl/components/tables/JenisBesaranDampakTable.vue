@@ -13,7 +13,7 @@
         </el-tooltip>
       </el-col>
       <el-col :span="6">
-        <el-tooltip class="item" effect="dark" content="klik tombol ini untuk menyimpan sebagian data yang sudah diinput dalam Tabel" placement="top">
+        <el-tooltip v-if="!perbaikan" class="item" effect="dark" content="klik tombol ini untuk menyimpan sebagian data yang sudah diinput dalam Tabel" placement="top">
           <i class="el-alert__icon el-icon-warning" />
         </el-tooltip>
       </el-col>
@@ -33,6 +33,7 @@
       </el-col>
       <el-col :span="6">
         <el-button
+          v-if="!perbaikan"
           type="warning"
           size="small"
           icon="el-icon-check"
@@ -111,6 +112,12 @@ const changeTypeResource = new Resource('change-types');
 
 export default {
   name: 'JenisBesaranDampakTable',
+  props: {
+    perbaikan: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       loading: true,
