@@ -55,7 +55,7 @@ class Project extends Model implements Auditable
 
     protected $guarded = [];
 
-    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document', 'form_ka_doc', 'version_workspace'];
+    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document', 'form_ka_doc'];
 
     public function team()
     {
@@ -178,20 +178,20 @@ class Project extends Model implements Auditable
         return false;
     }
 
-    public function getVersionWorkspaceAttribute()
-    {
-        $data = array();
-        for($i= 0; $i < 100; $i++) {
-            $docVersi = DocumentAttachment::select('versi')->where('id_project', $this->id)->where('versi', $i)->orderBy('created_at', 'desc')->first();
-            if($docVersi === null) {
-                continue;
-            } else {
-                $data[] = $docVersi;
-            }
-        };
+    // public function getVersionWorkspaceAttribute()
+    // {
+    //     $data = array();
+    //     for($i= 0; $i < 100; $i++) {
+    //         $docVersi = DocumentAttachment::select('versi')->where('id_project', $this->id)->where('versi', $i)->orderBy('created_at', 'desc')->first();
+    //         if($docVersi === null) {
+    //             continue;
+    //         } else {
+    //             $data[] = $docVersi;
+    //         }
+    //     };
 
-        return $data;
-    }
+    //     return $data;
+    // }
 
     public function getSubmissionDeadlineAttribute()
     {

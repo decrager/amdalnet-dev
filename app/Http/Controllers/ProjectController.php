@@ -127,8 +127,9 @@ class ProjectController extends Controller
         } else if ($request->id) {
             // return one just one
             return response()->json(ProjectController::getProject($request->id));
+        } else if ($request->perbaikan) {
+            return Project::where('id', $request->id_project)->first();
         }
-
         return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function ($q) {
             $q->select('id', 'email');
             $q->with(['user' => function ($query) {

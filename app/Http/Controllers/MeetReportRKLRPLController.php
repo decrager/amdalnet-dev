@@ -102,10 +102,16 @@ class MeetReportRKLRPLController extends Controller
                 if(!$request->isAccepted) {
                     // update workflow
                     if($project->marking == 'uklupl-mt.examination') {
+                        if(request()->has('perbaikan')) {
+                            $project->perbaikan = true;
+                        }
                         $project->workflow_apply('held-uklupl-examination-meeting');
                         $project->workflow_apply('return-uklupl-examination');
                         $project->save();
                     } else if ('uklupl-mt.ba-drafting') {
+                        if(request()->has('perbaikan')) {
+                            $project->perbaikan = true;
+                        }
                         $project->applyWorkFlowTransition('draft-uklupl-ba', 'uklupl-mt.examination-meeting', 'uklupl-mt.returned-examination');
                         $project->save();
                     }

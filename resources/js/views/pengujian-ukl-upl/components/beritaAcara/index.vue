@@ -407,6 +407,7 @@ export default {
             idProject: this.$route.params.id,
             documentType: 'ukl-upl',
             isAccepted: accept,
+            perbaikan: true,
           });
           this.loadingAccept = false;
           this.reports.is_accepted = accept;
