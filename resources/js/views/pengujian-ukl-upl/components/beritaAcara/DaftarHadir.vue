@@ -160,9 +160,36 @@
         style="color: blue"
         @click.prevent="download(reports.file)"
       >
-        {{ baFileName }}
+        <!-- {{ baFileName }} -->
+        Unduh BA Final
       </el-button>
     </div>
+    <!-- <el-upload
+      :auto-upload="false"
+      :on-change="checkHandleUploadChangeRapatTimTeknis"
+      :show-file-list="false"
+      action=""
+    >
+      <el-button
+        :loading="loadingUpload"
+        type="warning"
+        style="margin-top: 10px"
+      >
+        Unggah BA Final Rapat Tim Teknis
+      </el-button>
+    </el-upload> -->
+    <!-- <div v-if="reportsrapat.file">
+      <el-button
+        type="text"
+        size="medium"
+        icon="el-icon-download"
+        style="color: blue"
+        @click.prevent="download(reportsrapat.file)"
+      > -->
+        <!-- {{ baFileNameRapat }} -->
+        <!-- Unduh BA Final Rapat Tim Teknis
+      </el-button>
+    </div> -->
     <small
       v-if="errors.dokumen_file"
       style="color: #f56c6c; display: block; margin-top: 5px"
@@ -190,6 +217,10 @@ export default {
       default: () => [],
     },
     reports: {
+      type: Object,
+      default: () => {},
+    },
+    reportsrapat: {
       type: Object,
       default: () => {},
     },
@@ -248,6 +279,10 @@ export default {
       const arrName = this.reports.file.split('/');
       return arrName[arrName.length - 1];
     },
+    baFileNameRapat() {
+      const arrName = this.reportsrapat.file.split('/');
+      return arrName[arrName.length - 1];
+    },
   },
   methods: {
     addTableRow() {
@@ -290,6 +325,14 @@ export default {
         this.handleUploadChange(file);
       }
     },
+    checkHandleUploadChangeRapatTimTeknis(file, fileList) {
+      if (file.raw.size > 5242880) {
+        this.showFileAlert();
+        return;
+      } else {
+        this.handleUploadChangeRapatTimTeknis(file);
+      }
+    },
     async handleUploadChange(file) {
       if (this.reports.type === 'update') {
         this.loadingUpload = true;
@@ -306,6 +349,35 @@ export default {
           this.$emit('updateuploadfile', { name: data.name });
           this.$message({
             message: 'BA Final sukses diupload',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        }
+      } else {
+        this.$alert(
+          'Mohon Simpan dan Unduh Draft Berita Acara terlebih dahulu',
+          {
+            confirmButtonText: 'OK',
+          }
+        );
+      }
+    },
+    async handleUploadChangeRapatTimTeknis(file) {
+      if (this.reports.type === 'update') {
+        this.loadingUpload = true;
+        const formData = new FormData();
+        formData.append('idProject', this.$route.params.id);
+        formData.append('file_rapat', 'true');
+        formData.append('uklUpl', 'true');
+        const fileUpload = await this.convertBase64(file.raw);
+        formData.append('dokumen_file_rapat', fileUpload);
+        const data = await meetingReportResource.store(formData);
+        this.errors = data.errors === null ? {} : data.errors;
+        this.loadingUpload = false;
+        if (data.errors === null) {
+          this.$emit('updateUploadFileRapat', { name: data.name_rapat });
+          this.$message({
+            message: 'BA Final Rapat Tim Teknis sukses diupload',
             type: 'success',
             duration: 5 * 1000,
           });

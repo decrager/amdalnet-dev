@@ -32,6 +32,14 @@ class MeetingReport extends Model
                 return Storage::disk('public')->temporaryUrl($this->attributes['file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
+        // if($this->attributes['file_rapat']) {
+        //     if(str_contains($this->attributes['file_rapat'], 'storage/')) {
+        //         return $this->attributes['file_rapat'];
+        //     } else {
+        //         // return Storage::url($this->attributes['file']);
+        //         return Storage::disk('public')->temporaryUrl($this->attributes['file_rapat'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+        //     }
+        // }
 
         return null;
     }
@@ -39,5 +47,9 @@ class MeetingReport extends Model
     public function rawFile()
     {
         return $this->attributes['file'];
+    }
+    public function rawFileRapat()
+    {
+        return $this->attributes['file_rapat'];
     }
 }
