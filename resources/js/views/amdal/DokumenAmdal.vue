@@ -184,7 +184,6 @@ export default {
       this.templateKALoaded = true;
     },
     workspace(){
-      console.log({ gun: this.fileNameKa });
       this.$router.push({
         name: 'projectWorkspace',
         params: {

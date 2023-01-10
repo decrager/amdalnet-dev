@@ -236,10 +236,12 @@ class KaReviewController extends Controller
                         $project->workflow_apply('submit-uklupl');
                         $project->workflow_apply('review-uklupl-adm');
                         $project->workflow_apply('return-uklupl-adm');
+                        $project->perbaikan = true;
                         $project->save();
                     } else if($project->marking == 'uklupl-mt.sent') {
                         $project->workflow_apply('review-uklupl-adm');
                         $project->workflow_apply('return-uklupl-adm');
+                        $project->perbaikan = true;
                         $project->save();
                     }
                 }
