@@ -3,8 +3,8 @@
     <div v-if="isAbleToComment || dataPerbaikan" class="button-show">
       <div style="padding-bottom: 0.5rem;">
         <el-button @click="showHide">{{ !showForm ? 'Tampilkan Masukan Saran/Tanggapan' : 'Sembunyikan Masukan Saran/Tanggapan' }}</el-button>
+        <el-button @click="download">Download Rekap Komentar</el-button>
         <el-button v-if="(isPerbaikan || dataPerbaikan) && (isWebForm || fileDocxUrl)" style="float: right;" type="success" @click="showHidePreviewMatriks">{{ !showPrev ? 'Tampilkan Perbaikan Matriks UKL UPL' : 'Sembunyikan Perbaikan Matriks UKL UPL' }}</el-button>
-        <!-- <el-button @click="download">Download Rekap Komentar</el-button> -->
         <el-button v-if="isPerbaikan || dataPerbaikan" style="float: right;" type="info" @click="loadPerbaikan">
           <span>Perbaikan Ulang</span>
         </el-button>
