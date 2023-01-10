@@ -60,7 +60,21 @@ class TUKManagementController extends Controller
         }
 
         if($request->type == 'secretaryMember') {
-            $members = TukSecretaryMember::select('id', 'id_feasibility_test_team', 'name', 'nik', 'position', 'institution')->where('id_feasibility_test_team', $request->id)->orderBy('id', 'desc')->get();
+            $members = TukSecretaryMember::select('id', 'id_feasibility_test_team', 'name', 'nik', 'position', 'institution')->where('id_feasibility_test_team', $request->id)
+            ->where(function($query) use($request) {
+                if($request->searchMember) {
+                    $search = strtolower($request->searchMember);
+                    $query->where(function($q) use($search) {
+                        $q->whereRaw("LOWER(name) LIKE '%" . $search . "%'");
+                    })->orWhere(function($q) use($search) {
+                        $q->whereRaw("LOWER(nik) LIKE '%" . $search . "%'");
+                    })->orWhere(function($q) use($search) {
+                        $q->whereRaw("LOWER(position) LIKE '%" . $search . "%'");
+                    })->orWhere(function($q) use($search) {
+                        $q->whereRaw("LOWER(institution) LIKE '%" . $search . "%'");
+                    });
+                };
+            })->orderBy('id', 'desc')->get();
 
             return $members;
         }
@@ -71,7 +85,21 @@ class TUKManagementController extends Controller
                 return [];
             }
 
-            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $id_team)->get();
+            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $id_team)
+            ->where(function($query) use($request) {
+                if($request->searchTuk) {
+                    $search = strtolower($request->searchTuk);
+                    $query->whereHas('lukMember', function($q) use($search) {
+                        $q->whereRaw("LOWER(name) LIKE '%" . $search . "%'");
+                    })->orWhereHas('expertBank', function($q) use($search) {
+                        $q->whereRaw("LOWER(name) LIKE '%" . $search . "%'");
+                    })->orWhereHas('lukMember', function($q) use($search) {
+                        $q->whereRaw("LOWER(nik) LIKE '%" . $search . "%'");
+                    })->orWhereHas('lukMember', function($q) use($search) {
+                        $q->whereRaw("LOWER(institution) LIKE '%" . $search . "%'");
+                    });
+                };
+            })->get();
             $member = [];
 
             foreach($members as $m) {
@@ -123,7 +151,7 @@ class TUKManagementController extends Controller
                 } else if($team->authority == 'Kabupaten/Kota' && $team->districtAuthority) {
                     $team_name = 'Tim Uji kelayakan ' . ucwords(strtolower($team->districtAuthority->name)) . ' ' . $team->team_number;
                 }
-    
+
                 return [
                     'id' => $team->id,
                     'name' => $team_name,
@@ -221,7 +249,7 @@ class TUKManagementController extends Controller
             $employees = LukMember::select('id', 'nik', 'name', 'institution', 'position', 'cv', 'email')->whereDoesntHave('feasibilityTestTeamMember')->orderBy('name')->get();
 
             $existing_employees = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $request->idTUK],['id_luk_member', '!=', null]])->get();
-            
+
             foreach($experts as $ex) {
                 $expertEmployee[] = [
                     'id' => $ex->id,
@@ -268,7 +296,7 @@ class TUKManagementController extends Controller
 
         if($request->type == 'teamDataMember') {
             $tuk = FeasibilityTestTeam::find($request->idTeam);
-            
+
             $team_name = null;
             if($tuk->authority == 'Pusat') {
                 $team_name = 'Tim Uji Kelayakan Pusat ' . $tuk->team_number;
@@ -396,7 +424,7 @@ class TUKManagementController extends Controller
             if($validator->fails()) {
                 return response()->json(['errors' => $validator->messages()]);
             }
-            
+
             DB::beginTransaction();
 
             $secretary_member = null;
@@ -545,10 +573,10 @@ class TUKManagementController extends Controller
                 } else {
                     $member = new FeasibilityTestTeamMember();
                 }
-    
+
                 $member->id_feasibility_test_team = $members[$i]['idTeam'];
                 $member->position = $members[$i]['role'];
-                
+
                 if($members[$i]['id_member']) {
                     if($members[$i]['type'] == 'expert') {
                         $member->id_expert_bank = explode('-', $members[$i]['id_member'])[0];
@@ -558,7 +586,7 @@ class TUKManagementController extends Controller
                         $member->id_expert_bank = null;
                     }
                 }
-    
+
                 $member->save();
 
                 // ====== CHANGE USER ROLE ======= //
@@ -591,7 +619,7 @@ class TUKManagementController extends Controller
                         if($members[$i]['role'] == 'Kepala Sekretariat') {
                             $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SECRETARY);
                             $user->syncRoles($valsubRole);
-                            
+
                             // ==== NOTIFICATION RECEIVER === //
                             $receiver_secretary[] = $user;
 
@@ -639,7 +667,7 @@ class TUKManagementController extends Controller
 
             return response()->json(['message' => 'success']);
         }
-        
+
         $validator = $this->validateStore($request);
 
         if($validator->fails()) {
@@ -651,7 +679,7 @@ class TUKManagementController extends Controller
 
         if($request->type == 'create') {
             $tuk = new FeasibilityTestTeam();
-            
+
             // === CHECK EXIST TUK TO ASSIGN TEAM NUMBER === //
             if($request->authority == 'Pusat') {
                 $check_tuk = FeasibilityTestTeam::where('authority', 'Pusat')->count();
@@ -777,7 +805,7 @@ class TUKManagementController extends Controller
                 $id_team = $team_member->id_feasibility_test_team;
             }
         }
-        
+
         return $id_team;
     }
 
