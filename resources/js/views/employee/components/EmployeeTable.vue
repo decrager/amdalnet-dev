@@ -110,48 +110,55 @@ export default {
   //   EmployeeTable,
   //   Pagination,
   // },
-  data() {
-    return {
-      list: [],
-      loading: false,
-      listQuery: {
-        page: 1,
-        limit: 10,
-        type: 'list',
-        search: null,
-      },
-      total: 0,
-      timeoutId: null,
-    };
+  props: {
+    list: {
+      type: Array,
+      default: () => [],
+    },
+    loading: Boolean,
   },
-  created() {
-    this.getData();
-  },
+  // data() {
+  //   return {
+  //     list: [],
+  //     loading: false,
+  //     listQuery: {
+  //       page: 1,
+  //       limit: 10,
+  //       type: 'list',
+  //       search: null,
+  //     },
+  //     total: 0,
+  //     timeoutId: null,
+  //   };
+  // },
+  // created() {
+  //   this.getData();
+  // },
   methods: {
     checkPermission,
     checkRole,
     handleFilter() {
       this.getData();
     },
-    async getData() {
-      this.loading = true;
-      const { data, total } = await employeeTukResource.list(this.listQuery);
-      this.list = data.map((x) => {
-        let team = '-';
-        if (x.feasibility_test_team_member !== null) {
-          if (x.feasibility_test_team_member.feasibility_test_team !== null) {
-            team = this.tukName(
-              x.feasibility_test_team_member.feasibility_test_team
-            );
-          }
-        }
+    // async getData() {
+    //   this.loading = true;
+    //   const { data, total } = await employeeTukResource.list(this.listQuery);
+    //   this.list = data.map((x) => {
+    //     let team = '-';
+    //     if (x.feasibility_test_team_member !== null) {
+    //       if (x.feasibility_test_team_member.feasibility_test_team !== null) {
+    //         team = this.tukName(
+    //           x.feasibility_test_team_member.feasibility_test_team
+    //         );
+    //       }
+    //     }
 
-        x.team = team;
-        return x;
-      });
-      this.total = total;
-      this.loading = false;
-    },
+    //     x.team = team;
+    //     return x;
+    //   });
+    //   this.total = total;
+    //   this.loading = false;
+    // },
     handleSubmitRoute() {
       this.$router.push({ name: 'createEmployeeTuk' });
     },
