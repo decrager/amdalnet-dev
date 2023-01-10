@@ -1118,7 +1118,7 @@ export default {
     },
     handleKerangkaUklUpl(project, perbaikan) {
       if (perbaikan === true) {
-        this.$alert('Menu <b> Formulir UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b>', 'Peringatan', {
+        this.$alert('Menu <b> Formulir UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b> Untuk Melakukan Perbaikan Pada Menu ini.', 'Peringatan', {
           confirmButtonText: 'Confirm',
           center: true,
           dangerouslyUseHTMLString: true,
@@ -1424,7 +1424,7 @@ export default {
     },
     handleMatUklUpl(project, perbaikan) {
       if (perbaikan === true) {
-        this.$alert('Menu <b> Matriks UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b>', 'Peringatan', {
+        this.$alert('Menu <b> Matriks UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b> Untuk Melakukan Perbaikan Pada Menu ini.', 'Peringatan', {
           confirmButtonText: 'Confirm',
           center: true,
           dangerouslyUseHTMLString: true,

@@ -140,6 +140,7 @@ export default {
       this.urlPdf = data.pdf_url;
       this.createTime = data.create_time;
       this.showDocument = true;
+      console.log(this.urlPdf, this.showDocument);
       this.projectName = data.file_name;
       this.versi = data.versi_doc;
       this.loading = false;
@@ -159,6 +160,7 @@ export default {
           filename: this.projectName,
           createTime: this.createTime,
           versi: this.versi,
+          workspaceType: 'ukl-upl',
         },
       });
     },

@@ -1,11 +1,11 @@
 <template>
   <div class="app-container" style="position: relative; display: flex; flex-direction: column;">
-    <div v-if="isAbleToComment" class="button-show">
+    <div v-if="isAbleToComment || dataPerbaikan" class="button-show">
       <div style="padding-bottom: 0.5rem;">
         <el-button @click="showHide">{{ !showForm ? 'Tampilkan Masukan Saran/Tanggapan' : 'Sembunyikan Masukan Saran/Tanggapan' }}</el-button>
-        <el-button v-if="isPerbaikan && (isWebForm || fileDocxUrl) && dataPerbaikan" style="float: right;" type="success" @click="showHidePreviewMatriks">{{ !showPrev ? 'Tampilkan Perbaikan Matriks UKL UPL' : 'Sembunyikan Perbaikan Matriks UKL UPL' }}</el-button>
+        <el-button v-if="(isPerbaikan || dataPerbaikan) && (isWebForm || fileDocxUrl)" style="float: right;" type="success" @click="showHidePreviewMatriks">{{ !showPrev ? 'Tampilkan Perbaikan Matriks UKL UPL' : 'Sembunyikan Perbaikan Matriks UKL UPL' }}</el-button>
         <!-- <el-button @click="download">Download Rekap Komentar</el-button> -->
-        <el-button v-if="isPerbaikan" style="float: right;" type="info" @click="loadPerbaikan">
+        <el-button v-if="isPerbaikan || dataPerbaikan" style="float: right;" type="info" @click="loadPerbaikan">
           <span>Perbaikan Ulang</span>
         </el-button>
       </div>
@@ -251,9 +251,6 @@ export default {
   },
   async mounted() {
     this.getMarking();
-    if (this.isWebForm() || this.fileDocxUrl) {
-      this.handleCetakMatriks();
-    }
     this.handleCetakMatriks();
     this.getPerbaikan();
     this.officeUrl = process.env.MIX_OFFICE_URL;
@@ -477,7 +474,6 @@ export default {
       this.fileDocxUrl = data.data.docx_url;
       this.fileName = data.data.file_name;
       this.filePdfUrl = data.data.pdf_url;
-      console.log(this.fileDocxUrl);
     },
 
     etherpadAuth() {
