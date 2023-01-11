@@ -103,26 +103,49 @@
           </el-col>
         </el-row>
       </el-form>
-      <div style="display: flex; align-items: center; margin-bottom: 5px">
-        <h4>Daftar Anggota Tim Uji Kelayakan</h4>
+      <div style="display: flex; flex-direction: row; justify-content: space-between;">
+        <div style="margin-bottom: 5px">
+          <h4>Daftar Anggota Tim Uji Kelayakan</h4>
+        </div>
+        <div style="display: block; margin-block-start: 1.33em; margin-block-end: 1.33em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;">
+          <el-input
+            v-model="tukSearch"
+            suffix-icon="el-icon search"
+            placeholder="Pencarian "
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="handleSearchTuk"
+            />
+          </el-input>
+        </div>
       </div>
       <MemberTable :loading="loadingMember" :list="listMember" />
-      <div
-        style="
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          margin-bottom: 5px;
-        "
-      >
-        <h4>Daftar Anggota Sekretariat</h4>
-        <el-button
-          type="warning"
-          style="margin-left: 15px"
-          @click="handleAddSecretaryMember"
-        >
-          Tambahkan Anggota
-        </el-button>
+      <div style="display: flex; flex-direction: row; justify-content: space-between;">
+        <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 5px;">
+          <h4>Daftar Anggota Sekretariat</h4>
+          <el-button
+            type="warning"
+            style="margin-left: 15px"
+            @click="handleAddSecretaryMember"
+          >
+            Tambahkan Anggota
+          </el-button>
+        </div>
+        <div style="display: block; margin-block-start: 1.33em; margin-block-end: 1.33em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;">
+          <el-input
+            v-model="memberSearch"
+            suffix-icon="el-icon search"
+            placeholder="Pencarian "
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="handleSearchMember"
+            />
+          </el-input>
+        </div>
       </div>
       <SecretaryMemberTable
         :loading="loadingSecretaryMember"
@@ -171,6 +194,8 @@ export default {
       imageRaw: null,
       errors: {},
       deletedSecretaryMembers: [],
+      tukSearch: null,
+      memberSearch: null,
       // userInfo: {},
     };
   },
@@ -201,16 +226,27 @@ export default {
       this.listMember = await tukManagementResource.list({
         type: 'profileMember',
         email: this.userInfo.email,
+        searchTuk: this.tukSearch,
       });
       this.loadingMember = false;
+      // this.tukSearch = null;
     },
     async getSecretaryMemberData() {
       this.loadingSecretaryMember = true;
       this.listSecretaryMember = await tukManagementResource.list({
         type: 'secretaryMember',
         id: this.team.id,
+        searchMember: this.memberSearch,
       });
       this.loadingSecretaryMember = false;
+    },
+    async handleSearchTuk() {
+      await this.getMemberData();
+      this.tukSearch = null;
+    },
+    async handleSearchMember() {
+      await this.getSecretaryMemberData();
+      this.memberSearch = null;
     },
     async handleSubmit() {
       this.errors = {};

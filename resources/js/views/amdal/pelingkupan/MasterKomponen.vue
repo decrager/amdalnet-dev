@@ -28,7 +28,7 @@
         <komponen-kegiatan-lain-sekitar
           :components="activities"
           :mode="mode"
-          @delete="onDeleteActivites"
+          @delete="onDeleteActivity"
         />
       </el-col>
     </el-row>
