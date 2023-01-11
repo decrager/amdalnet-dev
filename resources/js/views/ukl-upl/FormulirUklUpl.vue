@@ -152,13 +152,23 @@ export default {
       }
     },
     async handleNotSave() {
-      this.$router.push({
-        name: 'MatriksUklUpl',
-        params: this.$route.params && this.$route.params.id,
-        query: {
-          perbaikan: true,
-          isFixFormulirUklUpl: false,
-        },
+      this.$confirm(
+        'Apakah anda yakin tidak ada perbaikan di <b> Formulir UKL UPL </b> ini dan akan melanjutkan ke <b> Matriks UKL UPL </b> ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+          dangerouslyUseHTMLString: true,
+        }).then(() => {
+        this.$router.push({
+          name: 'MatriksUklUpl',
+          params: this.$route.params && this.$route.params.id,
+          query: {
+            perbaikan: true,
+            isFixFormulirUklUpl: false,
+          },
+        });
       });
     },
     async handleSaveForm(perbaikan) {

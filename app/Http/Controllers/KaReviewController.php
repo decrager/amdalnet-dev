@@ -89,6 +89,13 @@ class KaReviewController extends Controller
                 $document_type = 'KA';
             } else if($request->documentType == 'andal-rkl-rpl') {
                 $document_type = 'ANDAL RKL RPL';
+
+                // if document is repairment
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject],['is_accepted', false]])->first();
+                if($meeting_report) {
+                    $meeting_report->is_accepted = null;
+                    $meeting_report->save();
+                }
             } else if($request->documentType == 'ukl-upl') {
                 $document_type = 'UKL UPL';
 
@@ -141,15 +148,23 @@ class KaReviewController extends Controller
             // === WORKFLOW === //
             if($document_type == 'KA') {
                 if($project->marking == 'amdal.form-ka-drafting') {
-                    //$project->workflow_apply('submit-amdal-form-ka');
-                    // $project->save();
-                } /* else if($project->marking == 'amdal.form-ka-submitted') {
-                    $project->workflow_apply('review-amdal-form-ka');
+                    $project->workflow_apply('submit-amdal-form-ka');
                     $project->save();
-                }*/
+                } else if($project->marking == 'amdal.form-ka-adm-returned') {
+                    $project->applyWorkFlowTransition('return-amdal-form-ka-review', 'amdal.form-ka-adm-returned', 'amdal.form-ka-submitted');
+                    $project->save();
+                }
             } else if($document_type == 'ANDAL RKL RPL') {
                 if($project->marking == 'amdal.rklrpl-drafting') {
                     $project->workflow_apply('submit-amdal');
+                    // $project->workflow_apply('review-amdal-adm');
+                    $project->save();
+                } else if ($project->marking == 'amdal.feasibility-returned') {
+                    $project->applyWorkFlowTransition('submit-amdal', 'amdal.feasibility-returned', 'amdal.submitted');
+                    // $project->workflow_apply('review-amdal-adm');
+                    $project->save();
+                } else if ($project->marking == 'amdal.adm-returned') {
+                    $project->applyWorkFlowTransition('submit-amdal', 'amdal.feasibility-returned', 'amdal.submitted');
                     // $project->workflow_apply('review-amdal-adm');
                     $project->save();
                 }
@@ -216,19 +231,20 @@ class KaReviewController extends Controller
 
                 // === WORKFLOW === //
                 if($document_type == 'KA') {
-                    /*
-                    if($project->marking == 'amdal.form-ka-adm-review') {
-                        $project->workflow_apply('return-amdal-form-ka-review');
-                        $project->save();
-                    } else if($project->marking == 'amdal.form-ka-submitted') {
+                     if($project->marking == 'amdal.form-ka-submitted') {
                         $project->workflow_apply('review-amdal-form-ka');
                         $project->workflow_apply('return-amdal-form-ka-review');
                         $project->save();
-                    }*/
+                    }
                 } else if($document_type == 'ANDAL RKL RPL') {
                     if($project->marking == 'amdal.rklrpl-drafting') {
                         $project->workflow_apply('submit-amdal');
                         $project->workflow_apply('review-amdal-adm');
+                        $project->workflow_apply('return-amdal-adm');
+                        $project->save();
+                    } else if($project->marking == 'amdal.submitted') {
+                        $project->workflow_apply('review-amdal-adm');
+                        $project->workflow_apply('return-amdal-adm');
                         $project->save();
                     }
                 } else if($document_type == 'UKL UPL') {
@@ -236,12 +252,19 @@ class KaReviewController extends Controller
                         $project->workflow_apply('submit-uklupl');
                         $project->workflow_apply('review-uklupl-adm');
                         $project->workflow_apply('return-uklupl-adm');
-                        $project->perbaikan = true;
+                        // if document is repairment
+                        $meeting_report = MeetingReport::where([['id_project', $request->idProject],['is_accepted', null]])->first();
+                        if($meeting_report) {
+                            $project->perbaikan = true;
+                        }
                         $project->save();
                     } else if($project->marking == 'uklupl-mt.sent') {
                         $project->workflow_apply('review-uklupl-adm');
                         $project->workflow_apply('return-uklupl-adm');
-                        $project->perbaikan = true;
+                        $meeting_report = MeetingReport::where([['id_project', $request->idProject],['is_accepted', null]])->first();
+                        if($meeting_report) {
+                            $project->perbaikan = true;
+                        }
                         $project->save();
                     }
                 }
@@ -309,9 +332,8 @@ class KaReviewController extends Controller
 
                 // === WORKFLOW === //
                 if($document_type == 'KA') {
-                    if($project->marking == 'amdal.form-ka-drafting') {
-                        $project->workflow_apply('submit-amdal-form-ka');
-                        // $project->workflow_apply('review-amdal-form-ka');
+                    if($project->marking == 'amdal.form-ka-submitted') {
+                        $project->applyWorkFlowTransition('submit-amdal-form-ka', 'amdal.form-ka-submitted', 'amdal.form-ka-adm-review');
                         $project->save();
                     } /* else if($project->marking == 'amdal.form-ka-submitted') {
                         // $project->workflow_apply('review-amdal-form-ka');

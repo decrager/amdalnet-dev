@@ -153,25 +153,35 @@ export default {
       }
     },
     async handleNotSave() {
-      const data = await axios.get(
-        `/api/dokumen-ukl-upl/${this.idProject}`
-      );
-      this.$router.push({
-        name: 'projectWorkspace',
-        params: {
-          id: this.idProject,
-          versi: data.data.versi_doc,
-          filename: data.data.file_name,
-          createTime: data.data.create_time,
-          workspaceType: 'ukl-upl',
-        },
-        query: {
-          perbaikan: true,
-          isFixFormulirUklUpl: this.$route.query.isFixFormulirUklUpl,
-          isFixMatriksUklUpl: false,
-        },
+      this.$confirm(
+        'Apakah anda yakin tidak ada perbaikan di <b> Matriks UKL UPL </b> ini dan akan melanjutkan ke <b> Workspace UKL UPL </b> ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+          dangerouslyUseHTMLString: true,
+        }).then(() => {
+        const data = axios.get(
+          `/api/dokumen-ukl-upl/${this.idProject}`
+        );
+        this.$router.push({
+          name: 'projectWorkspace',
+          params: {
+            id: this.idProject,
+            versi: data.data.versi_doc,
+            filename: data.data.file_name,
+            createTime: data.data.create_time,
+            workspaceType: 'ukl-upl',
+          },
+          query: {
+            perbaikan: true,
+            isFixFormulirUklUpl: this.$route.query.isFixFormulirUklUpl,
+            isFixMatriksUklUpl: false,
+          },
+        });
+        this.handleCetakMatriks();
       });
-      this.handleCetakMatriks();
     },
     async checkIfFormComplete() {
       const idProject = parseInt(this.$route.params && this.$route.params.id);
