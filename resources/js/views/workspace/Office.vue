@@ -308,11 +308,15 @@ export default {
     },
     loadPerbaikan() {
       const that = this;
-      this.$alert('Anda akan dialihkan ke menu <b> Formulir UKL UPL </b>', 'Peringatan', {
-        confirmButtonText: 'Confirm',
-        center: true,
-        dangerouslyUseHTMLString: true,
-      }).then(res => {
+      this.$confirm(
+        'Anda akan dialihkan ke menu <b> Formulir UKL UPL </b>. Apakah anda yakin akan melakukan perbaikan ulang Formulir & Matriks UKL UPL?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+          dangerouslyUseHTMLString: true,
+        }).then(() => {
         that.$router.push({
           path: `/uklupl/${this.$route.params.id}/formulir`,
           query: {

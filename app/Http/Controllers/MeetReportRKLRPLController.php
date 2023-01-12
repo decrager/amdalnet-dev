@@ -20,6 +20,7 @@ use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
 use App\Notifications\AcceptToFeasibilityTest;
 use App\Notifications\MeetingReportNotification;
+use App\Notifications\RklRplAcceptedNotification;
 use App\Notifications\UklUplAcceptedNotification;
 use App\Utils\Html;
 use App\Utils\ListRender;
@@ -157,6 +158,56 @@ class MeetReportRKLRPLController extends Controller
 
                 if(count($receiver) > 0) {
                     Notification::send($receiver, new UklUplAcceptedNotification($project, $request->isAccepted));
+                }
+            } else if ($document_type == 'rkl-rpl') {
+                $project = Project::findOrFail($request->idProject);
+                if(!$request->isAccepted) {
+                    // update workflow
+                    if($project->marking == 'amdal.examination') {
+                        if(request()->has('perbaikan')) {
+                            $project->perbaikan = true;
+                        }
+                        $project->workflow_apply('held-amdal-feasibility-meeting');
+                        $project->workflow_apply('return-amdal-feasibility');
+                        $project->save();
+                    } else if ('amdal.feasibility-ba-drafting') {
+                        if(request()->has('perbaikan')) {
+                            $project->perbaikan = true;
+                        }
+                        $project->applyWorkFlowTransition('draft-amdal-feasibility-ba', 'amdal.feasibility-ba-drafting', 'amdal.feasibility-returned');
+                        $project->save();
+                    }
+                    // delete file
+                    $document = KaReview::where([['id_project', $request->idProject],['status', 'submit']])->first();
+                    Storage::disk('public')->delete($document->getRawApplicationLetter());
+
+                    // delete submit document
+                    KaReview::where('id_project', $request->idProject)->delete();
+
+                }
+
+                // === NOTIFICATIONS === //
+                $receiver = [];
+                // 1. Pemrakarsa
+                $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+                if($pemrakarsa_user) {
+                    $receiver[] = $pemrakarsa_user;
+                }
+                // 2. Penyusun
+                $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->get();
+                foreach($formulator_team_members as $ftm) {
+                    if($ftm->formulator) {
+                        $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                        if($formulator_user) {
+                            $receiver[] = $formulator_user;
+                        }
+                    }
+                }
+
+                if(count($receiver) > 0) {
+                    Notification::send($receiver, new RklRplAcceptedNotification($project, $request->isAccepted));
                 }
             }
 

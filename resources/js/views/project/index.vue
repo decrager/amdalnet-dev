@@ -1081,6 +1081,7 @@ export default {
         this.announcement = currentProject.announcement;
       }
       this.announcement.project_location = currentProject.address;
+      this.announcement.is_done = currentProject.is_done;
       this.announcement.sub_project = subProject;
       // console.log(this.announcement);
       this.show = true;
