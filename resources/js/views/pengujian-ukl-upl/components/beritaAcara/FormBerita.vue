@@ -9,7 +9,7 @@
             value-format="yyyy-MM-dd"
             placeholder="Pilih tanggal"
             style="width: 100%"
-            :disabled="isSecretary ? '':disabled"
+            :disabled="isSecretary ? true:false"
           />
         </el-form-item>
       </el-col>
@@ -21,7 +21,7 @@
             format="HH:mm"
             value-format="HH:mm"
             style="width: 100%"
-            :disabled="isSecretary ? '':disabled"
+            :disabled="isSecretary ? true:false"
           />
         </el-form-item>
       </el-col>
@@ -29,7 +29,7 @@
         <el-form-item label="Tempat Rapat">
           <el-input
             v-model="reports.location"
-            :disabled="isSecretary ? '':disabled"
+            :disabled="isSecretary ? true:false"
           />
         </el-form-item>
       </el-col>

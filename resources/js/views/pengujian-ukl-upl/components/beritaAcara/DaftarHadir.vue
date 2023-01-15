@@ -21,7 +21,7 @@
             v-model="scope.row.role"
             placeholder="Pilih Peran"
             style="width: 100%"
-            :disabled="isSecretary ? '':disabled"
+            :disabled="isSecretary ? true:false"
             @change="handleChangeRole($event, scope.$index)"
           >
             <el-option
@@ -46,7 +46,7 @@
             placeholder="Pilih Anggota"
             style="width: 100%"
             filterable
-            :disabled="isSecretary ? '':disabled"
+            :disabled="isSecretary ? true:false"
             @change="handleChangeName($event, scope.row.type, scope.$index)"
           >
             <el-option
@@ -77,7 +77,7 @@
             placeholder="Pilih Instansi"
             style="width: 100%"
             filterable
-            :disabled="isSecretary ? '':disabled"
+            :disabled="isSecretary ? true:false"
           >
             <el-option
               v-for="item in scope.row.institution_options"
@@ -108,7 +108,7 @@
                 type="text"
                 icon="el-icon-close"
                 style="display: block"
-                :disabled="isSecretary ? '':disabled"
+                :disabled="isSecretary ? true:false"
                 @click.prevent="deleteRow(scope.$index, scope.row.id)"
               />
             </div>
@@ -118,7 +118,7 @@
                 type="text"
                 icon="el-icon-close"
                 style="display: block"
-                :disabled="isSecretary ? '':disabled"
+                :disabled="isSecretary ? true:false"
                 @click.prevent="deleteRow(scope.$index, scope.row.id)"
               />
             </div>
@@ -129,7 +129,7 @@
     <div style="margin-top: 10px">
       <el-button
         icon="el-icon-plus"
-        :disabled="isSecretary ? '':disabled"
+        :disabled="isSecretary ? true:false"
         circle
         @click.prevent="addTableRow"
       />
