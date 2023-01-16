@@ -181,10 +181,10 @@ class ProjectController extends Controller
                             ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
                             ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
                             ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
-                            ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
-                            ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
-                            ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
-                            ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                            ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%');
+                            // ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                            // ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                            // ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
                     }
                     return $query;
                 }
