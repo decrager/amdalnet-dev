@@ -462,7 +462,44 @@ class KaReviewController extends Controller
             }
         }
 
-
+        // === PDF Document Workspace === //
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Versi UKL UPL']])->get();
+        // dd($document_attachment->toArray());
+        $doc_versi_0 = ['file' => null, 'file_name' => null];
+        $doc_versi_1 = ['file' => null, 'file_name' => null];
+        $doc_versi_2 = ['file' => null, 'file_name' => null];
+        $doc_versi_3 = ['file' => null, 'file_name' => null];
+        $pdfName = 'document-' . strtolower(str_replace('/', '-', $project->project_title));
+        foreach ($document_attachment as $doc_attach) {
+            switch ($doc_attach->versi) {
+                case 0:
+                    $doc_versi_0 = [
+                        'file' => $this->docxToPdf($doc_attach->attachment),
+                        'file_name' => $pdfName . '-versi-' . $doc_attach->versi,
+                    ];
+                    break;
+                case 1:
+                    $doc_versi_1 = [
+                        'file' => $this->docxToPdf($doc_attach->attachment),
+                        'file_name' => $pdfName . '-versi-' . $doc_attach->versi,
+                    ];
+                    break;
+                case 2:
+                    $doc_versi_2 = [
+                        'file' => $this->docxToPdf($doc_attach->attachment),
+                        'file_name' => $pdfName . '-versi-' . $doc_attach->versi,
+                    ];
+                    break;
+                case 3:
+                    $doc_versi_3 = [
+                        'file' => $this->docxToPdf($doc_attach->attachment),
+                        'file_name' => $pdfName . '-versi-' . $doc_attach->versi,
+                    ];
+                    break;
+                default:
+                    break;
+            }
+        }
         // === PDF RONA AWAL === //
         $rona_awal = ProjectRonaAwal::where([['id_project', $id_project],['file', '!=', null],['is_andal', false]])->get();
         $geofisik_kimia = [];
@@ -611,6 +648,30 @@ class KaReviewController extends Controller
                     'file' => true,
                     'generate' => true,
                 ],
+                [
+                    'no' => 5,
+                    'name' => 'Dokumen UKL UPL versi 0',
+                    'file' => $doc_versi_0['file'],
+                    'file_name' => $doc_versi_0['file_name'],
+                ],
+                [
+                    'no' => 6,
+                    'name' => 'Dokumen UKL UPL versi 1',
+                    'file' => $doc_versi_1['file'],
+                    'file_name' => $doc_versi_1['file_name'],
+                ],
+                [
+                    'no' => 7,
+                    'name' => 'Dokumen UKL UPL versi 2',
+                    'file' => $doc_versi_2['file'],
+                    'file_name' => $doc_versi_2['file_name'],
+                ],
+                [
+                    'no' => 8,
+                    'name' => 'Dokumen UKL UPL versi 3',
+                    'file' => !$doc_versi_3['file'] ? null : $doc_versi_3['file'],
+                    'file_name' => !$doc_versi_3['file_name'] ? null : $doc_versi_3['file_name'],
+                ],
             ];
         }
 
@@ -668,6 +729,15 @@ class KaReviewController extends Controller
         return response()->json($attachment);
     }
 
+    private function docxToPdf($url)
+    {
+        $downloadUri = url($url);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
+    }
+
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
@@ -716,6 +786,7 @@ class KaReviewController extends Controller
 
     private function downloadExternalFile($filepath)
     {
+        dd($filepath);
         $tmpName = tempnam(sys_get_temp_dir(),'');
         $tmpFile = Storage::disk('public')->get($filepath);
         file_put_contents($tmpName, $tmpFile);

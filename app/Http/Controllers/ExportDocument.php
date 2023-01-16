@@ -524,7 +524,45 @@ class ExportDocument extends Controller
         $project = Project::with('listSubProject')->findOrFail($id_project);
         $listSubProject = array_values($project->listSubProject->toArray());
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL'], ['versi', 0]])->orderBy('created_at', 'desc')->first();
-        if($document_attachment && !request()->has('regenerate') && !request()->has('revisi') && !request()->has('versi')) {
+        if(request()->has('pdfVersi')) {
+            $document = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Versi UKL UPL']])->orderBy('created_at', 'desc')->first();
+            $pdfName = 'workspace/' . 'document-' . strtolower(str_replace('/', '-', $project->project_title));
+
+            $document_attachments = new DocumentAttachment();
+            $document_attachments->id_project = $project->id;
+
+            if($document === null) {
+                $document_attachments->versi = 0;
+                $document_attachments->attachment = $pdfName . '-versi-0-' . '.docx';
+                //get file and copy it to local
+                Storage::disk('local')->put($pdfName.'.docx', Storage::disk('public')->get('workspace/' .'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title . '.docx'))));
+
+                //put it to s3 storage
+                Storage::disk('public')->put($pdfName . '-versi-0-' . '.docx', Storage::disk('local')->get($pdfName.'.docx'));
+            } else {
+                $document_attachments->versi = $document->versi + 1;
+                $document_attachments->attachment = $pdfName . '-versi-' . $document->versi + 1 . '-' . '.docx';
+                //get file and copy it to local
+                Storage::disk('local')->put($pdfName.'.docx', Storage::disk('public')->get('workspace/' .'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title . '.docx'))));
+
+                //put it to s3 storage
+                Storage::disk('public')->put($pdfName . '-versi-' . $document->versi + 1 . '-' . '.docx', Storage::disk('local')->get($pdfName.'.docx'));
+            }
+
+            $document_attachments->type = 'Dokumen Versi UKL UPL';
+            $document_attachments->save();
+
+            $pdf_url = $this->docxToPdf($document_attachment->attachment);
+            return [
+                'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
+                'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
+                'pdf_url' => $pdf_url,
+                'docx_url' => $document_attachment->attachment,
+                'create_time' => $document_attachment->created_at->toTimeString(),
+                'versi_doc' => $document_attachment->versi,
+            ];
+        }
+        if($document_attachment && !request()->has('regenerate') && !request()->has('pdfVersi')) {
             $pdf_url = $this->docxToPdf($document_attachment->attachment);
             if ($project->marking === 'uklupl-mt.returned-examination') {
                 $project = Project::findOrFail($id_project);
@@ -540,21 +578,6 @@ class ExportDocument extends Controller
                 'create_time' => $document_attachment->created_at->toTimeString(),
                 'versi_doc' => $document_attachment->versi,
             ];
-        }
-
-        if($request->has('versi')) {
-            $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL'], ['versi', $request->versi]])->orderBy('created_at', 'desc')->first();
-            if($document_attachment && !request()->has('regenerate') && !request()->has('revisi')) {
-                $pdf_url = $this->docxToPdf($document_attachment->attachment);
-                return [
-                    'file_name' => 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx',
-                    'project_title' => strtolower(str_replace('/', '-', $project->project_title)),
-                    'pdf_url' => $pdf_url,
-                    'docx_url' => $document_attachment->attachment,
-                    'create_time' => $document_attachment->created_at->toTimeString(),
-                    'versi_doc' => $document_attachment->versi,
-                ];
-            }
         }
 
         $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
