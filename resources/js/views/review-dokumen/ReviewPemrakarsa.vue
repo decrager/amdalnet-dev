@@ -69,6 +69,7 @@
 <script>
 import Tinymce from '@/components/Tinymce';
 import Resource from '@/api/resource';
+import axios from 'axios';
 const kaReviewsResource = new Resource('ka-reviews');
 
 export default {
@@ -245,10 +246,14 @@ export default {
       const file = await this.convertBase64(this.file);
       formData.append('file', file);
       await kaReviewsResource.store(formData);
+      this.printDocVersion();
       this.getData();
       this.file = null;
       this.fileName = null;
       this.loadingSubmit = false;
+    },
+    async printDocVersion() {
+      await axios.get(`/api/dokumen-ukl-upl/${this.$route.params.id}?pdfVersi=true`);
     },
     showFileAlert() {
       this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
