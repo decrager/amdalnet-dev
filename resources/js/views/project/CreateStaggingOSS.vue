@@ -1832,7 +1832,14 @@ export default {
 
         const { result, result_risk, scale, scale_unit } = this.sumResult(e.listSubProjectParams);
         e.result = result;
-        e.result_risk = result_risk;
+        // e.result_risk = result_risk;
+        if (e.skala_resiko === 'MT'){
+          e.result_risk = 'Menengah Tinggi';
+        } else if (e.skala_resiko === 'T'){
+          e.result_risk = 'Tinggi';
+        } else {
+          e.result_risk = result_risk;
+        }
         e.scale = scale;
         e.scale_unit = scale_unit;
 
@@ -2400,6 +2407,7 @@ export default {
       // );
 
       // send to pubishProjectRoute
+
       this.$router.push({
         name: 'publishProject',
         params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson, mapUploadPdf: this.filePdf, isOSS: this.isOSS },
