@@ -434,7 +434,7 @@
             <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district+'/ '+scope.row.address[0].prov : '' }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="isExaminer || isAdmin || isSubtance || isSecretary" label="Penugasan" width="200px" align="center">
+        <el-table-column v-if="isExaminer || isAdmin || isSubtance " label="Penugasan" width="200px" align="center">
           <template slot="header">
             <el-select
               v-model="listQuery.filterTUK"
@@ -652,6 +652,9 @@ export default {
       this.userInfo.roles.includes('examiner-secretary')
     ) {
       this.listQuery.tuk = 'true';
+      if (this.userInfo.roles.includes('examiner-secretary')) {
+        this.listQuery.tukActivityProcess = 'true';
+      }
     }
     // else if (this.userInfo.roles.includes('examiner-substance')) {
     //   const formulator = await formulatorResource.list({ email: this.userInfo.email });
@@ -661,6 +664,7 @@ export default {
     this.getFiltered(this.listQuery);
 
     // load info project from oss
+    console.log(this.$store);
     await this.loadInfoFromOss();
   },
   methods: {

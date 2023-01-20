@@ -65,7 +65,7 @@ class OssService
                                 'kd_penerimaan' => null,
                                 'nominal' => null,
                             ],
-                        ]                           
+                        ]
                     ]
                 ];
                 // print_r($data);
@@ -166,7 +166,7 @@ class OssService
         foreach ($subProjectsAmdalnet as $sp) {
             array_push($subProjectsAmdalnetIdProyeks, $sp->id_proyek);
         }
-        
+
         return [
             'ossNib' => $ossNib,
             'initiator' => $initiator,
@@ -238,7 +238,8 @@ class OssService
                         'kd_instansi' => $dataProject['sektor'],
                         'kd_status' => $statusCode,
                         'tgl_status' => (string)$project->updated_at,
-                        'nip_status' => null, // NULL
+                        // 'nip_status' => null, // NULL
+                        'nip_status' => '',
                         'nama_status' => OssService::getStatusNameOss($statusCode),
                         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
                         'id_daerah' => $jsonContent['kd_daerah'],
@@ -247,6 +248,37 @@ class OssService
                         'kd_izin_new' => $kdIzinNew,
                     ],
                 ];
+                // $data = [
+                //     'IZINSTATUS' => [
+                //         'nib' => $ossNib->nib,
+                //         'id_produk' => $idProduct,
+                //         'id_proyek' => $dataProject['id_proyek'],
+                //         'oss_id' => $ossNib->oss_id,
+                //         'id_izin' => $idIzin,
+                //         'kd_izin' => $ossNib->kd_izin,
+                //         'kd_instansi' => $dataProject['sektor'],
+                //         'kd_status' => $statusCode,
+                //         'tgl_status' => (string)$project->updated_at,
+                //         'nip_status' => null, // NULL
+                //         'nama_status' => OssService::getStatusNameOss($statusCode),
+                //         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
+                //         // 'id_daerah' => $jsonContent['kd_daerah'],
+                //         // 'kewenangan' => $jsonContent['kewenangan'],
+                //         // 'kewenangan_new' => $authorityNew,
+                //         // 'kd_izin_new' => $kdIzinNew,
+                //         'data_pnbp' => [
+                //             [
+                //                 'kd_akun' => null,
+                //                 'kd_penerimaan' => null,
+                //                 'kd_billing' => null,
+                //                 'tgl_billing' => null,
+                //                 'tgl_expire' => null,
+                //                 'nominal' => null,
+                //                 'url_dokumen' => null,
+                //             ],
+                //         ]
+                //     ],
+                // ];
                 $response = Http::withHeaders([
                     'user_key' => env('OSS_USER_KEY'),
                 ])->post(env('OSS_ENDPOINT') . '/receiveLicenseStatusLingkungan', $data);

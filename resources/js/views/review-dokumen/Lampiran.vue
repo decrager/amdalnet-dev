@@ -71,6 +71,18 @@
             }}
           </a>
           <a
+            v-else-if="scope.row.name.includes('versi')"
+            :href="scope.row.file"
+            class="link-lampiran"
+            style="color: inherit;"
+          >
+            {{
+              loadingExternalFile[`loading-${scope.$index}`]
+                ? 'Loading...'
+                : 'Unduh File PDF'
+            }}
+          </a>
+          <a
             v-else
             href="#"
             class="link-lampiran"
