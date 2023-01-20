@@ -1256,8 +1256,8 @@ class ProjectController extends Controller
 
         return response([
             'amdal' => ProjectSkklFinal::count(),
-            'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
-            'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
+            'uklupl' => Project::where(['required_doc' => 'UKL-UPL', 'marking' => 'uklupl-mt.pkplh-published'])->count(),
+            'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mt.pkplh-published', 'uklupl-mr.pkplh-published'])->count()
         ]);
 
         /*
