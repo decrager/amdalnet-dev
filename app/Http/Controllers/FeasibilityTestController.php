@@ -16,6 +16,7 @@ use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
 use App\Notifications\FeasibilityTestNotification;
 use App\Notifications\FeasibilityTestRecapNotification;
+use App\Services\OssService;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
@@ -107,6 +108,10 @@ class FeasibilityTestController extends Controller
             $recap->recap = $request->recap;
             $recap->is_feasib = $request->isFeasib;
             $recap->save();
+
+            if ($request->isOSS === "true") {
+                OssService::receiveLicenseStatusNotif($request, '45');
+            }
 
             $project = Project::findOrFail($request->idProject);
             $user = User::where('email', $project->initiator->email)->first();
