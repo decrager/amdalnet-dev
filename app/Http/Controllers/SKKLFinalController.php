@@ -75,9 +75,9 @@ class SKKLFinalController extends Controller
             $skkl->file = $name;
             $saved = $skkl->save();
 
-            if ($request->isOSS === "true") {
-                OssService::receiveLicenseStatusNotif($request, '50');
-            }
+            // if ($request->isOSS === "true") {
+            //     OssService::receiveLicenseStatusNotif($request, '50');
+            // }
 
             if ($saved && $fileCreated) {
                 if ($sendLicenseStatus) {
