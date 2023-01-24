@@ -225,7 +225,11 @@ export default {
     async handleSubmit() {
       this.loadingSubmit = true;
       const formData = new FormData();
+      if (this.$route.query.isOSS){
+        formData.append('isOSS', 'true');
+      }
       formData.append('id_project', this.idProject);
+      formData.append('idProject', this.idProject);
       formData.append('number', this.postForm.number);
       formData.append('title', this.postForm.title);
       formData.append('date_published', this.postForm.date_published);

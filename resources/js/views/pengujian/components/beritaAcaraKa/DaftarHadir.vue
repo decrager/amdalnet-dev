@@ -306,6 +306,9 @@ export default {
       if (this.reports.type === 'update') {
         this.loadingUpload = true;
         const formData = new FormData();
+        if (this.$route.query.isOSS){
+          formData.append('isOSS', 'true');
+        }
         formData.append('idProject', this.$route.params.id);
         formData.append('file', 'true');
         const fileUpload = await this.convertBase64(file.raw);

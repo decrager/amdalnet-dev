@@ -18,6 +18,7 @@ use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
 use App\Notifications\AndalNotification;
 use App\Notifications\MeetingReportNotification;
+use App\Services\OssService;
 use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
@@ -95,6 +96,10 @@ class MeetingReportController extends Controller
 
                 if($meeting_report->file) {
                     Storage::disk('public')->delete($meeting_report->rawFile());
+                }
+
+                if ($request->isOSS === "true") {
+                    OssService::receiveLicenseStatusNotif($request, '10');
                 }
 
                 $file = $this->base64ToFile($request->dokumen_file);
