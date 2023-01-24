@@ -109,9 +109,9 @@ class FeasibilityTestController extends Controller
             $recap->is_feasib = $request->isFeasib;
             $recap->save();
 
-            if ($request->isOSS === "true") {
-                OssService::receiveLicenseStatusNotif($request, '45');
-            }
+            // if ($request->isOSS === "true") {
+            //     OssService::receiveLicenseStatusNotif($request, '45');
+            // }
 
             $project = Project::findOrFail($request->idProject);
             $user = User::where('email', $project->initiator->email)->first();

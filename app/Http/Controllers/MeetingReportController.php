@@ -98,9 +98,9 @@ class MeetingReportController extends Controller
                     Storage::disk('public')->delete($meeting_report->rawFile());
                 }
 
-                if ($request->isOSS === "true") {
-                    OssService::receiveLicenseStatusNotif($request, '10');
-                }
+                // if ($request->isOSS === "true") {
+                //     OssService::receiveLicenseStatusNotif($request, '10');
+                // }
 
                 $file = $this->base64ToFile($request->dokumen_file);
                 $name = 'berita-acara-ka/' . uniqid() . '.' . $file['extension'];
