@@ -358,7 +358,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="isLoginFromOSS? handleFeasibilityTestOSS(scope.row) : handleFeasibilityTest(scope.row)"
+                  @click="isLoginFromOSS? handleFeasibilityTestOSS(scope.row.id) : handleFeasibilityTest(scope.row.id)"
                 >
                   SKKL
                 </el-button>
