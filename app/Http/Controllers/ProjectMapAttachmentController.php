@@ -136,7 +136,6 @@ class ProjectMapAttachmentController extends Controller
             $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
             $map->save();
         }
-
         $properties = json_decode($properties, true);
         foreach (json_decode($geometry) as $key => $kelolaGeom) {
             $encode = json_encode($kelolaGeom);
@@ -156,7 +155,7 @@ class ProjectMapAttachmentController extends Controller
                         'attachment_type' => $temp->attachment_type,
                         'file_type' => $temp->file_type,
                         'step' => $request->step,
-                        'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$encode'), 4326)"),
+                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$encode')), 4326)"),
                         'properties' => json_encode($properties[$key], true),
                     ]);
                 }
