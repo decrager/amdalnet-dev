@@ -80,7 +80,8 @@ class MeetReportRKLRPLController extends Controller
             if($report) {
                 return $this->getExistReportRapat($request->projectId, $document_type);
             } else {
-                return null;
+                // return null;
+                return $this->getFreshReportRapat($request->idProject, $document_type);
             }
         }
     }
@@ -579,6 +580,35 @@ class MeetReportRKLRPLController extends Controller
             'file_rapat' => null,
             'is_accepted' => null,
             'deleted_invitations' => []
+        ];
+
+        return $data;
+    }
+    private function getFreshReportRapat($id_project, $document_type) {
+        $meeting = TestingMeeting::where([['id_project', $id_project],['document_type', $document_type]])->first();
+
+        if(!$meeting) {
+            return [
+                'type' => 'notexist'
+            ];
+        }
+
+        $data = [
+            // 'type' => 'new',
+            'id_project' => $id_project,
+            // 'id_testing_meeting' => $meeting->id,
+            // 'id_initiator' => $meeting->project->initiator->id,
+            // 'meeting_date' => $meeting->meeting_date,
+            // 'meeting_time' => $meeting->meeting_time,
+            // 'location' => $meeting->location,
+            // 'expert_bank_team_id' => $meeting->expert_bank_team_id,
+            // 'project_name' => $meeting->project->project_title,
+            // 'invitations' => $invitations,
+            'notes' => null,
+            'file' => null,
+            'file_rapat' => null,
+            'is_accepted' => null,
+            // 'deleted_invitations' => []
         ];
 
         return $data;

@@ -186,13 +186,13 @@
         Unggah BA Final Rapat Tim Teknis
       </el-button>
     </el-upload>
-    <div v-if="reportsRapat.file">
+    <div v-if="reportsrapat.file">
       <el-button
         type="text"
         size="medium"
         icon="el-icon-download"
         style="color: blue"
-        @click.prevent="download(reportsRapat.file)"
+        @click.prevent="download(reportsrapat.file)"
       >
         <!-- {{ baFileNameTeknis }} -->
         Unduh Berita Acara Final Tim Teknis
@@ -228,7 +228,7 @@ export default {
       type: Object,
       default: () => {},
     },
-    reportsRapat: {
+    reportsrapat: {
       type: Object,
       default: () => {},
     },
@@ -288,7 +288,7 @@ export default {
       return arrName[arrName.length - 1];
     },
     baFileNameTeknis() {
-      const arrName = this.reportsRapat.file.split('/');
+      const arrName = this.reportsrapat.file.split('/');
       return arrName[arrName.length - 1];
     },
     isSecretary() {
