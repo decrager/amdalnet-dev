@@ -223,7 +223,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="isLoginFromOSS? handleBeritaAcaraKaOSS(scope.row) : handleBeritaAcaraKa(scope.row)"
+                  @click="handleBeritaAcaraKa(scope.row)"
                 >
                   Berita Acara KA
                 </el-button>
@@ -349,7 +349,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="isLoginFromOSS? handleRekomendasiUjiKelayakanOSS(scope.row) : handleRekomendasiUjiKelayakan(scope.row)"
+                  @click="handleRekomendasiUjiKelayakan(scope.row)"
                 >
                   Surat Rekomendasi Uji Kelayakan
                 </el-button>
@@ -358,7 +358,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="isLoginFromOSS? handleFeasibilityTestOSS(scope.row.id) : handleFeasibilityTest(scope.row.id)"
+                  @click="handleFeasibilityTest(scope.row.id)"
                 >
                   SKKL
                 </el-button>
@@ -1176,15 +1176,14 @@ export default {
     handleBeritaAcaraKa(project) {
       this.$router.push({
         path: `/amdal/${project.id}/berita-acara-ka`,
-        query: { isOSS: true },
       });
     },
-    handleBeritaAcaraKaOSS(project) {
-      this.$router.push({
-        path: `/amdal/${project.id}/berita1-acara-ka`,
-        query: { isOSS: true },
-      });
-    },
+    // handleBeritaAcaraKaOSS(project) {
+    //   this.$router.push({
+    //     path: `/amdal/${project.id}/berita1-acara-ka`,
+    //     query: { isOSS: true },
+    //   });
+    // },
     handleBeritaAcaraAndalRklRpl(project) {
       this.$router.push({
         path: `/amdal/${project.id}/berita-acara-andal-rkl-rpl`,
@@ -1217,30 +1216,30 @@ export default {
         });
       }
     },
-    handleRekomendasiUjiKelayakanOSS(project) {
-      if (this.isAmdal(project)) {
-        this.$router.push({
-          path: `/amdal/${project.id}/rekomendasi-uji-kelayakan`,
-          query: { isOSS: true },
-        });
-      } else {
-        this.$router.push({
-          path: `/uklupl/${project.id}/rekomendasi-uji-kelayakan`,
-          query: { isOSS: true },
-        });
-      }
-    },
+    // handleRekomendasiUjiKelayakanOSS(project) {
+    //   if (this.isAmdal(project)) {
+    //     this.$router.push({
+    //       path: `/amdal/${project.id}/rekomendasi-uji-kelayakan`,
+    //       query: { isOSS: true },
+    //     });
+    //   } else {
+    //     this.$router.push({
+    //       path: `/uklupl/${project.id}/rekomendasi-uji-kelayakan`,
+    //       query: { isOSS: true },
+    //     });
+    //   }
+    // },
     handleFeasibilityTest(id) {
       this.$router.push({
         path: `/amdal/${id}/skkl`,
       });
     },
-    handleFeasibilityTestOSS(id) {
-      this.$router.push({
-        path: `/amdal/${id}/skkl`,
-        query: { isOSS: true },
-      });
-    },
+    // handleFeasibilityTestOSS(id) {
+    //   this.$router.push({
+    //     path: `/amdal/${id}/skkl`,
+    //     query: { isOSS: true },
+    //   });
+    // },
     handlePKPLH(project) {
       this.$router.push({
         path: `/uklupl/${project.id}/pkplh`,

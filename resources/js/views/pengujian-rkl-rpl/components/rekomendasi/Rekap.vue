@@ -267,7 +267,6 @@ export default {
                 idProject: this.$route.params.id,
                 recap: this.recap.recap,
                 isFeasib: accept,
-                isOSS: this.$route.query.isOSS ? 'true' : 'false',
               })
               .then((data) => {
                 this.getFinalRecap();

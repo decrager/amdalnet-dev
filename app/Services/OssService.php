@@ -194,41 +194,6 @@ class OssService
                 $idProduct = $dataProduct['id_produk'];
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
-                // foreach ($dataChecklist as $c) {
-                //     if ($c['id_proyek'] == $dataProject['id_proyek']) {
-                //         $idIzin = $c['id_izin'];
-                //         break;
-                //     }
-                // }
-                // $subProjectAmdalnet = SubProject::where('id_proyek', $dataProject['id_proyek'])
-                //     ->orderBy('created_at', 'desc')
-                //     ->first();
-                // $kdIzinNew = $ossNib->kd_izin;
-                // mapping kode izin:
-                // 029000000002	Persetujuan SKKL
-                // 029000000010	SPPL
-                // 029000000001	Persetujuan PKPLH
-                // if ($subProjectAmdalnet) {
-                //     if ($subProjectAmdalnet->result == 'AMDAL') {
-                //         $kdIzinNew = '029000000002';
-                //     } else if ($subProjectAmdalnet->result == 'UKL-UPL') {
-                //         $kdIzinNew = '029000000001';
-                //     } else if ($subProjectAmdalnet->result == 'SPPL') {
-                //         $kdIzinNew = '029000000010';
-                //     }
-                // }
-                // kewenangan:
-                // 00 : kewenangan pusat
-                // 01 : kewenangan provinsi
-                // 02 : kewenangan kabupaten
-                // $authorityNew = $ossNib->kewenangan;
-                // if (strtolower($project->authority) == 'pusat') {
-                //     $authorityNew = '00';
-                // } else if (strtolower($project->authority) == 'provinsi') {
-                //     $authorityNew = '01';
-                // } else if (strtolower($project->authority) == 'kabupaten') {
-                //     $authorityNew = '02';
-                // }
                 $data = [
                     'IZINSTATUS' => [
                         'nib' => $ossNib->nib,
@@ -260,26 +225,16 @@ class OssService
                 $respJson = $response->json();
                 Log::debug(json_encode($data));
                 Log::debug(json_encode($respJson));
-                $statusResponse = null;
-                if (isset($respJson['responreceiveLicenseStatus']['keterangan'])) {
-                    $statusResponse = $respJson['responreceiveLicenseStatus']['keterangan'];
-                }
-                if (!empty($statusResponse) && $statusResponse === 'Sukses'){
+                // $statusResponse = null;
+                // if (isset($respJson['responreceiveLicenseStatus']['keterangan'])) {
+                //     $statusResponse = $respJson['responreceiveLicenseStatus']['keterangan'];
+                // }
+                // if (!empty($statusResponse) && $statusResponse === 'Sukses'){
+                //     Log::debug('Update status: oss_nibs .' . $ossNib->nib . ' updated with kd_status = ' . $statusCode);
+                // }
+                if (isset($respJson['responreceiveLicenseStatus']['kode']) && $respJson['responreceiveLicenseStatus']['kode'] === '200') {
                     Log::debug('Update status: oss_nibs .' . $ossNib->nib . ' updated with kd_status = ' . $statusCode);
                 }
-                // $idIzinNew = null;
-                // if (isset($respJson['responreceiveLicenseStatus']['id_izin_new'])) {
-                //     $idIzinNew = $respJson['responreceiveLicenseStatus']['id_izin_new'];
-                // }
-                // if (!empty($idIzinNew) && $idIzinNew != $idIzin) {
-                //     // update id_izin
-                //     $ossNib->id_izin = $idIzinNew;
-                //     $jsonContent['id_izin'] = $idIzinNew;
-                //     $ossNib->json_content = $jsonContent;
-                //     $ossNib->save();
-                //     Log::debug('Update kewenangan: oss_nibs .'
-                //         . $ossNib->nib . ' updated with id_izin_new = ' . $idIzinNew);
-                // }
             }
         }
         return true;
