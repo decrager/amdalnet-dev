@@ -135,7 +135,7 @@
         v-model="reports.notes"
         v-loading="loadingtuk"
         output-format="html"
-        :readonly="isSecretary ? '1':'0'"
+        :readonly="isSecretary ? 1:0"
         :menubar="''"
         :image="false"
         :toolbar="isSecretary ? ['fullscreen']:[
@@ -186,15 +186,15 @@
         Unggah BA Final Rapat Tim Teknis
       </el-button>
     </el-upload>
-    <div v-if="reportsrapat.file">
+    <div v-if="reportsRapat.file">
       <el-button
         type="text"
         size="medium"
         icon="el-icon-download"
         style="color: blue"
-        @click.prevent="download(reportsrapat.file)"
+        @click.prevent="download(reportsRapat.file)"
       >
-        <!-- {{ baFileName }} -->
+        <!-- {{ baFileNameTeknis }} -->
         Unduh Berita Acara Final Tim Teknis
       </el-button>
     </div>
@@ -228,7 +228,7 @@ export default {
       type: Object,
       default: () => {},
     },
-    reportsrapat: {
+    reportsRapat: {
       type: Object,
       default: () => {},
     },
@@ -285,6 +285,10 @@ export default {
   computed: {
     baFileName() {
       const arrName = this.reports.file.split('/');
+      return arrName[arrName.length - 1];
+    },
+    baFileNameTeknis() {
+      const arrName = this.reportsRapat.file.split('/');
       return arrName[arrName.length - 1];
     },
     isSecretary() {
