@@ -11,6 +11,7 @@ use App\Entity\ImpactIdentificationClone;
 use App\Entity\Initiator;
 use App\Entity\MeetingReport;
 use App\Entity\MeetingReportInvitation;
+use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\TestingMeeting;
@@ -28,6 +29,7 @@ use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Log;
 
 class MeetingReportController extends Controller
 {
@@ -90,6 +92,22 @@ class MeetingReportController extends Controller
         if($request->file) {
             $project = Project::findOrFail($request->idProject);
             $meeting_report = null;
+            $initiator = Initiator::find($project->id_applicant);
+            if (!$initiator) {
+                Log::error('Initiator not found');
+                return false;
+            }
+            $ossNib = OssNib::where('nib', $initiator->nib)->first();
+            if (!$ossNib) {
+                Log::error('OSSNib not found');
+                return false;
+            }
+            if ($ossNib) {
+                OssService::receiveLicenseStatusNotif($request, '10');
+            }
+            // if ($request->isOSS === 'true') {
+            //     OssService::receiveLicenseStatusNotif($request, '10');
+            // }
 
             if($request->dokumen_file) {
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
@@ -97,10 +115,6 @@ class MeetingReportController extends Controller
                 if($meeting_report->file) {
                     Storage::disk('public')->delete($meeting_report->rawFile());
                 }
-
-                // if ($request->isOSS === "true") {
-                //     OssService::receiveLicenseStatusNotif($request, '10');
-                // }
 
                 $file = $this->base64ToFile($request->dokumen_file);
                 $name = 'berita-acara-ka/' . uniqid() . '.' . $file['extension'];

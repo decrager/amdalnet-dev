@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Initiator;
+use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectSkklFinal;
 use App\Services\OssService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Log;
 
 class SKKLFinalController extends Controller
 {
@@ -75,16 +78,29 @@ class SKKLFinalController extends Controller
             $skkl->file = $name;
             $saved = $skkl->save();
 
+            $initiator = Initiator::find($project->id_applicant);
+            if (!$initiator) {
+                Log::error('Initiator not found');
+                return false;
+            }
+            $ossNib = OssNib::where('nib', $initiator->nib)->first();
+            if (!$ossNib) {
+                Log::error('OSSNib not found');
+                return false;
+            }
+            if ($ossNib) {
+                OssService::receiveLicenseStatusNotif($request, '50');
+            }
             // if ($request->isOSS === "true") {
             //     OssService::receiveLicenseStatusNotif($request, '50');
             // }
 
-            if ($saved && $fileCreated) {
-                if ($sendLicenseStatus) {
-                    OssService::receiveLicenseStatus($project, '50');
-                }
-                return response()->json(['code' => 200, 'data' => $skkl]);
-            }
+            // if ($saved && $fileCreated) {
+            //     if ($sendLicenseStatus) {
+            //         OssService::receiveLicenseStatus($request, '50');
+            //     }
+            //     return response()->json(['code' => 200, 'data' => $skkl]);
+            // }
             return response()->json(['code' => 500, 'fileCreated' => $fileCreated]);
         }
     }

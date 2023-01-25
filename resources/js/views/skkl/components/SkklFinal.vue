@@ -100,7 +100,7 @@ import Resource from '@/api/resource';
 // import axios from 'axios';
 import { mapGetters } from 'vuex';
 const skklFinalResource = new Resource('skkl-final');
-const skklResource = new Resource('skkl');
+// const skklResource = new Resource('skkl');
 const initiatorResource = new Resource('initiators');
 
 export default {
@@ -156,14 +156,14 @@ export default {
   },
   methods: {
     async getData() {
-      const data = await skklResource.list({
-        idProject: this.idProject,
-        skklOss: 'true',
-      });
-      if ('file_url' in data && 'user_key' in data) {
-        this.fileUrl = data.file_url;
-        this.userKey = data.user_key;
-      }
+      // const data = await skklResource.list({
+      //   idProject: this.idProject,
+      //   skklOss: 'true',
+      // });
+      // if ('file_url' in data && 'user_key' in data) {
+      //   this.fileUrl = data.file_url;
+      //   this.userKey = data.user_key;
+      // }
       // get skkl final by id_project
       this.loading = true;
       const skklFinals = await skklFinalResource.list({
@@ -225,9 +225,10 @@ export default {
     async handleSubmit() {
       this.loadingSubmit = true;
       const formData = new FormData();
-      if (this.$route.query.isOSS){
-        formData.append('isOSS', 'true');
-      }
+      // if (this.$route.query.isOSS){
+      //   formData.append('isOSS', 'true');
+      // }
+      formData.append('isOSS', 'true');
       formData.append('id_project', this.idProject);
       formData.append('idProject', this.idProject);
       formData.append('number', this.postForm.number);

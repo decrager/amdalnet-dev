@@ -9,6 +9,8 @@ use App\Entity\FeasibilityTestDetail;
 use App\Entity\FeasibilityTestRecap;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
+use App\Entity\Initiator;
+use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
 use App\Entity\TestingMeetingInvitation;
@@ -25,6 +27,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Utils\Document;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Log;
 use PDF;
 
 class FeasibilityTestController extends Controller
@@ -114,6 +117,20 @@ class FeasibilityTestController extends Controller
             // }
 
             $project = Project::findOrFail($request->idProject);
+            $initiator = Initiator::find($project->id_applicant);
+            if (!$initiator) {
+                Log::error('Initiator not found');
+                return false;
+            }
+            $ossNib = OssNib::where('nib', $initiator->nib)->first();
+            if (!$ossNib) {
+                Log::error('OSSNib not found');
+                return false;
+            }
+            if ($ossNib) {
+                OssService::receiveLicenseStatusNotif($request, '45');
+            }
+
             $user = User::where('email', $project->initiator->email)->first();
 
             if($user) {
