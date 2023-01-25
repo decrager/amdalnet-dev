@@ -140,7 +140,7 @@
         v-model="reports.notes"
         v-loading="loadingtuk"
         output-format="html"
-        :readonly="isSecretary ? '1':'0'"
+        :readonly="isSecretary ? 1:0"
         :menubar="''"
         :image="false"
         :toolbar="isSecretary ? ['fullscreen']:[
