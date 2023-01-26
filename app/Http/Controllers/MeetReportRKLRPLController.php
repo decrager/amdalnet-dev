@@ -13,6 +13,7 @@ use App\Entity\Initiator;
 use App\Entity\KaReview;
 use App\Entity\MeetingReport;
 use App\Entity\MeetingReportInvitation;
+use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\TestingMeeting;
@@ -22,6 +23,7 @@ use App\Notifications\AcceptToFeasibilityTest;
 use App\Notifications\MeetingReportNotification;
 use App\Notifications\RklRplAcceptedNotification;
 use App\Notifications\UklUplAcceptedNotification;
+use App\Services\OssService;
 use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
@@ -31,6 +33,7 @@ use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Log;
 
 class MeetReportRKLRPLController extends Controller
 {
@@ -220,6 +223,20 @@ class MeetReportRKLRPLController extends Controller
 
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
+
+                $initiator = Initiator::find($project->id_applicant);
+                if (!$initiator) {
+                    Log::error('Initiator not found');
+                    return false;
+                }
+                $ossNib = OssNib::where('nib', $initiator->nib)->first();
+                if (!$ossNib) {
+                    Log::error('OSSNib not found');
+                    return false;
+                }
+                if ($ossNib) {
+                    OssService::receiveLicenseStatusNotif($request, '45');
+                }
 
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
 
