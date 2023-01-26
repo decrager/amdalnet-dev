@@ -591,6 +591,7 @@ export default {
       return this.userInfo.roles.includes('lpjp');
     },
     isInitiator() {
+      console.log({ gun: this.userInfo.roles.includes('initiator') });
       return this.userInfo.roles.includes('initiator');
     },
     isFormulator() {
@@ -612,9 +613,11 @@ export default {
       return this.userInfo.roles.includes('examiner');
     },
     isScoping(){
+      console.log({ guns: this.$route.name === 'scopingProject' });
       return this.$route.name === 'scopingProject';
     },
     isDigiWork(){
+      console.log({ gunx: this.$route.name === 'digWorkProject' });
       return this.$route.name === 'digWorkProject';
     },
     isScreening(){
@@ -1639,9 +1642,7 @@ export default {
         if (this.initiator.user_type === 'Pemerintah') {
           return true;
         } else {
-          if (project.oss_risk !== null) {
-            return true;
-          }
+          return true;
         }
       }
 
