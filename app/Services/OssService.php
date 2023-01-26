@@ -48,12 +48,12 @@ class OssService
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_daerah' => $ossNib->kd_daerah,
                         'kewenangan' => $ossNib->kewenangan,
-                        'nomor_izin' => null, // NIP pemroses (TUK) ? Need confirm
-                        'tgl_terbit_izin' => null,  // nambah kolom di tabel amdalnet
+                        'nomor_izin' => "", // NIP pemroses (TUK) ? Need confirm
+                        'tgl_terbit_izin' => "",  // nambah kolom di tabel amdalnet
                         'tgl_berlaku_izin' => (string)$project->updated_at,
-                        'nama_ttd' => null, // nambah kolom di tabel amdalnet
-                        'nip_ttd' => null, // nambah kolom di tabel amdalnet
-                        'jabatan_ttd' => null, // nambah kolom di tabel amdalnet
+                        'nama_ttd' => "", // nambah kolom di tabel amdalnet
+                        'nip_ttd' => "", // nambah kolom di tabel amdalnet
+                        'jabatan_ttd' => "", // nambah kolom di tabel amdalnet
                         'status_izin' => $statusIzin['status_izin'],
                         'file_izin' => $statusIzin['file_izin'],
                         'keterangan' => $statusIzin['keterangan'],
@@ -63,9 +63,9 @@ class OssService
                         'thn_berlaku_izin' => $statusIzin['thn_berlaku_izin'],
                         'data_pnbp' => [
                             [
-                                'kd_akun' => null,
-                                'kd_penerimaan' => null,
-                                'nominal' => null,
+                                'kd_akun' => "",
+                                'kd_penerimaan' => "",
+                                'nominal' => "",
                             ],
                         ]
                     ]
@@ -95,10 +95,10 @@ class OssService
             'status_izin' => $statusCode,
             'file_izin' => $fileUrl, // skkl
             'keterangan' => OssService::getStatusNameOss($statusCode),
-            'file_lampiran' => null,
-            'nomenklatur_nomor_izin' => null,
-            'bln_berlaku_izin' => null,
-            'thn_berlaku_izin' => null,
+            'file_lampiran' => "",
+            'nomenklatur_nomor_izin' => "",
+            'bln_berlaku_izin' => "",
+            'thn_berlaku_izin' => "",
         ];
     }
 
