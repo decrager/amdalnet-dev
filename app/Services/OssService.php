@@ -16,11 +16,12 @@ use Illuminate\Support\Facades\Storage;
 
 class OssService
 {
-    public static function receiveLicense($project = null, $fileUrl = '', $statusCode = '50')
+    public static function receiveLicense($request, $fileUrl, $statusCode)
     {
         /*
             ! DEPRECATED
         */
+        $project = Project::findOrFail($request->idProject);
         $dataSubProject = OssService::getSubProjects($project);
         $initiator = $dataSubProject['initiator'];
         $ossNib = $dataSubProject['ossNib'];
@@ -74,10 +75,15 @@ class OssService
                     'user_key' => env('OSS_USER_KEY'),
                 ])->post(env('OSS_ENDPOINT') . '/receiveLicense', $data);
                 $respJson = $response->json();
-                print_r($respJson);
+                // print_r($respJson);
+                Log::debug(json_encode($data));
+                Log::debug(json_encode($respJson));
                 // if ((int)$respJson['responreceiveLicense']['kode'] == 200) {
 
                 // }
+                if (isset($respJson['responreceiveLicense']['kode']) && $respJson['responreceiveLicense']['kode'] === '200') {
+                    Log::debug('responreceiveLicense file_izin: oss_nibs .' . $ossNib->nib . ' responreceiveLicense with status_izin = ' . $statusCode);
+                }
             }
         }
         return true;

@@ -91,6 +91,13 @@ class SKKLFinalController extends Controller
             if ($ossNib) {
                 OssService::receiveLicenseStatusNotif($request, '50');
             }
+
+            $skklFinal = ProjectSkklFinal::where('id_project', $data['id_project'])->first();
+            if ($skklFinal) {
+                $filename = $skklFinal->file;
+                $fileUrl = Storage::temporaryUrl('public/' . $filename, Carbon::now()->addMinutes(30));
+                OssService::receiveLicense($request, $fileUrl, '50');
+            }
             // if ($request->isOSS === "true") {
             //     OssService::receiveLicenseStatusNotif($request, '50');
             // }

@@ -6,6 +6,7 @@ use App\Entity\Initiator;
 use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectPkplhFinal;
+use App\Entity\ProjectSkklFinal;
 use App\Services\OssService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -101,6 +102,14 @@ class PkplhFinalController extends Controller
             if ($ossNib) {
                 OssService::receiveLicenseStatusNotif($request, '50');
             }
+
+            $skklFinal = ProjectSkklFinal::where('id_project', $data['id_project'])->first();
+            if ($skklFinal) {
+                $filename = $skklFinal->file;
+                $fileUrl = Storage::temporaryUrl('public/' . $filename, Carbon::now()->addMinutes(30));
+                OssService::receiveLicense($request, $fileUrl, '50');
+            }
+
             // if ($saved && $fileCreated) {
             //     if ($sendLicenseStatus) {
             //         OssService::receiveLicenseStatus($project, '50');
