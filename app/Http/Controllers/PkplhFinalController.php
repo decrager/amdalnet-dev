@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Initiator;
+use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectPkplhFinal;
 use App\Services\OssService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Log;
 
 class PkplhFinalController extends Controller
 {
@@ -85,13 +88,26 @@ class PkplhFinalController extends Controller
             $pkplh->file = $name;
             $saved = $pkplh->save();
 
-            if ($saved && $fileCreated) {
-                if ($sendLicenseStatus) {
-                    OssService::receiveLicenseStatus($project, '50');
-                }
-
-                return response()->json(['code' => 200, 'data' => $pkplh]);
+            $initiator = Initiator::find($project->id_applicant);
+            if (!$initiator) {
+                Log::error('Initiator not found');
+                return false;
             }
+            $ossNib = OssNib::where('nib', $initiator->nib)->first();
+            if (!$ossNib) {
+                Log::error('OSSNib not found');
+                return false;
+            }
+            if ($ossNib) {
+                OssService::receiveLicenseStatusNotif($request, '50');
+            }
+            // if ($saved && $fileCreated) {
+            //     if ($sendLicenseStatus) {
+            //         OssService::receiveLicenseStatus($project, '50');
+            //     }
+
+            //     return response()->json(['code' => 200, 'data' => $pkplh]);
+            // }
             return response()->json(['code' => 500, 'fileCreated' => $fileCreated]);
         }
     }
