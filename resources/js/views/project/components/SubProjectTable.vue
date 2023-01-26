@@ -27,7 +27,7 @@
           <div><b>ID Izin :</b> {{ scope.row.idizin }}</div>
           <div><b>Nama Kegiatan :</b> {{ scope.row.name }}</div>
           <div><b>KBLI :</b> {{ scope.row.kbli }}</div>
-          <div><b>Tingkat Resiko :</b> {{ scope.row.skala_resiko }}</div>
+          <div><b>Tingkat Risiko :</b> {{ scope.row.skala_resiko }}</div>
           <div><b>Kewenangan :</b> {{ getKewenangan(scope.row.kewenangan) }}</div>
           <div><b>Alamat :</b></div>
           <ul style="margin-block-start: 0px">

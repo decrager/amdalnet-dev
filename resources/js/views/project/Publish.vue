@@ -98,7 +98,7 @@
             <i class="el-alert__icon el-icon-warning is-big" />
             <div class="el-alert__content">
               <p class="el-alert__description">
-                Permohonan Persetujuan Lingkungan dengan tingkat Resiko <b>Rendah</b> atau <b>Menengah Rendah</b> dilakukan secara otomatis melalui sistem <b>OSS RBA</b>
+                Permohonan Persetujuan Lingkungan dengan tingkat Risiko <b>Rendah</b> atau <b>Menengah Rendah</b> dilakukan secara otomatis melalui sistem <b>OSS RBA</b>
               </p>
             </div>
             <br><br>
@@ -107,9 +107,9 @@
             <el-col :span="12">{{ project.registration_no || "Belum Mempunyai" }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
             <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
-          <el-row v-show="isRiskShow" style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
-            <el-col v-if="!isFromOSS" :span="12">{{ project.oss_risk }}</el-col>
-            <el-col v-if="isFromOSS" :span="12">{{ project.result_risk }}</el-col>
+          <el-row v-show="isRiskShow" style="padding-bottom: 16px"><el-col :span="12">Tingkat Risiko</el-col>
+            <el-col v-if="!isFromOSS || isTUK" :span="12">{{ project.oss_risk }}</el-col>
+            <el-col v-if="isFromOSS || isTUK" :span="12">{{ project.result_risk }}</el-col>
           </el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
             <el-col :span="12">{{ project.authority }}</el-col></el-row>
@@ -228,6 +228,9 @@ export default {
     },
     getLpjps(){
       return this.$store.getters.lpjps;
+    },
+    isTUK() {
+      return this.userInfo.roles.some((role) => role.includes('examiner'));
     },
     isPemerintah(){
       return this.$store.getters.isPemerintah;

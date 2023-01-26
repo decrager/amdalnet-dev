@@ -57,7 +57,7 @@
             <span>{{ scope.row.amdal_type }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="Tingkat Resiko" width="250">
+        <el-table-column align="left" label="Tingkat Risiko" width="250">
           <template slot-scope="scope">
             <span>{{ scope.row.risk_level }}</span>
           </template>
