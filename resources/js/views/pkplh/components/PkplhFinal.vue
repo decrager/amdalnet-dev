@@ -101,7 +101,7 @@ import Resource from '@/api/resource';
 // import axios from 'axios';
 import { mapGetters } from 'vuex';
 const pkplhFinalResource = new Resource('pkplh-final');
-const skklResource = new Resource('skkl');
+// const skklResource = new Resource('skkl');
 const initiatorResource = new Resource('initiators');
 
 export default {
@@ -165,15 +165,15 @@ export default {
   },
   methods: {
     async getData() {
-      const data = await skklResource.list({
-        idProject: this.idProject,
-        skklOss: 'true',
-        type: 'pkplh',
-      });
-      if ('file_url' in data && 'user_key' in data) {
-        this.fileUrl = data.file_url;
-        this.userKey = data.user_key;
-      }
+      // const data = await skklResource.list({
+      //   idProject: this.idProject,
+      //   skklOss: 'true',
+      //   type: 'pkplh',
+      // });
+      // if ('file_url' in data && 'user_key' in data) {
+      //   this.fileUrl = data.file_url;
+      //   this.userKey = data.user_key;
+      // }
       // get skkl final by id_project
       this.loading = true;
       const pkplhFinals = await pkplhFinalResource.list({

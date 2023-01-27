@@ -89,19 +89,19 @@ class PkplhFinalController extends Controller
             $pkplh->file = $name;
             $saved = $pkplh->save();
 
-            $initiator = Initiator::find($project->id_applicant);
-            if (!$initiator) {
-                Log::error('Initiator not found');
-                return false;
-            }
-            $ossNib = OssNib::where('nib', $initiator->nib)->first();
-            if (!$ossNib) {
-                Log::error('OSSNib not found');
-                return false;
-            }
-            if ($ossNib) {
-                OssService::receiveLicenseStatusNotif($request, '50');
-            }
+            // $initiator = Initiator::find($project->id_applicant);
+            // if (!$initiator) {
+            //     Log::error('Initiator not found');
+            //     return false;
+            // }
+            // $ossNib = OssNib::where('nib', $initiator->nib)->first();
+            // if (!$ossNib) {
+            //     Log::error('OSSNib not found');
+            //     return false;
+            // }
+            // if ($ossNib) {
+            //     OssService::receiveLicenseStatusNotif($request, '50');
+            // }
 
             // $skklFinal = ProjectSkklFinal::where('id_project', $data['id_project'])->first();
             // if ($skklFinal) {
