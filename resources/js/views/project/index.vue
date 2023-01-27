@@ -309,7 +309,7 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && scope.row.version_workspace !== null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
+                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -591,7 +591,6 @@ export default {
       return this.userInfo.roles.includes('lpjp');
     },
     isInitiator() {
-      console.log({ gun: this.userInfo.roles.includes('initiator') });
       return this.userInfo.roles.includes('initiator');
     },
     isFormulator() {
@@ -613,11 +612,9 @@ export default {
       return this.userInfo.roles.includes('examiner');
     },
     isScoping(){
-      console.log({ guns: this.$route.name === 'scopingProject' });
       return this.$route.name === 'scopingProject';
     },
     isDigiWork(){
-      console.log({ gunx: this.$route.name === 'digWorkProject' });
       return this.$route.name === 'digWorkProject';
     },
     isScreening(){
