@@ -257,7 +257,8 @@ export default {
   },
   async created() {
     const idProject = this.$route.query.idProject;
-    if (idProject) {
+    const docType = this.$route.query.document_type;
+    if (idProject && docType === 'ukl-upl') {
       const data = await Axios.get(
         `/api/dokumen-ukl-upl/${idProject}`
       );
@@ -267,6 +268,27 @@ export default {
       this.createTimes = datas.create_time;
       this.versions = datas.versi_doc;
       this.addOfficeScript(datas);
+    } else if (docType === 'ka') {
+      const data = await projectResource.list({
+        id_project: this.$route.params.id,
+        perbaikan: true,
+      });
+      data.file_name = `ka-${data.id}-${data.project_title.toLowerCase()}.docx`;
+      this.addOfficeScript(data);
+    } else if (docType === 'ka-andal') {
+      const data = await projectResource.list({
+        id_project: this.$route.params.id,
+        perbaikan: true,
+      });
+      data.file_name = `${data.id}-andal.docx`;
+      this.addOfficeScript(data);
+    } else if (docType === 'rkl-rpl') {
+      const data = await projectResource.list({
+        id_project: this.$route.params.id,
+        perbaikan: true,
+      });
+      data.file_name = `${data.id}-rkl-rpl.docx`;
+      this.addOfficeScript(data);
     } else {
       this.addOfficeScript();
     }

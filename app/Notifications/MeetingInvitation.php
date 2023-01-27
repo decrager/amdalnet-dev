@@ -11,6 +11,8 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Notifications\Action;
 
 class MeetingInvitation extends Notification
 {
@@ -55,7 +57,9 @@ class MeetingInvitation extends Notification
     {
         Carbon::setLocale('id');
         $document = '';
-        $url = url("/#/project/docspace/". $this->id_project). "/". 0 . "?" . "idProject=" . $this->id_project;
+        $url = url("/#/project/docspace/". $this->id_project). "/". $this->meeting->document_type . "?" . "idProject=" . $this->id_project . "&" . 'document_type=' . $this->meeting->document_type;
+        $urlRkl = url("/#/project/docspace/". $this->id_project). "/". 'rkl-rpl' . "?" . "idProject=" . $this->id_project . "&" . 'document_type=' . 'rkl-rpl';
+        $urlAndal = url("/#/project/docspace/". $this->id_project). "/". 'ka-andal' . "?" . "idProject=" . $this->id_project . "&" . 'document_type=' . 'ka-andal';
         $role = '';
 
         if ($this->role[0] == 'examiner-chief') {
@@ -79,24 +83,91 @@ class MeetingInvitation extends Notification
         if ($this->meeting->link !== '-') {
             $link = "&lt;a href='{$this->meeting->link}'&gt;{$this->meeting->link}&lt;/a&gt;";
         }
-        return (new MailMessage)
-                    ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
-                    ->greeting('Yth. ' . $notifiable->name)
-                    ->line('Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada:')
-                    ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . ' ' . $this->meeting->zone. '<br>' . 'Tempat: ' . $this->meeting->location . '<br>' . 'Link Meeting: ' . htmlspecialchars_decode($link)))
-                    ->line('Untuk memberikan Saran Masukan atau Tanggapan, silakan login ke dalam sistem Amdalnet terlebih dulu menggunakan akun yg telah diberikan.')
-                    ->action('Klik Untuk Memberikan SPT', $url)
-                    ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
-                    ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name . '<br>' . $role))
-                    ->attach($this->attachment, [
-                        'as' => 'Undangan Rapat.pdf',
-                        'mime' => 'application/pdf'
-                    ])
-                    ->attach($this->pdf, [
-                        'as' => $this->filename.'.pdf',
-                        'mime' => 'application/pdf'
-                    ]);
+        // dd($this->pdf['rkl']);
+        if ($this->meeting->document_type == 'rkl-rpl') {
+            return (new MailMessage)
+            ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
+            ->greeting('Yth. ' . $notifiable->name)
+            ->line('Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada:')
+            ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . ' ' . $this->meeting->zone. '<br>' . 'Tempat: ' . $this->meeting->location . '<br>' . 'Link Meeting: ' . htmlspecialchars_decode($link)))
+            ->line('Untuk memberikan Saran Masukan atau Tanggapan, silakan login ke dalam sistem Amdalnet terlebih dulu menggunakan akun yg telah diberikan.')
+            ->action('Klik Untuk Memberikan SPT RKL-RPL', $urlRkl)
+            ->line($this->makeActionIntoLine(new Action('Klik Untuk Memberikan SPT ANDAL', $urlAndal)))
+            ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
+            ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name . '<br>' . $role))
+            ->attach($this->attachment, [
+                'as' => 'Undangan Rapat.pdf',
+                'mime' => 'application/pdf'
+            ])
+            ->attach($this->pdf['rkl'], [
+                'as' => $this->filename['rkl'].'.pdf',
+                'mime' => 'application/pdf'
+            ])
+            ->attach($this->pdf['andal'], [
+                'as' => $this->filename['andal'].'.pdf',
+                'mime' => 'application/pdf'
+            ]);
+        } else {
+            return (new MailMessage)
+            ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
+            ->greeting('Yth. ' . $notifiable->name)
+            ->line('Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada:')
+            ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . ' ' . $this->meeting->zone. '<br>' . 'Tempat: ' . $this->meeting->location . '<br>' . 'Link Meeting: ' . htmlspecialchars_decode($link)))
+            ->line('Untuk memberikan Saran Masukan atau Tanggapan, silakan login ke dalam sistem Amdalnet terlebih dulu menggunakan akun yg telah diberikan.')
+            ->action('Klik Untuk Memberikan SPT', $url)
+            ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
+            ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name . '<br>' . $role))
+            ->attach($this->attachment, [
+                'as' => 'Undangan Rapat.pdf',
+                'mime' => 'application/pdf'
+            ])
+            ->attach($this->pdf, [
+                'as' => $this->filename.'.pdf',
+                'mime' => 'application/pdf'
+            ]);
+        }
     }
+
+    private function makeActionIntoLine(Action $action): Htmlable {
+        return new class($action) implements Htmlable {
+            private $action;
+
+            public function __construct(Action $action) {
+                $this->action = $action;
+            } // end __construct()
+
+            public function toHtml() {
+                return $this->strip($this->table());
+            } // end toHtml()
+
+            private function table() {
+                return sprintf(
+                    '<table class="action">
+                        <tr>
+                        <td align="center">%s</td>
+                    </tr></table>
+                ', $this->btn());
+            } // end table()
+
+            private function btn() {
+                return sprintf(
+                    '<a
+                        href="%s"
+                        class="button button-primary"
+                        target="_blank"
+                        style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\', \'Segoe UI Symbol\'; box-sizing: border-box; border-radius: 3px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16); color: #fff; display: inline-block; text-decoration: none; -webkit-text-size-adjust: none; background-color: #3490dc; border-top: 10px solid #3490dc; border-right: 18px solid #3490dc; border-bottom: 10px solid #3490dc; border-left: 18px solid #3490dc;"
+                    >%s</a>',
+                    htmlspecialchars($this->action->url),
+                    htmlspecialchars($this->action->text)
+                );
+            } // end btn()
+
+            private function strip($text) {
+                return str_replace("\n", ' ', $text);
+            } // end strip()
+
+        };
+    } // end makeActionIntoLine()
 
     /**
      * Get the array representation of the notification.
