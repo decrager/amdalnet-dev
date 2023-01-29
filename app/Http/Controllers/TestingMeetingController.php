@@ -167,9 +167,9 @@ class TestingMeetingController extends Controller
                     $tmpName = tempnam(sys_get_temp_dir(),'');
                     $document_attachment =  DocumentAttachment::where('id_project', $project->id)->where('type', $meeting->document_type == 'ka' ? 'Formulir KA' : 'Formulir KA Andal')->first();
                     $pdf_url = $this->docxToPdf($document_attachment->attachment);
-                    $filename = 'ka-andal-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+                    $filename = 'ka-andal-' . strtolower(str_replace('/', '-', $project->project_title));
                     if($meeting->document_type == 'ka') {
-                        $filename = 'ka-' . $project->id . '-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+                        $filename = 'ka-' . $project->id . '-' . strtolower(str_replace('/', '-', $project->project_title)) ;
                     }
                     $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
                     file_put_contents($tmpName, $tmpFile);

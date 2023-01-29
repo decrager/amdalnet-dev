@@ -34,8 +34,18 @@ router.beforeEach(async(to, from, next) => {
       if (to.fullPath === '/login') {
         next({ path: '/dashboard' });
       } else if (to.query.redirect.includes('/project/docspace')) {
+        let document_type = 'ukl-upl';
+        if (to.query.redirect.includes('ka-andal')) {
+          document_type = 'ka-andal';
+        } else if (to.query.redirect.includes('rkl-rpl')) {
+          document_type = 'rkl-rpl';
+        } else if (to.query.redirect.includes('ka')) {
+          document_type = 'ka';
+        }
+        console.log({ doc_type: document_type });
         next({ path: to.query.redirect, query: {
           idProject: query.substring(query.indexOf('e/') + 2, query.lastIndexOf('/')),
+          document_type: document_type,
         }});
       } else {
         next({ path: '/dashboard' });

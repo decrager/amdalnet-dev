@@ -309,7 +309,7 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && scope.row.version_workspace !== null && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
+                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -1639,9 +1639,7 @@ export default {
         if (this.initiator.user_type === 'Pemerintah') {
           return true;
         } else {
-          if (project.oss_risk !== null) {
-            return true;
-          }
+          return true;
         }
       }
 
