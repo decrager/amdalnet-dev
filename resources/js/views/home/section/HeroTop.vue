@@ -6,8 +6,7 @@
       <div class="home__data">
         <span class="home__data-title">AMDALNET</span>
         <h1 class="home__data-subtitle">Sistem Informasi Dokumen<br> Lingkungan Hidup</h1>
-        <a href="#" class="button">Ajukan Persetujuan Lingkungan</a>
-
+        <router-link to="login" class="button">Ajukan Persetujuan Lingkungan</router-link>
       </div>
 
     </div>
