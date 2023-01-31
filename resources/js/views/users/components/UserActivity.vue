@@ -93,28 +93,28 @@
       >
         <el-form ref="initiatorForm" :model="user.initiatorData">
           <el-form-item label="Nama Pemrakarsa">
-            <el-input v-model="user.initiatorData.name" />
+            <el-input v-model="user.initiatorData.name" :readonly="true" />
           </el-form-item>
           <el-form-item label="Penanggung Jawab">
-            <el-input v-model="user.initiatorData.pic" />
+            <el-input v-model="user.initiatorData.pic" :readonly="true" />
           </el-form-item>
           <el-form-item label="No. Telepon">
-            <el-input v-model="user.initiatorData.phone" />
+            <el-input v-model="user.initiatorData.phone" :readonly="true" />
           </el-form-item>
           <el-form-item label="Alamat">
-            <el-input v-model="user.initiatorData.address" />
+            <el-input v-model="user.initiatorData.address" :readonly="true" />
           </el-form-item>
           <el-form-item
             v-if="user.initiatorData.user_type !== 'Pemerintah'"
             label="NIB"
           >
-            <el-input v-model="user.initiatorData.nib" />
+            <el-input v-model="user.initiatorData.nib" :readonly="true" />
           </el-form-item>
-          <el-form-item>
+          <!-- <el-form-item>
             <el-button type="primary" @click="onInitiatorSubmit">
               Ubah
             </el-button>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </el-tab-pane>
       <el-tab-pane
