@@ -108,7 +108,7 @@
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
             <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
           <el-row v-show="isRiskShow" style="padding-bottom: 16px"><el-col :span="12">Tingkat Risiko</el-col>
-            <el-col :span="12">{{ project.oss_risk || project.result_risk }}</el-col>
+            <el-col :span="12">{{ project.oss_risk || project.oss_result_risk }}</el-col>
             <!-- <el-col v-if="isFromOSS || isTUK" :span="12">{{ project.result_risk }}</el-col> -->
           </el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>

@@ -1780,6 +1780,20 @@ export default {
       this.currentProject.b3 = false;
       this.currentProject.traffic = false;
     },
+    sumResultRisikoOSS(e){
+      console.log('sumResultRisikoOSS');
+      console.log(e);
+      let oss_result_risk = '';
+      for (let i = 0; i < e.length; i++) {
+        if (e[i].skala_resiko === 'T'){
+          oss_result_risk = 'Tinggi';
+          break;
+        } else if (e[i].skala_resiko === 'MT'){
+          oss_result_risk = 'Menengah Tinggi';
+        }
+      }
+      return { oss_result_risk };
+    },
     sumResult(listParam){
       let result = '';
       let result_risk = '';
@@ -1809,8 +1823,12 @@ export default {
     },
     calculateListSubProjectResult(){
       this.currentProject.listSubProjectNonChecked = this.listSubProject;
-
+      console.log('calculateListSubProjectResult');
+      const oss_project_is_used = this.listSubProject.filter(e => e.isUsed);
+      const { oss_result_risk } = this.sumResultRisikoOSS(oss_project_is_used);
+      this.currentProject.oss_result_risk = oss_result_risk;
       this.currentProject.listSubProject = this.listSubProject.filter(e => e.isUsed).map(e => {
+        // const { oss_result_risk } = this.sumResultRisikoOSS(e);
         if (!e.listSubProjectParams || e.listSubProjectParams.filter(e => e.used) < 1){
           this.$message({
             message: `Parameter untuk project dengan kbli ${e.kbli} belum diisi`,
@@ -1831,15 +1849,16 @@ export default {
         e.listSubProjectParams = e.listSubProjectParams.filter(e => e.used);
 
         const { result, result_risk, scale, scale_unit } = this.sumResult(e.listSubProjectParams);
+        // e.oss_result_risk = oss_result_risk;
         e.result = result;
-        // e.result_risk = result_risk;
-        if (e.skala_resiko === 'MT'){
-          e.result_risk = 'Menengah Tinggi';
-        } else if (e.skala_resiko === 'T'){
-          e.result_risk = 'Tinggi';
-        } else {
-          e.result_risk = result_risk;
-        }
+        e.result_risk = result_risk;
+        // if (e.skala_resiko === 'MT'){
+        //   e.result_risk = 'Menengah Tinggi';
+        // } else if (e.skala_resiko === 'T'){
+        //   e.result_risk = 'Tinggi';
+        // } else {
+        //   e.result_risk = result_risk;
+        // }
         e.scale = scale;
         e.scale_unit = scale_unit;
 
