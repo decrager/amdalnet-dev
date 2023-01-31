@@ -17,23 +17,34 @@
         <el-button :loading="loading" type="primary" @click="workspace">
           Workspace
         </el-button>
-        <a
-          v-if="showDocument"
-          class="btn-pdf"
-          :href="urlPdf"
-          :download="`ka-${projectName}.pdf`"
-        >
-          Export to .PDF
-        </a>
-        <a
-          v-if="showDocument"
-          class="btn-docx"
-          :href="downloadDocxPath"
-          :download="`ka-${projectName}.docx`"
-        >
+        <a v-if="showDocument" class="btn-docx" :href="downloadDocxPath" :download="`ka-${projectName}.docx`">
           Export to .DOCX
         </a>
-        <el-button :loading="loading" type="primary" @click="regenerateDocx">
+        <a v-if="showDocument" class="btn-pdf" :href="urlPdf" :download="`ka-${projectName}.pdf`">
+          Export to .PDF
+        </a>
+        <div
+          v-if="isFormulator"
+          role="alert"
+          class="el-alert el-alert--error is-dark"
+          style="width: 50%;margin-top: 10px"
+        >
+          <div class="el-alert__content">
+            <div class="el-alert__description">
+              <p style="font-weight: bold;">PERHATIAN</p>
+              <p>Tombol Buat Ulang Dokumen diperuntukan apabila Workspace UKL-UPL anda tidak terbuat dengan sempurna.
+                Tombol Buat Ulang Dokumen akan mereset progres Workspace yang sudah ada sebelumnya ke format awal.</p>
+            </div>
+          </div>
+        </div>
+        <el-button
+          v-if="isFormulator"
+          :loading="loading"
+          type="primary"
+          class="btn-resetworkspace"
+          style="margin-top: 10px"
+          @click="regenerateDocx"
+        >
           Buat ulang dokumen
         </el-button>
         <!-- <span style="float: right;">
@@ -196,19 +207,24 @@ export default {
 .body__section.left__section {
   flex: 2;
 }
+
 .body__section.right__section {
   flex: 1;
 }
+
 .heading__comment {
   display: flex;
   column-gap: 15px;
 }
+
 .heading__comment.img__comment {
   flex: 0.5;
 }
+
 .heading__comment.name__comment {
   flex: 2;
 }
+
 .img__comment img {
   width: 32px;
   border-radius: 50%;
@@ -233,12 +249,38 @@ export default {
   transition: 0.1s;
   font-weight: 400;
 }
+
+.btn-resetworkspace {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #ff4949;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-appearance: none;
+  text-align: center;
+  font-weight: bold;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: 0.1s;
+  font-weight: 400;
+}
+
 .btn-docx {
   background-color: #216221;
   border: 1px solid #216221;
 }
+
 .btn-pdf {
-  background-color: #ff4949;
+  background-color: #FFBA00;
+  border: 1px solid #FFBA00;
+}
+
+.btn-resetworkspace {
+  background-color: #ffffff;
   border: 1px solid #ff4949;
 }
 </style>
