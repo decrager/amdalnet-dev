@@ -117,101 +117,111 @@ class ProjectMapAttachmentController extends Controller
     {
 
         if($temp->file_type === 'PDF') {
-            $map = ProjectMapAttachment::firstOrNew([
-                'id_project' => $request->id_project,
-                'attachment_type' => $temp->attachment_type,
-                'file_type' => $temp->file_type,
-                'step' => $request->step,
-                'geom' => null,
-                'properties' => null,
-            ]);
-
-            if ($map->id) {
-                if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
-                    Storage::disk('public')->delete('map/' . $map->stored_filename);
-                }
-            }
-
-            $map->original_filename = $file->getClientOriginalName();
-            $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
-            $map->save();
-        }
-        $properties = json_decode($properties, true);
-        foreach (json_decode($geometry) as $key => $kelolaGeom) {
-            $encode = json_encode($kelolaGeom);
-            if($temp->file_type === 'SHP') {
-                if($temp->attachment_type === 'area-pemantauan' || $temp->attachment_type === 'area-pengelolaan') {
-                    $map = ProjectMapAttachment::firstOrNew([
-                        'id_project' => $request->id_project,
-                        'attachment_type' => $temp->attachment_type,
-                        'file_type' => $temp->file_type,
-                        'step' => $request->step,
-                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$encode')), 4326)"),
-                        'properties' => json_encode($properties[$key], true),
-                    ]);
-                } else {
-                    $map = ProjectMapAttachment::firstOrNew([
-                        'id_project' => $request->id_project,
-                        'attachment_type' => $temp->attachment_type,
-                        'file_type' => $temp->file_type,
-                        'step' => $request->step,
-                        'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$encode')), 4326)"),
-                        'properties' => json_encode($properties[$key], true),
-                    ]);
-                }
-            }
-
-            if ($map->id) {
-                if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
-                    Storage::disk('public')->delete('map/' . $map->stored_filename);
-                }
-            }
-
-            $map->original_filename = $file->getClientOriginalName();
-            $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
-            if($temp->file_type === 'SHP') {
-                $map->id_styles = $idStyle;
-            }
-
-            $enableCloneAndal = false;
-
-            // save file to S3
-            if (!Storage::disk('public')->exists('map')) {
-                Storage::disk('public')->makeDirectory('map');
-            }
-            $filePut = Storage::disk('public')->put('map/' . $map->stored_filename, file_get_contents($file));
-            if ($filePut) {
-                $map->save();
-
-                // clone andal, if step = 'ka'
-                if ($request['step'] == 'ka' && $enableCloneAndal) {
-                    $existingClone = ProjectMapAttachment::where('id_project', $request->id_project)
-                        ->where('attachment_type', $temp->attachment_type)
-                        ->where('file_type', $temp->file_type)
-                        ->where('step', 'andal')
-                        ->orderBy('created_at', 'desc')
-                        ->first();
-                    if ($existingClone) {
-                        // update
-                        $existingClone->original_filename = $map->original_filename;
-                        $existingClone->stored_filename = $map->stored_filename;
-                        $existingClone->geom = $map->geom;
-                        $existingClone->properties = $map->properties;
-                        $existingClone->id_styles = $map->id_styles;
-                        $existingClone->save();
-                    } else {
-                        // create new clone
-                        $clone = $map->replicate();
-                        $clone->step = 'andal';
-                        $clone->save();
+            // dd( ($temp->attachment_type));
+            foreach (array ($temp->attachment_type) as $attachment) {
+                $map = ProjectMapAttachment::firstOrNew([
+                    'id_project' => $request->id_project,
+                    'attachment_type' => $temp->attachment_type,
+                    'file_type' => $temp->file_type,
+                    'step' => $request->step,
+                    'geom' => null,
+                    'properties' => null,
+                ]);
+                if ($map->id) {
+                    if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
+                        Storage::disk('public')->delete('map/' . $map->stored_filename);
                     }
                 }
-                // // Add workflow
-                // $project = Project::findOrFail($request->id_project);
-                // if ($project->marking == 'uklupl-mt.matrix-upl') {
-                //     $project->workflow_apply('submit-uklupl');
-                //     $project->save();
-                // }
+
+                $map->original_filename = $file->getClientOriginalName();
+                $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
+                // save file to S3
+                if (!Storage::disk('public')->exists('map')) {
+                    Storage::disk('public')->makeDirectory('map');
+                }
+                $filePut = Storage::disk('public')->put('map/' . $map->stored_filename, file_get_contents($file));
+
+                $map->save();
+            }
+        }
+        $properties = json_decode($properties, true);
+        if($temp->file_type != 'PDF') {
+            foreach (json_decode($geometry) as $key => $kelolaGeom) {
+                $encode = json_encode($kelolaGeom);
+                if($temp->file_type === 'SHP') {
+                    if($temp->attachment_type === 'area-pemantauan' || $temp->attachment_type === 'area-pengelolaan') {
+                        $map = ProjectMapAttachment::firstOrNew([
+                            'id_project' => $request->id_project,
+                            'attachment_type' => $temp->attachment_type,
+                            'file_type' => $temp->file_type,
+                            'step' => $request->step,
+                            'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$encode')), 4326)"),
+                            'properties' => json_encode($properties[$key], true),
+                        ]);
+                    } else {
+                        $map = ProjectMapAttachment::firstOrNew([
+                            'id_project' => $request->id_project,
+                            'attachment_type' => $temp->attachment_type,
+                            'file_type' => $temp->file_type,
+                            'step' => $request->step,
+                            'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$encode')), 4326)"),
+                            'properties' => json_encode($properties[$key], true),
+                        ]);
+                    }
+                }
+
+                if ($map->id) {
+                    if (Storage::disk('public')->exists('map/' . $map->stored_filename)) {
+                        Storage::disk('public')->delete('map/' . $map->stored_filename);
+                    }
+                }
+
+                $map->original_filename = $file->getClientOriginalName();
+                $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
+                if($temp->file_type === 'SHP') {
+                    $map->id_styles = $idStyle;
+                }
+
+                $enableCloneAndal = false;
+
+                // save file to S3
+                if (!Storage::disk('public')->exists('map')) {
+                    Storage::disk('public')->makeDirectory('map');
+                }
+                $filePut = Storage::disk('public')->put('map/' . $map->stored_filename, file_get_contents($file));
+                if ($filePut) {
+                    $map->save();
+
+                    // clone andal, if step = 'ka'
+                    if ($request['step'] == 'ka' && $enableCloneAndal) {
+                        $existingClone = ProjectMapAttachment::where('id_project', $request->id_project)
+                            ->where('attachment_type', $temp->attachment_type)
+                            ->where('file_type', $temp->file_type)
+                            ->where('step', 'andal')
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+                        if ($existingClone) {
+                            // update
+                            $existingClone->original_filename = $map->original_filename;
+                            $existingClone->stored_filename = $map->stored_filename;
+                            $existingClone->geom = $map->geom;
+                            $existingClone->properties = $map->properties;
+                            $existingClone->id_styles = $map->id_styles;
+                            $existingClone->save();
+                        } else {
+                            // create new clone
+                            $clone = $map->replicate();
+                            $clone->step = 'andal';
+                            $clone->save();
+                        }
+                    }
+                    // // Add workflow
+                    // $project = Project::findOrFail($request->id_project);
+                    // if ($project->marking == 'uklupl-mt.matrix-upl') {
+                    //     $project->workflow_apply('submit-uklupl');
+                    //     $project->save();
+                    // }
+                }
             }
         }
     }
