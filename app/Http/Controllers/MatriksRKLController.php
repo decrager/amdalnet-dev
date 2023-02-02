@@ -699,7 +699,6 @@ class MatriksRKLController extends Controller
              $idPoinA[] = $pA->id;
          }
          $results = $this->getLoopDataB($stages, $id_project, $results, $type, $idPoinA);
-
         return $results;
   }
 
@@ -771,7 +770,6 @@ class MatriksRKLController extends Controller
 
             // === SUCCESS INDICATOR == //
             $success_indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
-
             $results[] = [
                 'no' => $total + 1,
                 'id' => $pA->id,
