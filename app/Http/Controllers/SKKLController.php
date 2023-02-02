@@ -362,26 +362,28 @@ class SKKLController extends Controller
                 [
                     'name' => 'Persetujuan Lingkungan SKKL',
                     // 'file' => $skkl_download_name,
-                    'file' => Storage::disk('public')->temporaryUrl($skkl_download_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => Storage::disk('public')->temporaryUrl('skkl/' . $save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $update_date_skkl,
                     'uploaded' => $skkl
                 ],
                 [
                     'name' => 'Dokumen KA',
                     // 'file' => $dokumen_ka,
-                    'file' => Storage::disk('public')->temporaryUrl($dokumen_ka, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    // 'file' => Storage::disk('public')->temporaryUrl($dokumen_ka, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $dokumen_ka,
                     'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
                 ],
                 [
                     'name' => 'Dokumen ANDAL',
                     // 'file' =>  $dokumen_andal,
-                    'file' => Storage::disk('public')->temporaryUrl($dokumen_andal, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    // 'file' => Storage::disk('public')->temporaryUrl($dokumen_andal, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $dokumen_andal,
                     'updated_at' => $andalDate
                 ],
                 [
                     'name' => 'Dokumen RKL RPL',
                     // 'file' => $dokumen_rkl_rpl,
-                    'file' => Storage::disk('public')->temporaryUrl($dokumen_rkl_rpl, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $dokumen_rkl_rpl,
                     'updated_at' => $rklRplDate
                 ]
             ];

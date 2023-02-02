@@ -110,11 +110,11 @@ class MatriksUklUplController extends Controller
         $with = '';
         if ($type == 'ukl'){
             $with = ['envManagePlan' => function($q) {
-                $q->with(['forms', 'locations']);
+                $q->with(['forms', 'locations'])->orderBy('updated_at', 'desc');
             }];
         } else if ($type == 'upl'){
             $with = ['envMonitorPlan' => function($q) {
-                $q->with(['forms', 'locations']);
+                $q->with(['forms', 'locations'])->orderBy('updated_at', 'desc');
             }];
         }
         /*
