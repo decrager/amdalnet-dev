@@ -1826,7 +1826,8 @@ export default {
       console.log('calculateListSubProjectResult');
       const oss_project_is_used = this.listSubProject.filter(e => e.isUsed);
       const { oss_result_risk } = this.sumResultRisikoOSS(oss_project_is_used);
-      this.currentProject.oss_result_risk = oss_result_risk;
+      // this.currentProject.oss_result_risk = oss_result_risk;
+      this.currentProject.result_risk = oss_result_risk;
       this.currentProject.listSubProject = this.listSubProject.filter(e => e.isUsed).map(e => {
         // const { oss_result_risk } = this.sumResultRisikoOSS(e);
         if (!e.listSubProjectParams || e.listSubProjectParams.filter(e => e.used) < 1){
@@ -1851,7 +1852,7 @@ export default {
         const { result, result_risk, scale, scale_unit } = this.sumResult(e.listSubProjectParams);
         // e.oss_result_risk = oss_result_risk;
         e.result = result;
-        e.result_risk = result_risk;
+        e.result_risk_param = result_risk;
         // if (e.skala_resiko === 'MT'){
         //   e.result_risk = 'Menengah Tinggi';
         // } else if (e.skala_resiko === 'T'){

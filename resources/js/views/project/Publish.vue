@@ -108,7 +108,7 @@
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
             <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
           <el-row v-show="isRiskShow" style="padding-bottom: 16px"><el-col :span="12">Tingkat Risiko</el-col>
-            <el-col :span="12">{{ project.oss_risk || project.oss_result_risk }}</el-col>
+            <el-col :span="12">{{ project.oss_risk || project.result_risk }}</el-col>
             <!-- <el-col v-if="isFromOSS || isTUK" :span="12">{{ project.result_risk }}</el-col> -->
           </el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
@@ -331,7 +331,7 @@ export default {
         };
       });
       const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
-        var rmDecimalSupp = ~~e.scale;
+        var rmDecimalSupp = e.scale;
         var	reverse = rmDecimalSupp.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
         projectScale = projectScale.join('.').split('').reverse().join('');
         return {
