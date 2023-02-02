@@ -331,7 +331,7 @@ export default {
         };
       });
       const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
-        var rmDecimalSupp = ~~e.scale;
+        var rmDecimalSupp = e.scale;
         var	reverse = rmDecimalSupp.toString().split('').reverse().join(''), projectScale = reverse.match(/\d{1,3}/g);
         projectScale = projectScale.join('.').split('').reverse().join('');
         return {
