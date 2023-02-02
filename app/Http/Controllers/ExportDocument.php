@@ -1310,7 +1310,7 @@ class ExportDocument extends Controller
 
     private function docxToPdf($url)
     {
-        $downloadUri = url($url);
+        $downloadUri = $url ;
         $key = Document::GenerateRevisionId($downloadUri);
         $convertedUri;
         $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);

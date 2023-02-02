@@ -191,7 +191,7 @@ class Workspace
      */
     public function commandRequest($method, $key)
     {
-        $docCommandUrl = env('OFFICE_COMMAND_URL', 'https://amdalnet-dev.menlhk.go.id/oods/coauthoring/CommandService.ashx');
+        $documentCommandUrl = env('OFFICE_COMMAND_URL', 'https://amdalnet-dev.menlhk.go.id/oods/coauthoring/CommandService.ashx');
 
         $arr = [
             "c" => $method,

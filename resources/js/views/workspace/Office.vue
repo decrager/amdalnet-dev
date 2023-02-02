@@ -494,12 +494,14 @@ export default {
     },
 
     async handleCetakMatriks() {
-      const data = await Axios.get(
-        `/api/matriks-ukl-upl/${this.$route.params.id}?perbaikanMatriksUkl=true`
-      );
-      this.fileDocxUrl = data.data.docx_url;
-      this.fileName = data.data.file_name;
-      this.filePdfUrl = data.data.pdf_url;
+      if (this.$route.query.perbaikan) {
+        const data = await Axios.get(
+          `/api/matriks-ukl-upl/${this.$route.params.id}`
+        );
+        this.fileDocxUrl = data.data.docx_url;
+        this.fileName = data.data.file_name;
+        this.filePdfUrl = data.data.pdf_url;
+      }
     },
 
     etherpadAuth() {

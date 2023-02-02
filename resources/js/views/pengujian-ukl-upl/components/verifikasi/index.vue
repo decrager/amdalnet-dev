@@ -262,11 +262,20 @@
       <WebgisVerifikasi />
     </el-dialog>
     <el-dialog title="" class="map-dialog" :visible.sync="showDocumentDialog">
+      <a
+        class="btn-pdf"
+        :href="urlPdf"
+        style="margin-bottom: 10px;"
+        :download="`ukl-upl-${projectName}.pdf`"
+      >
+        Download Document .PDF
+      </a>
       <iframe
         :src="`https://docs.google.com/gview?url=${encodeURIComponent(
           urlPdf
         )}&embedded=true`"
         width="100%"
+        :loading="true"
         height="530px"
         frameborder="0"
       />
@@ -309,6 +318,7 @@ export default {
       formulatorTeamDialog: false,
       publicConsultationDialog: false,
       publicConsultation: null,
+      projectName: null,
       pertekFile: null,
       publicConsultationDocs: [],
       docxData: {},
@@ -368,6 +378,7 @@ export default {
         `/api/dokumen-ukl-upl/${this.$route.params.id}`
       );
       this.urlPdf = data.data.pdf_url;
+      this.projectName = data.data.filename;
     },
     async getPertek() {
       const { data } = await envManageDocsResource.list({
@@ -656,5 +667,30 @@ export default {
 }
 .map-dialog .el-dialog__body {
   height: 600px;
+}
+</style>
+
+<style scoped>
+.btn-pdf {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #ffffff;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: 0.1s;
+  font-weight: 400;
+}
+
+.btn-pdf {
+  background-color: #ff4949;
+  border: 1px solid #ff4949;
 }
 </style>
