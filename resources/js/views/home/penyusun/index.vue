@@ -65,18 +65,6 @@
           :header-cell-style="{ background: '#3AB06F', color: 'white' }"
         >
           <el-table-column align="center" label="Nama" prop="name" sortable />
-          <!-- <el-table-column
-            align="center"
-            label="No. Registrasi"
-            prop="reg_no"
-            sortable
-          />
-          <el-table-column
-            align="center"
-            label="No. Sertifikat"
-            prop="cert_no"
-            sortable
-          /> -->
           <el-table-column
             align="center"
             label="Sertifikasi"
@@ -159,12 +147,11 @@ export default {
     async getList() {
       this.loading = true;
       const { data, meta } = await formulatorResource.list(this.listQuery);
-      // console.log(data[0]);
       this.list = data.map((x) => {
         x.membership_status = x.membership_status ? x.membership_status : '-';
         x.status = this.calculateStatus(x.date_start, x.date_end);
         x.cert_no = this.noCertificate(x.cert_no);
-        x.user = x.user.active === 1 ? 'Aktif' : 'Tidak Aktif';
+        x.user = x.user === null || x.user.active === 0 ? 'Tidak Aktif' : 'Aktif';
 
         return x;
       });
