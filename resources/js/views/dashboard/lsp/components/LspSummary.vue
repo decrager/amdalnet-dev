@@ -130,7 +130,7 @@ export default {
           total = total + doc1.total + doc2.total;
         } else {
           summary.active = 0;
-          total = 0;
+          // total = 0;
         }
 
         doc1 = res.data_non_active.find((e) => e.membership_status === 'ATPA');
@@ -140,7 +140,7 @@ export default {
           total = total + doc1.total + doc2.total;
         } else {
           summary.nonActive = 0;
-          total = 0;
+          // total = 0;
         }
 
         doc1 = res.data_status.find((e) => e.membership_status === 'ATPA');
