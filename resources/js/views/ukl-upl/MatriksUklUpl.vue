@@ -28,6 +28,7 @@
         </el-button>
         <el-button
           v-if="isFormulator && isPerbaikan"
+          style="margin-bottom: 10px;"
           class="pull-right"
           type="success"
           size="small"
@@ -36,6 +37,21 @@
         >
           Ya
         </el-button>
+
+        <div v-if="isFormulator" role="alert" style="margin-bottom: 10px;" class="el-alert el-alert--info is-light">
+          <div style="line-height: 1.6;" class="el-alert__content">
+            <strong>Sebelum Simpan & Lanjutkan, harap klik "SIMPAN" (tombol hijau) pada:</strong>
+            <p>
+              <ol>
+                <li>Matriks UKL</li>
+                <li>Matriks UPL</li>
+                <li>Dokumen Pendukung</li>
+                <li>Peta Titik Pengelolaan & Pemantauan</li>
+              </ol>
+            </p>
+          </div>
+        </div>
+
         <span v-if="isPerbaikan" class="pull-right" style="font-weight: bold; margin-top: .5rem;">Apakah Ada Perbaikan pada Matriks UKL UPL ini?</span>
       </span>
       <el-collapse v-if="isFormulirComplete" v-model="activeName" :accordion="true" @change="checkIfFormComplete">
