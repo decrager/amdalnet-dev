@@ -668,7 +668,7 @@ class ProjectController extends Controller
         // send status to OSS if not pemerintah
         // uncomment this for enabling oss -ossenabled
         if (!isset($request['isPemerintah']) && $request['isOSS'] === "true") {
-            OssService::receiveLicenseStatus($project, '45');
+            OssService::receiveLicenseStatus($project, '20');
         }
 
         return new ProjectResource($project);
