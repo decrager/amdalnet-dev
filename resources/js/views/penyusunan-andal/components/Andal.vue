@@ -5,6 +5,19 @@
         WORKSPACE
       </el-button>
     </div>
+
+    <div
+      v-if="isFormulator"
+      role="alert"
+      class="el-alert el-alert--error is-light"
+    >
+      <div style="margin-bottom: 10px;" class="el-alert__description">
+        <p>
+          Sebelum masuk ke <strong>Workspace</strong>, harap lengkapi terlebih dahulu semua isian pada halaman ini
+        </p>
+      </div>
+    </div>
+
     <el-collapse v-model="activeName" :accordion="true">
       <el-collapse-item name="pelingkupan">
         <template slot="title" class="head-accordion">
@@ -84,6 +97,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 // import TableAndal from '@/views/penyusunan-andal/components/Table';
@@ -124,6 +138,16 @@ export default {
       activeName: '',
       loadingWorkspace: false,
     };
+  },
+  computed: {
+    ...mapGetters({
+      userInfo: 'user',
+      userId: 'userId',
+      markingStatus: 'markingStatus',
+    }),
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   methods: {
     async checkData() {

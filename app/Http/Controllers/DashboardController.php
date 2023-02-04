@@ -31,23 +31,20 @@ class DashboardController extends Controller
         $non_active = DB::table('formulators')
         ->select('membership_status', DB::raw('count(*) as total'))
         ->where('id_lsp', $request->lspId)
-        ->Where('date_end', '<', date('Y-m-d H:i:s'))
-        ->groupBy('membership_status')->get();
+        ->Where('date_end', '<', date('Y-m-d H:i:s'));
 
         $active = DB::table('formulators')
         ->select('membership_status', DB::raw('count(*) as total'))
         ->where('id_lsp', $request->lspId)
-        ->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
-        ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]])
-        ->groupBy('membership_status')->get();
+        ->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]]);
 
         $query = DB::table('formulators')
         ->select('membership_status', DB::raw('count(*) as total'))
         ->where('id_lsp', $request->lspId);
         return response()->json([
             'data_status' => $query->groupBy('membership_status')->get(),
-            'data_active' => $active,
-            'data_non_active' => $non_active,
+            'data_active' => $active->groupBy('membership_status')->get(),
+            'data_non_active' => $non_active->groupBy('membership_status')->get(),
         ]);
     }
 
