@@ -16,7 +16,7 @@ const amdalRoutes = {
       meta: {
         title: 'Asistensi Pelingkupan',
         icon: 'documentation',
-        permissions: ['view menu ka'],
+        permissions: ['view menu ka', 'do AMDAL review'],
       },
     },
     {
@@ -45,7 +45,7 @@ const amdalRoutes = {
         title: 'Penyusunan Andal',
         icon: 'zip',
         noCache: true,
-        permissions: ['view menu andal'],
+        permissions: ['view menu andal', 'do AMDAL review'],
       },
     },
     {
@@ -56,7 +56,7 @@ const amdalRoutes = {
         title: 'Penyusunan RKL RPL',
         icon: 'zip',
         noCache: true,
-        permissions: ['view menu rkl rpl'],
+        permissions: ['view menu rkl rpl', 'do AMDAL review'],
       },
     },
     {

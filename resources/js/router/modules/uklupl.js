@@ -16,7 +16,7 @@ const ukluplRoutes = {
       meta: {
         title: 'Asistensi Pelingkupan',
         icon: 'documentation',
-        // permissions: ['view menu ukl upl form'],
+        permissions: ['view menu ukl upl form', 'do UKL/UPL review'],
       },
     },
     {
