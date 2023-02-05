@@ -27,6 +27,24 @@
               </el-form>
               <el-form>
                 <el-row>
+                  <el-form-item label="Jenis">
+                    <el-select
+                      v-model="currentParam.jenis"
+                      placeholder="Pilih Jenis Materi"
+                      style="width: 100%"
+                    >
+                      <el-option
+                        v-for="item in jenis"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
                   <el-form-item label="Tanggal Terbit">
                     <el-date-picker
                       v-model="currentParam.raise_date"
@@ -82,6 +100,16 @@ export default {
     return {
       currentParam: {},
       link: '',
+      jenis: [
+        {
+          label: 'Materi',
+          value: 'materi',
+        },
+        {
+          label: 'Panduan',
+          value: 'panduan',
+        },
+      ],
     };
   },
   created() {
@@ -110,6 +138,7 @@ export default {
       formData.append('link', this.link);
       formData.append('name', this.currentParam.name);
       formData.append('description', this.currentParam.description);
+      formData.append('description', this.currentParam.jenis);
       formData.append('raise_date', this.currentParam.raise_date);
       formData.append('old_link', this.currentParam.link);
 

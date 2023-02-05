@@ -18,34 +18,91 @@ class MaterialController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->sort == 'null') {
-            $sort = 'DESC';
+        if (request()->has('materi')) {
+            if ($request->sort == 'null') {
+                $sort = 'DESC';
+            } else {
+                $sort = $request->sort;
+            }
+
+            if($request->search && ($request->search !== 'null')) {
+                $materials = Material::where(function($q) use($request) {
+                    $q->where(function($query) use($request) {
+                        $query->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                    })->where('jenis', 'materi')
+                    ->where(function($query) use($request) {
+                        $query->whereRaw("LOWER(description) LIKE '%" . strtolower($request->search) . "%'");
+                    });
+                })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+                return response()->json($materials, 200);
+            } else {
+                $materials = Material::When($request->has('keyword'), function ($query) use ($request) {
+
+                    $searchQuery = '%' . $request->keyword . '%';
+                    $indents =  $query->where('jenis', 'materi')->where('name', 'ILIKE', '%'.$request->keyword.'%')
+                    ->where('description', 'ILIKE', $searchQuery);
+
+                    return $indents;
+                })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+                return response()->json($materials, 200);
+            }
+        } else if (request()->has('panduan')) {
+            if ($request->sort == 'null') {
+                $sort = 'DESC';
+            } else {
+                $sort = $request->sort;
+            }
+
+            if($request->search && ($request->search !== 'null')) {
+                $materials = Material::where(function($q) use($request) {
+                    $q->where(function($query) use($request) {
+                        $query->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                    })->where('jenis', 'panduan')
+                    ->orWhere(function($query) use($request) {
+                        $query->whereRaw("LOWER(description) LIKE '%" . strtolower($request->search) . "%'");
+                    });
+                })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+
+                return response()->json($materials, 200);
+            } else {
+                $materials = Material::When($request->has('keyword'), function ($query) use ($request) {
+                    $searchQuery = '%' . $request->keyword . '%';
+                    $indents =  $query->where('jenis', 'panduan')->where('name', 'ILIKE', '%'.$request->keyword.'%')
+                    ->where('description', 'ILIKE', $searchQuery);
+                    return $indents;
+                })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+                return response()->json($materials, 200);
+            }
         } else {
-            $sort = $request->sort;
+            if ($request->sort == 'null') {
+                $sort = 'DESC';
+            } else {
+                $sort = $request->sort;
+            }
+
+            if($request->search && ($request->search !== 'null')) {
+                $materials = Material::where(function($q) use($request) {
+                    $q->where(function($query) use($request) {
+                        $query->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                    })->where('jenis', 'materi')
+                    ->where(function($query) use($request) {
+                        $query->whereRaw("LOWER(description) LIKE '%" . strtolower($request->search) . "%'");
+                    });
+                })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+                return response()->json($materials, 200);
+            } else {
+                $materials = Material::When($request->has('keyword'), function ($query) use ($request) {
+
+                    $searchQuery = '%' . $request->keyword . '%';
+                    $indents =  $query->where('jenis', 'materi')->where('name', 'ILIKE', '%'.$request->keyword.'%')
+                    ->where('description', 'ILIKE', $searchQuery);
+
+                    return $indents;
+                })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+                return response()->json($materials, 200);
+            }
         }
 
-        if($request->search && ($request->search !== 'null')) {
-            $materials = Material::where(function($q) use($request) {
-                $q->where(function($query) use($request) {
-                    $query->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
-                })->orWhere(function($query) use($request) {
-                    $query->whereRaw("LOWER(description) LIKE '%" . strtolower($request->search) . "%'");
-                });
-            })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
-    
-            return response()->json($materials, 200);
-        } else {
-            $materials = Material::When($request->has('keyword'), function ($query) use ($request) {
-    
-                $searchQuery = '%' . $request->keyword . '%';
-                $indents = $query->where('name', 'ILIKE', '%'.$request->keyword.'%');
-                $indents = $indents->orWhere('description', 'ILIKE', $searchQuery);
-    
-                return $indents;
-            })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
-    
-            return response()->json($materials, 200);
-        }
     }
 
     /**
@@ -73,6 +130,7 @@ class MaterialController extends Controller
                 'name' => 'required',
                 'description' => 'required',
                 'raise_date' => 'required',
+                'jenis' => 'required',
                 'link' => 'required',
             ]
         );
@@ -81,7 +139,6 @@ class MaterialController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
-
             //create file
             $file = $request->file('link');
             $name = 'materi/' . uniqid() . '.' . $file->extension();
@@ -94,9 +151,9 @@ class MaterialController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'raise_date' => $request->raise_date,
+                'jenis' => $request->jenis,
                 'link' => $name,
             ]);
-
 
             if (!$materi) {
                 DB::rollback();

@@ -10,6 +10,13 @@
             <div class="form-container">
               <el-form>
                 <el-row>
+                  <el-form-item label="Nama Video"><small style="color: red">*</small>
+                    <el-input v-model="name" type="text" placeholder="Nama Video" />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
                   <el-form-item :class="{ 'is-error': errors.tutorial_type }">
                     <label style="color: #606266">Jenis Tutorial<small style="color: red">*</small></label>
                     <el-select v-model="value" placeholder="Jenis Tutorial" style="width:100%">
@@ -64,6 +71,7 @@ export default {
   data() {
     return {
       file: '',
+      name: '',
       errors: {
         tutorial_type: null,
         video_upload: null,
@@ -72,16 +80,28 @@ export default {
       form: {
         tutorial_type: [
           {
-            value: 'Penapisan Otomatis',
-            label: 'Penapisan Otomatis',
+            value: 'Landing Page',
+            label: 'Landing Page',
+          },
+          {
+            value: 'Registrasi',
+            label: 'Registrasi',
+          },
+          {
+            value: 'Penapisan',
+            label: 'Penapisan',
           },
           {
             value: 'Asistensi Pelingkupan',
             label: 'Asistensi Pelingkupan',
           },
           {
-            value: 'Amdal Digital Workspace',
-            label: 'Amdal Digital Workspace',
+            value: 'Penilaian Dokumen Lingkungan Hidup',
+            label: 'Penilaian Dokumen Lingkungan Hidup',
+          },
+          {
+            value: 'Lainnya',
+            label: 'Lainnya',
           },
         ],
       },
@@ -119,6 +139,7 @@ export default {
       console.log(this.value);
       const formData = new FormData();
       formData.append('url_video', this.file);
+      formData.append('name', this.name);
       formData.append('tutorial_type', this.value);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
