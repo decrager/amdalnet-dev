@@ -74,9 +74,9 @@
         <template slot-scope="scope">
           <ul style="margin-block-start: 0px">
             <li v-for="(lokasi, index) in scope.row.lokasi" :key="index">
-              Provinsi {{ lokasi.province.toLowerCase() }},
-              {{ lokasi.regency.toLowerCase() }},
-              {{ lokasi.alamat_usaha.toLowerCase() }}
+              Provinsi {{ lokasi.province ? lokasi.province.toLowerCase() : '' }},
+              {{ lokasi.regency ? lokasi.regency.toLowerCase() : '' }},
+              {{ lokasi.alamat_usaha ? lokasi.alamat_usaha.toLowerCase() : '' }}
             </li>
           </ul>
         </template>
@@ -137,6 +137,7 @@ export default {
     const ossProjects = this.$store.getters.ossByNib.data_proyek?.filter(
       (e) => e.id_izin && (e.skala_resiko === 'MT' || e.skala_resiko === 'T') && (e.file_izin === '-' || !e.file_izin) && !e.status_tapis
     );
+    console.log(this.$store.getters.pemrakarsa[0].nib);
     console.log(ossProjects);
     console.log(this.$store.getters.ossByNib);
     if (ossProjects) {
