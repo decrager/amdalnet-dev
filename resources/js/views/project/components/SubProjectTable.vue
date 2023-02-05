@@ -31,7 +31,7 @@
           <div><b>Kewenangan :</b> {{ getKewenangan(scope.row.kewenangan) }}</div>
           <div><b>Alamat :</b></div>
           <ul style="margin-block-start: 0px">
-            <li v-for="(lokasi, index) in scope.row.lokasi" :key="index">Provinsi {{ lokasi.province.toLowerCase() }}, {{ lokasi.regency.toLowerCase() }}, {{ lokasi.alamat_usaha.toLowerCase() }}</li>
+            <li v-for="(lokasi, index) in scope.row.lokasi" :key="index">Provinsi {{ lokasi.province ? lokasi.province.toLowerCase() : '' }}, {{ lokasi.regency ? lokasi.regency.toLowerCase() : '' }}, {{ lokasi.alamat_usaha ? lokasi.alamat_usaha.toLowerCase() : lokasi.alamat_usaha }}</li>
           </ul>
         </template>
       </el-table-column>
