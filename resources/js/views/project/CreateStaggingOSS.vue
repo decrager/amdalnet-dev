@@ -1156,6 +1156,7 @@ export default {
   },
   async created() {
     this.loading = true;
+    console.log(this.$store.getters);
     await this.$store.dispatch('getInitiator', this.userInfo.email);
     if (this.$store.getters.isPemerintah){
       this.currentProject.isPemerintah = 'true';
