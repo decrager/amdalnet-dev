@@ -5,6 +5,19 @@
         WORKSPACE
       </el-button>
     </div>
+
+    <div
+      v-if="isFormulator"
+      role="alert"
+      class="el-alert el-alert--error is-light"
+    >
+      <div style="margin-bottom: 10px;" class="el-alert__description">
+        <p>
+          Sebelum masuk ke <strong>Workspace</strong>, harap lengkapi terlebih dahulu semua isian pada halaman ini
+        </p>
+      </div>
+    </div>
+
     <el-collapse v-model="activeName" accordion>
       <el-collapse-item name="1">
         <template slot="title">
@@ -39,6 +52,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const rklResource = new Resource('matriks-rkl');
 import ManageApproach from '@/views/rkl-rpl/components/matriks-table/ManageApproach';
@@ -63,6 +77,18 @@ export default {
       loadingWorkspace: false,
     };
   },
+
+  computed: {
+    ...mapGetters({
+      userInfo: 'user',
+      userId: 'userId',
+      markingStatus: 'markingStatus',
+    }),
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
+  },
+
   methods: {
     async checkData() {
       this.loadingWorkspace = true;
