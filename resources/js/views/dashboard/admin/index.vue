@@ -1,6 +1,8 @@
 <template>
   <div class="app-container">
-    <Header />
+    <Header
+      v-if="isExaminerSecretary"
+    />
     <date-filter @filterChange="onFilterChange" />
     <submission-stats ref="stats" />
 
@@ -20,6 +22,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import InitiatorList from './components/InitiatorList';
 import SubmissionChart from './components/SubmissionChart';
 import PermitByRegion from './components/Permit';
@@ -41,6 +44,33 @@ export default {
     return {
       filter: '',
     };
+  },
+  computed: {
+    ...mapGetters(['roles']),
+    isAdmin() {
+      return this.$store.getters.roles[0].split('-')[0] === 'admin';
+    },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isLSP() {
+      return this.$store.getters.roles.includes('lsp');
+    },
+    isInitiator() {
+      return this.$store.getters.roles.includes('initiator');
+    },
+    isExaminer() {
+      return this.$store.getters.roles[0].split('-')[0] === 'examiner';
+    },
+    isExaminerSecretary() {
+      return this.$store.getters.roles.includes('examiner-secretary');
+    },
+    isLPJP() {
+      return this.$store.getters.roles.includes('lpjp');
+    },
+    isPustanling() {
+      return this.$store.getters.roles.includes('pustanling');
+    },
   },
   methods: {
     onFilterChange(val) {
