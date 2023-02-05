@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-        <el-tab-pane label="Materi" name="materi">
+        <el-tab-pane label="Materi & Panduan" name="materi">
           <Materi />
         </el-tab-pane>
         <el-tab-pane label="Kebijakan" name="kebijakan">

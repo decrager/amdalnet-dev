@@ -13,7 +13,7 @@
         icon="el-icon-plus"
         @click="handleCreate"
       >
-        {{ 'Tambah Materi' }}
+        {{ 'Tambah Materi / Panduan' }}
       </el-button>
       <el-row :gutter="32">
         <el-col :sm="24" :md="10">

@@ -1,9 +1,9 @@
 <template>
-  <section id="materi" class="kebijakan section_data pb-0">
+  <section id="panduan" class="kebijakan section_data pb-0">
     <div class="container">
       <el-row>
         <el-col :span="24">
-          <h2 class="fw white mb-1-5">Materi AMDALNET</h2>
+          <h2 class="fw white mb-1-5">Panduan AMDALNET</h2>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="mb-1">
@@ -131,7 +131,7 @@ import axios from 'axios';
 import Pagination from '@/components/Pagination';
 
 export default {
-  name: 'Materi',
+  name: 'Panduan',
   components: {
     Pagination,
   },
@@ -199,7 +199,7 @@ export default {
     getAll(search, sort, limit) {
       axios
         .get(
-          `/api/materials?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}&materi=true`
+          `/api/materials?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}&panduan=true`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -244,7 +244,7 @@ export default {
 </script>
 
 <style scoped>
-#materi {
+#panduan {
   background-color: #133715;
   padding-top: 11rem;
   padding-bottom: 11rem;
