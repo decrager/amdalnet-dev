@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <Header />
     <date-filter @filterChange="onFilterChange" />
     <submission-stats ref="stats" />
 
@@ -24,6 +25,7 @@ import SubmissionChart from './components/SubmissionChart';
 import PermitByRegion from './components/Permit';
 import SubmissionStats from './components/SubmissionStats';
 import DateFilter from './components/DateFilter';
+import Header from './components/Header';
 
 export default {
   name: 'AdminDashboard',
@@ -33,6 +35,7 @@ export default {
     PermitByRegion,
     SubmissionStats,
     DateFilter,
+    Header,
   },
   data() {
     return {
