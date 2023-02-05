@@ -1796,38 +1796,38 @@ export default {
     },
     sumResult(listParam){
       let result = '';
-      let result_risk = '';
+      // let result_risk = '';
       let scale = '';
       let scale_unit = '';
 
       for (let i = 0; i < listParam.length; i++) {
         if (listParam[i].result === 'AMDAL'){
           result = listParam[i].result;
-          result_risk = listParam[i].result_risk;
+          // result_risk = listParam[i].result_risk;
           scale = listParam[i].scale;
           scale_unit = listParam[i].scale_unit;
           break;
         } else if (listParam[i].result === 'UKL-UPL'){
           result = listParam[i].result;
-          result_risk = listParam[i].result_risk;
+          // result_risk = listParam[i].result_risk;
           scale = listParam[i].scale;
           scale_unit = listParam[i].scale_unit;
         } else if (listParam[i].result === 'SPPL' && result !== 'UKL-UPL'){
           result = listParam[i].result;
-          result_risk = listParam[i].result_risk;
+          // result_risk = listParam[i].result_risk;
           scale = listParam[i].scale;
           scale_unit = listParam[i].scale_unit;
         }
       }
-      return { result, result_risk, scale, scale_unit };
+      return { result, scale, scale_unit };
     },
     calculateListSubProjectResult(){
       this.currentProject.listSubProjectNonChecked = this.listSubProject;
       console.log('calculateListSubProjectResult');
       const oss_project_is_used = this.listSubProject.filter(e => e.isUsed);
       const { oss_result_risk } = this.sumResultRisikoOSS(oss_project_is_used);
-      // this.currentProject.oss_result_risk = oss_result_risk;
-      this.currentProject.result_risk = oss_result_risk;
+      this.currentProject.oss_result_risk = oss_result_risk;
+      // this.currentProject.result_risk = oss_result_risk;
       this.currentProject.listSubProject = this.listSubProject.filter(e => e.isUsed).map(e => {
         // const { oss_result_risk } = this.sumResultRisikoOSS(e);
         if (!e.listSubProjectParams || e.listSubProjectParams.filter(e => e.used) < 1){
@@ -1849,10 +1849,11 @@ export default {
         }
         e.listSubProjectParams = e.listSubProjectParams.filter(e => e.used);
 
-        const { result, result_risk, scale, scale_unit } = this.sumResult(e.listSubProjectParams);
+        const { result, scale, scale_unit } = this.sumResult(e.listSubProjectParams);
         // e.oss_result_risk = oss_result_risk;
         e.result = result;
-        e.result_risk_param = result_risk;
+        e.result_risk = oss_result_risk;
+        // e.result_risk_param = result_risk;
         // if (e.skala_resiko === 'MT'){
         //   e.result_risk = 'Menengah Tinggi';
         // } else if (e.skala_resiko === 'T'){

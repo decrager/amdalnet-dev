@@ -210,7 +210,7 @@ class OssService
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_instansi' => $dataProject['sektor'],
                         'kd_status' => $statusCode,
-                        'tgl_status' => (string)$project->updated_at,
+                        'tgl_status' => (string)$project->updated_at->format('d-m-Y'),
                         'nip_status' => '',
                         'nama_status' => OssService::getStatusNameOss($statusCode),
                         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
@@ -308,7 +308,7 @@ class OssService
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_instansi' => $dataProject['sektor'],
                         'kd_status' => $statusCode,
-                        'tgl_status' => (string)$project->updated_at,
+                        'tgl_status' => (string)$project->updated_at->format('d-m-Y'),
                         // 'nip_status' => null, // NULL
                         'nip_status' => '',
                         'nama_status' => OssService::getStatusNameOss($statusCode),
