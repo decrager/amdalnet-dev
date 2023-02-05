@@ -5,6 +5,8 @@
     <hero-home v-if="toggleMenu" />
     <steps-home v-if="toggleMenu" />
     <materi v-if="toggleMenuMateri" />
+    <panduan v-if="toggleMenuPanduan" />
+    <videos v-if="toggleMenuVideos" />
     <kebijakan v-if="toggleMenuKebijakan" />
     <izin v-if="toggleIzin" />
     <persetujuan v-if="togglePersetujuan" />
@@ -38,6 +40,8 @@ import StepsHome from './section/Steps.vue';
 import Kebijakan from './section/Kebijakan.vue';
 import Izin from './section/Izin.vue';
 import Materi from './section/Materi.vue';
+import Panduan from './section/Panduan.vue';
+import Videos from './section/Videos.vue';
 import Uklm from './section/Uklm.vue';
 import Ukls from './section/Ukls.vue';
 import Sop from './section/Sop.vue';
@@ -64,6 +68,8 @@ export default {
     'steps-home': StepsHome,
     'kebijakan': Kebijakan,
     'materi': Materi,
+    'panduan': Panduan,
+    'videos': Videos,
     'ukl-menengah': Uklm,
     'ukl-spesifik': Ukls,
     'Sop': Sop,
@@ -86,6 +92,8 @@ export default {
   data() {
     return {
       toggleMenuMateri: false,
+      toggleMenuPanduan: false,
+      toggleMenuVideos: false,
       toggleMenuKebijakan: false,
       toggleIzin: false,
       toggleMenu: true,
@@ -125,6 +133,8 @@ export default {
     },
     setAllState(e){
       const materi = (e === 'MATERI') ? 'true' : 'false';
+      const panduan = (e === 'PANDUAN') ? 'true' : 'false';
+      const videos = (e === 'VIDEOS') ? 'true' : 'false';
       const kebijakan = (e === 'KEBIJAKAN') ? 'true' : 'false';
       const izin = (e === 'IZIN') ? 'true' : 'false';
       const template = (e === 'TEMPLATE') ? 'true' : 'false';
@@ -139,6 +149,8 @@ export default {
       const penyusun = (e === 'Penyusun') ? 'true' : 'false';
       const tentang = (e === 'TENTANG') ? 'true' : 'false';
       this.toggleMenuMateri = JSON.parse(materi);
+      this.toggleMenuPanduan = JSON.parse(panduan);
+      this.toggleMenuVideos = JSON.parse(videos);
       this.toggleMenuKebijakan = JSON.parse(kebijakan);
       this.toggleIzin = JSON.parse(izin);
       this.toggleMenu = false;

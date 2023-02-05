@@ -14,7 +14,25 @@
       <div id="nav-menu" class="nav__menu">
         <ul class="nav__list">
           <li class="nav__item">
-            <a href="#" class="nav__link" :class="{'active-link':(activeMenu === 'Materi')}" @click="handleSetMenu('MATERI')">Materi</a>
+            <a href="#" class="nav__link" :class="{'active-link':(activeMenu === 'Materis')}" @click="handleSetMenu('MATERIS')">Materi
+              <template v-if="isActiveMateri">
+                <i class="el-icon-arrow-up" />
+              </template>
+              <template v-else>
+                <i class="el-icon-arrow-down" />
+              </template>
+            </a>
+            <ul v-if="isActiveMateri" class="left-4 top-1-8">
+              <li>
+                <a href="#" @click="handleSetMenu('MATERI')">Materi</a>
+              </li>
+              <li>
+                <a href="#" @click="handleSetMenu('VIDEOS')">Video Tutorial</a>
+              </li>
+              <li>
+                <a href="#" @click="handleSetMenu('PANDUAN')">Panduan</a>
+              </li>
+            </ul>
           </li>
           <li class="nav__item">
             <a href="#" class="nav__link" :class="{'active-link':(activeMenu === 'Formulir')}" @click="handleSetMenu('FORMULIR')">
@@ -80,6 +98,9 @@
                 <a href="#" @click="handleSetMenu('TUK')">Daftar TUK</a>
               </li>
               <li>
+                <a href="#" @click="handleSetMenu('TUK')">Daftar TUK</a>
+              </li>
+              <li>
                 <a href="https://amdal.menlhk.go.id/info_persuratan" target="_blank">Informasi Persuratan</a>
               </li>
               <li>
@@ -116,6 +137,7 @@ export default {
       loading: false,
       isActiveFormulir: false,
       isActiveDaftar: false,
+      isActiveMateri: false,
       activeMenu: 'Home',
     };
   },
@@ -161,11 +183,12 @@ export default {
       if (e === 'LOGO'){
         this.activeMenu = 'Home';
       }
-      if (e !== 'FORMULIR' && e !== 'DAFTAR' && e !== 'STATIC'){
+      if (e !== 'FORMULIR' && e !== 'DAFTAR' && e !== 'STATIC' && e !== 'MATERIS'){
         this.$emit('handleSetMenu', e);
       }
-      if (e === 'MATERI'){
-        this.activeMenu = 'Materi';
+      if (e === 'MATERIS' || e === 'MATERI' || e === 'PANDUAN' || e === 'VIDEOS'){
+        this.isActiveMateri = !this.isActiveMateri;
+        this.activeMenu = 'Materis';
       }
       if (e === 'FORMULIR' || e === 'UKL_UPL_M' || e === 'UKL_UPL_S' || e === 'SOP' || e === 'CLUSTER'){
         this.isActiveFormulir = !this.isActiveFormulir;

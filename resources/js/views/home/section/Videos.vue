@@ -1,9 +1,9 @@
 <template>
-  <section id="materi" class="kebijakan section_data pb-0">
+  <section id="videos" class="kebijakan section_data pb-0">
     <div class="container">
       <el-row>
         <el-col :span="24">
-          <h2 class="fw white mb-1-5">Materi AMDALNET</h2>
+          <h2 class="fw white mb-1-5">Video Tutorial AMDALNET</h2>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="mb-1">
@@ -40,20 +40,17 @@
           </el-col>
           <el-col :span="6" class="py1 cp">
             <div class="d-flex align-items-center" @click="handleSort(sort)">
-              <span class="fz12 white fw">Judul Materi</span>
+              <span class="fz12 white fw">Judul Video</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
-          <el-col :span="8" class="py1 cp">
-            <div
-              class="d-flex align-items-center"
-              @click="handleSort(sort)"
-            >
-              <span class="fz12 white fw">Deskripsi</span>
+          <el-col :span="6" class="py1 cp">
+            <div class="d-flex align-items-center" @click="handleSort(sort)">
+              <span class="fz12 white fw">Jenis Video</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
-          <el-col :span="5" class="text-center py1 cp">
+          <el-col :span="6" class="text-center py1 cp">
             <div
               class="d-flex align-items-center justify-align-center"
               @click="handleSort(sort)"
@@ -62,7 +59,7 @@
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
-          <el-col :span="3" class="text-center py1">
+          <el-col :span="4" class="text-center py1">
             <div class="d-flex align-items-center justify-align-center">
               <span class="fz12 white fw">Download</span>
             </div>
@@ -81,17 +78,17 @@
           <el-col :span="6" class="py">
             <span class="fz12 white">{{ material.name }}</span>
           </el-col>
-          <el-col :span="8" class="py">
-            <span class="fz12 white">{{ material.description }}</span>
+          <el-col :span="6" class="py">
+            <span class="fz12 white">{{ material.tutorial_type }}</span>
           </el-col>
-          <el-col :span="5" class="py text-center">
+          <el-col :span="6" class="py text-center">
             <span class="fz12 white">{{
-              formatDateStr(material.raise_date)
+              formatDateStr(material.created_at)
             }}</span>
           </el-col>
-          <el-col :span="3" class="py text-center">
+          <el-col :span="4" class="py text-center">
             <a
-              :href="material.link"
+              :href="material.url_video"
               target="_blank"
               class="fz12 white cl-blue buttonDownload"
               download
@@ -131,7 +128,7 @@ import axios from 'axios';
 import Pagination from '@/components/Pagination';
 
 export default {
-  name: 'Materi',
+  name: 'Videos',
   components: {
     Pagination,
   },
@@ -199,10 +196,11 @@ export default {
     getAll(search, sort, limit) {
       axios
         .get(
-          `/api/materials?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}&materi=true`
+          `/api/tutorial-video?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
+          console.log({ data: this.allData });
           this.total = response.data.total;
         });
     },
@@ -244,7 +242,7 @@ export default {
 </script>
 
 <style scoped>
-#materi {
+#videos {
   background-color: #133715;
   padding-top: 11rem;
   padding-bottom: 11rem;

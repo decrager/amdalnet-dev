@@ -11,7 +11,8 @@
         <span>{{ scope.$index + 1 }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Jenis Tutorial" prop="tutorial_type" sortable />
+    <el-table-column label="Nama Video" prop="name" sortable />
+    <el-table-column label="Jenis Video Tutorial" prop="tutorial_type" sortable />
     <el-table-column label="Link Video">
       <template slot-scope="scope">
         <span>{{ scope.row.url_video }}</span>

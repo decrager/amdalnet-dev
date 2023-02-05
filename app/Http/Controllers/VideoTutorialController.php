@@ -32,7 +32,7 @@ class VideoTutorialController extends Controller
                 $indents = $query->where('tutorial_type', 'ILIKE', '%'.$request->keyword.'%');
                 return $indents;
             })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
-    
+
             return response()->json($videoTutorial, 200);
         }
 
@@ -60,6 +60,7 @@ class VideoTutorialController extends Controller
             $request->all(),
             [
                 'tutorial_type'    => 'required',
+                'name'    => 'required',
             ]
         );
 
@@ -76,10 +77,11 @@ class VideoTutorialController extends Controller
             } else {
                 $name = NULL;
             }
-            
+
 
             $permit = new VideoTutorial();
             $permit->tutorial_type = $params['tutorial_type'];
+            $permit->name = $params['name'];
             $permit->url_video = $name;
             $permit->save();
 
@@ -122,6 +124,7 @@ class VideoTutorialController extends Controller
             $request->all(),
             [
                 'tutorial_type'    => 'required',
+                'name'    => 'required',
             ]
         );
 
@@ -139,8 +142,9 @@ class VideoTutorialController extends Controller
                 $file->storePubliclyAs('public', $name);
                 $permit->url_video = $name;
             }
-            
+
             $permit->tutorial_type = $params['tutorial_type'];
+            $permit->name = $params['name'];
             $permit->save();
         }
 

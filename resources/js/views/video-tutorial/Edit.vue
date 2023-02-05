@@ -1,7 +1,8 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <form
+    <el-form
       enctype="multipart/form-data"
+      :model="currentParam"
       @submit.prevent="saveVideoTutorial"
     >
       <el-card>
@@ -10,8 +11,15 @@
             <div class="form-container">
               <el-form>
                 <el-row>
+                  <el-form-item label="Nama Video"><small style="color: red">*</small>
+                    <el-input v-model="currentParam.name" type="text" placeholder="Nama Video" />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
                   <el-form-item label="Jenis Tutorial">
-                    <el-select v-model="value" placeholder="Jenis Tutorial" style="width:100%">
+                    <el-select v-model="currentParam.tutorial_type" placeholder="Jenis Tutorial" style="width:100%">
                       <el-option
                         v-for="item in form.tutorial_type"
                         :key="item.value"
@@ -49,7 +57,7 @@
           </el-col>
         </el-row>
       </el-card>
-    </form>
+    </el-form>
   </div>
 </template>
 <script>
@@ -60,20 +68,33 @@ export default {
   data() {
     return {
       file: '',
+      name: '',
       currentParam: {},
       form: {
         tutorial_type: [
           {
-            value: 'Penapisan Otomatis',
-            label: 'Penapisan Otomatis',
+            value: 'Landing Page',
+            label: 'Landing Page',
+          },
+          {
+            value: 'Registrasi',
+            label: 'Registrasi',
+          },
+          {
+            value: 'Penapisan',
+            label: 'Penapisan',
           },
           {
             value: 'Asistensi Pelingkupan',
             label: 'Asistensi Pelingkupan',
           },
           {
-            value: 'Amdal Digital Workspace',
-            label: 'Amdal Digital Workspace',
+            value: 'Penilaian Dokumen Lingkungan Hidup',
+            label: 'Penilaian Dokumen Lingkungan Hidup',
+          },
+          {
+            value: 'Lainnya',
+            label: 'Lainnya',
           },
         ],
       },
@@ -92,7 +113,8 @@ export default {
     async saveVideoTutorial() {
       const formData = new FormData();
       formData.append('url_video', this.file);
-      formData.append('tutorial_type', this.value);
+      formData.append('name', this.currentParam.name);
+      formData.append('tutorial_type', this.currentParam.tutorial_type);
       formData.append('old_link', this.currentParam.link);
       formData.append('id', this.currentParam.id);
       const headers = { 'Content-Type': 'multipart/form-data' };
