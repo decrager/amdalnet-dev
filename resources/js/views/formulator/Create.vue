@@ -410,7 +410,7 @@ export default {
         email: this.$store.getters.roles[0] === 'lsp' ? this.$store.getters.user.email : null,
         byUserEmail: 'true',
       });
-      this.id_lsp = data[0].id;
+      this.currentFormulator.id_lsp = data[0].id;
     },
     async getLsp() {
       const { data } = await lspResource.list({
