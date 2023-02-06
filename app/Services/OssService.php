@@ -248,6 +248,7 @@ class OssService
 
     public static function receiveLicenseStatus($project = null, $statusCode)
     {
+        dd($statusCode);
         $dataSubProject = OssService::getSubProjects($project);
         $ossNib = $dataSubProject['ossNib'];
         $subProjects =  $dataSubProject['subProjects'];
@@ -319,6 +320,7 @@ class OssService
                         'kd_izin_new' => $kdIzinNew,
                     ],
                 ];
+                // dd($data);
                 // $data = [
                 //     'IZINSTATUS' => [
                 //         'nib' => $ossNib->nib,
@@ -359,8 +361,8 @@ class OssService
                 Log::debug(json_encode($data));
                 Log::debug(json_encode($respJson));
                 $idIzinNew = null;
-                if (isset($respJson['responreceiveLicenseStatus']['id_izin_new'])) {
-                    $idIzinNew = $respJson['responreceiveLicenseStatus']['id_izin_new'];
+                if (isset($respJson['responReceiveLicenseStatusLingkungan']['id_izin_new'])) {
+                    $idIzinNew = $respJson['responReceiveLicenseStatusLingkungan']['id_izin_new'];
                 }
                 if (!empty($idIzinNew) && $idIzinNew != $idIzin) {
                     // update id_izin
