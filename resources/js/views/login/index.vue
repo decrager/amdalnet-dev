@@ -130,7 +130,7 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item prop="nib" :label="$t('login.nib')">
-                  <el-input v-model="registrationForm.nib" name="nib" type="text" :placeholder="$t('login.nib')" />
+                  <el-input v-model="registrationForm.nib" name="nib" type="number" :placeholder="$t('login.nib')" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -839,7 +839,12 @@ export default {
           message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus',
           trigger: 'blur',
         }],
-        nib: [{ required: true, trigger: 'blur', message: 'NIB Dibutuhkan' }],
+        nib: [{
+          required: true,
+          trigger: 'blur',
+          message: 'NIB tidak Valid',
+          pattern: /(\d{13})/,
+        }],
         // phone: [{ required: true, trigger: 'blur', message: 'Silahkan Masukan Nomor Telepon Yang Benar' }],
         phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, {
           type: 'number',

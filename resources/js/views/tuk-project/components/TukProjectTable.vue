@@ -77,10 +77,10 @@
 
     <el-table-column align="center" label="Anggota Uji Kelayakan">
       <template slot-scope="scope">
-        <el-button v-if="district" type="warning" @click="handleTukProjectMember(scope.row.id)">
+        <el-button v-if="district" style="margin: 2px;" type="warning" @click="handleTukProjectMember(scope.row.id)">
           Ubah
         </el-button>
-        <el-button type="warning" @click="handleViewForm(scope.row.id)">
+        <el-button style="margin: 2px;" type="warning" @click="handleViewForm(scope.row.id)">
           Lihat Detail Penapisan
         </el-button>
       </template>
