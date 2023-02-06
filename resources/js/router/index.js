@@ -164,7 +164,7 @@ export const constantRoutes = [
         component: () => import('@/views/dashboard/admin/index.vue'),
         name: 'tukProject',
         meta: {
-          title: 'Risiko T dan MT',
+          title: 'Dasbor',
           icon: 'layout-fluid',
           noCache: true,
           permissions: ['view menu tuk project', 'manage tuk project'],
