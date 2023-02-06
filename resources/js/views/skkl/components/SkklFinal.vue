@@ -218,7 +218,7 @@ export default {
       });
     },
     showFileAlert() {
-      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+      this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
         center: true,
       });
     },
