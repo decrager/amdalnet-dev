@@ -156,6 +156,7 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: 'dashboard',
+    alwaysShow: true,
     meta: { title: 'dashboard', icon: 'layout-fluid' },
     children: [
       {
@@ -169,17 +170,17 @@ export const constantRoutes = [
           permissions: ['view menu tuk project', 'manage tuk project'],
         },
       },
-      {
-        path: '/dasborMr',
-        component: () => import('@/views/dashboard/admin/components/Header.vue'),
-        name: 'tukProject',
-        meta: {
-          title: 'Risiko MR dan R',
-          icon: 'layout-fluid',
-          noCache: true,
-          permissions: ['view menu tuk project', 'manage tuk project'],
-        },
-      },
+      // {
+      //   path: '/dasborMr',
+      //   component: () => import('@/views/dashboard/admin/components/Header.vue'),
+      //   name: 'tukProject',
+      //   meta: {
+      //     title: 'Risiko MR dan R',
+      //     icon: 'layout-fluid',
+      //     noCache: true,
+      //     permissions: ['view menu tuk project', 'manage tuk project'],
+      //   },
+      // },
     ],
   },
   // {
