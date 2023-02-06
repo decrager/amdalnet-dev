@@ -1,20 +1,20 @@
 <template>
   <el-card v-loading="loading" class="box-card">
     <div style="margin: 0 0 2em 0; font-weight: bold">Pengajuan</div>
-    <line-chart :chart-data="lineChartData.data" :x-axis="xAxis" />
+    <bar-chart :chart-data="barChartData.data" :x-axis="xAxis" />
   </el-card>
 </template>
 <script>
 import { mapGetters } from 'vuex';
 import axios from 'axios';
-import LineChart from './LineChart';
+import BarChart from './BarChart';
 
 export default {
   name: 'SubmissionChart',
-  components: { LineChart },
+  components: { BarChart },
   data() {
     return {
-      lineChartData: {
+      barChartData: {
         data: {
           amdalData: [],
           ukluplData: [],
@@ -26,8 +26,8 @@ export default {
       loading: false,
       userInfo: {},
       period: 2,
-      date_start: new Date().getFullYear().toString() + '-01',
-      date_end: new Date().getFullYear().toString() + '-12',
+      date_start: new Date().setMonth().toString() - 3,
+      date_end: new Date().getMonth().toString(),
     };
   },
   computed: {
@@ -67,10 +67,10 @@ export default {
       axios
         .get(`/api/dashboard/chart?${search}`)
         .then((data) => {
-          this.lineChartData.data.amdalData = data.data.amdal;
-          this.lineChartData.data.ukluplData = data.data.ukl_upl;
-          this.lineChartData.data.spplData = data.data.sppl;
-          this.lineChartData.data.aARKLRPLData = data.data.adendum;
+          this.barChartData.data.amdalData = data.data.amdal;
+          this.barChartData.data.ukluplData = data.data.ukl_upl;
+          this.barChartData.data.spplData = data.data.sppl;
+          this.barChartData.data.aARKLRPLData = data.data.adendum;
           this.xAxis = data.data.dates;
           this.loading = false;
         })

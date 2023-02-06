@@ -322,7 +322,8 @@ class DashboardController extends Controller
                 $adendum[] = 0;
             }
         } else if($period == 2) {
-            $range = CarbonPeriod::create($start . '-01', '1 month', $end . '-01')->toArray();
+            // $range = CarbonPeriod::create($start . '-01', '1 month', $end . '-01')->toArray();
+            $range = CarbonPeriod::create(Carbon::now()->subMonths(3), '1 month', now())->toArray();
             foreach($range as $r) {
                 $dates[] = Carbon::createFromFormat('Y-m', $r->format('Y-m'))->isoFormat('MMMM Y');
                 $year = $r->format('Y');
@@ -363,7 +364,6 @@ class DashboardController extends Controller
                 $adendum[] = 0;
             }
         }
-
 
         return [
             'dates' => $dates,

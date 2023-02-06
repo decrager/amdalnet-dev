@@ -73,16 +73,16 @@
               <span class="fz12 white fw">Tanggal Berlaku SK</span>
             </div>
           </el-col>
-          <el-col :span="3" class="text-center py1">
+          <el-col :span="5" class="text-center py1">
             <div class="d-flex align-items-center justify-align-start">
               <span class="fz12 white fw">Penerbit SK</span>
             </div>
           </el-col>
-          <el-col :span="2" class="text-center py1">
+          <!-- <el-col :span="2" class="text-center py1">
             <div class="d-flex align-items-center justify-align-center">
               <span class="fz12 white fw">File</span>
             </div>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row
           v-for="(ijin, index) in allData"
@@ -106,10 +106,10 @@
           <el-col :span="4" class="py1">
             <span class="fz12 white">{{ formatDateStr(ijin.date) }}</span>
           </el-col>
-          <el-col :span="3" class="py1">
+          <el-col :span="5" class="py1">
             <span class="fz12 white">{{ ijin.publisher }}</span>
           </el-col>
-          <el-col :span="2" class="py text-center">
+          <!-- <el-col :span="2" class="py text-center">
             <a
               v-if="ijin.file"
               :href="ijin.file"
@@ -120,7 +120,7 @@
               <i class="el-icon-download" /> Download
             </a>
             <span v-else>-</span>
-          </el-col>
+          </el-col> -->
         </el-row>
       </div>
       <div class="block" style="text-align: right">
