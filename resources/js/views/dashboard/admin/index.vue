@@ -1,8 +1,5 @@
 <template>
   <div class="app-container">
-    <Header
-      v-if="isExaminerSecretary"
-    />
     <date-filter @filterChange="onFilterChange" />
     <submission-stats ref="stats" />
 
@@ -22,13 +19,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import InitiatorList from './components/InitiatorList';
 import SubmissionChart from './components/SubmissionChart';
 import PermitByRegion from './components/Permit';
 import SubmissionStats from './components/SubmissionStats';
 import DateFilter from './components/DateFilter';
-import Header from './components/Header';
 
 export default {
   name: 'AdminDashboard',
@@ -38,39 +33,11 @@ export default {
     PermitByRegion,
     SubmissionStats,
     DateFilter,
-    Header,
   },
   data() {
     return {
       filter: '',
     };
-  },
-  computed: {
-    ...mapGetters(['roles']),
-    isAdmin() {
-      return this.$store.getters.roles[0].split('-')[0] === 'admin';
-    },
-    isFormulator() {
-      return this.$store.getters.roles.includes('formulator');
-    },
-    isLSP() {
-      return this.$store.getters.roles.includes('lsp');
-    },
-    isInitiator() {
-      return this.$store.getters.roles.includes('initiator');
-    },
-    isExaminer() {
-      return this.$store.getters.roles[0].split('-')[0] === 'examiner';
-    },
-    isExaminerSecretary() {
-      return this.$store.getters.roles.includes('examiner-secretary');
-    },
-    isLPJP() {
-      return this.$store.getters.roles.includes('lpjp');
-    },
-    isPustanling() {
-      return this.$store.getters.roles.includes('pustanling');
-    },
   },
   methods: {
     onFilterChange(val) {
