@@ -9,8 +9,6 @@
     <div v-if="showIframe" style="position: absolute; background-color: rgb(238 238 229); z-index: 100; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
       <iframe
         :src="iframeSrc"
-        class="iframe-placeholder"
-        onload="document.getElementById('spinner').style.display='none';"
         width="100%"
         height="100%"
         frameborder="0"
@@ -44,4 +42,8 @@ export default {
 </script>
 
 <style scoped>
+iframe {
+  background-image: url("/Includes/Site/images/AjaxLoader.gif");
+  background-repeat: no-repeat;
+}
 </style>
