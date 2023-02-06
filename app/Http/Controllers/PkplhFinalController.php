@@ -100,7 +100,7 @@ class PkplhFinalController extends Controller
                 return false;
             }
             if($ossNib) {
-                $skklFinal = ProjectSkklFinal::where('id_project', $data['id_project'])->first();
+                $skklFinal = ProjectPkplhFinal::where('id_project', $data['id_project'])->first();
                 if ($skklFinal) {
                     $filename = $skklFinal->file;
                     $fileUrl = Storage::temporaryUrl('public/' . $filename, Carbon::now()->addMinutes(30));
