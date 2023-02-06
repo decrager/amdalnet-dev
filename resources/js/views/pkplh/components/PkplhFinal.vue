@@ -208,7 +208,7 @@ export default {
       window.open(url, '_blank').focus();
     },
     async handleUploadChange(file, fileList) {
-      if (file.raw.size > 1048576) {
+      if (file.raw.size > 10485760) {
         this.showFileAlert();
         return;
       }
