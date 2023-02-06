@@ -32,7 +32,7 @@ router.beforeEach(async(to, from, next) => {
   if (isUserLogged) {
     if (to.path === '/login') {
       if (to.fullPath === '/login') {
-        next({ path: '/dasborMt' });
+        next({ path: '/dashboard' });
       } else if (to.query.redirect.includes('/project/docspace')) {
         let document_type = 'ukl-upl';
         if (to.query.redirect.includes('ka-andal')) {
