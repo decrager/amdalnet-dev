@@ -98,6 +98,20 @@
               />
             </el-select>
           </el-col>
+          <el-col :span="6">
+            <el-select
+              v-model="filterIsPublish"
+              placeholder="Status Dokumen"
+              filterable
+            >
+              <el-option
+                v-for="item in statusDokumen"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-col>
           <el-col :span="12" />
         </el-row>
         <el-row style="padding-top: 10px">
@@ -346,6 +360,16 @@ export default {
       pippib2022Periode1JSON: null,
       authorities: [],
       sectors: [],
+      statusDokumen: [
+        {
+          label: 'Terbit',
+          value: 'true',
+        },
+        {
+          label: 'Belum Terbit',
+          value: 'false',
+        },
+      ],
       projectYears: [
         {
           id: 1,
@@ -364,6 +388,7 @@ export default {
       districts: [],
       filterAuthority: null,
       filterSector: null,
+      filterIsPublish: null,
       filterYear: null,
       filterInitiator: null,
       filterProvince: null,
@@ -417,6 +442,9 @@ export default {
       if (this.filterSector !== null) {
         params['sector'] = this.filterSector;
       }
+      if (this.filterIsPublish !== null) {
+        params['is_publish'] = this.filterIsPublish;
+      }
       if (this.filterYear !== null) {
         params['project_year'] = this.filterYear;
       }
@@ -442,6 +470,7 @@ export default {
     resetFilter() {
       this.filterAuthority = null;
       this.filterSector = null;
+      this.filterIsPublish = null;
       this.filterYear = null;
       this.filterInitiator = null;
       this.filterProvince = null;
@@ -954,7 +983,7 @@ export default {
       this.mapInit.add(kawasanHutanB);
 
       const pippib2022Periode1 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_1/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_2/MapServer',
         sublayers: [
           {
             id: 0,

@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ProjectMapAttachmentResource;
+use App\Entity\ProjectPkplhFinal;
+use App\Entity\ProjectSkklFinal;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -435,6 +437,17 @@ class ProjectMapAttachmentController extends Controller
             })
             ->when($request->has('id_applicant'), function ($query) use ($request) {
                 return $query->where('projects.id_applicant', '=', $request->id_applicant);
+            })
+            ->when($request->has('is_publish'), function ($query) use ($request) {
+                if ($request->is_publish === 'true') {
+                    $pkplhFinal = ProjectPkplhFinal::pluck('id_project')->toArray();
+                    $skklFinal = ProjectSkklFinal::pluck('id_project')->toArray();
+                    return $query->where('projects.marking', '=', ['uklupl-mt.pkplh-published', 'amdal.skkl-published'])->orwhereIn('projects.id', $pkplhFinal)->orWhereIn('projects.id', $skklFinal);
+                } else {
+                    $pkplhFinal = ProjectPkplhFinal::pluck('id_project')->toArray();
+                    $skklFinal = ProjectSkklFinal::pluck('id_project')->toArray();
+                    return $query->where('projects.marking', '!=', ['uklupl-mt.pkplh-published', 'amdal.skkl-published'])->orwhereNotIn('projects.id', $pkplhFinal)->orWhereNotIn('projects.id', $skklFinal);
+                }
             })
             ->when($request->has('prov'), function ($query) use ($request) {
                 $prov = Province::find($request->prov);
