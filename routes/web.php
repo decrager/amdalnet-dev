@@ -1,7 +1,10 @@
 <?php
 
+use App\Entity\Initiator;
 use App\Entity\LukMember;
+use App\Entity\OssNib;
 use App\Entity\Project;
+use App\Entity\SubProject;
 use App\Entity\WorkspaceComment;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExportDocument;
@@ -38,6 +41,13 @@ Route::get('auth/new-password',  [AuthController::class, 'resetPasswordRedirect'
 Route::get('#/oss/new-password',  [AuthController::class, 'resetPasswordRedirect'])->name('password.reset.redirect');
 
 Route::get('/test', function () {
+    $dataProject = Project::first();
+    $dataDate = (string)$dataProject->updated_at->format('d-m-Y');
+    dd($dataDate);
+
+
+    ////
+
     $document = public_path('document/template_rekap_komentar.docx');
     $commentsRaw = WorkspaceComment::with('user')->where('document_type', 'ukl-upl')->where('id_project', '1910')->get()->toArray();
     // dd($commentsRaw);
@@ -172,4 +182,36 @@ Route::get('/test', function () {
     // $document->saveAs($outputWord);
 
     // return Response()->download($outputWord);
+});
+
+
+Route::get('/test1', function () {
+    $project = Project::findOrFail('2056');
+    $initiator = Initiator::find($project->id_applicant);
+    if (!$initiator) {
+        Log::error('Initiator not found');
+        return false;
+    }
+    $ossNib = OssNib::where('nib', $initiator->nib)->first();
+    if (!$ossNib) {
+        Log::error('OSSNib not found');
+        return false;
+    }
+    $jsonContent = $ossNib->json_content;
+    $subProjects = $jsonContent['data_proyek'];
+    $subProjectsAmdalnet = SubProject::where('id_project', $project->id)->get();
+    if (empty($subProjectsAmdalnet)) {
+        Log::error('Sub projects not found');
+        return false;
+    }
+    $subProjectsAmdalnetIdProyeks = [];
+    foreach ($subProjectsAmdalnet as $sp) {
+        array_push($subProjectsAmdalnetIdProyeks, $sp->id_proyek);
+    }
+    return [
+        'ossNib' => $ossNib,
+        'initiator' => $initiator,
+        'subProjects' => $subProjects,
+        'subProjectsAmdalnetIdProyeks' => $subProjectsAmdalnetIdProyeks,
+    ];
 });

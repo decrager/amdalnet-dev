@@ -28,6 +28,7 @@
         </el-button>
         <el-button
           v-if="isFormulator && isPerbaikan"
+          style="margin-bottom: 10px;"
           class="pull-right"
           type="success"
           size="small"
@@ -36,6 +37,13 @@
         >
           Ya
         </el-button>
+
+        <div v-if="isFormulator" role="alert" style="margin-bottom: 10px;" class="el-alert el-alert--info is-light">
+          <div style="line-height: 1.6;" class="el-alert__description">
+            Sebelum <strong>Simpan & Lanjutkan</strong>, harap klik <strong>"SIMPAN PERUBAHAN"</strong> (Tombol Hijau) pada <strong>Jenis dan Besaran Dampak</strong>
+          </div>
+        </div>
+
         <span v-if="isPerbaikan" class="pull-right" style="font-weight: bold; margin-top: .5rem;">Apakah Ada Perbaikan pada Formulir UKL UPL ini?</span>
       </span>
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">

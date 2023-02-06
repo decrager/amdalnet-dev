@@ -11,6 +11,7 @@
       </el-tabs>
       <el-button
         v-if="isFormulator"
+        style="margin-bottom: 10px;"
         class="pull-right"
         type="success"
         size="small"
@@ -20,6 +21,22 @@
       >
         Simpan & Lanjutkan
       </el-button>
+
+      <div v-if="isFormulator" role="alert" class="el-alert el-alert--info is-light">
+        <div style="line-height: 1.6;" class="el-alert__content">
+          <strong>Sebelum Simpan & Lanjutkan, harap:</strong>
+          <p>
+            <ul>
+              <li>Lengkapi isian Komponen kegiatan dan komponen lingkungan pada bagian Pelingkupan</li>
+              <li>Simpan Perubahan pada Evaluasi Dampak Potensial & Dampak Penting Hipotetik</li>
+              <li>Lengkapi Peta Batas Wilayah Studi & Peta Pendukung (Peta SHP & PDF)</li>
+              <li>Simpan Perubahan pada Metode Studi</li>
+              <li>Export Bagan Alir Pelingkupan</li>
+            </ul>
+          </p>
+        </div>
+      </div>
+
       <div class="clearfix" style="margin-bottom:1em;" />
       <!-- <h2>Formulir Kerangka Acuan</h2> -->
 

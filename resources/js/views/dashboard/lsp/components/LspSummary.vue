@@ -117,53 +117,109 @@ export default {
       }
 
       await countResource.list(param).then((res) => {
-        let total = 0;
+        // let total = 0;
         const summary = {
           total: 0, active: 0, nonActive: 0, sertifikasi: 0, ktpa: 0, atpa: 0,
         };
-        let doc1 = res.data_active.find((e) => e.membership_status === 'ATPA');
-        let doc2 = res.data_active.find((e) => e.membership_status === 'KTPA');
-        // const doc = res.data_active.find((e) => e.membership_status === 'ATPA');
-        // console.log({ count: doc });
-        if (doc1) {
-          summary.active = (doc1.total + doc2.total);
-          total = total + doc1.total + doc2.total;
-        } else {
-          summary.active = 0;
-        }
+        let doc1 = 0;
+        let doc2 = 0;
+        let doc3 = 0;
 
-        doc1 = res.data_non_active.find((e) => e.membership_status === 'ATPA');
-        doc2 = res.data_non_active.find((e) => e.membership_status === 'KTPA');
-        if (doc1) {
-          summary.nonActive = (doc1.total + doc2.total);
-          total = total + doc1.total + doc2.total;
-        } else {
-          summary.nonActive = 0;
-        }
-
+        // Jumlah Penyusun Total
         doc1 = res.data_status.find((e) => e.membership_status === 'ATPA');
         doc2 = res.data_status.find((e) => e.membership_status === 'KTPA');
-        if (doc1) {
-          summary.sertifikasi = doc1.total + doc2.total;
+        doc3 = res.data_status.find((e) => e.membership_status === 'TA');
+        if (!doc1) {
+          if (!doc2) {
+            summary.total = doc3.total;
+          }
+          summary.total = doc2.total + doc3.total;
+        }
+        if (!doc2) {
+          if (!doc3) {
+            summary.total = doc1.total;
+          }
+          summary.total = doc1.total + doc3.total;
+        }
+        if (!doc3) {
+          summary.total = doc1.total + doc2.total;
         } else {
-          summary.sertifikasi = 0;
+          summary.total = doc1.total + doc2.total + doc3.total;
         }
 
-        doc1 = res.data_status.find((e) => e.membership_status === 'KTPA');
-        if (doc1) {
-          summary.ktpa = doc1.total;
+        // Jumlah Penyusun Aktif
+        doc1 = res.data_active.find((e) => e.membership_status === 'ATPA');
+        doc2 = res.data_active.find((e) => e.membership_status === 'KTPA');
+        doc3 = res.data_active.find((e) => e.membership_status === 'TA');
+        if (!doc1) {
+          if (!doc2) {
+            summary.active = doc3.total;
+          }
+          summary.active = doc2.total + doc3.total;
+        }
+        if (!doc2) {
+          if (!doc3) {
+            summary.active = doc1.total;
+          }
+          summary.active = doc1.total + doc3.total;
+        }
+        if (!doc3) {
+          summary.active = doc1.total + doc2.total;
         } else {
-          summary.ktpa = 0;
+          summary.active = doc1.total + doc2.total + doc3.total;
         }
 
+        // Jumlah Penyusun Tidak Aktif
+        doc1 = res.data_non_active.find((e) => e.membership_status === 'ATPA');
+        doc2 = res.data_non_active.find((e) => e.membership_status === 'KTPA');
+        doc3 = res.data_non_active.find((e) => e.membership_status === 'TA');
+        if (!doc1) {
+          if (!doc2) {
+            summary.nonActive = doc3.total;
+          }
+          summary.nonActive = doc2.total + doc3.total;
+        }
+        if (!doc2) {
+          if (!doc3) {
+            summary.nonActive = doc1.total;
+          }
+          summary.nonActive = doc1.total + doc3.total;
+        }
+        if (!doc3) {
+          summary.nonActive = doc1.total + doc2.total;
+        } else {
+          summary.nonActive = doc1.total + doc2.total + doc3.total;
+        }
+
+        // Jumlah Penyusun Sertifikasi
         doc1 = res.data_status.find((e) => e.membership_status === 'ATPA');
-        if (doc1) {
-          summary.atpa = doc1.total;
+        doc2 = res.data_status.find((e) => e.membership_status === 'KTPA');
+        if (!doc1) {
+          if (!doc2) {
+            summary.sertifikasi = 0;
+          }
+          summary.sertifikasi = doc2.total;
         } else {
-          summary.apta = 0;
+          summary.sertifikasi = doc1.total + doc2.total;
         }
 
-        summary.total = total;
+        // Jumlah Penyusun KTPA
+        doc1 = res.data_status.find((e) => e.membership_status === 'KTPA');
+        if (!doc1) {
+          summary.ktpa = 0;
+        } else {
+          summary.ktpa = doc1.total;
+        }
+
+        // Jumlah Penyusun ATPA
+        doc1 = res.data_status.find((e) => e.membership_status === 'ATPA');
+        if (!doc1) {
+          summary.ktpa = 0;
+        } else {
+          summary.atpa = doc1.total;
+        }
+
+        // summary.total = total;
         this.summary = summary;
         this.isLoading = false;
         console.log('getCount: ', this.summary);
