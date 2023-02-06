@@ -124,9 +124,9 @@ export default {
             name: 'AMDAL',
             itemStyle: {
               normal: {
-                color: '#347437',
+                color: '#0079c1',
                 lineStyle: {
-                  color: '#347437',
+                  color: '#0079c1',
                   width: 1,
                 },
               },
