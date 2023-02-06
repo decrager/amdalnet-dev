@@ -108,6 +108,11 @@ export default {
   },
   methods: {
     handleFileUpload() {
+      if (this.$refs.file.files[0].size > 1024 * 1024 * 200) {
+        this.$alert('File yang anda upload melebihi 200 Mb', {
+          center: true,
+        });
+      }
       this.file = this.$refs.file.files[0];
     },
     async saveVideoTutorial() {
