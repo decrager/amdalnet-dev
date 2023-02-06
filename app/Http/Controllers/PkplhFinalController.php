@@ -90,15 +90,15 @@ class PkplhFinalController extends Controller
             $saved = $pkplh->save();
 
             $initiator = Initiator::find($project->id_applicant);
-            if (!$initiator) {
-                Log::error('Initiator not found');
-                return false;
-            }
+            // if (!$initiator) {
+            //     Log::error('Initiator not found');
+            //     return false;
+            // }
             $ossNib = OssNib::where('nib', $initiator->nib)->first();
-            if (!$ossNib) {
-                Log::error('OSSNib not found');
-                return false;
-            }
+            // if (!$ossNib) {
+            //     Log::error('OSSNib not found');
+            //     return false;
+            // }
             if($ossNib) {
                 $skklFinal = ProjectPkplhFinal::where('id_project', $data['id_project'])->first();
                 if ($skklFinal) {
