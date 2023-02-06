@@ -7,8 +7,6 @@ import echarts from 'echarts';
 require('echarts/theme/macarons'); // echarts theme
 import { debounce } from '@/utils';
 
-const animationDuration = 6000;
-
 export default {
   props: {
     className: {
@@ -23,83 +21,179 @@ export default {
       type: String,
       default: '300px',
     },
+    chartData: {
+      type: Object,
+      required: true,
+    },
+    xAxis: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       chart: null,
+      sidebarElm: null,
     };
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val);
+      },
+    },
   },
   mounted() {
     this.initChart();
-    this.__resizeHandler = debounce(() => {
-      if (this.chart) {
-        this.chart.resize();
-      }
-    }, 100);
-    window.addEventListener('resize', this.__resizeHandler);
+    if (this.autoResize) {
+      this.__resizeHandler = debounce(() => {
+        if (this.chart) {
+          this.chart.resize();
+        }
+      }, 100);
+      window.addEventListener('resize', this.__resizeHandler);
+    }
+    // Monitor the sidebar changes
+    this.sidebarElm = document.getElementsByClassName('sidebar-container')[0];
+    this.sidebarElm &&
+      this.sidebarElm.addEventListener(
+        'transitionend',
+        this.sidebarResizeHandler
+      );
   },
   beforeDestroy() {
     if (!this.chart) {
       return;
     }
-    window.removeEventListener('resize', this.__resizeHandler);
+    if (this.autoResize) {
+      window.removeEventListener('resize', this.__resizeHandler);
+    }
+
+    this.sidebarElm &&
+      this.sidebarElm.removeEventListener(
+        'transitionend',
+        this.sidebarResizeHandler
+      );
+
     this.chart.dispose();
     this.chart = null;
   },
   methods: {
-    initChart() {
-      this.chart = echarts.init(this.$el, 'macarons');
-
+    sidebarResizeHandler(e) {
+      if (e.propertyName === 'width') {
+        this.__resizeHandler();
+      }
+    },
+    setOptions({ amdalData, ukluplData, spplData, aARKLRPLData } = {}) {
+      const xAxisData = this.xAxis;
+      console.log({ data: this.xAxis });
       this.chart.setOption({
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { // Axis indicator, axis trigger is valid
-            type: 'shadow', // The default is a straight line, which can be selected as: 'line' | 'shadow'
-          },
+        xAxis: {
+          data: xAxisData,
+          // left: 1,
+          // boundaryGap: false,
+          // axisTick: {
+          //   show: false,
+          // },
         },
         grid: {
-          top: 10,
-          left: '2%',
-          right: '2%',
-          bottom: '3%',
+          left: 10,
+          right: 10,
+          bottom: 20,
+          top: 30,
           containLabel: true,
         },
-        xAxis: [{
-          type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          axisTick: {
-            alignWithLabel: true,
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
           },
-        }],
-        yAxis: [{
-          type: 'value',
+          padding: [5, 10],
+        },
+        yAxis: {
           axisTick: {
             show: false,
           },
-        }],
-        series: [{
-          name: 'pageA',
-          type: 'bar',
-          stack: 'vistors',
-          barWidth: '60%',
-          data: [79, 52, 200, 334, 390, 330, 220],
-          animationDuration,
-        }, {
-          name: 'pageB',
-          type: 'bar',
-          stack: 'vistors',
-          barWidth: '60%',
-          data: [80, 52, 200, 334, 390, 330, 220],
-          animationDuration,
-        }, {
-          name: 'pageC',
-          type: 'bar',
-          stack: 'vistors',
-          barWidth: '60%',
-          data: [30, 52, 200, 334, 390, 330, 220],
-          animationDuration,
-        }],
+        },
+        legend: {
+          data: ['AMDAL', 'UKL UPL', 'SPPL', 'Addendum ANDAL dan RKL RPL'],
+        },
+        series: [
+          {
+            name: 'AMDAL',
+            itemStyle: {
+              normal: {
+                color: '#347437',
+                lineStyle: {
+                  color: '#347437',
+                  width: 1,
+                },
+              },
+            },
+            smooth: true,
+            type: 'bar',
+            data: amdalData,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
+          },
+          {
+            name: 'UKL UPL',
+            smooth: true,
+            type: 'bar',
+            itemStyle: {
+              normal: {
+                color: '#449748',
+                lineStyle: {
+                  color: '#449748',
+                  width: 1,
+                },
+              },
+            },
+            data: ukluplData,
+            animationDuration: 2800,
+            animationEasing: 'quadraticOut',
+          },
+          {
+            name: 'SPPL',
+            itemStyle: {
+              normal: {
+                color: '#eb8a00',
+                lineStyle: {
+                  color: '#eb8a00',
+                  width: 1,
+                },
+              },
+            },
+            smooth: true,
+            type: 'bar',
+            data: spplData,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
+          },
+          {
+            name: 'Addendum ANDAL dan RKL RPL',
+            itemStyle: {
+              normal: {
+                color: '#fac400',
+                lineStyle: {
+                  color: '#fac400',
+                  width: 1,
+                },
+              },
+            },
+            smooth: true,
+            type: 'bar',
+            data: aARKLRPLData,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
+          },
+        ],
       });
+    },
+    initChart() {
+      this.chart = echarts.init(this.$el, 'macarons');
+      this.setOptions(this.chartData);
     },
   },
 };
