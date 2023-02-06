@@ -29,7 +29,7 @@
           type="card"
           @tab-click="handleClickTab"
         >
-          <el-tab-pane label="PENYUSUN" name="penyusunAktif">
+          <el-tab-pane label="PENYUSUN" name="penyusunBersertifikat">
             <formulator-table
               :loading="loading"
               :list="list"
@@ -137,6 +137,8 @@ export default {
         this.listQuery.active = 'true';
       } else if (tab.name === 'penyusunBersertifikat') {
         this.listQuery.active = 'bersertifikat';
+      } else if (tab.name === 'penyusunTidakBersertifikat') {
+        this.listQuery.active = 'tidakBersertifikat';
       } else {
         this.listQuery.active = '';
       }
