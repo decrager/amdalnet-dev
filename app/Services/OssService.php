@@ -248,7 +248,7 @@ class OssService
 
     public static function receiveLicenseStatus($project = null, $statusCode)
     {
-        dd($statusCode);
+        // dd($statusCode);
         $dataSubProject = OssService::getSubProjects($project);
         $ossNib = $dataSubProject['ossNib'];
         $subProjects =  $dataSubProject['subProjects'];
