@@ -15,16 +15,16 @@ export default {
   data() {
     return {
       showIframe: false,
-      iframeSrc: 'https://amdalnet-dev.menlhk.go.id/dashboard_mr',
+      iframeSrc: '',
     };
   },
-  // created() {
-  //   if (window.location.href.includes('amdalnet-dev')) {
-  //     this.iframeSrc = 'https://amdalnet-dev.menlhk.go.id/dashboard_mr';
-  //   } else {
-  //     this.iframeSrc = 'https://amdalnet.menlhk.go.id/dashboard_mr';
-  //   }
-  // },
+  created() {
+    if (window.location.href.includes('amdalnet-dev')) {
+      this.iframeSrc = 'https://amdalnet-dev.menlhk.go.id/dashboard_mr';
+    } else {
+      this.iframeSrc = 'https://amdalnet.menlhk.go.id/dashboard_mr';
+    }
+  },
   methods: {
     showHide() {
       this.showIframe = !this.showIframe;
