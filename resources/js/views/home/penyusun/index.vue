@@ -37,7 +37,7 @@
               @handleDelete="handleDelete($event)"
             />
           </el-tab-pane>
-          <el-tab-pane label="TENAGA AHLI" name="penyusunTidakBersertifikat">
+          <el-tab-pane label="TENAGA AHLI" name="penyusunBersertifikat">
             <formulator-table
               :loading="loading"
               :list="list"
@@ -112,7 +112,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        // active: 'true',
+        active: 'true',
         search: null,
       },
       total: 0,
@@ -135,8 +135,6 @@ export default {
       this.listQuery.search = null;
       if (tab.name === 'penyusunAktif') {
         this.listQuery.active = 'true';
-      } else if (tab.name === 'penyusunTidakAktif') {
-        this.listQuery.active = 'false';
       } else if (tab.name === 'penyusunBersertifikat') {
         this.listQuery.active = 'bersertifikat';
       } else if (tab.name === 'penyusunTidakBersertifikat') {
@@ -148,6 +146,7 @@ export default {
     },
     async getList() {
       this.loading = true;
+      console.log({ data: this.listQuery });
       const { data, meta } = await formulatorResource.list(this.listQuery);
       this.list = data.map((x) => {
         x.membership_status = x.membership_status ? x.membership_status : '-';

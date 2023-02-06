@@ -56,16 +56,12 @@ class FormulatorController extends Controller
         return FormulatorResource::collection(
            $formulator =  Formulator::with('user')->where(function ($query) use ($request) {
                 if ($request->active && ($request->active == 'true')) {
-                    $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+                    $query->where('membership_status', '!=', 'TA')->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
                         ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
-                } else if($request->active && ($request->active == 'false')) {
-                    $query->where('date_end', null)
-                          ->orWhere('date_end', '<', date('Y-m-d H:i:s'));
                 } else if($request->active && ($request->active === 'bersertifikat')) {
-                    $query->whereIn('membership_status', ['KTPA', 'ATPA']);
-                } else if($request->active && ($request->active === 'tidakBersertifikat')) {
-                    $query->whereIn('membership_status', ['TA']);
-            }})
+                    $query->where('membership_status', 'TA');
+                }
+            })
             ->where(function($query) use($request) {
                 if($request->search) {
                     $query->where(function($q) use($request) {
