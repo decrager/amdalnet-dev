@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button style="font-weight: bold;" :loading="loading" type="warning" @click="showHide">Daftar Rekap SPPL dan UKL-UPL Menengah Rendah</el-button>
-    <div v-if="showIframe" class="iframe-container" style="position: absolute; background-color: rgb(238 238 229); z-index: 100; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
+    <div v-if="showIframe" style="position: absolute; background-color: rgb(238 238 229); z-index: 100; left: 0; right: 0; padding-top: 1rem; padding-right: 1rem; padding-left: 1rem; margin-left: 1px; height: 100%;">
       <iframe
         :src="iframeSrc"
         width="100%"
@@ -37,8 +37,8 @@ export default {
 </script>
 
 <style scoped>
-.iframe-container{
+/* .iframe-container{
    min-height: 100px;
    background: url("public/assets/gif/loader.gif") no-repeat 50% top !important;
-}
+} */
 </style>
