@@ -16,6 +16,15 @@
           <h4>Dokumen Persetujuan Lingkungan Final</h4>
           <PkplhFinal />
         </el-col>
+        <el-alert
+          v-if="isPublish"
+          :title="'Persetujuan Lingkungan Diterbitkan'"
+          type="success"
+          description="Terimakasih"
+          show-icon
+          center
+          :closable="false"
+        />
       </el-row>
       <el-row :gutter="32">
         <el-col :sm="24" :md="24">
@@ -60,13 +69,23 @@ export default {
       readonly: true,
     };
   },
+  computed: {
+    isPublish(){
+      return this.$store.getters.markingStatus === 'uklupl-mt.pkplh-published';
+    },
+  },
   mounted() {
+    console.log(this.$store.getters);
     this.loadMap();
+    this.getMarking();
   },
   created() {
     this.$store.dispatch('getStep', 6);
   },
   methods: {
+    async getMarking() {
+      await this.$store.dispatch('getMarking', this.idProject);
+    },
     async loadMap() {
       axios.get('api/map/' + this.idProject).then((response) => {
         const map = new Map({
