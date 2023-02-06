@@ -98,9 +98,6 @@
                 <a href="#" @click="handleSetMenu('TUK')">Daftar TUK</a>
               </li>
               <li>
-                <a href="#" @click="handleSetMenu('TUK')">Daftar TUK</a>
-              </li>
-              <li>
                 <a href="https://amdal.menlhk.go.id/info_persuratan" target="_blank">Informasi Persuratan</a>
               </li>
               <li>
