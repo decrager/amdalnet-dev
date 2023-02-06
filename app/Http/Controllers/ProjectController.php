@@ -419,6 +419,10 @@ class ProjectController extends Controller
                 'oss_required_doc' => $fileOssReqDocName,
                 'oss_sppl_doc' => $fileOssSpplDocName,
             ]);
+            // if (!isset($request['isPemerintah']) && $request['isOSS'] === "true") {
+            //     OssService::receiveLicenseStatus($project, '20');
+            // }
+            // dd('terlewat');
 
             // add workflow
             $project->workflow_apply('fill-info');
