@@ -92,19 +92,19 @@ class MeetingReportController extends Controller
         if($request->file) {
             $project = Project::findOrFail($request->idProject);
             $meeting_report = null;
-            $initiator = Initiator::find($project->id_applicant);
-            if (!$initiator) {
-                Log::error('Initiator not found');
-                return false;
-            }
-            $ossNib = OssNib::where('nib', $initiator->nib)->first();
-            if (!$ossNib) {
-                Log::error('OSSNib not found');
-                return false;
-            }
-            if ($ossNib) {
-                OssService::receiveLicenseStatusNotif($request, '10');
-            }
+            // $initiator = Initiator::find($project->id_applicant);
+            // if (!$initiator) {
+            //     Log::error('Initiator not found');
+            //     return false;
+            // }
+            // $ossNib = OssNib::where('nib', $initiator->nib)->first();
+            // if (!$ossNib) {
+            //     Log::error('OSSNib not found');
+            //     return false;
+            // }
+            // if ($ossNib) {
+            //     OssService::receiveLicenseStatusNotif($request, '10');
+            // }
             // if ($request->isOSS === 'true') {
             //     OssService::receiveLicenseStatusNotif($request, '10');
             // }
