@@ -67,7 +67,7 @@
           <!-- <el-divider>atau</el-divider>
           <div style="text-align: start; margin-bottom: 15px;">
             <span style="font-size: smaller; color: black;">Masuk dengan Akun OSS RBA</span>
-          </div>
+          </div> -->
           <el-row>
             <router-link to="/oss/login">
               <el-button type="primary" style="width: 100%;">

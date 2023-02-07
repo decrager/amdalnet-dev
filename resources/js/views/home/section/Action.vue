@@ -215,13 +215,13 @@ export default {
         .get(`/api/tutorial-video`)
         .then((response) => {
           response.data.data.map((val, i) => {
-            if (val.name === 'Tutorial Simulasi Penapisan'){
+            if (val.name === 'Tutorial Menyusun Tim LPJP'){
               this.video3 = val.url_video;
             }
-            if (val.name === 'Tutorial Login Amdalnet'){
+            if (val.name === 'Tutorial Submit Dokumen UKL UPL -Pemrakarsa'){
               this.video1 = val.url_video;
             }
-            if (val.name === 'Tutorial Memberikan Komentar melalui Workspace'){
+            if (val.name === 'Tutorial Membuat Berita Acara Hasil Pemeriksaan Dokumen UKL UPL'){
               this.video2 = val.url_video;
             }
           });
