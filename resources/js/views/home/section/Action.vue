@@ -215,13 +215,13 @@ export default {
         .get(`/api/tutorial-video`)
         .then((response) => {
           response.data.data.map((val, i) => {
-            if (val.tutorial_type === 'Amdal Digital Workspace'){
+            if (val.tutorial_type === 'Penapisan'){
               this.video3 = val.url_video;
             }
-            if (val.tutorial_type === 'Penapisan Otomatis'){
+            if (val.tutorial_type === 'Asistensi Pelingkupan'){
               this.video1 = val.url_video;
             }
-            if (val.tutorial_type === 'Asistensi Pelingkupan'){
+            if (val.tutorial_type === 'Penilaian Dokumen Lingkungan Hidup'){
               this.video2 = val.url_video;
             }
           });
