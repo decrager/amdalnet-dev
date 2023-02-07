@@ -68,7 +68,7 @@
           <div style="text-align: start; margin-bottom: 15px;">
             <span style="font-size: smaller; color: black;">Masuk dengan Akun OSS RBA</span>
           </div> -->
-          <el-row>
+          <!-- <el-row>
             <router-link to="/oss/login">
               <el-button type="primary" style="width: 100%;">
                 <div>
@@ -80,7 +80,7 @@
                 </div>
               </el-button>
             </router-link>
-          </el-row>
+          </el-row> -->
         </el-form>
       </div>
     </div>
