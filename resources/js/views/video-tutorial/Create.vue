@@ -34,7 +34,7 @@
               <el-form>
                 <el-row>
                   <el-form-item :class="{ 'is-error': errors.video_upload || errors.video_maks }">
-                    <label style="color: #606266">Video (Maksimal 50 MB)<small style="color: red">*</small></label>
+                    <label style="color: #606266">Video (Maksimal 200 MB)<small style="color: red">*</small></label>
                     <input
                       ref="file"
                       type="file"
@@ -126,7 +126,7 @@ export default {
       if (!this.file) {
         errors++;
         this.errors.video_upload = true;
-      } else if (this.$refs.file.files[0].size > 1024 * 1024 * 50) {
+      } else if (this.$refs.file.files[0].size > 1024 * 1024 * 200) {
         errors++;
         this.errors.video_maks = true;
       }

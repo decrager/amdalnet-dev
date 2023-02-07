@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    v-if="mobile === false"
     id="disclaimer"
     title="Pemberitahuan"
     :visible.sync="showDisclaimer"
@@ -28,10 +29,14 @@ export default {
   data() {
     return {
       showDisclaimer: true,
+      mobile: false,
     };
   },
   mounted() {
     console.log('disclaimer!');
+    if (window.innerWidth <= 400) {
+      this.mobile = true;
+    }
   },
   methods: {
     handleClose(){
