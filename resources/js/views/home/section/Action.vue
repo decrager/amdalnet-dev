@@ -215,13 +215,13 @@ export default {
         .get(`/api/tutorial-video`)
         .then((response) => {
           response.data.data.map((val, i) => {
-            if (val.name === 'Tutorial Simulasi Penapisan'){
+            if (val.tutorial_type === 'Penapisan'){
               this.video3 = val.url_video;
             }
-            if (val.name === 'Tutorial Login Amdalnet'){
+            if (val.tutorial_type === 'Asistensi Pelingkupan'){
               this.video1 = val.url_video;
             }
-            if (val.name === 'Tutorial Memberikan Komentar melalui Workspace'){
+            if (val.tutorial_type === 'Penilaian Dokumen Lingkungan Hidup'){
               this.video2 = val.url_video;
             }
           });
