@@ -583,7 +583,7 @@ class ExportDocument extends Controller
         $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
 
         $project_title_big = strtoupper($project->project_title);
-        $pemrakarsa = $project->initiator->name;
+        $pemrakarsa = htmlspecialchars($project->initiator->name);
         $pemrakarsa_address = $project->initiator->address;
         $pemrakarsa_phone = $project->initiator->phone;
         $pemrakarsa_nib = $project->initiator->nib;
