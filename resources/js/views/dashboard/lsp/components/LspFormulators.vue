@@ -55,6 +55,7 @@
       :page.sync="query.page"
       :limit.sync="query.limit"
       @pagination="getData"
+      @click.prevent
     />
   </el-card>
 </template>
@@ -78,7 +79,7 @@ export default {
       loading: false,
       query: {
         page: 1,
-        limit: 15,
+        limit: 10,
       },
       total: 0,
     };
