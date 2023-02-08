@@ -1205,6 +1205,9 @@ export default {
                     return false;
                   }
 
+                  this.$alert(`Akun anda telah berhasil dibuat, periksa Email anda untuk melakukan aktivasi akun`, {
+                    confirmButtonText: 'OK',
+                  });
                   this.$message({
                     message:
                       'User Dengan Email ' +
