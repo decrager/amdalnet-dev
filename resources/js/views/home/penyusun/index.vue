@@ -29,7 +29,7 @@
           type="card"
           @tab-click="handleClickTab"
         >
-          <el-tab-pane label="PENYUSUN" name="penyusunBersertifikat">
+          <el-tab-pane label="PENYUSUN BERSERTIFIKAT" name="penyusunBersertifikat">
             <formulator-table
               :loading="loading"
               :list="list"
@@ -37,7 +37,7 @@
               @handleDelete="handleDelete($event)"
             />
           </el-tab-pane>
-          <el-tab-pane label="TENAGA AHLI" name="penyusunBersertifikat">
+          <el-tab-pane label="TENAGA AHLI" name="penyusunTidakBersertifikat">
             <formulator-table
               :loading="loading"
               :list="list"
