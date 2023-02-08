@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\AndalAttachment;
 use App\Entity\AndalComment;
 use App\Entity\Comment;
+use Illuminate\Support\Facades\Log;
 use App\Entity\ComponentType;
 use App\Entity\DocumentAttachment;
 use App\Entity\EnvImpactAnalysis;
@@ -2863,6 +2864,7 @@ class AndalComposingController extends Controller
         if($data) {
             $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data, $selected_font));
         }
+        Log::info($content);
         Html::addHtml($cell, $content);
         return [
             'name' => '${' . $name . '_' . $stage_id . '_' . $impact_id . '}',

@@ -1,6 +1,6 @@
 <?php
 namespace App\Utils;
-
+use Illuminate\Support\Facades\Log;
 class ListRender
 {
     public static function parsingList($text, $font_style = '', $font_size = '')
@@ -49,6 +49,10 @@ class ListRender
         $result = str_replace('</li>', '</span>', $new_string);
 
         if($type == 'ul') {
+            if(str_contains($result, 'li style="list-style-type: none;"'))
+            {
+                $result = str_replace('<li style="list-style-type: none;">', '<span style="display:inline-block; font-family: ' . $font_style .'; font-size: ' . $font_size . '; padding: 0; margin: 0;">&#9632; ', $result);
+            }
             $result = str_replace('<ul style="list-style-type: square;">', '', $result);
             $result = str_replace('<li>', '<span style="display:inline-block; font-family: ' . $font_style .'; font-size: ' . $font_size . '; padding: 0; margin: 0;">&#9632; ', $result);
         }
