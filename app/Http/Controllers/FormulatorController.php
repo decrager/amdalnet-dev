@@ -64,6 +64,8 @@ class FormulatorController extends Controller
                 } else if($request->active && ($request->active === 'bersertifikat')) {
                     $query->where('membership_status', 'KTPA')
                         ->orWhere('membership_status', 'ATPA');
+                } else if($request->active && ($request->active === 'tidakBersertifikat')) {
+                        $query->where('membership_status', 'TA');
                 } 
             })
             ->where(function($query) use($request) {
