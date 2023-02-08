@@ -1261,6 +1261,9 @@ export default {
                     return false;
                   }
 
+                  this.$alert(`Akun anda telah berhasil dibuat, periksa Email anda untuk melakukan aktivasi akun`, {
+                    confirmButtonText: 'OK',
+                  });
                   this.$message({
                     message:
                       'User Dengan Email ' +
@@ -1326,6 +1329,9 @@ export default {
                       '',
                       { dangerouslyUseHTMLString: true, center: true, customClass: 'alert-certificate' });
                   } else {
+                    this.$alert(`Akun anda telah berhasil dibuat, periksa Email anda untuk melakukan aktivasi akun`, {
+                      confirmButtonText: 'OK',
+                    });
                     this.$message({
                       message:
                         'User Dengan Email ' +
