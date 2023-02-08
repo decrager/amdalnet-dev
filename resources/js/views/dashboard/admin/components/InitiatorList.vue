@@ -37,7 +37,7 @@ export default {
       loading: false,
       listQuery: {
         page: 1,
-        limit: 5,
+        limit: 10,
       },
       total: 0,
       period: 2,
@@ -89,7 +89,7 @@ export default {
       }
       this.listQuery = {
         page: 1,
-        limit: 5,
+        limit: 10,
       };
       this.total = 0;
       this.getInitiators();

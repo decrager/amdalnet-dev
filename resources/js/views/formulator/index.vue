@@ -148,7 +148,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        active: 'true',
+        active: 'aktif',
         search: null,
         email: this.$store.getters.user.email,
       },
@@ -171,9 +171,9 @@ export default {
       this.listQuery.limit = 10;
       this.listQuery.search = null;
       if (tab.name === 'penyusunAktif') {
-        this.listQuery.active = 'true';
+        this.listQuery.active = 'aktif';
       } else if (tab.name === 'penyusunTidakAktif') {
-        this.listQuery.active = 'false';
+        this.listQuery.active = 'nonaktif';
       } else if (tab.name === 'penyusunBersertifikat') {
         this.listQuery.active = 'bersertifikat';
       } else {
@@ -212,7 +212,7 @@ export default {
     cancelUpdateCertificate() {
       this.updateCertificate = false;
       this.activeName = 'penyusunAktif';
-      this.listQuery.active = 'true';
+      this.listQuery.active = 'aktif';
       this.listQuery.search = null;
       this.getList();
     },
