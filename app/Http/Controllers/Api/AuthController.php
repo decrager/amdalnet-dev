@@ -319,7 +319,7 @@ class AuthController extends BaseController
             $request->only('email')
         );
 
-        if ($user->active === 1) {
+        if (!$user->active === 1) {
             Notification::send($user, new UserRegistered($user, null));
             event(new \App\Events\NotificationEvent());
         }
