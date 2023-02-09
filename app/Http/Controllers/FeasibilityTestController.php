@@ -117,19 +117,21 @@ class FeasibilityTestController extends Controller
             // }
 
             $project = Project::findOrFail($request->idProject);
-            // $initiator = Initiator::find($project->id_applicant);
-            // if (!$initiator) {
-            //     Log::error('Initiator not found');
-            //     return false;
-            // }
-            // $ossNib = OssNib::where('nib', $initiator->nib)->first();
-            // if (!$ossNib) {
-            //     Log::error('OSSNib not found');
-            //     return false;
-            // }
-            // if ($ossNib) {
-            //     OssService::receiveLicenseStatusNotif($request, '45');
-            // }
+            if ($project->is_oss === 1) {
+                $initiator = Initiator::find($project->id_applicant);
+                if (!$initiator) {
+                    Log::error('Initiator not found');
+                    return false;
+                }
+                $ossNib = OssNib::where('nib', $initiator->nib)->first();
+                if (!$ossNib) {
+                    Log::error('OSSNib not found');
+                    return false;
+                }
+                if ($ossNib) {
+                    OssService::receiveLicenseStatusNotif($request, '45');
+                }
+            }
 
             $user = User::where('email', $project->initiator->email)->first();
 

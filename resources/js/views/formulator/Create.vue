@@ -175,6 +175,13 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row v-if="currentFormulator.isCertified" :gutter="32">
+          <el-col :sm="24" :md="12">
+            <el-form-item label="No Sertifikat" prop="certNo">
+              <el-input v-model="currentFormulator.cert_no" name="certNo" placeholder="Nomor Sertifikat" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div style="text-align: right">
         <el-button @click="handleCancel()"> Batal </el-button>
@@ -251,6 +258,16 @@ export default {
         callback();
       }
     };
+    const validateCertNo = (rule, value, callback) => {
+      if (
+        this.currentFormulator.isCertified &&
+        !this.currentFormulator.cert_no
+      ) {
+        callback(new Error('No Sertifikat Wajib Diisi'));
+      } else {
+        callback();
+      }
+    };
     const validateMembershipStatus = (rule, value, callback) => {
       if (this.currentFormulator.isCertified && !value) {
         callback(new Error('Sertifikasi Wajib Dipilih'));
@@ -267,6 +284,7 @@ export default {
         date_start: null,
         membership_status: null,
         isCertified: false,
+
       },
       sertifikatFileUpload: null,
       lspOptions: [],
@@ -290,6 +308,13 @@ export default {
           {
             trigger: 'blur',
             validator: validateEmail,
+          },
+        ],
+        certNo: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: validateCertNo,
           },
         ],
         // expertise: [
@@ -551,6 +576,7 @@ export default {
     handleChangeIsCertified(data) {
       if (!data) {
         this.currentFormulator.date_start = null;
+        this.currentFormulator.cert_no = null;
         this.currentFormulator.file_sertifikat = null;
         this.sertifikatFileName = null;
         this.currentFormulator.membership_status = null;

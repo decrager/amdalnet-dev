@@ -31,8 +31,9 @@ class DashboardController extends Controller
         $non_active = DB::table('formulators')
         ->select('membership_status', DB::raw('count(*) as total'))
         ->where('id_lsp', $request->lspId)
-        ->Where('date_end', '<', date('Y-m-d H:i:s'));
-
+        ->Where('date_end', '<', date('Y-m-d H:i:s'))
+        ->orWhere([['id_lsp', $request->lspId], ['date_start', null]]);
+        
         $active = DB::table('formulators')
         ->select('membership_status', DB::raw('count(*) as total'))
         ->where('id_lsp', $request->lspId)
