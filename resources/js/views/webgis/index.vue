@@ -402,7 +402,7 @@ export default {
         return this.mappedProject;
       }
       this.filtered = this.mappedProject.filter(item => {
-        return item.project_title.toLowerCase().includes(this.selectedProject);
+        return item.project_title.toLowerCase().includes(this.selectedProject.toLowerCase());
       });
 
       this.total = this.filtered.length;
