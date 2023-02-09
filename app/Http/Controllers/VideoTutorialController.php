@@ -16,6 +16,9 @@ class VideoTutorialController extends Controller
      */
     public function index(Request $request)
     {
+        if(request()->has('landingPage')) {
+            return VideoTutorial::get();
+        }
         if ($request->sort == 'null') {
             $sort = 'DESC';
         } else {
