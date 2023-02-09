@@ -223,19 +223,20 @@ class MeetReportRKLRPLController extends Controller
 
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
-
-                $initiator = Initiator::find($project->id_applicant);
-                if (!$initiator) {
-                    Log::error('Initiator not found');
-                    return false;
-                }
-                $ossNib = OssNib::where('nib', $initiator->nib)->first();
-                if (!$ossNib) {
-                    Log::error('OSSNib not found');
-                    return false;
-                }
-                if ($ossNib) {
-                    OssService::receiveLicenseStatusNotif($request, '45');
+                if($project->is_oss === 1){
+                    $initiator = Initiator::find($project->id_applicant);
+                    if (!$initiator) {
+                        Log::error('Initiator not found');
+                        return false;
+                    }
+                    $ossNib = OssNib::where('nib', $initiator->nib)->first();
+                    if (!$ossNib) {
+                        Log::error('OSSNib not found');
+                        return false;
+                    }
+                    if ($ossNib) {
+                        OssService::receiveLicenseStatusNotif($request, '45');
+                    }
                 }
 
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();

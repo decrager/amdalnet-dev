@@ -52,7 +52,6 @@
                       :height="150"
                       :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
                     />
-                    <!-- <el-input v-model="currentProject.description" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
                 <el-row>
@@ -64,7 +63,6 @@
                       :height="150"
                       :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
                     />
-                    <!-- <el-input v-model="currentProject.location_desc" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
               </el-col>
@@ -86,7 +84,6 @@
                       :height="150"
                       :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
                     />
-                    <!-- <el-input v-model="currentProject.location_desc" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
               </el-col>
@@ -246,85 +243,6 @@
                 >+</el-button>
               </el-form-item>
             </el-row>
-            <!-- Alamat -->
-            <!-- <el-row v-show="currentProject.isPemerintah === 'true'" type="flex" justify="end" :gutter="4"> -->
-            <!-- <el-row type="flex" justify="end" :gutter="4">
-              <el-col :span="24" :xs="24">
-                <el-form-item label="AlamatOss" prop="address">
-                  <el-table :key="refresh" :data="currentProject.address" max-height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-                    <el-table-column align="center" width="55">
-                      <template slot-scope="scope">
-                        <el-checkbox v-model="scope.row.isUsed" :disabled="fromOss" />
-                      </template>
-                    </el-table-column>
-                    <el-table-column align="center" label="No." width="55">
-                      <template slot-scope="scope">
-                        {{ scope.$index + 1 }}
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="Provinsi" width="200px">
-                      <template slot-scope="scope">
-                        <el-select
-                          v-model="scope.row.prov"
-                          :disabled="fromOss"
-                          placeholder="Pilih"
-                          style="width: 100%"
-                          filterable
-                          @change="changeProvince(scope.row)"
-                        >
-                          <el-option
-                            v-for="item in getProvinceOptions"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                          />
-                        </el-select>
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="Kota/Kabupaten" width="300px">
-                      <template slot-scope="scope">
-                        <el-select
-                          v-model="scope.row.district"
-                          :disabled="fromOss"
-                          placeholder="Pilih"
-                          style="width: 100%"
-                          filterable
-                        >
-                          <el-option
-                            v-for="item in scope.row.districts"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                          />
-                        </el-select>
-                      </template>
-                    </el-table-column>
-
-                    <el-table-column label="Alamat">
-                      <template slot-scope="scope">
-                        <el-input v-model="scope.row.address" :disabled="fromOss" />
-                      </template>
-                    </el-table-column>
-
-                    <el-table-column width="100px">
-                      <template slot-scope="scope">
-                        <el-popconfirm
-                          title="Hapus Alamat ?"
-                          @confirm="currentProject.address.splice(scope.$index,1)"
-                        >
-                          <el-button slot="reference" type="danger" icon="el-icon-close" />
-                        </el-popconfirm>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                  <el-button
-                    type="primary"
-                    :disabled="fromOss"
-                    @click="handleAddAddressTable"
-                  >+</el-button>
-                </el-form-item>
-              </el-col>
-            </el-row> -->
             <el-row type="flex" justify="end">
               <el-col :span="5" style="padding-right: 0px">
                 <el-button size="medium" @click="activeName = '1'">
@@ -521,7 +439,6 @@
                   :label="preeAgreementLabel + ' Max 10MB'"
                   prop="pre_agreement"
                 >
-                  <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
                   <classic-upload :name="filePreAgreementName" :fid="'filePreAgreement'" @handleFileUpload="handleFilePreAgreementUpload" />
                   <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi</el-tag>
                 </el-form-item>
@@ -548,7 +465,6 @@
                   <el-checkbox v-model="currentProject.emission" label="Emisi Gas Buang" @change="currentProject.nothing = false" />
                   <el-checkbox v-model="currentProject.b3" label="Limbah B3" @change="currentProject.nothing = false" />
                   <el-checkbox v-model="currentProject.traffics" label="Gangguan Lalu Lintas" @change="currentProject.nothing = false" />
-                  <!-- <el-checkbox v-model="currentProject.nothing" label="Tidak Ada" @change="handleNothingTick" /> -->
                 </el-form-item>
               </el-col>
             </el-row>
@@ -698,19 +614,9 @@ import { mapGetters } from 'vuex';
 import Workflow from '@/components/Workflow';
 import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
-// import SupportTable from './components/SupportTable.vue';
 import SubProjectTable from './components/SubProjectTable.vue';
 import KewenanganTable from './components/KewenanganTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
-const SupportDocResource = new Resource('support-docs');
-const provinceResource = new Resource('provinces');
-const districtResource = new Resource('districts');
-const authorityResource = new Resource('authorities');
-const projectResource = new Resource('projects');
-// const projectMapResource = new Resource('project-map');
-const kbliEnvParamResource = new Resource('kbli-env-params');
-const kbliResource = new Resource('business');
-//
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import esriConfig from '@arcgis/core/config.js';
 import Map from '@arcgis/core/Map';
@@ -728,8 +634,13 @@ import centroid from '@turf/centroid';
 import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
 import Print from '@arcgis/core/widgets/Print';
 import editor from '@/components/Tinymce';
-// import { saveAs } from 'file-saver';
-// import JSZip from 'jszip';
+const SupportDocResource = new Resource('support-docs');
+const provinceResource = new Resource('provinces');
+const districtResource = new Resource('districts');
+const authorityResource = new Resource('authorities');
+const projectResource = new Resource('projects');
+const kbliEnvParamResource = new Resource('kbli-env-params');
+const kbliResource = new Resource('business');
 
 export default {
   name: 'CreateProject',
@@ -762,45 +673,12 @@ export default {
       }
       callback();
     };
-    // var validateKtr = (rule, value, callback) => {
-    //   if (!this.currentProject.fileKtr){
-    //     callback(new Error('File KTR Belum Diunggah'));
-    //   }
-    //   callback();
-    // };
-    //
-    // var validatePippib = (rule, value, callback) => {
-    //   if (!this.currentProject.filepippib){
-    //     callback(new Error('File PIPPIB Belum Diunggah'));
-    //   }
-    //   callback();
-    // };
-    //
-    // var validateKawasanLindung = (rule, value, callback) => {
-    //   if (!this.currentProject.fileKawasanLindung){
-    //     callback(new Error('File Kawasan Lindung Belum Diunggah'));
-    //   }
-    //   callback();
-    // };
-    //
     var validateMap = (rule, value, callback) => {
       if (!this.fileMap){
         callback(new Error('File Peta Tapak Belum Diunggah'));
       }
       callback();
     };
-    // var validatePdfPenapisanOss = (rule, value, callback) => {
-    //   if (!this.currentProject.fileOssReqDoc){
-    //     callback(new Error('File Hasil Penapisan di OSS Belum Diunggah'));
-    //   }
-    //   callback();
-    // };
-    // var validatePdfSpplOss = (rule, value, callback) => {
-    //   if (!this.currentProject.fileOssSpplDoc){
-    //     callback(new Error('File Dokumen SPPL dari OSS Belum Diunggah'));
-    //   }
-    //   callback();
-    // };
     var validatePdfMap = (rule, value, callback) => {
       if (!this.filePdf){
         callback(new Error('File Peta Tapak Belum Diunggah'));
@@ -857,14 +735,6 @@ export default {
       fileOssReqDocName: 'No File Selected',
       fileOssSpplDocName: 'No File Selected',
       ossRiskOptions: [
-        // {
-        //   value: 'Rendah',
-        //   label: 'Rendah',
-        // },
-        // {
-        //   value: 'Menengah Rendah',
-        //   label: 'Menengah Rendah',
-        // },
         {
           value: 'Menengah Tinggi',
           label: 'Menengah Tinggi',
@@ -1022,15 +892,6 @@ export default {
         description: [
           { required: true, trigger: 'blur', message: 'Data Deskripsi Kegiatan Belum Diisi' },
         ],
-        // fileKtr: [
-        //   { validator: validateKtr, trigger: 'change' },
-        // ],
-        // filepippib: [
-        //   { validator: validatePippib, trigger: 'change' },
-        // ],
-        // fileKawasanLindung: [
-        //   { validator: validateKawasanLindung, trigger: 'change' },
-        // ],
         filePdf: [
           { validator: validatePdfMap, trigger: 'change' },
         ],
@@ -1310,16 +1171,9 @@ export default {
       console.log(this.currentProject);
       console.log(this.listSubProject);
     }
-    // console.log(this.currentProject);
-    // load info user and initiator
-    // const { email } = await this.$store.dispatch('user/getInfo');
-
-    // console.log(this.userInfo);
 
     if (!this.$store.getters.isPemerintah && !this.$route.params.project) {
-      // console.log('masuk pak eko');
       await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
-
       await this.getProjectsFromOss();
     }
 
@@ -1328,7 +1182,6 @@ export default {
 
     // set flag from oss
     this.fromOss = !this.$store.getters.isPemerintah;
-    // this.fromOss = !!this.$store.getters.ossByNib.data_proyek;
 
     generateArcgisToken(this.token);
 
@@ -1336,9 +1189,6 @@ export default {
     this.$store.dispatch('getStep', 0);
 
     // for default value
-    // this.currentProject.study_approach = 'Tunggal';
-    // this.currentProject.status = 'Rencana';
-    // this.currentProject.project_type = 'Baru';
 
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
@@ -1354,11 +1204,6 @@ export default {
       this.filePreAgreementName = this.currentProject.filePreAgreement?.name;
       this.handleFileTapakProyekMapUpload('a');
       this.handleFileTapakProyekPdfUpload('pdf');
-      // this.fileName = this.getFileName(this.currentProject.map);
-      // this.fileMap = this.getFileName(this.currentProject.map);
-      // this.listSupportTable = await this.getListSupporttable(
-      //   this.currentProject.id
-      // );
       this.getDistricts(this.currentProject.id_prov);
     }
     this.getAllData();
@@ -1376,8 +1221,6 @@ export default {
   methods: {
     async getFieldBySector(sproject) {
       if (this.currentProject.isPemerintah === 'true'){
-        // const { value } = await kbliResource.get(sproject.sector);
-
         const { data } = await kbliResource.list({
           fieldBySectorName: sproject.sector,
         });
@@ -1428,8 +1271,6 @@ export default {
       console.log(sproject);
 
       if (this.currentProject.isPemerintah === 'true'){
-        // const { value } = await kbliResource.get(sproject.sector);
-
         sproject.biz_name = sproject.biz_type;
 
         const { data } = await kbliEnvParamResource.list({
@@ -1462,9 +1303,6 @@ export default {
         });
         sproject.listSubProjectParams = data.map((i) => {
           for (const oldPar of sproject.list_sub_project_params) {
-            // console.log({ old: oldPar.param, new: i.param });
-            // console.log({ old: oldPar.scale_unit, new: i.scale_unit });
-            // console.log(oldPar.param === i.param && oldPar.scale_unit === i.unit);
             if (oldPar.param === i.param && oldPar.scale_unit === i.unit){
               i.result = oldPar.result;
               i.result_risk = this.getResultRiskByResult(oldPar.result);
@@ -1731,15 +1569,6 @@ export default {
         await this.calculateKewenanganAnomali();
         this.activeName = '3';
       }
-      // this.$refs.pendekatanStudi.validate(async(valid) => {
-      //   if (valid) {
-      //     await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
-      //     this.activeName = '3';
-      //   } else {
-      //     console.log('error submit!!');
-      //     return false;
-      //   }
-      // });
     },
     async handleBackStatusKegiatan(){
       delete this.currentProject.authority;
@@ -1870,32 +1699,14 @@ export default {
     },
     calculateChoosenProject(){
       const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => {
-        // if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
-        //   return e.type === 'utama' && e.result === 'AMDAL';
-        // } else if (this.currentProject.study_approach === 'Terpadu'){
         return e.result === 'AMDAL';
-        // }
       });
       const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => {
-        // if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
-        //   return e.type === 'utama' && e.result === 'UKL-UPL';
-        // } else if (this.currentProject.study_approach === 'Terpadu'){
         return e.result === 'UKL-UPL';
-        // }
       });
       const listMainProjectSppl = this.currentProject.listSubProject.filter(e => {
-        // if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
-        //   return e.type === 'utama' && e.result === 'SPPL';
-        // } else if (this.currentProject.study_approach === 'Terpadu'){
         return e.result === 'SPPL';
-        // }
       });
-      // console.log('project tanpa filter', this.currentProject);
-      // const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
-      // const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
-      // const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
-
-      // console.log('listAmdal', listMainProjectAmdal);
       let choosenProject = '';
 
       if (listMainProjectAmdal.length !== 0){
@@ -1905,8 +1716,6 @@ export default {
       } else if (listMainProjectSppl.length !== 0) {
         choosenProject = listMainProjectSppl[0];
       }
-
-      // console.log('choosenProject', choosenProject);
 
       // add choosen project to current project
       this.currentProject.kbli = choosenProject.kbli ? choosenProject.kbli : 'non kbli';
@@ -2001,7 +1810,6 @@ export default {
       }
       this.filePreAgreement = e.target.files[0];
       this.filePreAgreementName = e.target.files[0].name;
-      // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekPdfUpload(e){
       if (!e.target) {
@@ -2037,10 +1845,6 @@ export default {
         return;
       }
 
-      // if (e.target.files[0].type !== 'application/x-zip-compressed'){
-      //   this.$alert('File yang diterima hanya .zip', 'Format Salah');
-      //   return;
-      // }
       if (!e.target.files[0].type.includes('zip')){
         this.$alert('File yang diterima hanya .zip', 'Format Salah');
         return;
@@ -2338,20 +2142,16 @@ export default {
         return;
       }
 
-      // this.fromOss = true;
-      // this.idizin = this.$store.getters.ossByNib.id_izin;
       this.kewenanganPMA = this.$store.getters.ossByNib.status_penanaman_modal;
       this.kewenanganOSS = this.$store.getters.ossByNib.kewenangan;
       this.jenisKawasanOSS = this.$store.getters.ossByNib.jenis_kawasan;
 
-      // const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => (e.file_izin === '-' || !e.file_izin) && !e.status_tapis);
       const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(
         (e) => e.id_izin && (e.skala_resiko === 'MT' || e.skala_resiko === 'T') && (e.file_izin === '-' || !e.file_izin) && !e.status_tapis
       );
       // console.log(ossProjects);
 
       ossProjects.forEach(e => {
-        // console.log('ini', e);
         e.data_lokasi_proyek.forEach(i => {
           this.currentProject.address.push({
             prov: i.province,
@@ -2416,17 +2216,10 @@ export default {
       }
 
       // check if project in kawasan lindung without exception
-      // console.log('perbandingan kawasan lindung', [this.currentProject.kawasan_lindung === 'Y', this.currentProject.fileKawasanLindung]);
       if (this.currentProject.kawasan_lindung === 'Y' && !this.currentProject.fileKawasanLindung && this.currentProject.required_doc !== 'AMDAL') {
         this.currentProject.required_doc = 'AMDAL';
         this.currentProject.result_risk = 'Tinggi';
       }
-
-      // this.$refs.currentProject.validate((valid) => {
-      //   if (valid) {
-      // this.currentProject.listSupportDoc = this.listSupportTable.filter(
-      //   (item) => item.name && item.file
-      // );
 
       // send to pubishProjectRoute
 
@@ -2434,11 +2227,6 @@ export default {
         name: 'publishProject',
         params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson, mapUploadPdf: this.filePdf, isOSS: this.isOSS },
       });
-      //   } else {
-      //     console.log('error submit!!');
-      //     return false;
-      //   }
-      // });
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
@@ -2602,8 +2390,6 @@ export default {
     handleKbliSelect(item) {
       this.getSectorsByKbli(item.value);
       this.getBusinessByKbli(item.value);
-      // this.currentProject.biz_type = '';
-      // this.currentProject.sector = '';
     },
     handleBusinessTypeSelect(item) {
       this.getUnitByKbli(this.currentProject.kbli, item);

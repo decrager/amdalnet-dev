@@ -88,23 +88,24 @@ class PkplhFinalController extends Controller
 
             $pkplh->file = $name;
             $saved = $pkplh->save();
-
-            $initiator = Initiator::find($project->id_applicant);
-            if (!$initiator) {
-                Log::error('Initiator not found');
-                return false;
-            }
-            $ossNib = OssNib::where('nib', $initiator->nib)->first();
-            if (!$ossNib) {
-                Log::error('OSSNib not found');
-                return false;
-            }
-            if($ossNib) {
-                $skklFinal = ProjectPkplhFinal::where('id_project', $data['id_project'])->first();
-                if ($skklFinal) {
-                    $filename = $skklFinal->file;
-                    $fileUrl = Storage::temporaryUrl('public/' . $filename, Carbon::now()->addMinutes(30));
-                    OssService::receiveLicense($request, $fileUrl, '50');
+            if ($project->is_oss === 1) {
+                $initiator = Initiator::find($project->id_applicant);
+                if (!$initiator) {
+                    Log::error('Initiator not found');
+                    return false;
+                }
+                $ossNib = OssNib::where('nib', $initiator->nib)->first();
+                if (!$ossNib) {
+                    Log::error('OSSNib not found');
+                    return false;
+                }
+                if($ossNib) {
+                    $skklFinal = ProjectPkplhFinal::where('id_project', $data['id_project'])->first();
+                    if ($skklFinal) {
+                        $filename = $skklFinal->file;
+                        $fileUrl = Storage::temporaryUrl('public/' . $filename, Carbon::now()->addMinutes(30));
+                        OssService::receiveLicense($request, $fileUrl, '50');
+                    }
                 }
             }
             // if ($ossNib) {
