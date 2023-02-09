@@ -218,10 +218,10 @@ export default {
             if (val.name === 'Tutorial Menyusun Tim LPJP'){
               this.video3 = val.url_video;
             }
-            if (val.name === 'Tutorial Submit Dokumen UKL UPL -Pemrakarsa'){
+            if (val.name === 'Tutorial Menyusun Matriks UPL'){
               this.video1 = val.url_video;
             }
-            if (val.name === 'Tutorial Membuat Berita Acara Hasil Pemeriksaan Dokumen UKL UPL'){
+            if (val.name === 'Tutorial Memberikan Komentar melalui Workspace'){
               this.video2 = val.url_video;
             }
           });
