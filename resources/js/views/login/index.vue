@@ -1205,9 +1205,13 @@ export default {
                     return false;
                   }
 
-                  this.$alert(`Akun anda telah berhasil dibuat, periksa Email anda untuk melakukan aktivasi akun`, {
-                    confirmButtonText: 'OK',
-                  });
+                  this.$alert('<i class="el-icon-success style="""></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
+                    '',
+                    {
+                      confirmButtonText: 'OK',
+                      center: true,
+                      dangerouslyUseHTMLString: true,
+                    });
                   this.$message({
                     message:
                       'User Dengan Email ' +
@@ -1261,9 +1265,13 @@ export default {
                     return false;
                   }
 
-                  this.$alert(`Akun anda telah berhasil dibuat, periksa Email anda untuk melakukan aktivasi akun`, {
-                    confirmButtonText: 'OK',
-                  });
+                  this.$alert('<i class="el-icon-success style="""></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
+                    '',
+                    {
+                      confirmButtonText: 'OK',
+                      center: true,
+                      dangerouslyUseHTMLString: true,
+                    });
                   this.$message({
                     message:
                       'User Dengan Email ' +
@@ -1329,9 +1337,13 @@ export default {
                       '',
                       { dangerouslyUseHTMLString: true, center: true, customClass: 'alert-certificate' });
                   } else {
-                    this.$alert(`Akun anda telah berhasil dibuat, periksa Email anda untuk melakukan aktivasi akun`, {
-                      confirmButtonText: 'OK',
-                    });
+                    this.$alert('<i class="el-icon-success style="""></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
+                      '',
+                      {
+                        confirmButtonText: 'OK',
+                        center: true,
+                        dangerouslyUseHTMLString: true,
+                      });
                     this.$message({
                       message:
                         'User Dengan Email ' +
@@ -1606,5 +1618,8 @@ $textColor: #eee;
   width: 178px;
   height: 178px;
   display: block;
+}
+.el-icon-success {
+  scale: 400%;
 }
 </style>
