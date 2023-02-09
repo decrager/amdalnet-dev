@@ -41,6 +41,7 @@ use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\Shared\Html;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
+use App\Entity\ProjectPkplhFinal;
 
 class ProjectController extends Controller
 {
@@ -169,7 +170,16 @@ class ProjectController extends Controller
             }
         )
             ->where(function ($query) use ($request) {
-                return $request->filters ? $query->where('projects.required_doc', $request->filters) : '';
+                if ($request->filters === 'UKL-UPL') {
+                    $pkplhFinal = ProjectPkplhFinal::pluck('id_project')->toArray();
+                    return $request->filters ? $query->whereIn('projects.id', $pkplhFinal)->orWhere('projects.marking', '=', 'uklupl-mt.pkplh-published') : '';
+                }
+
+                if ($request->filters === 'AMDAL') {
+                    $skklFinal = ProjectSkklFinal::pluck('id_project')->toArray();
+                    return $request->filters ? $query->whereIn('projects.id', $skklFinal)->orWhere('projects.marking', '=', 'amdal.skkl-published') : '';
+                }
+
             })
             ->where(
                 function ($query) use ($request) {
