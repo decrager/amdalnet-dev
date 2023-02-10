@@ -15,7 +15,7 @@
     <div class="data" v-html="data.location_desc" />
 
     <p class="ph-header">Surat Kesesuaian Tata Ruang</p>
-    <p class="data"><el-link :href="data.ktr" target="_blank" icon="el-icon-download" type="primary">{{ file_ktr }}</el-link></p>
+    <p class="data"><el-link :href="data.ktr" target="_blank" icon="el-icon-download" type="primary">Dokumen Kesesuaian Tata Ruang</el-link></p>
 
   </div>
 </template>

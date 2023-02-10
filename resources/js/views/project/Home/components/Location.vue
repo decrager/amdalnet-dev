@@ -45,7 +45,7 @@
     />
 
     <p class="header">Surat Kesesuaian Tata Ruang</p>
-    <p class="data"><el-link :href="data.ktr" target="_blank" icon="el-icon-download" type="primary">{{ file_ktr }}</el-link></p>
+    <p class="data"><el-link :href="data.ktr" target="_blank" icon="el-icon-download" type="primary">Dokumen Kesesuaian Tata Ruang</el-link></p>
 
     <div style="text-align: right;">
       <el-button :loading="loading" type="primary" @click="handleSave">Simpan</el-button>

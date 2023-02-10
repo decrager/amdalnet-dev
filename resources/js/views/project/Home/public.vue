@@ -27,7 +27,7 @@
               <public-project-formulator-team :id="projectId" />
             </el-tab-pane>
             <el-tab-pane label="SPT">
-              <project-public-feedback v-if="announcement_id > 0" :id="announcement_id" />
+              <SPT v-if="announcement_id > 0" :id="announcement_id" />
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -41,7 +41,7 @@ import PublicProjectInitiator from './components/PublicInitiator.vue';
 import PublicProjectTimeline from './components/PublicTimeline.vue';
 import PublicProjectLocation from './components/PublicLocation.vue';
 import PublicProjectFormulatorTeam from './components/PublicFormulatorTeam.vue';
-
+import SPT from './components/SPT.vue';
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
 
@@ -53,6 +53,7 @@ export default {
     PublicProjectTimeline,
     PublicProjectLocation,
     PublicProjectFormulatorTeam,
+    SPT,
   },
   props: {
     projectId: {
