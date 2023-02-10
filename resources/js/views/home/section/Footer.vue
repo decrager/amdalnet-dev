@@ -37,16 +37,16 @@
             </p>
           </div>
           <div>
-            <a href="https://www.instagram.com/" target="_blank">
+            <a href="https://www.instagram.com/dit.pdluk/" target="_blank">
               <i class="ri-instagram-fill footer__social" />
             </a>
             <a href="https://www.whatsapp.com/" target="_blank">
               <i class="ri-whatsapp-fill footer__social" />
             </a>
-            <a href="https://twitter.com/" target="_blank">
+            <a href="https://twitter.com/dit_pdluk" target="_blank">
               <i class="ri-twitter-fill footer__social" />
             </a>
-            <a href="https://www.youtube.com/" target="_blank">
+            <a href="https://www.youtube.com/@direktoratpdluk7145" target="_blank">
               <i class="ri-youtube-fill footer__social" />
             </a>
           </div>

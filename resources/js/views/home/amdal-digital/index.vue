@@ -65,7 +65,7 @@
             sandbox="allow-scripts allow-same-origin"
             :src="`https://docs.google.com/gview?url=${encodeURIComponent(
               urlPdf
-            )}&time=0&embedded=true`"
+            )}&embedded=true`"
             width="100%"
             loading="lazy"
             height="723px"

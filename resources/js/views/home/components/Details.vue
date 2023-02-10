@@ -409,8 +409,18 @@ export default {
   },
   methods: {
     async loadBusiness(){
-      const business = await kbliResource.get(this.selectedAnnouncement.project.sector);
-      this.sector_name = business.value;
+      if (isNaN(this.selectedAnnouncement.project.sector)) {
+        console.log(this.selectedAnnouncement.project.sector);
+        const business = await kbliResource.list({
+          data: this.selectedAnnouncement.project.sector,
+        });
+        this.sector_name = business.data[0].value;
+      } else {
+        const business = await kbliResource.list({
+          id: this.selectedAnnouncement.project.sector,
+        });
+        this.sector_name = business.data[0].value;
+      }
     },
     loadMap() {
       // console.log(this.selectedAnnouncement.project_id);
