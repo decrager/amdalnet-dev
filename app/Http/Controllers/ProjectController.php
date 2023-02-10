@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Business;
+use App\Entity\WorkflowState;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
@@ -52,6 +53,10 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
+        if (request()->has('doc')) {
+           $data =  $this->printBuktiDokumen($request->doc, $request->project_id);
+           return $data;
+        }
         if ($request->lastInput) {
             return Project::with('feasibilityTest')->whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
@@ -1402,6 +1407,119 @@ class ProjectController extends Controller
         }
         Html::addHtml($cell, $content);
         return $table;
+    }
+
+    private function printBuktiDokumen($doc, $project_id)
+    {
+        $document = new TemplateProcessor(public_path('document/Template-Bukti-Submit.docx'));
+        $dataProject = Project::with('address', 'listSubProject', 'initiator')->findOrFail($project_id);
+        $document->setValue('nama_project', htmlspecialchars($dataProject->project_title ?? '-'));
+        $document->setValue('no_registrasi', $dataProject->registration_no ?? '-');
+        $document->setValue('pemrakarsa', htmlspecialchars($dataProject->initiator->name ?? '-'));
+        $document->setValue('penanggung_jawab', $dataProject->initiator->pic ?? '-');
+        $document->setValue('alamat_penanggung_jawab', $dataProject->initiator->address ?? '-');
+        $document->setValue('doc_status', $doc);
+        $document->setValue('nomor_telepon', $dataProject->initiator->phone ?? '-');
+        $document->setValue('jabatan', $dataProject->initiator->pic_role ?? '-');
+        $document->setValue('email_pemrakarsa', $dataProject->initiator->email ?? '-');
+        $document->setValue('jenis_dokumen', $dataProject->required_doc ?? '-');
+        $document->setValue('tingkat_resiko', $dataProject->initiator->user_type === 'Pemrakarsa' ? $dataProject->oss_risk : '-');
+        $document->setValue('kewenangan', $dataProject->authority ?? '-');
+        $document->setValue('tipe_pemrakarsa', $dataProject->initiator->user_type === 'Pemrakarsa' ? 'Pemrakarsa Pelaku Usaha' : 'Pemrakarsa Pemerintah');
+        $document->setValue('deskripsi_kegiatan', trim(html_entity_decode($dataProject->description ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
+        $document->setValue('deskripsi_lokasi', trim(html_entity_decode($dataProject->location_desc ?? '-'), " \t\n\r\0\x0B\xC2\xA0"));
+        $document->setValue('tanggal', Carbon::parse(now())->translatedFormat('d F Y'));
+        $document->setValue('jam', now()->format('H:i:s'));
+        $document->setValue('tanggal_dibuat', $dataProject->created_at->translatedFormat('d F Y'));
+        $document->setValue('jam_dibuat', $dataProject->created_at->toTimeString());
+
+        $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 80, 'height' => 80]);
+        $workflow = $this->trackingTimeline($project_id);
+        $dataDaftarKegiatan = [];
+        $dataDaftarLokasi = [];
+        $dataDaftarTracking = [];
+        $numberSubProject = 1;
+        $numberAddress = 1;
+        $numberTracking = 1;
+        $listSubProject = array_values($dataProject->listSubProject->sortByDesc('type')->toArray());
+        Settings::setOutputEscapingEnabled(true);
+        foreach ($listSubProject as $key => $subProject) {
+            $dataDaftarKegiatan[$key]['no'] = $numberSubProject++;
+            $dataDaftarKegiatan[$key]['jenis_kegiatan'] = ucwords($subProject['biz_name'] ?? '-') . ' ' . $dataProject->kbli . ' - Sektor ' . $subProject['sector_name'];
+            $dataDaftarKegiatan[$key]['jenis_keg'] = ucwords($subProject['type'] ?? '-');
+            $dataDaftarKegiatan[$key]['nama_kegiatan'] = $subProject['name'] ?? '-';
+            $dataDaftarKegiatan[$key]['skala_besaran'] = ($subProject['scale'] ?? '0') . ' ' . str_replace('(menengah tinggi)', '', $subProject['scale_unit']);
+        }
+
+        foreach ($dataProject->address as $key => $a) {
+            $dataDaftarLokasi[$key]['no_lokasi'] = $numberAddress++;
+            $dataDaftarLokasi[$key]['lokasi_provinsi'] = $a->prov ?? '-';
+            $dataDaftarLokasi[$key]['lokasi_kota_kabupaten'] = $a->district ?? '-';
+            $dataDaftarLokasi[$key]['alamat'] = $a->address ?? '-';
+        }
+
+        foreach ($workflow as $key => $a) {
+            $data = $a->toArray();
+            $dataDaftarTracking[$key]['no_tracking'] = $numberTracking++;
+            $dataDaftarTracking[$key]['nama_status'] = $data['label'] ?? '-';
+            $dataDaftarTracking[$key]['tanggal_tracking'] = $data['datetime'] ?? '-';
+        }
+
+        $document->cloneRowAndSetValues('no', $dataDaftarKegiatan);
+        $document->cloneRowAndSetValues('no_lokasi', $dataDaftarLokasi);
+        $document->cloneRowAndSetValues('no_tracking', $dataDaftarTracking);
+
+        Settings::setOutputEscapingEnabled(false);
+
+        $outputWord = storage_path('app/public/' . 'print-penapisan.docx');
+        // save word to local
+        $document->saveAs($outputWord);
+        // upload word to storage
+        $store = Storage::disk('public')->putFileAs('print-penapisan', $outputWord, $dataProject->registration_no . '_penapisan.docx');
+        // convert to temporary link
+        $downloadUri = Storage::disk('public')->temporaryUrl($store, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri = null;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
+    }
+
+    private function trackingTimeline($idProject)
+    {
+        $project = Project::where('id', $idProject)->first();
+        if (!$project) {
+            return response('Status Kegiatan tidak ditemukan', 404);
+        }
+        $data = WorkflowStep::where('doc_type', $project->required_doc)
+            ->select(
+                'workflow_steps.code',
+                'workflow_logs.from_place',
+                'workflow_logs.to_place',
+                'workflow_logs.created_at as datetime',
+                'workflow_steps.rank',
+                'workflow_steps.is_conditional',
+                'workflow_states.public_tracking as label',
+                'users.name as username',
+                'workflow_states.state'
+            )
+            // ->addSelect(DB::raw('\''.$project->marking.'\' as current_marking'))
+            ->leftJoin('workflow_states', 'workflow_states.code', '=', 'workflow_steps.code')
+            ->leftJoin('workflow_logs',  function ($join) use ($project) {
+                $join->on('workflow_logs.id_project', '=', DB::raw($project->id));
+                $join->on('workflow_logs.to_place', '=', 'workflow_states.state');
+            })
+            ->leftJoin('users', 'users.id', '=', 'updated_by')
+            ->orderBy('rank', 'ASC')
+            ->get();
+        $datas = [];
+        foreach ($data as $datak) {
+            if($datak->to_place === null) {
+                continue;
+            } else {
+                $datas[] = $datak;
+            }
+        }
+        return $datas;
     }
 
     public function printPenapisan(Request $request)

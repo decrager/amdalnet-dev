@@ -23,6 +23,9 @@
         <a v-if="showDocument" class="btn-pdf" :href="urlPdf" :download="`ka-${projectName}.pdf`">
           Export to .PDF
         </a>
+        <a v-if="showBukti" class="btn-submit" :href="urlBukti" :download="`bukti-submit-ka.pdf`">
+          Unduh Bukti Pengiriman
+        </a>
         <div
           v-if="isFormulator"
           role="alert"
@@ -74,7 +77,7 @@
         </el-col>
         <el-col :sm="24" :md="10">
           <ReviewPenyusun v-if="isFormulator" :documenttype="'UKL UPL'" />
-          <ReviewPemrakarsa v-if="isInitiator" :documenttype="'UKL UPL'" />
+          <ReviewPemrakarsa v-if="isInitiator" :documenttype="'UKL UPL'" @submitPemrakarsa="submitPemrakarsa" />
           <Lampiran />
         </el-col>
       </el-row>
@@ -89,6 +92,9 @@ import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 import axios from 'axios';
 import WorkflowUkl from '@/components/WorkflowUkl';
 import Lampiran from '../review-dokumen/Lampiran.vue';
+import Resource from '@/api/resource';
+const kaReviewsResource = new Resource('ka-reviews');
+const projectsResource = new Resource('projects');
 
 export default {
   components: {
@@ -103,8 +109,10 @@ export default {
       projectName: '',
       idProject: 0,
       urlPdf: null,
+      urlBukti: null,
       createTime: null,
       showDocument: false,
+      showBukti: false,
       docxUrl: null,
       versiDoc: {},
       version: null,
@@ -135,6 +143,8 @@ export default {
   },
   async created() {
     this.$store.dispatch('getStep', 5);
+    this.getBuktiDoc();
+    this.getSubmit();
     await this.getData();
   },
   methods: {
@@ -156,6 +166,28 @@ export default {
       this.versi = data.versi_doc;
       this.loading = false;
       this.downloadDocxPath = this.docxUrl;
+    },
+    async getBuktiDoc() {
+      const data = await projectsResource.list({
+        project_id: this.$route.params.id,
+        doc: 'UKL - UPL',
+      });
+      this.urlBukti = data;
+    },
+    async getSubmit() {
+      const data = await kaReviewsResource.list({
+        idProject: this.$route.params.id,
+        documentType: 'ukl-upl',
+        status: 'submit-to-pemrakarsa',
+      });
+      if (data !== null) {
+        this.showBukti = true;
+      }
+    },
+    submitPemrakarsa(status) {
+      if (status === true) {
+        this.showBukti = true;
+      }
     },
     setProjectId() {
       this.idProject = this.$route.params.id;
@@ -232,7 +264,8 @@ export default {
 }
 
 .btn-docx,
-.btn-pdf {
+.btn-pdf,
+.btn-submit {
   padding: 10px 20px;
   font-size: 14px;
   border-radius: 4px;
@@ -277,6 +310,10 @@ export default {
 .btn-pdf {
   background-color: #FFBA00;
   border: 1px solid #FFBA00;
+}
+.btn-submit {
+  background-color: #0058ff;
+  border: 1px solid #0058ff;
 }
 
 .btn-resetworkspace {

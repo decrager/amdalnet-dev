@@ -42,7 +42,13 @@ class KaReviewController extends Controller
         }
 
         $document_type = $request->documentType;
+        $status = $request->status;
         $id_project = $request->idProject;
+
+        if (request()->has('status')) {
+            $review = KaReview::where([['id_project', $id_project],['document_type', $document_type],['status', $status]])->with('project')->orderBy('id', 'desc')->first();
+            return $review;
+        }
 
         $review = KaReview::where([['id_project', $id_project],['document_type', $document_type]])->with('project')->orderBy('id', 'desc')->first();
 
