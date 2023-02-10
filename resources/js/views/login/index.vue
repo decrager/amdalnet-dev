@@ -1205,7 +1205,7 @@ export default {
                     return false;
                   }
 
-                  this.$alert('<i class="el-icon-success style="""></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
+                  this.$alert('<i class="el-icon-success"></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
                     '',
                     {
                       confirmButtonText: 'OK',
@@ -1265,7 +1265,7 @@ export default {
                     return false;
                   }
 
-                  this.$alert('<i class="el-icon-success style="""></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
+                  this.$alert('<i class="el-icon-success"></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
                     '',
                     {
                       confirmButtonText: 'OK',
@@ -1337,7 +1337,7 @@ export default {
                       '',
                       { dangerouslyUseHTMLString: true, center: true, customClass: 'alert-certificate' });
                   } else {
-                    this.$alert('<i class="el-icon-success style="""></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
+                    this.$alert('<i class="el-icon-success"></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
                       '',
                       {
                         confirmButtonText: 'OK',
@@ -1621,5 +1621,6 @@ $textColor: #eee;
 }
 .el-icon-success {
   scale: 400%;
+  margin-bottom: 10px;
 }
 </style>
