@@ -10,8 +10,9 @@
       v-if="isFormulator"
       role="alert"
       class="el-alert el-alert--error is-light"
+      style="margin-bottom: 10px;"
     >
-      <div style="margin-bottom: 10px;" class="el-alert__description">
+      <div class="el-alert__description">
         <p>
           Sebelum masuk ke <strong>Workspace</strong>, harap lengkapi terlebih dahulu semua isian pada halaman ini
         </p>

@@ -11,8 +11,7 @@
           <div role="alert" class="el-alert el-alert--info is-light mb-1-5">
             <div class="el-alert__content">
               <p class="el-alert__description" style="font-weight: bold;">
-                Apabila memerlukan dokumen SKKL atau PKPLH dari list dibawah, silahkan bersurat kepada <a href="mailto:amdalnet@menlhk.go.id">
-                  Direktorat Pencegahan Dampak Lingkungan Usaha dan Kegiatan</a>
+                Apabila anda memerlukan file persetujuan lingkungan (SKKL/PKPLH) silahkan kirimkan permintaan informasi ke Direktorat PDLUK KLHK melalui email <a href="mailto:amdalnet@menlhk.go.id">amdalnet@menlhk.go.id</a>
               </p>
             </div>
           </div>
