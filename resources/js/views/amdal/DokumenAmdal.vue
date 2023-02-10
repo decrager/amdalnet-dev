@@ -40,6 +40,9 @@
         >
           Export to .DOCX
         </a>
+        <a v-if="showBukti" class="btn-submit" :href="urlBukti" :download="`bukti-submit-ukl-upl.pdf`">
+          Unduh Bukti Pengiriman
+        </a>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
@@ -78,6 +81,7 @@
           <ReviewPemrakarsa
             v-if="isInitiator"
             :documenttype="'Kerangka Acuan'"
+            @submitPemrakarsa="submitPemrakarsa"
           />
           <Lampiran />
         </el-col>
@@ -94,7 +98,8 @@ import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 import Lampiran from '@/views/review-dokumen/Lampiran';
 const scopingResource = new Resource('scoping');
 const andalComposingResource = new Resource('andal-composing');
-const kaReviewResounce = new Resource('ka-reviews');
+const kaReviewResource = new Resource('ka-reviews');
+const projectsResource = new Resource('projects');
 
 export default {
   components: {
@@ -110,6 +115,8 @@ export default {
       projects: '',
       urlPdf: '',
       loading: false,
+      urlBukti: null,
+      showBukti: false,
       fileNameKa: null,
       loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
@@ -136,6 +143,8 @@ export default {
   },
   async created() {
     // this.userInfo = await this.$store.dispatch('user/getInfo');
+    this.getBuktiDoc();
+    this.getSubmit();
     await this.getData();
   },
   methods: {
@@ -183,6 +192,28 @@ export default {
       this.loading = false;
       this.templateKALoaded = true;
     },
+    async getBuktiDoc() {
+      const data = await projectsResource.list({
+        project_id: this.$route.params.id,
+        doc: 'FORMULIR KERANGKA ACUAN',
+      });
+      this.urlBukti = data;
+    },
+    async getSubmit() {
+      const data = await kaReviewResource.list({
+        idProject: this.$route.params.id,
+        documentType: 'ka',
+        status: 'submit-to-pemrakarsa',
+      });
+      if (data !== null) {
+        this.showBukti = true;
+      }
+    },
+    submitPemrakarsa(status) {
+      if (status === true) {
+        this.showBukti = true;
+      }
+    },
     workspace(){
       this.$router.push({
         name: 'projectWorkspace',
@@ -195,7 +226,7 @@ export default {
     },
     async exportPdf() {
       this.loadingPDF = true;
-      const fileURL = await kaReviewResounce.list({
+      const fileURL = await kaReviewResource.list({
         pdf: 'true',
         idProject: this.$route.params.id,
       });
@@ -244,7 +275,8 @@ export default {
   border: 2px solid #099c4b;
 }
 .btn-docx,
-.btn-pdf {
+.btn-pdf,
+.btn-submit {
   padding: 10px 20px;
   font-size: 14px;
   border-radius: 4px;
@@ -268,5 +300,9 @@ export default {
 .btn-pdf {
   background-color: #ff4949;
   border: 1px solid #ff4949;
+}
+.btn-submit {
+  background-color: #0058ff;
+  border: 1px solid #0058ff;
 }
 </style>

@@ -248,6 +248,7 @@ export default {
       await kaReviewsResource.store(formData);
       this.printDocVersion();
       this.getData();
+      this.$emit('submitPemrakarsa', true);
       this.file = null;
       this.fileName = null;
       this.loadingSubmit = false;
