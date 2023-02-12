@@ -97,7 +97,7 @@ class SKKLFinalController extends Controller
                         $filename = $skklFinal->file;
                         // $fileUrl = Storage::temporaryUrl('public/' . $filename);
                         $fileUrl = Storage::temporaryUrl('public/' . $filename, Carbon::now()->addMinutes(30));
-                        OssService::receiveLicense($request, $fileUrl, '50');
+                        OssService::receiveLicense($request, $fileUrl);
                     }
                 }
             }
