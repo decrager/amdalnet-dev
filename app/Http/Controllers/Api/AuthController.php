@@ -11,6 +11,8 @@ namespace App\Http\Controllers\Api;
 use App\Entity\Initiator;
 use App\Entity\OssLicense;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\UserRegistered;
 use App\Laravue\Acl;
 use App\Laravue\JsonResponse;
 use App\Laravue\Models\Role;
@@ -312,10 +314,15 @@ class AuthController extends BaseController
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
-
+        $user = User::where('email', $request->email)->first();
         $status = Password::sendResetLink(
             $request->only('email')
         );
+
+        if (!$user->active === 1) {
+            Notification::send($user, new UserRegistered($user, null));
+            event(new \App\Events\NotificationEvent());
+        }
 
         return $status === Password::RESET_LINK_SENT
                     ? response()->json([

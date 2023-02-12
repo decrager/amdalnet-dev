@@ -51,6 +51,15 @@ class UserRegistered extends Notification
         if (property_exists($this->user, 'raw_password')) {
             $raw_password = $this->user->getRawPassword();
         }
+        if ($this->original_password === null) {
+            return (new MailMessage)
+                    ->subject('Reminder Aktivasi Akun AMDALNET')
+                    ->greeting('Akun AMDALNET Anda Telah Dibuat.')
+                    ->line('Hai '.$this->user->name)
+                    ->line('Jika anda belum melakukan aktivasi, silahkan aktivasi akun anda')
+                    ->line('Aktivasi akun dengan menekan tombol dibawah ini.')
+                    ->action('Aktivasi Akun Anda', $url);
+        }
         if (!empty($raw_password)) {
             return (new MailMessage)
                             ->subject('Pendaftaran Akun AMDALNET')

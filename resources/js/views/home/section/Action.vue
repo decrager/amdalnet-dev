@@ -212,16 +212,16 @@ export default {
   methods: {
     getAll() {
       axios
-        .get(`/api/tutorial-video`)
+        .get(`/api/tutorial-video?landingPage`)
         .then((response) => {
-          response.data.data.map((val, i) => {
-            if (val.name === 'Tutorial Menyusun Tim LPJP'){
+          response.data.map((val, i) => {
+            if (val.name === 'Tutorial Simulasi Penapisan'){
               this.video3 = val.url_video;
             }
-            if (val.name === 'Tutorial Submit Dokumen UKL UPL -Pemrakarsa'){
+            if (val.name === 'Tutorial Login Amdalnet'){
               this.video1 = val.url_video;
             }
-            if (val.name === 'Tutorial Membuat Berita Acara Hasil Pemeriksaan Dokumen UKL UPL'){
+            if (val.name === 'Tutorial Memberikan Komentar melalui Workspace'){
               this.video2 = val.url_video;
             }
           });

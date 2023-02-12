@@ -24,6 +24,9 @@
             >
               Export Dokumen ANDAL to .DOCX
             </a>
+            <a v-if="showBukti" class="btn-submit" :href="urlBukti" :download="`bukti-submit-ukl-upl.pdf`">
+              Unduh Bukti Pengiriman
+            </a>
           </div>
           <iframe
             v-if="showDocumentAndal"
@@ -59,6 +62,7 @@
           <ReviewPemrakarsa
             v-if="isInitiator"
             :documenttype="'ANDAL RKL RPL'"
+            @submitPemrakarsa="submitPemrakarsa"
           />
         </el-col>
       </el-row>
@@ -73,6 +77,8 @@ import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
 import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 const rklResource = new Resource('matriks-rkl');
 const andalComposingResource = new Resource('andal-composing');
+const projectsResource = new Resource('projects');
+const kaReviewResource = new Resource('ka-reviews');
 
 export default {
   components: {
@@ -87,6 +93,8 @@ export default {
       showDocumentRklRpl: false,
       showDocumentAndal: false,
       andalPdfUrl: null,
+      urlBukti: null,
+      showBukti: false,
       andalDocxUrl: null,
       rklRplPdfUrl: null,
       rklRplDocxUrl: null,
@@ -112,6 +120,8 @@ export default {
   },
   async created() {
     this.loading = true;
+    this.getBuktiDoc();
+    this.getSubmit();
     await this.getDataAndal();
     await this.getData();
     this.loading = false;
@@ -136,6 +146,28 @@ export default {
       this.andalPdfUrl = data.pdf_url;
       this.titleAndal = data.project_title;
       this.showDocumentAndal = true;
+    },
+    async getBuktiDoc() {
+      const data = await projectsResource.list({
+        project_id: this.$route.params.id,
+        doc: 'ANDAL RKL - RPL',
+      });
+      this.urlBukti = data;
+    },
+    async getSubmit() {
+      const data = await kaReviewResource.list({
+        idProject: this.$route.params.id,
+        documentType: 'andal-rkl-rpl',
+        status: 'submit-to-pemrakarsa',
+      });
+      if (data !== null) {
+        this.showBukti = true;
+      }
+    },
+    submitPemrakarsa(status) {
+      if (status === true) {
+        this.showBukti = true;
+      }
     },
   },
 };
@@ -169,7 +201,8 @@ export default {
   border-radius: 50%;
   border: 2px solid #099c4b;
 }
-.btn-docx {
+.btn-docx,
+.btn-submit {
   padding: 10px 20px;
   font-size: 14px;
   border-radius: 4px;
@@ -187,5 +220,10 @@ export default {
   margin: 0;
   transition: 0.1s;
   font-weight: 400;
+}
+
+.btn-submit {
+  background-color: #0058ff !important;
+  border: 1px solid #0058ff !important;
 }
 </style>

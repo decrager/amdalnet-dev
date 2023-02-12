@@ -6,6 +6,17 @@
           <h2 class="fw white mb-1-5">Daftar Persetujuan Lingkungan</h2>
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="24">
+          <div role="alert" class="el-alert el-alert--info is-light mb-1-5">
+            <div class="el-alert__content">
+              <p class="el-alert__description" style="font-weight: bold;">
+                Apabila anda memerlukan file persetujuan lingkungan (SKKL/PKPLH) silahkan kirimkan permintaan informasi ke Direktorat PDLUK KLHK melalui email <a href="mailto:amdalnet@menlhk.go.id">amdalnet@menlhk.go.id</a>
+              </p>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
           <el-select

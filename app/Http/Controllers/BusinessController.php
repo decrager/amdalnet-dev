@@ -17,6 +17,11 @@ class BusinessController extends Controller
      */
     public function index(Request $request)
     {
+        if(request()->has('data')) {
+            return BusinessResource::collection(Business::distinct()->where('value', $request->data)->get(['value']));
+        }else if(request()->has('id')) {
+            return BusinessResource::collection(Business::distinct()->where('id', $request->id)->get(['value']));
+        }
         if($request->sectors){
             return BusinessResource::collection(Business::distinct()->where('description', 'sector')->get(['value']));
           } else if ($request->sectorsByKbli) {
@@ -50,7 +55,7 @@ class BusinessController extends Controller
             ->where('description', 'field')
             ->where(
                 function ($query) use ($request) {
-                    return $request->searchField ? 
+                    return $request->searchField ?
                         $query->where('business.value', 'ilike', '%' . $request->searchField . '%') : '';
                 }
             )

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\DocumentAttachment;
 use App\Entity\EnvImpactAnalysis;
+use App\Utils\Document;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
 use App\Entity\Initiator;
@@ -265,6 +266,38 @@ class SKKLController extends Controller
     private function getDocument($idProject) {
         $project = Project::findOrFail($idProject);
 
+        if(request()->has('amdalDigital')) {
+            // === DOKUMEN KA, ANDAL & RKL RPL === //
+        $document_attachment = DocumentAttachment::where('id_project', $idProject)
+                ->whereIn('type', ['Formulir KA', 'Dokumen Andal', 'Dokumen RKL RPL'])
+                ->get();
+        $dokumen_ka = $document_attachment->where('type', 'Formulir KA')->first() ?
+        $document_attachment->where('type', 'Formulir KA')->first()->attachment : null;
+        $dokumen_andal = $document_attachment->where('type', 'Dokumen Andal')->first() ?
+        $document_attachment->where('type', 'Dokumen Andal')->first()->attachment : null;
+        $dokumen_rkl_rpl = $document_attachment->where('type', 'Dokumen RKL RPL')->first() ?
+        $document_attachment->where('type', 'Dokumen RKL RPL')->first()->attachment : null;
+
+        return [
+                [
+                    'name' => 'Dokumen KA',
+                    // 'file' => $dokumen_ka,
+                    // 'file' => Storage::disk('public')->temporaryUrl($dokumen_ka, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $this->docxToPdf($dokumen_ka),
+                ],
+                [
+                    'name' => 'Dokumen ANDAL',
+                    // 'file' =>  $dokumen_andal,
+                    // 'file' => Storage::disk('public')->temporaryUrl($dokumen_andal, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $this->docxToPdf($dokumen_andal),
+                ],
+                [
+                    'name' => 'Dokumen RKL RPL',
+                    // 'file' => $dokumen_rkl_rpl,
+                    'file' => $this->docxToPdf($dokumen_rkl_rpl),
+                ]
+            ];
+        }
         // === DOKUMEN KA, ANDAL & RKL RPL === //
         $document_attachment = DocumentAttachment::where('id_project', $idProject)
                                     ->whereIn('type', ['Formulir KA', 'Dokumen Andal', 'Dokumen RKL RPL'])
@@ -387,6 +420,15 @@ class SKKLController extends Controller
                     'updated_at' => $rklRplDate
                 ]
             ];
+    }
+
+    private function docxToPdf($url)
+    {
+        $downloadUri = $url ;
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 
     private function getDocumentUklUpl($idProject) {

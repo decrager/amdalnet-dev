@@ -159,6 +159,17 @@
         </el-upload>
         <el-button type="danger" @click="handleClose">Batal</el-button>
         <el-button type="primary" :disabled="optional() || disableSave() || isReadOnly && !isUrlAndal" @click="!isReadOnly && isUrlAndal, handleSaveForm()">Simpan</el-button>
+        <div
+          role="alert"
+          class="el-alert el-alert--error is-light"
+          style="margin-top: 10px;"
+        >
+          <div class="el-alert__conten">
+            <p>
+              Data yang diisi dan diunggah harus sesuai hasil kajian
+            </p>
+          </div>
+        </div>
       </span>
     </el-dialog>
   </div>

@@ -288,8 +288,7 @@ class TestMeetRKLRPLController extends Controller
                 $invitation = TestingMeetingInvitation::findOrFail($data['invitations'][$i]['id']);
             }
 
-            $request_email = $data['invitations'][$i]['email'] ? strtolower($data['invitations'][$i]['email']) : $data['invitations'][$i]['email'];
-
+            $request_email = $data['invitations'][$i]['email'] ? strtolower(trim($data['invitations'][$i]['email'])) : trim($data['invitations'][$i]['email']);
             if($data['invitations'][$i]['type'] == 'Ketua TUK' || $data['invitations'][$i]['type'] == 'Anggota TUK') {
                 $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['tuk_member_id'];
             } else if($data['invitations'][$i]['type'] == 'Anggota Sekretariat TUK') {

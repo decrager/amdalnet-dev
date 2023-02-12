@@ -42,7 +42,10 @@
           >
             <template slot-scope="scope">
               <el-button type="primary" style="color: white !important" @click="showProject(scope.row.id)">AMDAL Digital</el-button>
-              <el-button type="warning" style="color: white !important" @click="showDocument(scope.row.id)">Dokumen</el-button>
+              <el-button v-if="scope.row.required_doc === 'UKL-UPL'" type="warning" style="color: white !important" @click="showDocument(scope.row.id, 'UKL-UPL')">Dokumen UKL - UPL</el-button>
+              <el-button v-if="scope.row.required_doc === 'AMDAL'" type="warning" style="color: white !important" @click="showDocument(scope.row.id, 'Dokumen KA')">Dokumen KA</el-button>
+              <el-button v-if="scope.row.required_doc === 'AMDAL'" type="warning" style="color: white !important; margin-top: .5rem;" @click="showDocument(scope.row.id, 'Dokumen ANDAL')">Dokumen ANDAL</el-button>
+              <el-button v-if="scope.row.required_doc === 'AMDAL'" type="warning" style="color: white !important; margin-top: .5rem;" @click="showDocument(scope.row.id, 'Dokumen RKL RPL')">Dokumen RKL - RPL</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -57,6 +60,18 @@
             @pagination="getData"
           />
         </div>
+        <el-dialog :visible.sync="dialogVisible">
+          <iframe
+            sandbox="allow-scripts allow-same-origin"
+            :src="`https://docs.google.com/gview?url=${encodeURIComponent(
+              urlPdf
+            )}&embedded=true`"
+            width="100%"
+            loading="lazy"
+            height="723px"
+            frameborder="0"
+          />
+        </el-dialog>
       </div>
       <div v-show="showProjectHome" class="public-project-home">
         <div style="text-align: right; margin-bottom:1em;">
@@ -71,7 +86,9 @@
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import ProjectPublicHome from '@/views/project/Home/public.vue';
+import axios from 'axios';
 
+const skklResource = new Resource('skkl');
 const projectResource = new Resource('projects');
 
 export default {
@@ -83,7 +100,9 @@ export default {
   data(){
     return {
       tableData: [],
+      dialogVisible: false,
       data: [],
+      urlPdf: null,
       loading: false,
       id: 0,
       showProjectHome: false,
@@ -129,7 +148,41 @@ export default {
       this.id = id;
       this.showProjectHome = true;
     },
-    showDocument(id){
+    async getDoc(id, required_doc) {
+      if (required_doc === 'UKL-UPL') {
+        const data = await axios.get(
+          `/api/dokumen-ukl-upl/${id}`
+        );
+        this.urlPdf = data.data.pdf_url;
+        this.dialogVisible = true;
+        this.loading = false;
+      }
+
+      if (required_doc === 'Dokumen KA' || required_doc === 'Dokumen ANDAL' || required_doc === 'Dokumen RKL RPL') {
+        const data = await skklResource.list({
+          idProject: id,
+          document: 'true',
+          amdalDigital: 'true',
+        });
+        data.forEach(ref => {
+          if (ref.name === 'Dokumen KA' && required_doc === 'Dokumen KA') {
+            this.urlPdf = ref.file;
+            this.dialogVisible = true;
+          } else if (ref.name === 'Dokumen ANDAL' && required_doc === 'Dokumen ANDAL') {
+            this.urlPdf = ref.file;
+            this.dialogVisible = true;
+          } else if (ref.name === 'Dokumen RKL RPL' && required_doc === 'Dokumen RKL RPL') {
+            this.urlPdf = ref.file;
+            this.dialogVisible = true;
+          }
+        });
+        this.loading = false;
+      }
+    },
+    showDocument(id, required_doc){
+      this.urlPdf = '';
+      this.loading = true;
+      this.getDoc(id, required_doc);
       this.$emit('showDocument', id);
     },
   },
