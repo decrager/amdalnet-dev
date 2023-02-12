@@ -264,7 +264,7 @@ class TestingMeetingController extends Controller
         // Save meetings invitation members
         for($i = 0; $i < count($data['invitations']); $i++) {
             $invitation = null;
-            $request_email = $data['invitations'][$i]['email'] ? strtolower($data['invitations'][$i]['email']) : $data['invitations'][$i]['email'];
+            $request_email = $data['invitations'][$i]['email'] ? strtolower(trim($data['invitations'][$i]['email'])) : trim($data['invitations'][$i]['email']);
 
             if($data['invitations'][$i]['id'] == null) {
                 $invitation = new TestingMeetingInvitation();

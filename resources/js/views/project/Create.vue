@@ -2319,7 +2319,7 @@ export default {
       });
 
       const pippib2022Periode1 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_1/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_2/MapServer',
         sublayers: [
           {
             id: 0,
@@ -2600,7 +2600,7 @@ export default {
       });
 
       const pippib2022Periode1 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_1/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2022_Periode_2/MapServer',
         sublayers: [
           {
             id: 0,
@@ -3133,7 +3133,7 @@ export default {
       } else if (value === 'Ketenaganukliran'){
         this.preeAgreementLabel = temp + 'Studi Kelayakan Ketenaganukliran (FS)';
       } else {
-        this.preeAgreementLabel = temp + 'Persetujuan Investasi';
+        this.preeAgreementLabel = temp + 'NIB';
       }
     },
     defineActions(event) {
