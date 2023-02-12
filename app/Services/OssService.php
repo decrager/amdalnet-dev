@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 
 class OssService
 {
-    public static function receiveLicense($request, $fileUrl, $statusCode)
+    public static function receiveLicense($request, $fileUrl)
     {
         /*
             ! DEPRECATED
@@ -37,7 +37,16 @@ class OssService
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
                 // call endpoint receiveLicense
-                $statusIzin = OssService::getStatusIzin($project, $fileUrl, $statusCode);
+                // $statusIzin = OssService::getStatusIzin($project, $fileUrl, $statusCode);
+                $authorityNew = $ossNib->kewenangan;
+                if (strtolower($project->authority) == 'pusat') {
+                    $authorityNew = '00';
+                } else if (strtolower($project->authority) == 'provinsi') {
+                    $authorityNew = '01';
+                } else if (strtolower($project->authority) == 'kabupaten') {
+                    $authorityNew = '02';
+                }
+                $statusIzin = OssService::getStatusIzin($project, $fileUrl);
                 $data = [
                     'IZINFINAL' => [
                         'nib' => $initiator->nib,
@@ -47,7 +56,8 @@ class OssService
                         'id_izin' => $ossNib->id_izin,
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_daerah' => $ossNib->kd_daerah,
-                        'kewenangan' => $ossNib->kewenangan,
+                        // 'kewenangan' => $ossNib->kewenangan,
+                        'kewenangan' => $authorityNew,
                         'nomor_izin' => "", // NIP pemroses (TUK) ? Need confirm
                         'tgl_terbit_izin' => "",  // nambah kolom di tabel amdalnet
                         'tgl_berlaku_izin' => (string)$project->updated_at,
@@ -82,15 +92,21 @@ class OssService
 
                 // }
                 if (isset($respJson['responreceiveLicense']['kode']) && $respJson['responreceiveLicense']['kode'] === '200') {
-                    Log::debug('responreceiveLicense file_izin: oss_nibs .' . $ossNib->nib . ' responreceiveLicense with status_izin = ' . $statusCode);
+                    Log::debug('responreceiveLicense file_izin: oss_nibs .' . $ossNib->nib . ' responreceiveLicense with status_izin = ' . $statusIzin['status_izin']);
                 }
             }
         }
         return true;
     }
 
-    private static function getStatusIzin($project, $fileUrl, $statusCode)
+    private static function getStatusIzin($project, $fileUrl)
     {
+        if(strtolower($project->authority) == 'pusat'){
+            $statusCode = '50';
+        } else {
+            $statusCode = '48';
+        }
+
         return [
             'status_izin' => $statusCode,
             'file_izin' => $fileUrl, // skkl
