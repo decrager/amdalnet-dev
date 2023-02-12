@@ -1411,7 +1411,13 @@ class ProjectController extends Controller
 
     private function printBuktiDokumen($doc, $project_id)
     {
+        $workflow = $this->trackingTimeline($project_id);
+        $count = count($workflow);
+        dd($workflow);
         $document = new TemplateProcessor(public_path('document/Template-Bukti-Submit.docx'));
+        if ($count >= 10) {
+            $document = new TemplateProcessor(public_path('document/Template-Bukti-Submit-Up-To-10.docx'));
+        }
         $dataProject = Project::with('address', 'listSubProject', 'initiator')->findOrFail($project_id);
         $document->setValue('nama_project', htmlspecialchars($dataProject->project_title ?? '-'));
         $document->setValue('no_registrasi', $dataProject->registration_no ?? '-');
@@ -1434,7 +1440,6 @@ class ProjectController extends Controller
         $document->setValue('jam_dibuat', $dataProject->created_at->toTimeString());
 
         $document->setImageValue('qrcode', ['path' => 'http://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=' . urlencode(config('app.url') . '/#/?tracking-document=' . $dataProject->registration_no), 'width' => 80, 'height' => 80]);
-        $workflow = $this->trackingTimeline($project_id);
         $dataDaftarKegiatan = [];
         $dataDaftarLokasi = [];
         $dataDaftarTracking = [];
