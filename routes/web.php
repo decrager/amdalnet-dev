@@ -215,3 +215,33 @@ Route::get('/test1', function () {
         'subProjectsAmdalnetIdProyeks' => $subProjectsAmdalnetIdProyeks,
     ];
 });
+
+Route::get('/test2', function () {
+    $headers = array(
+        "Content-type"=>"text/html",
+        "Content-Disposition"=>"attachment;Filename=myGeneratefile.doc"
+    );
+    $commentsRaw = WorkspaceComment::with('user')->where('document_type', 'ukl-upl')->where('id_project', '1910')->get()->toArray();
+    // dd($commentsRaw);
+    $commentsContent = $commentsRaw[0]['suggest'];
+    // dd($commentsContent);
+    $content = '<html>
+            <head><meta charset="utf-8"></head>
+            <body>
+                <p>My Blog Laravel 7 generate word document from html Example - Nicesnippets.com</p>
+                <ul><li>Php</li><li>Laravel</li><li>Html</li></ul>
+            </body>
+            </html>';
+    $content1 = '<html>
+    <head><meta charset="utf-8"></head>
+    <body>';
+    $content2 = '</body>
+    </html>';
+    $content3 = '
+        <p style="margin: 0pt 0pt 0pt 36pt; text-align: center; text-indent: -36pt; line-height: 115%; font-size: 12pt; font-family: Cambria, serif;"><span style="color: rgb(52, 73, 94);"><strong><span style="font-size: 10.0pt; line-height: 115%; font-family: Tahoma, sans-serif;">KOMPILASI SARAN/PENDAPAT/TANGGAPAN TERTULIS PESERTA RAPAT TIM TEKNIS </span></strong></span></p>
+        <p style="text-align: center; line-height: 115%; margin: 0pt; font-size: 12pt; font-family: Cambria, serif;"><strong><span style="font-size: 10pt; line-height: 115%; font-family: Tahoma, sans-serif; color: rgb(52, 73, 94);">KOMISI PENILAI AMDAL PUSAT &ndash; KEMENTERIAN LINGKUNGAN HIDUP DAN KEHUTANAN <br></span><span style="font-size: 10.0pt; font-family: Tahoma, sans-serif;"><span style="color: rgb(52, 73, 94);">PEMBAHASAN</span> </span> </strong></p>
+        <p style="text-align: center; line-height: 115%; margin: 0pt; font-size: 12pt; font-family: Cambria, serif;">&nbsp;</p>
+        <p style="text-align: center; line-height: 115%; margin: 0pt; font-size: 12pt; font-family: Cambria, serif;">&nbsp;</p>
+    ';
+    return \Response::make($content1.$content3.$content2,200, $headers);
+});
