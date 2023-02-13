@@ -115,16 +115,17 @@ class MeetingInvitation extends Notification
             ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . ' ' . $this->meeting->zone. '<br>' . 'Tempat: ' . $this->meeting->location . '<br>' . 'Link Meeting: ' . htmlspecialchars_decode($link)))
             ->line('Untuk memberikan Saran Masukan atau Tanggapan, silakan login ke dalam sistem Amdalnet terlebih dulu menggunakan akun yg telah diberikan.')
             ->action('Klik Untuk Memberikan SPT', $url)
+            ->line($this->makeActionIntoLine(new Action('Klik Untuk Mengunduh Dokumen UKL - UPL', $this->pdf)))
             ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
             ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name . '<br>' . $role))
             ->attach($this->attachment, [
                 'as' => 'Undangan Rapat.pdf',
                 'mime' => 'application/pdf'
-            ])
-            ->attach($this->pdf, [
-                'as' => $this->filename.'.pdf',
-                'mime' => 'application/pdf'
             ]);
+            // ->attach($this->pdf, [
+            //     'as' => $this->filename.'.pdf',
+            //     'mime' => 'application/pdf'
+            // ]);
         }
     }
 
