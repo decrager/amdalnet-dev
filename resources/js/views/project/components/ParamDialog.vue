@@ -1,5 +1,8 @@
 <template>
   <el-dialog :key="refreshDialog" :title="'Masukkan Parameter'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
+    <el-row>
+      <el-col><div><el-tag style="margin-bottom: 5px;">Silahkan centang dan isi parameter yang sesuai dengan rencana usaha dan/atau kegiatan anda</el-tag></div></el-col>
+    </el-row>
     <el-table
       v-loading="loading"
       :header-cell-style="{ background: '#099C4B', color: 'white' }"
@@ -7,7 +10,7 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="No." width="60px">
+      <el-table-column label="No. " width="60px">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
         </template>
