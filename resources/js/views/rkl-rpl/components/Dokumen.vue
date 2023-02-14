@@ -150,7 +150,7 @@ export default {
     async getBuktiDoc() {
       const data = await projectsResource.list({
         project_id: this.$route.params.id,
-        doc: 'ANDAL RKL - RPL',
+        doc: 'ANDAL RKL - RPL ',
       });
       this.urlBukti = data;
     },

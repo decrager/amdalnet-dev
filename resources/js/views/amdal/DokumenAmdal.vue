@@ -195,7 +195,7 @@ export default {
     async getBuktiDoc() {
       const data = await projectsResource.list({
         project_id: this.$route.params.id,
-        doc: 'FORMULIR KERANGKA ACUAN',
+        doc: 'FORMULIR KERANGKA ACUAN ',
       });
       this.urlBukti = data;
     },
