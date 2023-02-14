@@ -667,7 +667,7 @@ class TestingVerificationController extends Controller
             $templateProcessor = new TemplateProcessor(storage_path('app/public/template/template_berkas_adm_no_tuk.docx'));
             $templateProcessor->setValue('authority', $authority);
             if($tuk_logo) {
-                $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+                $templateProcessor->setImageValue('logo_tuk', $tuk_logo);
             } else {
                 $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
             }
