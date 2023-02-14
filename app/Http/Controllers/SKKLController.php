@@ -559,6 +559,10 @@ class SKKLController extends Controller
                                 $fileIzin = $c['file_izin'];
                             }
                         }
+                        array_push($idIzinList, $c['id_izin']);
+                        if ($c['file_izin'] != '-') {
+                            $fileIzin = $c['file_izin'];
+                        }
                     }
                 }
                 if (count($idIzinList) == 0) {
