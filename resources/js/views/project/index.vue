@@ -192,7 +192,7 @@
                   RKL/RPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isDocumentSubmitted(scope.row, 'andal-rkl-rpl') && isInitiator) || (scope.row.rkl_rpl_document && isFormulator)) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && ((isDocumentSubmitted(scope.row, 'andal-rkl-rpl') && isInitiator) || (scope.row.rkl_rpl_document && scope.row.andal_document && isFormulator)) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -291,7 +291,7 @@
                   Workspace KA
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isAndalFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping && !isLpjp"
+                  v-if="isAmdal(scope.row) && ((isFormulator && scope.row.andal_document && isAndalFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -300,7 +300,7 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isRklRplFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping && !isLpjp"
+                  v-if="isAmdal(scope.row) && ((isFormulator && scope.row.rkl_rpl_document && isRklRplFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
