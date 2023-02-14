@@ -433,7 +433,7 @@ class ProjectController extends Controller
                 'oss_invest_status' => isset($request['oss_invest_status']) ? $request['oss_invest_status'] : null,
                 'oss_required_doc' => $fileOssReqDocName,
                 'oss_sppl_doc' => $fileOssSpplDocName,
-                'is_oss' => isset($request['isOSS']) === "true" ? 1 : 0,
+                'is_oss' => $request['isOSS'] == "true" ? 1 : 0,
             ]);
             // if (!isset($request['isPemerintah']) && $request['isOSS'] === "true") {
             //     OssService::receiveLicenseStatus($project, '20');
