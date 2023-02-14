@@ -93,20 +93,22 @@ class MeetingInvitation extends Notification
             ->line('Untuk memberikan Saran Masukan atau Tanggapan, silakan login ke dalam sistem Amdalnet terlebih dulu menggunakan akun yg telah diberikan.')
             ->action('Klik Untuk Memberikan SPT RKL-RPL', $urlRkl)
             ->line($this->makeActionIntoLine(new Action('Klik Untuk Memberikan SPT ANDAL', $urlAndal)))
+            ->line($this->makeActionIntoLine(new Action('Klik Untuk Mengunduh Dokumen RKL - RPL', $this->pdf['rkl'])))
+            ->line($this->makeActionIntoLine(new Action('Klik Untuk Mengunduh Dokumen ANDAL', $this->pdf['andal'])))
             ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
             ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name . '<br>' . $role))
             ->attach($this->attachment, [
                 'as' => 'Undangan Rapat.pdf',
                 'mime' => 'application/pdf'
-            ])
-            ->attach($this->pdf['rkl'], [
-                'as' => $this->filename['rkl'].'.pdf',
-                'mime' => 'application/pdf'
-            ])
-            ->attach($this->pdf['andal'], [
-                'as' => $this->filename['andal'].'.pdf',
-                'mime' => 'application/pdf'
             ]);
+            // ->attach($this->pdf['rkl'], [
+            //     'as' => $this->filename['rkl'].'.pdf',
+            //     'mime' => 'application/pdf'
+            // ])
+            // ->attach($this->pdf['andal'], [
+            //     'as' => $this->filename['andal'].'.pdf',
+            //     'mime' => 'application/pdf'
+            // ]);
         } else {
             return (new MailMessage)
             ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
