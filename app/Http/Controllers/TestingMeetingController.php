@@ -708,7 +708,7 @@ class TestingMeetingController extends Controller
             $templateProcessor->setValue('authority_location', str_replace('Provinsi', '', $authority));
 
             if($tuk_logo) {
-                $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+                $templateProcessor->setImageValue('logo_tuk', $tuk_logo);
             } else {
                 $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
             }
