@@ -1413,7 +1413,6 @@ class ProjectController extends Controller
     {
         $workflow = $this->trackingTimeline($project_id);
         $count = count($workflow);
-        dd($workflow);
         $document = new TemplateProcessor(public_path('document/Template-Bukti-Submit.docx'));
         if ($count >= 10) {
             $document = new TemplateProcessor(public_path('document/Template-Bukti-Submit-Up-To-10.docx'));
