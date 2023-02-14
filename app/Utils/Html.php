@@ -80,6 +80,13 @@ class Html
         $dom = new \DOMDocument();
         $dom->preserveWhiteSpace = $preserveWhiteSpace;
         $html = self::stripInvalidXml($html);
+        if(str_contains($html, '</span></span></body>')) {
+            $closeTag =  substr_count($html, '</span>');
+            $openTag =  substr_count($html, '<span');
+            if ($closeTag !== $openTag) {
+                $html = str_replace('</span></span>', '</span>', $html);
+            }
+    }
         $dom->loadXML($html);
         self::$xpath = new \DOMXPath($dom);
         $node = $dom->getElementsByTagName('body');
