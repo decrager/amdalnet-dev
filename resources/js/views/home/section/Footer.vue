@@ -30,7 +30,7 @@
           </ul>
           <div class="footer__contact">
             <p>
-              <i class="ri-phone-fill" /> (+62) 21-5730191
+              <i class="ri-phone-fill" /> (+62) 813-3999-0567
             </p>
             <p>
               <i class="ri-mail-fill" /> amdalnet@menlhk.go.id
