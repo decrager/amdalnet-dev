@@ -55,7 +55,7 @@ class Project extends Model implements Auditable
 
     protected $guarded = [];
 
-    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document', 'form_ka_doc'];
+    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'andal_document', 'ukl_upl_document', 'form_ka_doc'];
 
     public function team()
     {
@@ -203,6 +203,17 @@ class Project extends Model implements Auditable
     {
 
         $save_file_name = $this->id . '-rkl-rpl' . '.docx';
+
+        if (Storage::disk('public')->exists('workspace/' . $save_file_name)) {
+            return true;
+        }
+
+        return false;
+    }
+    public function getAndalDocumentAttribute()
+    {
+
+        $save_file_name = $this->id . '-andal' . '.docx';
 
         if (Storage::disk('public')->exists('workspace/' . $save_file_name)) {
             return true;
