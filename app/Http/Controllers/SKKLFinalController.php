@@ -78,7 +78,7 @@ class SKKLFinalController extends Controller
             $skkl->file = $name;
             $saved = $skkl->save();
 
-            if($project->is_oss === 1) {
+            if ($project->is_oss === "1") {
                 $initiator = Initiator::find($project->id_applicant);
 
                 if (!$initiator) {

@@ -223,7 +223,7 @@ class MeetReportRKLRPLController extends Controller
 
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
-                if($project->is_oss === 1){
+                if ($project->is_oss === "1"){
                     $initiator = Initiator::find($project->id_applicant);
                     if (!$initiator) {
                         Log::error('Initiator not found');
