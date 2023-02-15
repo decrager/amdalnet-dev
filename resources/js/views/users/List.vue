@@ -85,6 +85,13 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Active" width="100">
+        <template slot-scope="scope">
+          <span v-if="scope.row.active == '1'" style="color:green">Active</span>
+          <span v-else style="color:red">Inactive</span>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
           <el-button
