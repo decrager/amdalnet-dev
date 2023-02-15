@@ -117,7 +117,7 @@ class FeasibilityTestController extends Controller
             // }
 
             $project = Project::findOrFail($request->idProject);
-            if ($project->is_oss === 1) {
+            if ($project->is_oss === "1") {
                 $initiator = Initiator::find($project->id_applicant);
                 if (!$initiator) {
                     Log::error('Initiator not found');
@@ -129,7 +129,11 @@ class FeasibilityTestController extends Controller
                     return false;
                 }
                 if ($ossNib) {
-                    OssService::receiveLicenseStatusNotif($request, '45');
+                    if ($request->isFeasib == 'true') {
+                        OssService::receiveLicenseStatusNotif($request, '45');
+                    } else {
+                        OssService::receiveLicenseStatusNotif($request, '90');
+                    }
                 }
             }
 

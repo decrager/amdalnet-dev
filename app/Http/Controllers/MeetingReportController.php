@@ -93,7 +93,7 @@ class MeetingReportController extends Controller
             $project = Project::findOrFail($request->idProject);
             $meeting_report = null;
 
-            if($project->is_oss === 1) {
+            if ($project->is_oss === "1") {
                 $initiator = Initiator::find($project->id_applicant);
                 if (!$initiator) {
                     Log::error('Initiator not found');
