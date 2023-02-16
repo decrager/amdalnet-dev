@@ -1461,12 +1461,29 @@ class ProjectController extends Controller
             $dataDaftarLokasi[$key]['lokasi_kota_kabupaten'] = $a->district ?? '-';
             $dataDaftarLokasi[$key]['alamat'] = $a->address ?? '-';
         }
-
         foreach ($workflow as $key => $a) {
             $data = $a->toArray();
             $dataDaftarTracking[$key]['no_tracking'] = $numberTracking++;
             $dataDaftarTracking[$key]['nama_status'] = $data['label'] ?? '-';
             $dataDaftarTracking[$key]['tanggal_tracking'] = $data['datetime'] ?? '-';
+            if($doc === 'UKL - UPL') {
+                if ($data['code'] === 'UKL-3') {
+                    break;
+                }
+            }
+
+            if($doc === 'FORMULIR KERANGKA ACUAN') {
+                if ($data['code'] === 'AMD-3') {
+                    break;
+                }
+            }
+
+            if($doc === 'ANDAL RKL - RPL') {
+                if ($data['code'] === 'AMD-15') {
+                    break;
+                }
+            }
+
         }
 
         $document->cloneRowAndSetValues('no', $dataDaftarKegiatan);
