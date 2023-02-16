@@ -96,6 +96,25 @@ class BusinessController extends Controller
     {
         $business = $request->business;
         $parent_id = 0;
+        $kbli = Business::where('value', $business['kbli_code'])->first();
+        if ($kbli === null) {
+            Business::create([
+                'parent_id' => $parent_id,
+                'value' => $business['kbli_code'],
+                'description' => 'kbli_code',
+            ]);
+        }
+        $sectorKbli = Business::where('value', $business['kbli_code'])->first();
+        if ($sectorKbli !== null) {
+            $sector = Business::where('parent_id', $sectorKbli->id)->where('value', $business['sector'])->first();
+            if ($sector === null) {
+                Business::create([
+                    'parent_id' => $sectorKbli->id,
+                    'value' => $business['sector'],
+                    'description' => 'sector',
+                ]);
+            }
+        }
         if ($business['description'] == 'field') {
             // find available sector id
             $kbli = Business::where('description', 'kbli_code')
