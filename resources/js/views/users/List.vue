@@ -127,6 +127,20 @@
             Permissions
           </el-button>
           <el-button
+            type="primary"
+            size="small"
+            icon="el-icon-edit"
+          >
+            Resend Verification
+          </el-button>
+          <el-button
+            type="primary"
+            size="small"
+            icon="el-icon-edit"
+          >
+            Activation
+          </el-button>
+          <el-button
             v-if="scope.row.roles.includes('visitor')"
             v-permission="['manage user']"
             type="danger"
