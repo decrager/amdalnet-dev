@@ -38,6 +38,7 @@ import screeningRoutes from './modules/screening';
 import digWorkRoutes from './modules/digwork';
 import businessRoutes from './modules/business';
 import plChangesRoutes from './modules/plChanges';
+
 // import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
@@ -97,6 +98,11 @@ export const constantRoutes = [
   {
     path: '/activate/:id',
     component: () => import('@/views/activate/index'),
+    hidden: true,
+  },
+  {
+    path: '/pre-login',
+    component: () => import('@/views/pre-login/index'),
     hidden: true,
   },
   {

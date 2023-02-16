@@ -9,6 +9,7 @@ import getPageTitle from '@/utils/get-page-title';
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
 const whiteList = [
+  '/pre-login',
   '/login',
   '/auth-redirect',
   '/home',

@@ -43,13 +43,17 @@ class ResetPassword extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = url("/#/activate/".$this->user->id);
         return (new MailMessage)
             ->subject('Reset Password Akun AMDALNET')
             ->greeting('Akun AMDALNET Anda Berhasil Direset.')
             ->line('Hai ' . $this->user->name)
             ->line('')
             ->line('Akun AMDALNET anda telah berhasil Direset.')
-            ->line('Password Baru Anda: ' . $this->user->pwd);
+            ->line('Password Baru Anda: ' . $this->user->pwd)
+            ->line('')
+            ->line('Silahkan tekan tombol aktivasi dibawah ini, kemudian login ke AMDALNET dengan password baru Anda.')
+            ->Action('Aktifasi Akun Anda', $url);
     }
 
     /**
