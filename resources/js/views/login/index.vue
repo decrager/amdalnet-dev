@@ -1205,13 +1205,14 @@ export default {
                     return false;
                   }
 
-                  this.$alert('<i class="el-icon-success"></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
-                    '',
-                    {
-                      confirmButtonText: 'OK',
-                      center: true,
-                      dangerouslyUseHTMLString: true,
-                    });
+                  this.$router.push('/pre-login');
+                  // this.$alert('<img src="/images/checked.png"><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
+                  //   '',
+                  //   {
+                  //     confirmButtonText: 'OK',
+                  //     center: true,
+                  //     dangerouslyUseHTMLString: true,
+                  //   });
                   this.$message({
                     message:
                       'User Dengan Email ' +
@@ -1265,13 +1266,14 @@ export default {
                     return false;
                   }
 
-                  this.$alert('<i class="el-icon-success"></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
-                    '',
-                    {
-                      confirmButtonText: 'OK',
-                      center: true,
-                      dangerouslyUseHTMLString: true,
-                    });
+                  this.$router.push('/pre-login');
+                  // this.$alert('<img src="/images/checked.png"><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda dan <b>pastikan untuk melakukan aktivasi akun</b> sebelum login ke Amdalnet. Tombol aktivasi dapat ditemukan di email registrasi yang dikirimkan pada email terdaftar.<p>',
+                  //   '',
+                  //   {
+                  //     confirmButtonText: 'OK',
+                  //     center: true,
+                  //     dangerouslyUseHTMLString: true,
+                  //   });
                   this.$message({
                     message:
                       'User Dengan Email ' +
@@ -1337,23 +1339,23 @@ export default {
                       '',
                       { dangerouslyUseHTMLString: true, center: true, customClass: 'alert-certificate' });
                   } else {
-                    this.$alert('<i class="el-icon-success"></i><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
-                      '',
-                      {
-                        confirmButtonText: 'OK',
-                        center: true,
-                        dangerouslyUseHTMLString: true,
-                      });
-                    this.$message({
-                      message:
-                        'User Dengan Email ' +
-                        this.registrationForm.email +
-                        ' Berhasil Dibuat',
-                      type: 'success',
-                      duration: 5 * 1000,
-                    });
+                    this.$router.push('/pre-login');
+                    // this.$alert('<img src="/images/checked.png"><br/><h3>Selamat, akun anda telah berhasil dibuat</h3><p>Periksa Email anda untuk melakukan aktivasi akun sebelum login ke Amdalnet<p>',
+                    //   '',
+                    //   {
+                    //     confirmButtonText: 'OK',
+                    //     center: true,
+                    //     dangerouslyUseHTMLString: true,
+                    //   });
                   }
-
+                  this.$message({
+                    message:
+                    'User Dengan Email ' +
+                      this.registrationForm.email +
+                      ' Berhasil Dibuat',
+                    type: 'success',
+                    duration: 5 * 1000,
+                  });
                   this.loading = false;
                   this.form = 'login';
                   this.registrationForm = {};
@@ -1619,7 +1621,7 @@ $textColor: #eee;
   height: 178px;
   display: block;
 }
-.el-icon-success {
+.scale {
   scale: 400%;
   margin-bottom: 10px;
 }
