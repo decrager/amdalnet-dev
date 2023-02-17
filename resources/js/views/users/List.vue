@@ -132,7 +132,7 @@
             style="margin: 5px;"
             @click="handleResendVerification(scope.row.id)"
           >
-            Resend Verification
+            Resend Activation
           </el-button>
           <el-button
             v-if="scope.row.active == '0'"
