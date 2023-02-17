@@ -127,7 +127,6 @@
             Permissions
           </el-button>
           <el-button
-            disabled="true"
             type="primary"
             size="small"
             style="margin: 5px;"
@@ -293,6 +292,7 @@ const userResource = new UserResource();
 const permissionResource = new Resource('permissions');
 const resetPasswordResource = new Resource('reset-password');
 const activeUserResource = new Resource('active-user');
+const ResendVerificationResource = new Resource('resend-verification');
 
 export default {
   name: 'UserList',
@@ -511,8 +511,9 @@ export default {
         cancelButtonText: 'Batalkan',
         type: 'warning',
       }).then(() => {
-        resetPasswordResource.store({ id });
-      }).catch(() => {
+        ResendVerificationResource.store({ id: id });
+      }).catch((error) => {
+        console.log(error);
       });
     },
     async handleBypassActive(id) {

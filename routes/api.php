@@ -274,6 +274,7 @@ Route::get('activities', [ProjectController::class, 'states']);
 Route::apiResource('tuk-project', 'TukProjectController');
 Route::apiResource('reset-password', 'ResetPasswordController');
 Route::apiResource('active-user', 'ActiveUserController');
+Route::apiResource('resend-verification', 'ResendVerificationController');
 Route::apiResource('ka-attachments', 'KaAttachmentController');
 Route::apiResource('save-status', 'SaveStatusController');
 
