@@ -108,10 +108,10 @@
           <li class="nav__item">
             <a href="#" class="nav__link" :class="{'active-link':(activeMenu === 'Kebijakan')}" @click="handleSetMenu('KEBIJAKAN')">Kebijakan</a>
           </li>
-          <li class="nav__item">
-            <!-- <a href="#about" class="nav__link" :class="{'active-link':(activeMenu === 'Tentang')}" @click="handleSetMenu('TENTANG')">Tentang Kami</a> -->
+          <!-- <li class="nav__item">
+            <a href="#about" class="nav__link" :class="{'active-link':(activeMenu === 'Tentang')}" @click="handleSetMenu('TENTANG')">Tentang Kami</a>
             <a href="" class="nav__link" :class="{'active-link':(activeMenu === '')}">Tentang Kami</a>
-          </li>
+          </li> -->
           <li class="nav__item">
             <router-link to="login" class="btn__link login_link">Masuk</router-link>
           </li>
