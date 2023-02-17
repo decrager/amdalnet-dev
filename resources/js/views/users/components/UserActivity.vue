@@ -126,9 +126,12 @@
         <div class="formulator-message">
           <p>
             <b>
-              Apabila terdapat data yang tidak sesuai, silahkan menghubungi
-              Admin Amdalnet
+              Apabila terdapat data yang tidak sesuai, silahkan menghubungi Admin LSP terkait
             </b>
+          </p>
+          <p>&nbsp;</p>
+          <p>
+            Terkait pembaruan masa berlaku penyusun dan upgrade sertifikat ATPA dan KTPA silahkan menghubungi Admin LSP Penerbit Sertifikat
           </p>
         </div>
         <el-form ref="formulatorForm" :model="formulator">
@@ -830,13 +833,18 @@ export default {
   }
 }
 .formulator-message {
-  background-color: #c4c4c4;
+  display: block;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #ffba00;
   width: fit-content;
   padding: 0.7em;
 }
 .formulator-message p {
   margin: 0;
   padding: 0;
+  font-weight: bold;
+  color: #ffffff;
 }
 </style>
 
