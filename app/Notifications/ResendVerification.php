@@ -48,7 +48,7 @@ class ResendVerification extends Notification
     {
         $url = url("/#/activate/".$this->user->id);
         return (new MailMessage)
-            ->subject('Pendaftaran Akun AMDALNET')
+            ->subject('Reminder Aktivasi Akun AMDALNET')
             ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
             ->line('Hai '.$this->user->name)
             ->line('')
