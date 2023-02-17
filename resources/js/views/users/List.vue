@@ -127,16 +127,20 @@
             Permissions
           </el-button>
           <el-button
+            disabled="true"
             type="primary"
             size="small"
-            icon="el-icon-edit"
+            style="margin: 5px;"
+            @click="handleResendVerification(scope.row.id)"
           >
             Resend Verification
           </el-button>
           <el-button
+            v-if="scope.row.active == '0'"
             type="primary"
             size="small"
-            icon="el-icon-edit"
+            style="margin: 5px;"
+            @click="handleBypassActive(scope.row.id)"
           >
             Activation
           </el-button>
@@ -288,6 +292,7 @@ const rolesResource = new Resource('roles');
 const userResource = new UserResource();
 const permissionResource = new Resource('permissions');
 const resetPasswordResource = new Resource('reset-password');
+const activeUserResource = new Resource('active-user');
 
 export default {
   name: 'UserList',
@@ -498,6 +503,34 @@ export default {
             message: 'Delete canceled',
           });
         });
+    },
+    async handleResendVerification(id) {
+      this.currentUserId = id;
+      this.$confirm('Apakah Anda Yakin Untuk Mengirim Ulang Email Aktivasi?', 'Perhatian', {
+        confirmButtonText: 'Kirim',
+        cancelButtonText: 'Batalkan',
+        type: 'warning',
+      }).then(() => {
+        resetPasswordResource.store({ id });
+      }).catch(() => {
+      });
+    },
+    async handleBypassActive(id) {
+      this.currentUserId = id;
+      await activeUserResource.store({ id: id })
+        .then((response) => {
+          var message = (response.id) ? 'User Berhasil Diaktifkan' : 'User Gagal Diaktifkan';
+          var message_type = (response.id) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      this.handleFilter();
     },
     async handleResetPassword(id) {
       this.currentUserId = id;
