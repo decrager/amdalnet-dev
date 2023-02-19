@@ -172,6 +172,7 @@ class WorkspaceController extends Controller
                     'toolbarHideFileName' => true,
                     'toolbarNoTabs' => true,
                     'hideRightMenu' => true,
+                    'forcesave' => true,
                     'hideRulers' => true,
                     'trackChanges' => true,
                     'help' => false,
