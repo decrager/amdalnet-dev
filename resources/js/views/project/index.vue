@@ -156,7 +156,7 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isDocumentSubmitted(scope.row, 'ka') && (isInitiator || isFormulator)) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && ((isDocumentSubmitted(scope.row, 'ka') && (isInitiator || isFormulator)) || (isFormulator && scope.row.form_ka_doc)) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
