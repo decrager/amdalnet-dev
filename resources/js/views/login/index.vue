@@ -1112,11 +1112,12 @@ export default {
                 this.loading = false;
                 window.location.reload();
               })
-              .catch(() => {
+              .catch((error) => {
+                console.log(error);
                 this.$message({
-                  message: 'Maaf Email atau Password yang anda masukkan kurang tepat',
+                  message: error.response.data.error ?? 'Maaf Email atau Password yang anda masukkan kurang tepat',
                   type: 'error',
-                  duration: 5 * 1000,
+                  duration: 10 * 1000,
                 });
                 this.loading = false;
               });

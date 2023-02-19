@@ -2477,8 +2477,8 @@ class AndalComposingController extends Controller
 
         // === CHECK IF FORMULIR KA HAS SUBMITTED === //
         if($type != 'andal') {
-            $submit = KaReview::where([['id_project', $id_project], ['status', 'submit']])->first();
-            if($submit) {
+            // $submit = KaReview::where([['id_project', $id_project], ['status', 'submit']])->first();
+            // if($submit) {
                 $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Formulir KA']])->first();
                 if($document_attachment) {
                     $pdf_url = $this->docxToPdf($document_attachment->attachment);
@@ -2489,9 +2489,9 @@ class AndalComposingController extends Controller
                         'file_name_ka' => $save_file_name,
                     ];
                 }
-            }
+            // }
         }
-
+        dd($type);
         $fomulator_team = FormulatorTeam::where('id_project', $project->id)->first();
         $fomulator_team_member = FormulatorTeamMember::where('id_formulator_team', $fomulator_team->id)->orderBy('position', 'desc')->get();
         $penyusun = [];

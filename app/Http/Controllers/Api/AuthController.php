@@ -44,10 +44,20 @@ class AuthController extends BaseController
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-        $credentials["active"]=1;
+        // $credentials["active"]=1;
         // $credentials=>active = 1;
 
         // return $credentials;
+        $actives = User::where('email', '=', $credentials['email'])->first();
+
+        if (!$actives) {
+            return response()->json(new JsonResponse([], 'Maaf Akun Dengan Email ' . $credentials['email'] . ' Anda Belum Terdaftar, Silahkan Lakukan Pendaftaran Akun Terlebih Dahulu'), Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($actives->active !== 1) {
+            return response()->json(new JsonResponse([], 'Maaf Email ' . $credentials['email'] . ' Anda Belum di Aktivasi, Silahkan Cek Email Anda untuk Melakukan Aktivasi'), Response::HTTP_UNAUTHORIZED);
+        }
+
         if (!Auth::attempt($credentials)) {
             return response()->json(new JsonResponse([], 'Maaf Email atau Password yang anda masukkan kurang tepat'), Response::HTTP_UNAUTHORIZED);
         }
