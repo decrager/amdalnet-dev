@@ -123,16 +123,17 @@
         label="Penyusun"
         name="formulatorTab"
       >
-        <div class="formulator-message">
-          <p>
-            <b>
-              Apabila terdapat data yang tidak sesuai, silahkan menghubungi Admin LSP terkait
-            </b>
-          </p>
-          <p>&nbsp;</p>
-          <p>
-            Terkait pembaruan masa berlaku penyusun dan upgrade sertifikat ATPA dan KTPA silahkan menghubungi Admin LSP Penerbit Sertifikat
-          </p>
+        <div role="alert" class="message">
+          <i class="el-alert__icon el-icon-warning is-big" style="align-self: center;" />
+          <div><span><b>PERHATIAN</b></span>
+            <p class="el-alert__description">
+              <ul style="line-height: 25px;">
+                <li>Apabila terdapat data yang tidak sesuai, silahkan menghubungi <b>Admin LSP Penerbit Sertifikat</b></li>
+                <li>Terkait pembaruan masa berlaku penyusun dan upgrade sertifikat ATPA dan KTPA silahkan menghubungi <b>Admin LSP Penerbit Sertifikat</b></li>
+                <li>Apabila masa berlaku sertifikat anda sudah habis, maka anda tidak dapat menyusun Dokumen AMDAL (hanya bisa menyusun UKL-UPL)</li>
+              </ul>
+            </p>
+          </div>
         </div>
         <el-form ref="formulatorForm" :model="formulator">
           <el-form-item label="Nama Penyusun">
@@ -845,6 +846,20 @@ export default {
   padding: 0;
   font-weight: bold;
   color: #ffffff;
+}
+.message {
+  margin-bottom: 10px;
+  display: flex;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #c6eafe;
+  width: auto;
+  padding: 0.7em;
+}
+.message p {
+  margin: 0;
+  padding: 0;
+  color: #000000;
 }
 </style>
 
