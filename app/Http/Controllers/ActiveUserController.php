@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Laravue\Models\User;
+use DB;
 use Illuminate\Http\Request;
 
 class ActiveUserController extends Controller
@@ -35,13 +37,30 @@ class ActiveUserController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->id){
-            $user = User::find($request->id);
-            $pwd = '1';
-            $user->active = $pwd;
-            $user->save();
-            return $user;
+        DB::beginTransaction();
+        try {
+            if($request->id && $request->active == true ){
+                $user = User::find($request->id);
+                $pwd = '1';
+                $user->active = $pwd;
+                $user->save();
+                DB::commit();
+                return $user;
+            }
+            if($request->id && $request->inactive == true ){
+                $user = User::find($request->id);
+                $pwd = '0';
+                $user->active = $pwd;
+                $user->save();
+                DB::commit();
+                return $user;
+            }
+
+        } catch (\Exception $th) {
+            DB::rollBack();
+            return response($th, 500);
         }
+
     }
 
     /**
