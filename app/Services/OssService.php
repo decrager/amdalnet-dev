@@ -206,9 +206,7 @@ class OssService
         $ossNib = $dataSubProject['ossNib'];
         $subProjects =  $dataSubProject['subProjects'];
         $subProjectsAmdalnetIdProyeks = $dataSubProject['subProjectsAmdalnetIdProyeks'];
-        // $jsonContent = $ossNib->json_content;
         $idIzin = $ossNib->id_izin;
-        // $dataChecklist = $jsonContent['data_checklist'];
 
         foreach ($subProjects as $dataProject) {
             $idProduct = null;
@@ -223,7 +221,8 @@ class OssService
                         'id_produk' => $idProduct,
                         'id_proyek' => $dataProject['id_proyek'],
                         'oss_id' => $ossNib->oss_id,
-                        'id_izin' => $idIzin,
+                        // 'id_izin' => $idIzin,
+                        'id_izin' => $dataProject['id_izin'],
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_instansi' => $dataProject['sektor'],
                         'kd_status' => $statusCode,
@@ -248,13 +247,6 @@ class OssService
                 $respJson = $response->json();
                 Log::debug(json_encode($data));
                 Log::debug(json_encode($respJson));
-                // $statusResponse = null;
-                // if (isset($respJson['responreceiveLicenseStatus']['keterangan'])) {
-                //     $statusResponse = $respJson['responreceiveLicenseStatus']['keterangan'];
-                // }
-                // if (!empty($statusResponse) && $statusResponse === 'Sukses'){
-                //     Log::debug('Update status: oss_nibs .' . $ossNib->nib . ' updated with kd_status = ' . $statusCode);
-                // }
                 if (isset($respJson['responreceiveLicenseStatus']['kode']) && $respJson['responreceiveLicenseStatus']['kode'] === '200') {
                     Log::debug('Update status: oss_nibs .' . $ossNib->nib . ' updated with kd_status = ' . $statusCode);
                 }
@@ -265,7 +257,6 @@ class OssService
 
     public static function receiveLicenseStatus($project = null, $statusCode)
     {
-        // dd($statusCode);
         $dataSubProject = OssService::getSubProjects($project);
         $ossNib = $dataSubProject['ossNib'];
         $subProjects =  $dataSubProject['subProjects'];
@@ -322,7 +313,7 @@ class OssService
                         'id_produk' => $idProduct,
                         'id_proyek' => $dataProject['id_proyek'],
                         'oss_id' => $ossNib->oss_id,
-                        'id_izin' => $idIzin,
+                        'id_izin' => $dataProject['id_izin'],
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_instansi' => $dataProject['sektor'],
                         'kd_status' => $statusCode,
