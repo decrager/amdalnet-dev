@@ -27,6 +27,9 @@ class OssService
         $ossNib = $dataSubProject['ossNib'];
         $subProjects =  $dataSubProject['subProjects'];
         $subProjectsAmdalnetIdProyeks = $dataSubProject['subProjectsAmdalnetIdProyeks'];
+        $jsonContent = $ossNib->json_content;
+        $idIzin = $ossNib->id_izin;
+        $dataChecklist = $jsonContent['data_checklist'];
 
         foreach ($subProjects as $dataProject) {
             $dataProduct = null;
@@ -36,6 +39,12 @@ class OssService
                 $idProduct = $dataProduct['id_produk'];
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
+                foreach ($dataChecklist as $c) {
+                    if ($c['id_proyek'] == $dataProject['id_proyek']) {
+                        $idIzin = $c['id_izin'];
+                        break;
+                    }
+                }
                 // call endpoint receiveLicense
                 // $statusIzin = OssService::getStatusIzin($project, $fileUrl, $statusCode);
                 $authorityNew = $ossNib->kewenangan;
@@ -53,8 +62,8 @@ class OssService
                         'id_produk' => $idProduct,
                         'id_proyek' => $dataProject['id_proyek'],
                         'oss_id' => $ossNib->oss_id,
-                        'id_izin' => $ossNib->id_izin,
-                        // 'id_izin' => $dataProject['id_izin'],
+                        // 'id_izin' => $ossNib->id_izin,
+                        'id_izin' => $idIzin,
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_daerah' => $ossNib->kd_daerah,
                         // 'kewenangan' => $ossNib->kewenangan,
@@ -207,6 +216,8 @@ class OssService
         $subProjects =  $dataSubProject['subProjects'];
         $subProjectsAmdalnetIdProyeks = $dataSubProject['subProjectsAmdalnetIdProyeks'];
         $idIzin = $ossNib->id_izin;
+        $jsonContent = $ossNib->json_content;
+        $dataChecklist = $jsonContent['data_checklist'];
 
         foreach ($subProjects as $dataProject) {
             $idProduct = null;
@@ -215,6 +226,12 @@ class OssService
                 $idProduct = $dataProduct['id_produk'];
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
+                foreach ($dataChecklist as $c) {
+                    if ($c['id_proyek'] == $dataProject['id_proyek']) {
+                        $idIzin = $c['id_izin'];
+                        break;
+                    }
+                }
                 $data = [
                     'IZINSTATUS' => [
                         'nib' => $ossNib->nib,
@@ -226,7 +243,7 @@ class OssService
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_instansi' => $dataProject['sektor'],
                         'kd_status' => $statusCode,
-                        'tgl_status' => (string)$project->updated_at->format('d-m-Y'),
+                        'tgl_status' => (string)$project->updated_at->format('Y-m-d'),
                         'nip_status' => '',
                         'nama_status' => OssService::getStatusNameOss($statusCode),
                         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
@@ -264,7 +281,7 @@ class OssService
         $jsonContent = $ossNib->json_content;
         $idIzin = $ossNib->id_izin;
         $dataChecklist = $jsonContent['data_checklist'];
-
+        // dd($dataChecklist);
         foreach ($subProjects as $dataProject) {
             $idProduct = null;
             if (count($dataProject['data_proyek_produk']) > 0) {
@@ -272,12 +289,14 @@ class OssService
                 $idProduct = $dataProduct['id_produk'];
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
-                // foreach ($dataChecklist as $c) {
-                //     if ($c['id_proyek'] == $dataProject['id_proyek']) {
-                //         $idIzin = $c['id_izin'];
-                //         break;
-                //     }
-                // }
+                // dd($subProjectsAmdalnetIdProyeks);
+                foreach ($dataChecklist as $c) {
+                    if ($c['id_proyek'] == $dataProject['id_proyek']) {
+                        $idIzin = $c['id_izin'];
+                        break;
+                    }
+                }
+                // dd($idIzin);
                 $subProjectAmdalnet = SubProject::where('id_proyek', $dataProject['id_proyek'])
                     ->orderBy('created_at', 'desc')
                     ->first();
@@ -313,12 +332,12 @@ class OssService
                         'id_produk' => $idProduct,
                         'id_proyek' => $dataProject['id_proyek'],
                         'oss_id' => $ossNib->oss_id,
-                        'id_izin' => $ossNib->id_izin,
-                        // 'id_izin' => $idIzin,
+                        // 'id_izin' => $ossNib->id_izin,
+                        'id_izin' => $idIzin,
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_instansi' => $dataProject['sektor'],
                         'kd_status' => $statusCode,
-                        'tgl_status' => (string)$project->updated_at->format('d-m-Y'),
+                        'tgl_status' => (string)$project->updated_at->format('Y-m-d'),
                         // 'nip_status' => null, // NULL
                         'nip_status' => '',
                         'nama_status' => OssService::getStatusNameOss($statusCode),
