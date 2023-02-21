@@ -1,15 +1,15 @@
 <template>
   <div>
-    <div class="message">
-      <p>
-        Terkait pembaruan masa berlaku penyusun dan upgrade sertifikat ATPA dan KTPA silahkan menghubungi Admin LSP Penerbit Sertifikat
-      </p>
-      <p>
-        &nbsp;
-      </p>
-      <p>
-        Terkait pembaruan member penyusun (menambah atau menghapus) di LPJP silahkan menghubungi Admin Pusfaster (<a href="mailto:pusfaster.bsilhk@gmail.com">pusfaster.bsilhk@gmail.com</a>)
-      </p>
+    <div role="alert" class="message">
+      <i class="el-alert__icon el-icon-warning is-big" style="align-self: center;" />
+      <div><span><b>PERHATIAN</b></span>
+        <p class="el-alert__description">
+          <ul style="line-height: 25px;">
+            <li>Terkait pembaruan masa berlaku penyusun dan upgrade sertifikat ATPA dan KTPA silahkan menghubungi <b>Admin LSP Penerbit Sertifikat</b></li>
+            <li>Terkait pembaruan member penyusun (menambah atau menghapus) di LPJP silahkan menghubungi <b>Admin Pusfaster (<a href="mailto:pusfaster.bsilhk@gmail.com">pusfaster.bsilhk@gmail.com</a>)</b></li>
+          </ul>
+        </p>
+      </div>
     </div>
     <el-card type="box-card">
       <div slot="header" class="clearfix">
@@ -118,17 +118,16 @@ export default {
 <style lang="scss" scoped>
 .message {
   margin-bottom: 10px;
-  display: block;
+  display: flex;
   padding: 5px;
   border-radius: 5px;
-  background-color: #ffba00;
-  width: fit-content;
+  background-color: #c6eafe;
+  width: auto;
   padding: 0.7em;
 }
 .message p {
   margin: 0;
   padding: 0;
-  font-weight: bold;
-  color: #ffffff;
+  color: #000000;
 }
 </style>
