@@ -144,7 +144,16 @@
             Activation
           </el-button>
           <el-button
-            v-if="scope.row.roles.includes('visitor')"
+            v-if="scope.row.active == '1'"
+            type="danger"
+            size="small"
+            style="margin: 5px;"
+            @click="handleBypassInactive(scope.row.id)"
+          >
+            Inactive
+          </el-button>
+          <el-button
+            v-if="scope.row.roles.includes('admin')"
             v-permission="['manage user']"
             type="danger"
             size="small"
@@ -518,10 +527,27 @@ export default {
     },
     async handleBypassActive(id) {
       this.currentUserId = id;
-      await activeUserResource.store({ id: id })
+      await activeUserResource.store({ id: id, active: true })
         .then((response) => {
           var message = (response.id) ? 'User Berhasil Diaktifkan' : 'User Gagal Diaktifkan';
           var message_type = (response.id) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      this.handleFilter();
+    },
+    async handleBypassInactive(id) {
+      this.currentUserId = id;
+      await activeUserResource.store({ id: id, inactive: true })
+        .then((response) => {
+          var message = (response.id) ? 'User Berhasil Dinonaktifkan' : 'User Gagal Dinonaktifkan';
+          var message_type = (response.id) ? 'warning' : 'error';
           this.$message({
             message: message,
             type: message_type,
